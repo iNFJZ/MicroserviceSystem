@@ -103,7 +103,7 @@ docker-compose down -v
 
 ### GatewayApi (Port 5050)
 - `/api/auth/*` - Chuyển tiếp đến AuthService
-- `/api/files/*` - Chuyển tiếp đến FileService
+- `/api/file/*` - Chuyển tiếp đến FileService
 
 ### AuthService (Port 5001)
 - `POST /api/auth/register` - Đăng ký người dùng
@@ -111,9 +111,9 @@ docker-compose down -v
 - `POST /api/auth/logout` - Đăng xuất
 
 ### FileService (Port 5002)
-- `POST /api/files/upload` - Upload file
-- `GET /api/files/download/{filename}` - Download file
-- `DELETE /api/files/{filename}` - Xóa file
+- `POST /api/file/upload` - Upload file
+- `GET /api/file/download/{filename}` - Download file
+- `DELETE /api/file/{filename}` - Xóa file
 
 ## Cấu trúc Docker
 
