@@ -1,7 +1,4 @@
-version: '3.9'
-
 services:
-
   postgres:
     image: postgres:14
     container_name: auth-postgres
@@ -14,6 +11,8 @@ services:
       POSTGRES_PASSWORD: 123456
     volumes:
       - pgdata:/var/lib/postgresql/data
+    networks:
+      - microservice-network
 
   redis:
     image: redis
@@ -21,17 +20,23 @@ services:
     restart: always
     ports:
       - "6379:6379"
+    volumes:
+      - redis-data:/data
+    networks:
+      - microservice-network
 
   rabbitmq:
     image: rabbitmq:3-management
     container_name: rabbitmq
     restart: always
     ports:
-      - "5672:5672"     # AMQP
-      - "15672:15672"   # Management UI
+      - "5672:5672"
+      - "15672:15672"
     environment:
       RABBITMQ_DEFAULT_USER: guest
       RABBITMQ_DEFAULT_PASS: guest
+    networks:
+      - microservice-network
 
   minio:
     image: minio/minio
@@ -45,7 +50,71 @@ services:
     volumes:
       - minio-data:/data
     command: server --console-address ":9001" /data
+    networks:
+      - microservice-network
+
+  auth-service:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: auth-service
+    working_dir: /app/AuthService
+    ports:
+      - "5001:80"
+    environment:
+      - ConnectionStrings__DefaultConnection=Host=auth-postgres;Port=5432;Database=auth_db;Username=postgres;Password=123456
+      - Redis__ConnectionString=redis:6379
+      - ASPNETCORE_ENVIRONMENT=Development
+    depends_on:
+      - postgres
+      - redis
+    networks:
+      - microservice-network
+    command: dotnet AuthService.dll
+
+  file-service:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: file-service
+    working_dir: /app/FileService
+    ports:
+      - "5002:80"
+    environment:
+      - Minio__Endpoint=minio:9000
+      - Minio__AccessKey=minio
+      - Minio__SecretKey=minio123
+      - Minio__BucketName=mybucket
+      - Minio__UseSSL=false
+      - ASPNETCORE_ENVIRONMENT=Development
+    depends_on:
+      - minio
+    networks:
+      - microservice-network
+    command: dotnet FileService.dll
+
+  gateway-api:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: gateway-api
+    working_dir: /app/GatewayApi
+    ports:
+      - "5050:80"
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Development
+    depends_on:
+      - auth-service
+      - file-service
+    networks:
+      - microservice-network
+    command: dotnet GatewayApi.dll
 
 volumes:
   pgdata:
   minio-data:
+  redis-data:
+
+networks:
+  microservice-network:
+    driver: bridge
