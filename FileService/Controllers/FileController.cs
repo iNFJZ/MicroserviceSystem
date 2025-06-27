@@ -1,6 +1,9 @@
 using FileService.Services;
+using FileService.DTOs;
 using FileService.Models;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Http;
+using System.ComponentModel.DataAnnotations;
 
 namespace FileService.Controllers
 {
@@ -21,36 +24,50 @@ namespace FileService.Controllers
 
         [HttpPost("upload")]
         [Consumes("multipart/form-data")]
-        public async Task<IActionResult> Upload([FromForm] IFormFile file)
+        public async Task<IActionResult> Upload([FromForm] UploadFileRequest request)
         {
-            if (file == null || file.Length == 0)
-                return BadRequest("No file uploaded");
-            if (file.Length > 10 * 1024 * 1024)
-                return BadRequest("File size exceeds the limit of 10MB");
-            try
+            var files = request.Files;
+            if (files == null || files.Count == 0)
+                return BadRequest("No files uploaded");
+            var results = new List<object>();
+            foreach (var file in files)
             {
-                using var stream = file.OpenReadStream();
-                await _fileService.UploadFileAsync(file.FileName, stream, file.ContentType);
-
-                var uploadEvent = new FileUploadEvent
+                if (file == null || file.Length == 0)
                 {
-                    FileName = file.FileName,
-                    ContentType = file.ContentType,
-                    FileSize = file.Length,
-                    UploadTime = DateTime.UtcNow,
-                    UserId = "anonymous"
-                };
+                    results.Add(new { fileName = "", message = "File is empty" });
+                    continue;
+                }
+                if (file.Length > 10 * 1024 * 1024)
+                {
+                    results.Add(new { fileName = file.FileName, message = "File size exceeds the limit of 10MB" });
+                    continue;
+                }
+                try
+                {
+                    using var stream = file.OpenReadStream();
+                    await _fileService.UploadFileAsync(file.FileName, stream, file.ContentType);
 
-                await _messageService.PublishFileUploadEventAsync(uploadEvent);
-                _logger.LogInformation("File uploaded successfully: {FileName}", file.FileName);
+                    var uploadEvent = new FileUploadEvent
+                    {
+                        FileName = file.FileName,
+                        ContentType = file.ContentType,
+                        FileSize = file.Length,
+                        UploadTime = DateTime.UtcNow,
+                        UserId = "anonymous"
+                    };
 
-                return Ok(new { file.FileName, message = "File uploaded successfully" });
+                    await _messageService.PublishFileUploadEventAsync(uploadEvent);
+                    _logger.LogInformation("File uploaded successfully: {FileName}", file.FileName);
+
+                    results.Add(new { fileName = file.FileName, message = "File uploaded successfully" });
+                }
+                catch (Exception ex)
+                {
+                    _logger.LogError(ex, "Error uploading file: {FileName}", file?.FileName);
+                    results.Add(new { fileName = file?.FileName, message = "Error uploading file" });
+                }
             }
-            catch (Exception ex)
-            {
-                _logger.LogError(ex, "Error uploading file: {FileName}", file?.FileName);
-                return StatusCode(500, "Error uploading file");
-            }
+            return Ok(results);
         }
 
         [HttpGet("download/{fileName}")]
@@ -58,6 +75,11 @@ namespace FileService.Controllers
         {
             try
             {
+                var files = await _fileService.ListFilesAsync();
+                if (!files.Contains(fileName))
+                {
+                    return NotFound(new { message = $"File '{fileName}' not found" });
+                }
                 var stream = await _fileService.DownloadFileAsync(fileName);
 
                 var downloadEvent = new FileDownloadEvent
@@ -83,6 +105,11 @@ namespace FileService.Controllers
         {
             try
             {
+                var files = await _fileService.ListFilesAsync();
+                if (!files.Contains(fileName))
+                {
+                    return NotFound(new { message = $"File '{fileName}' not found" });
+                }
                 await _fileService.DeleteFileAsync(fileName);
 
                 var deleteEvent = new FileDeleteEvent
