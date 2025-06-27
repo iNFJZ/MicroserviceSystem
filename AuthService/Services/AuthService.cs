@@ -1,5 +1,7 @@
 ﻿using AuthService.Models;
 using AuthService.Repositories;
+using AuthService.DTOs;
+using AuthService.Exceptions;
 using Microsoft.IdentityModel.Tokens;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
@@ -22,11 +24,16 @@ namespace AuthService.Services
 
         public async Task<string> RegisterAsync(RegisterDto dto)
         {
+            var existingUser = await _repo.GetByEmailAsync(dto.Email);
+            if (existingUser != null)
+                throw new UserAlreadyExistsException(dto.Email);
+
             var user = new User
             {
-                Username = dto.Username ?? throw new ArgumentNullException(nameof(dto.Username)),
-                Email = dto.Email ?? throw new ArgumentNullException(nameof(dto.Email)),
-                PasswordHash = BCrypt.Net.BCrypt.HashPassword(dto.Password)
+                Username = dto.Username,
+                Email = dto.Email,
+                PasswordHash = BCrypt.Net.BCrypt.HashPassword(dto.Password),
+                CreatedAt = DateTime.UtcNow
             };
 
             await _repo.AddAsync(user);
@@ -42,9 +49,9 @@ namespace AuthService.Services
 
         public async Task<string> LoginAsync(LoginDto dto)
         {
-            var user = await _repo.GetByEmailAsync(dto.Email ?? throw new ArgumentNullException(nameof(dto.Email)));
+            var user = await _repo.GetByEmailAsync(dto.Email);
             if (user == null || !BCrypt.Net.BCrypt.Verify(dto.Password, user.PasswordHash))
-                throw new UnauthorizedAccessException("Invalid credentials");
+                throw new InvalidCredentialsException();
 
             var token = GenerateJwt(user);
             
@@ -128,7 +135,7 @@ namespace AuthService.Services
                 new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString())
             };
 
-            var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_config["JwtSettings:Key"] ?? throw new ArgumentNullException("JwtSettings:Key")));
+            var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_config["JwtSettings:Key"] ?? throw new InvalidOperationException("JWT Key is not configured.")));
             var creds = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);
 
             var token = new JwtSecurityToken(

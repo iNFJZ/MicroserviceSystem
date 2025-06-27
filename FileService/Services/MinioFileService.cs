@@ -13,7 +13,7 @@ namespace FileService.Services
         public string? BucketName { get; set; }
     }
 
-    public class MinioFileService
+    public class MinioFileService : IFileService
     {
         private readonly IMinioClient _minioClient;
         private readonly string _bucketName;
@@ -24,6 +24,7 @@ namespace FileService.Services
             _minioClient = new MinioClient()
                 .WithEndpoint(config.Endpoint)
                 .WithCredentials(config.AccessKey, config.SecretKey)
+                .WithSSL(false)
                 .Build();
             _bucketName = config.BucketName!;
         }
@@ -38,15 +39,10 @@ namespace FileService.Services
                 await _minioClient.MakeBucketAsync(mbArgs);
             }
         }
+        
         public async Task UploadFileAsync(string objectName, Stream fileStream, string contentType)
         {
-            var beArgs = new BucketExistsArgs().WithBucket(_bucketName);
-            bool found = await _minioClient.BucketExistsAsync(beArgs);
-            if (!found)
-            {
-                var mbArgs = new MakeBucketArgs().WithBucket(_bucketName);
-                await _minioClient.MakeBucketAsync(mbArgs);
-            }
+            await EnsureBucketExists();
             var putObjectArgs = new PutObjectArgs()
                 .WithBucket(_bucketName)
                 .WithObject(objectName)

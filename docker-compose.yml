@@ -86,9 +86,15 @@ services:
       - Minio__SecretKey=minio123
       - Minio__BucketName=mybucket
       - Minio__UseSSL=false
+      - RabbitMQ__HostName=rabbitmq
+      - RabbitMQ__Port=5672
+      - RabbitMQ__UserName=guest
+      - RabbitMQ__Password=guest
+      - RabbitMQ__VirtualHost=/
       - ASPNETCORE_ENVIRONMENT=Development
     depends_on:
       - minio
+      - rabbitmq
     networks:
       - microservice-network
     command: dotnet FileService.dll
@@ -110,6 +116,19 @@ services:
       - microservice-network
     command: dotnet GatewayApi.dll
 
+  worker-service:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: worker-service
+    working_dir: /app/WorkerService
+    command: dotnet WorkerService.dll
+    depends_on:
+      - rabbitmq
+    networks:
+      - microservice-network
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Development
 volumes:
   pgdata:
   minio-data:

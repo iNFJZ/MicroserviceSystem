@@ -27,10 +27,18 @@ builder.Services.AddCors(options =>
 });
 
 // Configure MinIO
-builder.Services.Configure<FileService.Services.MinioOptions>(builder.Configuration.GetSection("Minio"));
-builder.Services.AddSingleton<FileService.Services.MinioFileService>();
+builder.Services.Configure<MinioOptions>(builder.Configuration.GetSection("Minio"));
+builder.Services.AddSingleton<IFileService, MinioFileService>();
+
+// Configure RabbitMQ
+builder.Services.Configure<RabbitMQOptions>(builder.Configuration.GetSection("RabbitMQ"));
+builder.Services.AddSingleton<IMessageService, RabbitMQMessageService>();
+builder.Services.AddSingleton<IFileEventConsumer, FileEventConsumer>();
 
 var app = builder.Build();
+
+var consumer = app.Services.GetRequiredService<IFileEventConsumer>();
+consumer.StartConsuming();
 
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
@@ -45,8 +53,3 @@ app.UseAuthorization();
 app.MapControllers();
 
 app.Run();
-
-record WeatherForecast(DateOnly Date, int TemperatureC, string? Summary)
-{
-    public int TemperatureF => 32 + (int)(TemperatureC / 0.5556);
-}
