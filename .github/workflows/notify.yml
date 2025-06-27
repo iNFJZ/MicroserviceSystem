@@ -1,0 +1,55 @@
+name: Notify Deployment
+
+on:
+  workflow_run:
+    workflows: ["CD Pipeline - Staging", "CD Pipeline - Production"]
+    types: [completed]
+
+jobs:
+  notify:
+    runs-on: ubuntu-latest
+    if: always()
+    
+    steps:
+    - name: Notify Slack/Discord
+      if: always()
+      run: |
+        # Thay thế YOUR_WEBHOOK_URL bằng webhook URL thực tế
+        WEBHOOK_URL="${{ secrets.NOTIFICATION_WEBHOOK_URL }}"
+        
+        if [ -n "$WEBHOOK_URL" ]; then
+          WORKFLOW_NAME="${{ github.event.workflow_run.name }}"
+          STATUS="${{ github.event.workflow_run.conclusion }}"
+          COMMIT_SHA="${{ github.event.workflow_run.head_sha }}"
+          COMMIT_MESSAGE="${{ github.event.workflow_run.head_commit.message }}"
+          
+          # Tạo message
+          if [ "$STATUS" = "success" ]; then
+            COLOR="good"
+            EMOJI="✅"
+            MESSAGE="Deployment successful!"
+          else
+            COLOR="danger"
+            EMOJI="❌"
+            MESSAGE="Deployment failed!"
+          fi
+          
+          # Gửi notification (ví dụ cho Slack)
+          curl -X POST -H 'Content-type: application/json' \
+            --data "{
+              \"text\": \"$EMOJI $WORKFLOW_NAME: $MESSAGE\",
+              \"attachments\": [{
+                \"color\": \"$COLOR\",
+                \"fields\": [{
+                  \"title\": \"Commit\",
+                  \"value\": \"$COMMIT_MESSAGE\",
+                  \"short\": true
+                }, {
+                  \"title\": \"SHA\",
+                  \"value\": \"$COMMIT_SHA\",
+                  \"short\": true
+                }]
+              }]
+            }" \
+            "$WEBHOOK_URL"
+        fi 

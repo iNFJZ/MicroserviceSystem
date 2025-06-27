@@ -1,0 +1,202 @@
+name: CD Pipeline - Staging
+
+on:
+  workflow_run:
+    workflows: ["CI Pipeline"]
+    branches: [develop]
+    types: [completed]
+
+env:
+  REGISTRY: ghcr.io
+  IMAGE_NAME: ${{ github.repository }}
+
+jobs:
+  deploy-staging:
+    runs-on: ubuntu-latest
+    if: ${{ github.event.workflow_run.conclusion == 'success' }}
+    
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+
+    - name: Set up Docker Buildx
+      uses: docker/setup-buildx-action@v3
+
+    - name: Log in to Container Registry
+      uses: docker/login-action@v3
+      with:
+        registry: ${{ env.REGISTRY }}
+        username: ${{ github.actor }}
+        password: ${{ secrets.GITHUB_TOKEN }}
+
+    - name: Deploy to staging environment
+      run: |
+        echo "Deploying to staging environment..."
+        
+        # Pull the latest image
+        docker pull ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:develop
+        
+        # Create staging docker-compose file
+        cat > docker-compose.staging.yml << 'EOF'
+        version: '3.8'
+        services:
+          postgres:
+            image: postgres:14
+            container_name: auth-postgres-staging
+            restart: always
+            ports:
+              - "5433:5432"
+            environment:
+              POSTGRES_DB: auth_db_staging
+              POSTGRES_USER: postgres
+              POSTGRES_PASSWORD: ${{ secrets.STAGING_DB_PASSWORD }}
+            volumes:
+              - pgdata-staging:/var/lib/postgresql/data
+            networks:
+              - microservice-network-staging
+
+          redis:
+            image: redis
+            container_name: redis-staging
+            restart: always
+            ports:
+              - "6380:6379"
+            volumes:
+              - redis-data-staging:/data
+            networks:
+              - microservice-network-staging
+
+          rabbitmq:
+            image: rabbitmq:3-management
+            container_name: rabbitmq-staging
+            restart: always
+            ports:
+              - "5673:5672"
+              - "15673:15672"
+            environment:
+              RABBITMQ_DEFAULT_USER: guest
+              RABBITMQ_DEFAULT_PASS: guest
+            networks:
+              - microservice-network-staging
+
+          minio:
+            image: minio/minio
+            container_name: minio-staging
+            ports:
+              - "9002:9000"
+              - "9003:9001"
+            environment:
+              MINIO_ROOT_USER: minio
+              MINIO_ROOT_PASSWORD: minio123
+            volumes:
+              - minio-data-staging:/data
+            command: server --console-address ":9001" /data
+            networks:
+              - microservice-network-staging
+
+          auth-service:
+            image: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:develop
+            container_name: auth-service-staging
+            working_dir: /app/AuthService
+            ports:
+              - "5004:80"
+            environment:
+              - ConnectionStrings__DefaultConnection=Host=auth-postgres-staging;Port=5432;Database=auth_db_staging;Username=postgres;Password=${{ secrets.STAGING_DB_PASSWORD }}
+              - Redis__ConnectionString=redis-staging:6379
+              - ASPNETCORE_ENVIRONMENT=Staging
+            depends_on:
+              - postgres
+              - redis
+            networks:
+              - microservice-network-staging
+            command: dotnet AuthService.dll
+
+          file-service:
+            image: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:develop
+            container_name: file-service-staging
+            working_dir: /app/FileService
+            ports:
+              - "5005:80"
+            environment:
+              - Minio__Endpoint=minio-staging:9000
+              - Minio__AccessKey=minio
+              - Minio__SecretKey=minio123
+              - Minio__BucketName=mybucket-staging
+              - Minio__UseSSL=false
+              - RabbitMQ__HostName=rabbitmq-staging
+              - RabbitMQ__Port=5672
+              - RabbitMQ__UserName=guest
+              - RabbitMQ__Password=guest
+              - RabbitMQ__VirtualHost=/
+              - ASPNETCORE_ENVIRONMENT=Staging
+            depends_on:
+              - minio
+              - rabbitmq
+            networks:
+              - microservice-network-staging
+            command: dotnet FileService.dll
+
+          gateway-api:
+            image: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:develop
+            container_name: gateway-api-staging
+            working_dir: /app/GatewayApi
+            ports:
+              - "5051:80"
+            environment:
+              - ASPNETCORE_ENVIRONMENT=Staging
+            depends_on:
+              - auth-service
+              - file-service
+            networks:
+              - microservice-network-staging
+            command: dotnet GatewayApi.dll
+
+          worker-service:
+            image: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:develop
+            container_name: worker-service-staging
+            working_dir: /app/WorkerService
+            command: dotnet WorkerService.dll
+            depends_on:
+              - rabbitmq
+            networks:
+              - microservice-network-staging
+            environment:
+              - ASPNETCORE_ENVIRONMENT=Staging
+
+        volumes:
+          pgdata-staging:
+          minio-data-staging:
+          redis-data-staging:
+
+        networks:
+          microservice-network-staging:
+            driver: bridge
+        EOF
+        
+        # Deploy using docker-compose
+        docker-compose -f docker-compose.staging.yml down
+        docker-compose -f docker-compose.staging.yml up -d
+        
+        echo "Staging deployment completed!"
+
+    - name: Health check
+      run: |
+        echo "Performing health checks..."
+        sleep 30
+        
+        # Check if services are running
+        docker ps --filter "name=staging" --format "table {{.Names}}\t{{.Status}}"
+        
+        # Basic health check for gateway
+        curl -f http://localhost:5051/health || echo "Gateway health check failed"
+        
+        echo "Health checks completed!"
+
+    - name: Notify deployment status
+      if: always()
+      run: |
+        if [ "${{ job.status }}" == "success" ]; then
+          echo "✅ Staging deployment successful!"
+        else
+          echo "❌ Staging deployment failed!"
+        fi 

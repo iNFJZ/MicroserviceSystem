@@ -1,0 +1,234 @@
+name: CD Pipeline - Production
+
+on:
+  workflow_run:
+    workflows: ["CI Pipeline"]
+    branches: [master]
+    types: [completed]
+  workflow_dispatch:
+    inputs:
+      environment:
+        description: 'Environment to deploy to'
+        required: true
+        default: 'production'
+        type: choice
+        options:
+        - production
+
+env:
+  REGISTRY: ghcr.io
+  IMAGE_NAME: ${{ github.repository }}
+
+jobs:
+  deploy-production:
+    runs-on: ubuntu-latest
+    if: ${{ github.event.workflow_run.conclusion == 'success' || github.event_name == 'workflow_dispatch' }}
+    environment: production
+    
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+
+    - name: Set up Docker Buildx
+      uses: docker/setup-buildx-action@v3
+
+    - name: Log in to Container Registry
+      uses: docker/login-action@v3
+      with:
+        registry: ${{ env.REGISTRY }}
+        username: ${{ github.actor }}
+        password: ${{ secrets.GITHUB_TOKEN }}
+
+    - name: Deploy to production environment
+      run: |
+        echo "Deploying to production environment..."
+        
+        # Pull the latest image
+        docker pull ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:main
+        
+        # Create production docker-compose file
+        cat > docker-compose.production.yml << 'EOF'
+        version: '3.8'
+        services:
+          postgres:
+            image: postgres:14
+            container_name: auth-postgres-production
+            restart: always
+            ports:
+              - "5434:5432"
+            environment:
+              POSTGRES_DB: auth_db_production
+              POSTGRES_USER: postgres
+              POSTGRES_PASSWORD: ${{ secrets.PRODUCTION_DB_PASSWORD }}
+            volumes:
+              - pgdata-production:/var/lib/postgresql/data
+            networks:
+              - microservice-network-production
+
+          redis:
+            image: redis
+            container_name: redis-production
+            restart: always
+            ports:
+              - "6381:6379"
+            volumes:
+              - redis-data-production:/data
+            networks:
+              - microservice-network-production
+
+          rabbitmq:
+            image: rabbitmq:3-management
+            container_name: rabbitmq-production
+            restart: always
+            ports:
+              - "5674:5672"
+              - "15674:15672"
+            environment:
+              RABBITMQ_DEFAULT_USER: guest
+              RABBITMQ_DEFAULT_PASS: guest
+            networks:
+              - microservice-network-production
+
+          minio:
+            image: minio/minio
+            container_name: minio-production
+            ports:
+              - "9004:9000"
+              - "9005:9001"
+            environment:
+              MINIO_ROOT_USER: minio
+              MINIO_ROOT_PASSWORD: minio123
+            volumes:
+              - minio-data-production:/data
+            command: server --console-address ":9001" /data
+            networks:
+              - microservice-network-production
+
+          auth-service:
+            image: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:main
+            container_name: auth-service-production
+            working_dir: /app/AuthService
+            ports:
+              - "5006:80"
+            environment:
+              - ConnectionStrings__DefaultConnection=Host=auth-postgres-production;Port=5432;Database=auth_db_production;Username=postgres;Password=${{ secrets.PRODUCTION_DB_PASSWORD }}
+              - Redis__ConnectionString=redis-production:6379
+              - ASPNETCORE_ENVIRONMENT=Production
+            depends_on:
+              - postgres
+              - redis
+            networks:
+              - microservice-network-production
+            command: dotnet AuthService.dll
+            restart: always
+
+          file-service:
+            image: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:main
+            container_name: file-service-production
+            working_dir: /app/FileService
+            ports:
+              - "5007:80"
+            environment:
+              - Minio__Endpoint=minio-production:9000
+              - Minio__AccessKey=minio
+              - Minio__SecretKey=minio123
+              - Minio__BucketName=mybucket-production
+              - Minio__UseSSL=false
+              - RabbitMQ__HostName=rabbitmq-production
+              - RabbitMQ__Port=5672
+              - RabbitMQ__UserName=guest
+              - RabbitMQ__Password=guest
+              - RabbitMQ__VirtualHost=/
+              - ASPNETCORE_ENVIRONMENT=Production
+            depends_on:
+              - minio
+              - rabbitmq
+            networks:
+              - microservice-network-production
+            command: dotnet FileService.dll
+            restart: always
+
+          gateway-api:
+            image: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:main
+            container_name: gateway-api-production
+            working_dir: /app/GatewayApi
+            ports:
+              - "5052:80"
+            environment:
+              - ASPNETCORE_ENVIRONMENT=Production
+            depends_on:
+              - auth-service
+              - file-service
+            networks:
+              - microservice-network-production
+            command: dotnet GatewayApi.dll
+            restart: always
+
+          worker-service:
+            image: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:main
+            container_name: worker-service-production
+            working_dir: /app/WorkerService
+            command: dotnet WorkerService.dll
+            depends_on:
+              - rabbitmq
+            networks:
+              - microservice-network-production
+            environment:
+              - ASPNETCORE_ENVIRONMENT=Production
+            restart: always
+
+        volumes:
+          pgdata-production:
+          minio-data-production:
+          redis-data-production:
+
+        networks:
+          microservice-network-production:
+            driver: bridge
+        EOF
+        
+        # Deploy using docker-compose
+        docker-compose -f docker-compose.production.yml down
+        docker-compose -f docker-compose.production.yml up -d
+        
+        echo "Production deployment completed!"
+
+    - name: Health check
+      run: |
+        echo "Performing health checks..."
+        sleep 60
+        
+        # Check if services are running
+        docker ps --filter "name=production" --format "table {{.Names}}\t{{.Status}}"
+        
+        # Basic health check for gateway
+        curl -f http://localhost:5052/health || echo "Gateway health check failed"
+        
+        # Check service logs for errors
+        echo "Checking service logs..."
+        docker logs auth-service-production --tail 20
+        docker logs file-service-production --tail 20
+        docker logs gateway-api-production --tail 20
+        
+        echo "Health checks completed!"
+
+    - name: Create deployment tag
+      if: success()
+      run: |
+        git config --local user.email "action@github.com"
+        git config --local user.name "GitHub Action"
+        git tag -a "v$(date +'%Y.%m.%d-%H%M%S')" -m "Production deployment $(date)"
+        git push origin --tags
+
+    - name: Notify deployment status
+      if: always()
+      run: |
+        if [ "${{ job.status }}" == "success" ]; then
+          echo "✅ Production deployment successful!"
+          echo "Services available at:"
+          echo "- Gateway API: http://localhost:5052"
+          echo "- Auth Service: http://localhost:5006"
+          echo "- File Service: http://localhost:5007"
+        else
+          echo "❌ Production deployment failed!"
+        fi 

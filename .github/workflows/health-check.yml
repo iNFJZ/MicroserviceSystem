@@ -1,0 +1,108 @@
+name: Health Check Monitor
+
+on:
+  schedule:
+    # Run every 5 minutes
+    - cron: '*/5 * * * *'
+  workflow_dispatch:
+
+jobs:
+  health-check:
+    runs-on: ubuntu-latest
+    
+    steps:
+    - name: Check staging environment
+      run: |
+        echo "Checking staging environment..."
+        
+        # Check if staging containers are running
+        STAGING_CONTAINERS=$(docker ps --filter "name=staging" --format "{{.Names}}" 2>/dev/null || echo "")
+        
+        if [ -n "$STAGING_CONTAINERS" ]; then
+          echo "✅ Staging containers are running:"
+          echo "$STAGING_CONTAINERS"
+          
+          # Health check for gateway
+          if curl -f http://localhost:5051/health >/dev/null 2>&1; then
+            echo "✅ Staging Gateway API is healthy"
+          else
+            echo "❌ Staging Gateway API health check failed"
+          fi
+        else
+          echo "⚠️ No staging containers found"
+        fi
+
+    - name: Check production environment
+      run: |
+        echo "Checking production environment..."
+        
+        # Check if production containers are running
+        PRODUCTION_CONTAINERS=$(docker ps --filter "name=production" --format "{{.Names}}" 2>/dev/null || echo "")
+        
+        if [ -n "$PRODUCTION_CONTAINERS" ]; then
+          echo "✅ Production containers are running:"
+          echo "$PRODUCTION_CONTAINERS"
+          
+          # Health check for gateway
+          if curl -f http://localhost:5052/health >/dev/null 2>&1; then
+            echo "✅ Production Gateway API is healthy"
+          else
+            echo "❌ Production Gateway API health check failed"
+          fi
+        else
+          echo "⚠️ No production containers found"
+        fi
+
+    - name: Check infrastructure services
+      run: |
+        echo "Checking infrastructure services..."
+        
+        # Check PostgreSQL
+        if docker ps --filter "name=postgres" --format "{{.Status}}" | grep -q "Up"; then
+          echo "✅ PostgreSQL is running"
+        else
+          echo "❌ PostgreSQL is not running"
+        fi
+        
+        # Check Redis
+        if docker ps --filter "name=redis" --format "{{.Status}}" | grep -q "Up"; then
+          echo "✅ Redis is running"
+        else
+          echo "❌ Redis is not running"
+        fi
+        
+        # Check RabbitMQ
+        if docker ps --filter "name=rabbitmq" --format "{{.Status}}" | grep -q "Up"; then
+          echo "✅ RabbitMQ is running"
+        else
+          echo "❌ RabbitMQ is not running"
+        fi
+        
+        # Check MinIO
+        if docker ps --filter "name=minio" --format "{{.Status}}" | grep -q "Up"; then
+          echo "✅ MinIO is running"
+        else
+          echo "❌ MinIO is not running"
+        fi
+
+    - name: Generate health report
+      if: always()
+      run: |
+        echo "=== Health Check Report ==="
+        echo "Timestamp: $(date)"
+        echo "Environment: GitHub Actions Runner"
+        
+        # Get container status
+        echo ""
+        echo "=== Container Status ==="
+        docker ps --format "table {{.Names}}\t{{.Status}}\t{{.Ports}}" | head -20
+        
+        # Get recent logs for any failed services
+        echo ""
+        echo "=== Recent Error Logs ==="
+        for container in $(docker ps --format "{{.Names}}"); do
+          if docker logs --tail 5 "$container" 2>&1 | grep -i "error\|exception\|fail" >/dev/null; then
+            echo "Errors in $container:"
+            docker logs --tail 3 "$container" 2>&1 | grep -i "error\|exception\|fail" || true
+          fi
+        done 

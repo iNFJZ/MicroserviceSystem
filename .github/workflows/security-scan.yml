@@ -1,0 +1,130 @@
+name: Security Scan
+
+on:
+  schedule:
+    # Run daily at 2 AM UTC
+    - cron: '0 2 * * *'
+  workflow_dispatch:
+  push:
+    branches: [ master, develop ]
+
+jobs:
+  dependency-check:
+    runs-on: ubuntu-latest
+    
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+
+    - name: Setup .NET
+      uses: actions/setup-dotnet@v4
+      with:
+        dotnet-version: '8.0.x'
+
+    - name: Run OWASP Dependency Check
+      uses: dependency-check/Dependency-Check_Action@main
+      with:
+        project: 'MicroserviceSystem'
+        path: '.'
+        format: 'HTML'
+        out: 'reports'
+        args: >
+          --failOnCVSS 7
+          --enableRetired
+
+    - name: Upload dependency check results
+      uses: actions/upload-artifact@v4
+      if: always()
+      with:
+        name: dependency-check-report
+        path: reports/
+
+  codeql-analysis:
+    runs-on: ubuntu-latest
+    
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+
+    - name: Initialize CodeQL
+      uses: github/codeql-action/init@v2
+      with:
+        languages: csharp
+
+    - name: Autobuild
+      uses: github/codeql-action/autobuild@v2
+
+    - name: Perform CodeQL Analysis
+      uses: github/codeql-action/analyze@v2
+
+  container-scan:
+    runs-on: ubuntu-latest
+    if: github.event_name == 'push'
+    
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+
+    - name: Set up Docker Buildx
+      uses: docker/setup-buildx-action@v3
+
+    - name: Build Docker image
+      run: |
+        docker build -t microservice-system:latest .
+
+    - name: Run Trivy vulnerability scanner
+      uses: aquasecurity/trivy-action@master
+      with:
+        image-ref: 'microservice-system:latest'
+        format: 'sarif'
+        output: 'trivy-results.sarif'
+
+    - name: Upload Trivy scan results to GitHub Security tab
+      uses: github/codeql-action/upload-sarif@v2
+      if: always()
+      with:
+        sarif_file: 'trivy-results.sarif'
+
+  secret-scan:
+    runs-on: ubuntu-latest
+    
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+
+    - name: Run TruffleHog
+      uses: trufflesecurity/trufflehog@main
+      with:
+        args: --only-verified --format json --output trufflehog-results.json
+
+    - name: Upload TruffleHog results
+      uses: actions/upload-artifact@v4
+      if: always()
+      with:
+        name: trufflehog-results
+        path: trufflehog-results.json
+
+  notify-security-issues:
+    runs-on: ubuntu-latest
+    needs: [dependency-check, codeql-analysis, container-scan, secret-scan]
+    if: always()
+    
+    steps:
+    - name: Check for security issues
+      run: |
+        echo "Security scan completed!"
+        echo "Check the following for results:"
+        echo "- Dependency Check: Download artifact 'dependency-check-report'"
+        echo "- CodeQL Analysis: Check GitHub Security tab"
+        echo "- Container Scan: Check GitHub Security tab"
+        echo "- Secret Scan: Download artifact 'trufflehog-results'"
+        
+        if [ "${{ needs.dependency-check.result }}" == "failure" ] || \
+           [ "${{ needs.codeql-analysis.result }}" == "failure" ] || \
+           [ "${{ needs.container-scan.result }}" == "failure" ] || \
+           [ "${{ needs.secret-scan.result }}" == "failure" ]; then
+          echo "❌ Security issues detected!"
+          exit 1
+        else
+          echo "✅ No critical security issues found!"
+        fi 
