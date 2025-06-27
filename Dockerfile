@@ -15,6 +15,7 @@ COPY ["AuthService/AuthService.csproj", "AuthService/"]
 COPY ["FileService/FileService.csproj", "FileService/"]
 COPY ["GatewayApi/GatewayApi.csproj", "GatewayApi/"]
 COPY ["AuthService.Tests/AuthService.Tests.csproj", "AuthService.Tests/"]
+COPY ["WorkerService.Tests/WorkerService.Tests.csproj", "WorkerService.Tests/"]
 COPY ["WorkerService/WorkerService.csproj", "WorkerService/"]
 
 # Restore all projects

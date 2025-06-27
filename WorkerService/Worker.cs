@@ -1,3 +1,6 @@
+using WorkerService.Services;
+using Microsoft.Extensions.Logging;
+
 namespace WorkerService;
 using WorkerService.Models;
 using RabbitMQ.Client;
@@ -5,51 +8,52 @@ using System.Text;
 using System.Text.Json;
 using RabbitMQ.Client.Events;
 
-public class Worker : BackgroundService, IDisposable
+public class Worker : BackgroundService
 {
     private readonly ILogger<Worker> _logger;
-    private IConnection _connection;
-    private readonly IModel _channel;
-    private const string FileUploadQueue = "file.upload";
-    public Worker(ILogger<Worker> logger)
+    private readonly IRabbitMQService _rabbitMQService;
+
+    public Worker(ILogger<Worker> logger, IRabbitMQService rabbitMQService)
     {
         _logger = logger;
-        var factory = new ConnectionFactory()
-        {
-            HostName = "rabbitmq",
-            Port = 5672,
-            UserName = "guest",
-            Password = "guest"
-        };
-        _connection = factory.CreateConnection();
-        _channel = _connection.CreateModel();
-        _channel.QueueDeclare(FileUploadQueue, durable: true, exclusive: false, autoDelete: false);
+        _rabbitMQService = rabbitMQService;
     }
 
     protected override async Task ExecuteAsync(CancellationToken stoppingToken)
     {
-        var consumer = new AsyncEventingBasicConsumer(_channel);
-        consumer.Received += async (model, ea) =>
+        _logger.LogInformation("Worker service starting...");
+
+        try
         {
-            var body = ea.Body.ToArray();
-            var message = Encoding.UTF8.GetString(body);
-            var fileEvent = JsonSerializer.Deserialize<FileUploadEvent>(message);
-            _logger.LogInformation("Received message: {message}", message);
+            await _rabbitMQService.StartConsumingAsync(stoppingToken);
 
-            //Logic
-            System.Console.WriteLine("Testing");
-            await Task.CompletedTask;
-        };
-
-        _channel.BasicConsume(queue: FileUploadQueue, autoAck: true, consumer: consumer);
-
-        await Task.CompletedTask;
+            // Keep the service running
+            while (!stoppingToken.IsCancellationRequested)
+            {
+                await Task.Delay(TimeSpan.FromSeconds(30), stoppingToken);
+                _logger.LogDebug("Worker service is running...");
+            }
+        }
+        catch (OperationCanceledException)
+        {
+            _logger.LogInformation("Worker service is stopping due to cancellation request");
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Unexpected error occurred in worker service");
+            throw;
+        }
+        finally
+        {
+            await _rabbitMQService.StopConsumingAsync();
+            _logger.LogInformation("Worker service stopped");
+        }
     }
 
-    public override void Dispose()
+    public override async Task StopAsync(CancellationToken cancellationToken)
     {
-        _channel.Dispose();
-        _connection.Dispose();
-        base.Dispose();
+        _logger.LogInformation("Worker service is stopping...");
+        await _rabbitMQService.StopConsumingAsync();
+        await base.StopAsync(cancellationToken);
     }
 }

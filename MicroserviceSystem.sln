@@ -1,5 +1,4 @@
-﻿
-Microsoft Visual Studio Solution File, Format Version 12.00
+﻿Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
 VisualStudioVersion = 17.13.35931.197
 MinimumVisualStudioVersion = 10.0.40219.1
@@ -17,6 +16,8 @@ EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FileService", "FileService\FileService.csproj", "{48CB6F29-B473-4D74-9891-9AF8CAB24508}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WorkerService", "WorkerService\WorkerService.csproj", "{E0D2DFCC-E95C-4940-86E5-F4B61177D570}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WorkerService.Tests", "WorkerService.Tests\WorkerService.Tests.csproj", "{F1E2F3G4-H5I6-J7K8-L9M0-N1O2P3Q4R5S6}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
