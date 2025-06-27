@@ -39,10 +39,7 @@ namespace AuthService.Services
             var sessionKey = $"{SESSION_PREFIX}{userId}:{sessionId}";
             var userSessionsKey = $"{USER_SESSIONS_PREFIX}{userId}";
 
-            // Store session data
             await _redisService.SetAsync(sessionKey, new { UserId = userId, SessionId = sessionId, CreatedAt = DateTime.UtcNow }, expiry);
-            
-            // Add session to user's session list
             await _redisService.SetHashAsync(userSessionsKey, sessionId, DateTime.UtcNow.ToString("O"));
             await _redisService.SetExpiryAsync(userSessionsKey, expiry);
         }

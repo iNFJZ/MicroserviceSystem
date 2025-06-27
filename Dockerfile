@@ -15,6 +15,7 @@ COPY ["AuthService/AuthService.csproj", "AuthService/"]
 COPY ["FileService/FileService.csproj", "FileService/"]
 COPY ["GatewayApi/GatewayApi.csproj", "GatewayApi/"]
 COPY ["AuthService.Tests/AuthService.Tests.csproj", "AuthService.Tests/"]
+COPY ["WorkerService/WorkerService.csproj", "WorkerService/"]
 
 # Restore all projects
 RUN dotnet restore "MicroserviceSystem.sln"
@@ -30,7 +31,7 @@ FROM build AS publish
 RUN dotnet publish "AuthService/AuthService.csproj" -c Release -o /app/publish/AuthService --no-restore --no-build
 RUN dotnet publish "FileService/FileService.csproj" -c Release -o /app/publish/FileService --no-restore --no-build
 RUN dotnet publish "GatewayApi/GatewayApi.csproj" -c Release -o /app/publish/GatewayApi --no-restore --no-build
-
+RUN dotnet publish "WorkerService/WorkerService.csproj" -c Release -o /app/publish/WorkerService --no-restore --no-build
 # Final stage
 FROM base AS final
 WORKDIR /app
@@ -39,6 +40,7 @@ WORKDIR /app
 COPY --from=publish /app/publish/AuthService /app/AuthService
 COPY --from=publish /app/publish/FileService /app/FileService
 COPY --from=publish /app/publish/GatewayApi /app/GatewayApi
+COPY --from=publish /app/publish/WorkerService /app/WorkerService
 
 # Copy configuration files for AuthService
 COPY AuthService/appsettings.json /app/AuthService/appsettings.json

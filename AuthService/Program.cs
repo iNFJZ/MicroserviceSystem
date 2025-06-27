@@ -1,6 +1,7 @@
 using AuthService.Data;
 using AuthService.Repositories;
 using AuthService.Services;
+using AuthService.Middleware;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using StackExchange.Redis;
@@ -15,12 +16,20 @@ builder.WebHost.ConfigureKestrel(serverOptions =>
     serverOptions.ListenAnyIP(80);
 });
 
-// Add Redis connection
+// Add Redis connection with retry logic
 builder.Services.AddSingleton<IConnectionMultiplexer>(sp =>
 {
     var configuration = sp.GetRequiredService<IConfiguration>();
     var redisConnectionString = configuration.GetConnectionString("Redis") ?? "localhost:6379";
-    return ConnectionMultiplexer.Connect(redisConnectionString);
+    
+    // Add retry options to Redis connection
+    var options = ConfigurationOptions.Parse(redisConnectionString);
+    options.AbortOnConnectFail = false;
+    options.ConnectRetry = 5;
+    options.ReconnectRetryPolicy = new ExponentialRetry(5000);
+    options.ConnectTimeout = 10000;
+    
+    return ConnectionMultiplexer.Connect(options);
 });
 
 builder.Services.AddDbContext<DBContext>(options =>
@@ -81,6 +90,21 @@ builder.Services.AddSwaggerGen(c =>
 
 var app = builder.Build();
 
+// Auto migrate database
+using (var scope = app.Services.CreateScope())
+{
+    var context = scope.ServiceProvider.GetRequiredService<DBContext>();
+    try
+    {
+        context.Database.Migrate();
+        Console.WriteLine("Database migration completed successfully.");
+    }
+    catch (Exception ex)
+    {
+        Console.WriteLine($"Database migration failed: {ex.Message}");
+    }
+}
+
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
 {
@@ -89,6 +113,9 @@ if (app.Environment.IsDevelopment())
 }
 
 app.UseHttpsRedirection();
+
+app.UseMiddleware<GlobalExceptionHandler>();
+
 app.UseAuthentication();
 app.UseAuthorization();
 

@@ -4,6 +4,8 @@ using System.Threading.Tasks;
 using AuthService.Models;
 using AuthService.Repositories;
 using AuthService.Services;
+using AuthService.DTOs;
+using AuthService.Exceptions;
 using Microsoft.Extensions.Configuration;
 using Moq;
 using Xunit;
@@ -31,6 +33,7 @@ public class AuthServiceTests
     {
         // Arrange
         var dto = new RegisterDto { Username = "user", Email = "user@email.com", Password = "pass" };
+        _userRepoMock.Setup(r => r.GetByEmailAsync(dto.Email)).ReturnsAsync((User?)null);
         _userRepoMock.Setup(r => r.AddAsync(It.IsAny<User>())).Returns(Task.CompletedTask);
         _sessionServiceMock.Setup(s => s.CreateUserSessionAsync(It.IsAny<Guid>(), It.IsAny<string>(), It.IsAny<TimeSpan>())).Returns(Task.CompletedTask);
         _sessionServiceMock.Setup(s => s.SetUserLoginStatusAsync(It.IsAny<Guid>(), true, It.IsAny<TimeSpan>())).Returns(Task.CompletedTask);
@@ -71,10 +74,10 @@ public class AuthServiceTests
     {
         // Arrange
         var dto = new LoginDto { Email = "notfound@email.com", Password = "wrong" };
-        _userRepoMock.Setup(r => r.GetByEmailAsync(dto.Email)).ReturnsAsync((User)null);
+        _userRepoMock.Setup(r => r.GetByEmailAsync(dto.Email)).ReturnsAsync((User?)null);
 
         // Act & Assert
-        await Assert.ThrowsAsync<UnauthorizedAccessException>(() => _authService.LoginAsync(dto));
+        await Assert.ThrowsAsync<InvalidCredentialsException>(() => _authService.LoginAsync(dto));
     }
 
     [Fact]
@@ -83,7 +86,7 @@ public class AuthServiceTests
         // Arrange
         var user = new User { Id = Guid.NewGuid(), Email = "user@email.com", Username = "user" };
         var token = _authService.GetType().GetMethod("GenerateJwt", System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance)
-            .Invoke(_authService, new object[] { user }) as string;
+            ?.Invoke(_authService, new object[] { user }) as string ?? string.Empty;
         _sessionServiceMock.Setup(s => s.BlacklistTokenAsync(It.IsAny<string>(), It.IsAny<TimeSpan>())).Returns(Task.CompletedTask);
         _sessionServiceMock.Setup(s => s.SetUserLoginStatusAsync(user.Id, false, null)).Returns(Task.CompletedTask);
 
@@ -102,7 +105,7 @@ public class AuthServiceTests
         // Arrange
         var user = new User { Id = Guid.NewGuid(), Email = "user@email.com", Username = "user" };
         var token = _authService.GetType().GetMethod("GenerateJwt", System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance)
-            .Invoke(_authService, new object[] { user }) as string;
+            ?.Invoke(_authService, new object[] { user }) as string ?? string.Empty;
         _sessionServiceMock.Setup(s => s.IsTokenBlacklistedAsync(token)).ReturnsAsync(true);
 
         // Act
