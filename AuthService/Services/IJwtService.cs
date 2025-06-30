@@ -7,5 +7,7 @@ namespace AuthService.Services
         string GenerateToken(User user);
         bool ValidateToken(string token);
         Guid? GetUserIdFromToken(string token);
+        DateTime? GetTokenExpiration(string token);
+        TimeSpan GetTokenExpirationTimeSpan(string token);
     }
 } 

@@ -120,6 +120,8 @@ app.UseHttpsRedirection();
 
 app.UseMiddleware<GlobalExceptionHandler>();
 
+app.UseTokenValidation();
+
 app.UseAuthentication();
 app.UseAuthorization();
 

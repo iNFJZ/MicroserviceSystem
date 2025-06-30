@@ -9,13 +9,17 @@ namespace AuthService.Tests
 {
     public class SessionServiceTests
     {
-        private readonly Mock<IRedisService> _redisServiceMock;
+        private readonly Mock<ICacheService> _cacheServiceMock;
+        private readonly Mock<IHashService> _hashServiceMock;
+        private readonly Mock<IRedisKeyService> _redisKeyServiceMock;
         private readonly SessionService _sessionService;
 
         public SessionServiceTests()
         {
-            _redisServiceMock = new Mock<IRedisService>();
-            _sessionService = new SessionService(_redisServiceMock.Object);
+            _cacheServiceMock = new Mock<ICacheService>();
+            _hashServiceMock = new Mock<IHashService>();
+            _redisKeyServiceMock = new Mock<IRedisKeyService>();
+            _sessionService = new SessionService(_cacheServiceMock.Object, _hashServiceMock.Object, _redisKeyServiceMock.Object);
         }
 
         [Fact]
@@ -23,7 +27,7 @@ namespace AuthService.Tests
         {
             // Arrange
             var token = "test-token";
-            _redisServiceMock.Setup(r => r.ExistsAsync(It.IsAny<string>())).ReturnsAsync(true);
+            _cacheServiceMock.Setup(r => r.ExistsAsync(It.IsAny<string>())).ReturnsAsync(true);
 
             // Act
             var result = await _sessionService.IsTokenBlacklistedAsync(token);
@@ -43,7 +47,7 @@ namespace AuthService.Tests
             await _sessionService.BlacklistTokenAsync(token, expiry);
 
             // Assert
-            _redisServiceMock.Verify(r => r.SetAsync(It.IsAny<string>(), true, expiry), Times.Once);
+            _cacheServiceMock.Verify(r => r.SetAsync(It.IsAny<string>(), true, expiry), Times.Once);
         }
 
         [Fact]
@@ -52,7 +56,7 @@ namespace AuthService.Tests
             // Arrange
             var userId = Guid.NewGuid();
             var sessionId = "session-1";
-            _redisServiceMock.Setup(r => r.ExistsAsync(It.IsAny<string>())).ReturnsAsync(true);
+            _hashServiceMock.Setup(r => r.GetHashAsync(It.IsAny<string>(), sessionId)).ReturnsAsync("session-data");
 
             // Act
             var result = await _sessionService.IsUserSessionValidAsync(userId, sessionId);
@@ -73,9 +77,8 @@ namespace AuthService.Tests
             await _sessionService.CreateUserSessionAsync(userId, sessionId, expiry);
 
             // Assert
-            _redisServiceMock.Verify(r => r.SetAsync(It.IsAny<string>(), It.IsAny<object>(), expiry), Times.Once);
-            _redisServiceMock.Verify(r => r.SetHashAsync(It.IsAny<string>(), sessionId, It.IsAny<string>()), Times.Once);
-            _redisServiceMock.Verify(r => r.SetExpiryAsync(It.IsAny<string>(), expiry), Times.Once);
+            _hashServiceMock.Verify(r => r.SetHashAsync(It.IsAny<string>(), sessionId, It.IsAny<string>()), Times.Once);
+            _cacheServiceMock.Verify(r => r.SetExpiryAsync(It.IsAny<string>(), expiry), Times.Once);
         }
 
         [Fact]
@@ -84,15 +87,14 @@ namespace AuthService.Tests
             // Arrange
             var userId = Guid.NewGuid();
             var sessionId = "session-1";
-            _redisServiceMock.Setup(r => r.ExistsAsync(It.IsAny<string>())).ReturnsAsync(true);
+            _hashServiceMock.Setup(r => r.DeleteHashAsync(It.IsAny<string>(), sessionId)).ReturnsAsync(true);
 
             // Act
             var result = await _sessionService.RemoveUserSessionAsync(userId, sessionId);
 
             // Assert
             Assert.True(result);
-            _redisServiceMock.Verify(r => r.DeleteAsync(It.IsAny<string>()), Times.Once);
-            _redisServiceMock.Verify(r => r.DeleteHashAsync(It.IsAny<string>(), sessionId), Times.Once);
+            _hashServiceMock.Verify(r => r.DeleteHashAsync(It.IsAny<string>(), sessionId), Times.Once);
         }
     }
 } 

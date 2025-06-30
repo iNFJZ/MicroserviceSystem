@@ -4,11 +4,13 @@ using FileService.Models;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Http;
 using System.ComponentModel.DataAnnotations;
+using Microsoft.AspNetCore.Authorization;
 
 namespace FileService.Controllers
 {
     [ApiController]
     [Route("api/[controller]")]
+    [Authorize]
     public class FileController : ControllerBase
     {
         private readonly IFileService _fileService;
