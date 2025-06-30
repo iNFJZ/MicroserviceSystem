@@ -11,6 +11,7 @@ namespace AuthService.Services
         private const string TokenBlacklistPrefix = "blacklist:";
         private const string UserSessionPrefix = "session:";
         private const string UserLoginPrefix = "login:";
+        private const string ActiveTokenPrefix = "token:";
 
         public SessionService(ICacheService cacheService, IHashService hashService, IRedisKeyService keyService)
         {
@@ -80,6 +81,33 @@ namespace AuthService.Services
             {
                 await _cacheService.DeleteAsync(loginKey);
             }
+        }
+
+        public async Task StoreActiveTokenAsync(string token, Guid userId, TimeSpan expiry)
+        {
+            var tokenKey = ActiveTokenPrefix + token;
+            await _cacheService.SetAsync(tokenKey, userId.ToString(), expiry);
+        }
+
+        public async Task<bool> IsTokenActiveAsync(string token)
+        {
+            var tokenKey = ActiveTokenPrefix + token;
+            return await _cacheService.ExistsAsync(tokenKey);
+        }
+
+        public async Task RemoveActiveTokenAsync(string token)
+        {
+            var tokenKey = ActiveTokenPrefix + token;
+            await _cacheService.DeleteAsync(tokenKey);
+        }
+
+        public async Task<Guid?> GetUserIdFromActiveTokenAsync(string token)
+        {
+            var tokenKey = ActiveTokenPrefix + token;
+            var userIdString = await _cacheService.GetAsync<string>(tokenKey);
+            if (Guid.TryParse(userIdString, out Guid userId))
+                return userId;
+            return null;
         }
     }
 } 

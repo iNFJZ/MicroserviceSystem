@@ -4,6 +4,9 @@ using Microsoft.OpenApi.Models;
 using Microsoft.AspNetCore.Http;
 using FileService.Models;
 using FileService.DTOs;
+using Microsoft.IdentityModel.Tokens;
+using System.Text;
+using FileService.Middleware;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -12,6 +15,25 @@ builder.WebHost.ConfigureKestrel(serverOptions =>
 {
     serverOptions.ListenAnyIP(80);
 });
+
+// Add JWT Authentication
+builder.Services.AddAuthentication("Bearer")
+    .AddJwtBearer("Bearer", options =>
+    {
+        options.TokenValidationParameters = new TokenValidationParameters
+        {
+            ValidateIssuer = true,
+            ValidateAudience = true,
+            ValidateLifetime = true,
+            ValidateIssuerSigningKey = true,
+            ValidIssuer = builder.Configuration["JwtSettings:Issuer"] ?? "http://localhost:5001",
+            ValidAudience = builder.Configuration["JwtSettings:Audience"] ?? "http://localhost:5001",
+            IssuerSigningKey = new SymmetricSecurityKey(
+                Encoding.UTF8.GetBytes(builder.Configuration["JwtSettings:Key"] ?? "thisismyverystrongsecretkey1234567890"))
+        };
+    });
+
+builder.Services.AddAuthorization();
 
 // Add services to the container.
 // Learn more about configuring OpenAPI at https://aka.ms/aspnet/openapi
@@ -46,6 +68,27 @@ builder.Services.AddSwaggerGen(c =>
             }
         }
     });
+    
+    // Add JWT authentication to Swagger
+    c.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
+    {
+        Description = "JWT Authorization header using the Bearer scheme. Example: \"Bearer {token}\"",
+        Name = "Authorization",
+        In = ParameterLocation.Header,
+        Type = SecuritySchemeType.Http,
+        Scheme = "bearer"
+    });
+    c.AddSecurityRequirement(new OpenApiSecurityRequirement{
+        {
+            new OpenApiSecurityScheme{
+                Reference = new OpenApiReference{
+                    Type = ReferenceType.SecurityScheme,
+                    Id = "Bearer"
+                }
+            },
+            new string[]{}
+        }
+    });
 });
 
 // Add CORS
@@ -69,10 +112,16 @@ builder.Services.AddScoped<IMessageService, RabbitMQMessageService>();
 builder.Services.AddScoped<IFileEventConsumer, FileEventConsumer>();
 builder.Services.AddScoped<IFileValidationService, FileValidationService>();
 
+builder.Services.AddHttpClient();
+
 var app = builder.Build();
 
-var consumer = app.Services.GetRequiredService<IFileEventConsumer>();
-consumer.StartConsuming();
+// Start the file event consumer in a background service
+using (var scope = app.Services.CreateScope())
+{
+    var consumer = scope.ServiceProvider.GetRequiredService<IFileEventConsumer>();
+    consumer.StartConsuming();
+}
 
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
@@ -83,7 +132,12 @@ if (app.Environment.IsDevelopment())
 
 app.UseHttpsRedirection();
 app.UseCors("AllowAll");
+
+// Add authentication and authorization middleware
+app.UseAuthentication();
+app.UseMiddleware<AuthValidationMiddleware>();
 app.UseAuthorization();
+
 app.MapControllers();
 
 app.Run();

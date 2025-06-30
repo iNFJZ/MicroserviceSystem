@@ -41,10 +41,16 @@ namespace AuthService.Services
             await _repo.AddAsync(user);
             var token = _jwtService.GenerateToken(user);
             
+            // Get token expiration time
+            var tokenExpiry = _jwtService.GetTokenExpirationTimeSpan(token);
+            
+            // Store token in Redis with expiration
+            await _sessionService.StoreActiveTokenAsync(token, user.Id, tokenExpiry);
+            
             // Create session for new user
             var sessionId = Guid.NewGuid().ToString();
-            await _sessionService.CreateUserSessionAsync(user.Id, sessionId, TimeSpan.FromDays(7));
-            await _sessionService.SetUserLoginStatusAsync(user.Id, true, TimeSpan.FromDays(7));
+            await _sessionService.CreateUserSessionAsync(user.Id, sessionId, tokenExpiry);
+            await _sessionService.SetUserLoginStatusAsync(user.Id, true, tokenExpiry);
             
             return token;
         }
@@ -57,10 +63,16 @@ namespace AuthService.Services
 
             var token = _jwtService.GenerateToken(user);
             
+            // Get token expiration time
+            var tokenExpiry = _jwtService.GetTokenExpirationTimeSpan(token);
+            
+            // Store token in Redis with expiration
+            await _sessionService.StoreActiveTokenAsync(token, user.Id, tokenExpiry);
+            
             // Create session for logged in user
             var sessionId = Guid.NewGuid().ToString();
-            await _sessionService.CreateUserSessionAsync(user.Id, sessionId, TimeSpan.FromDays(7));
-            await _sessionService.SetUserLoginStatusAsync(user.Id, true, TimeSpan.FromDays(7));
+            await _sessionService.CreateUserSessionAsync(user.Id, sessionId, tokenExpiry);
+            await _sessionService.SetUserLoginStatusAsync(user.Id, true, tokenExpiry);
             
             return token;
         }
@@ -73,8 +85,12 @@ namespace AuthService.Services
                 if (!userId.HasValue)
                     return false;
 
+                // Remove token from active tokens
+                await _sessionService.RemoveActiveTokenAsync(token);
+                
                 // Blacklist the token
-                await _sessionService.BlacklistTokenAsync(token, TimeSpan.FromDays(7));
+                var tokenExpiry = _jwtService.GetTokenExpirationTimeSpan(token);
+                await _sessionService.BlacklistTokenAsync(token, tokenExpiry);
                 
                 // Remove user login status
                 await _sessionService.SetUserLoginStatusAsync(userId.Value, false);
@@ -95,11 +111,20 @@ namespace AuthService.Services
                 if (await _sessionService.IsTokenBlacklistedAsync(token))
                     return false;
 
+                // Check if token exists in Redis (active token)
+                if (!await _sessionService.IsTokenActiveAsync(token))
+                    return false;
+
                 if (!_jwtService.ValidateToken(token))
                     return false;
 
                 var userId = _jwtService.GetUserIdFromToken(token);
                 if (!userId.HasValue)
+                    return false;
+
+                // Verify the token belongs to the correct user
+                var storedUserId = await _sessionService.GetUserIdFromActiveTokenAsync(token);
+                if (!storedUserId.HasValue || storedUserId.Value != userId.Value)
                     return false;
 
                 // Check if user is still logged in

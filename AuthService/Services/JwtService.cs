@@ -28,11 +28,14 @@ namespace AuthService.Services
             var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_config["JwtSettings:Key"] ?? throw new InvalidOperationException("JWT Key is not configured.")));
             var creds = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);
 
+            var expiresInMinutes = int.Parse(_config["JwtSettings:ExpiresInMinutes"] ?? "60");
+            var expirationTime = DateTime.UtcNow.AddMinutes(expiresInMinutes);
+
             var token = new JwtSecurityToken(
                 issuer: _config["JwtSettings:Issuer"],
                 audience: _config["JwtSettings:Audience"],
                 claims: claims,
-                expires: DateTime.UtcNow.AddDays(7),
+                expires: expirationTime,
                 signingCredentials: creds
             );
 
@@ -72,6 +75,31 @@ namespace AuthService.Services
             {
                 return null;
             }
+        }
+
+        public DateTime? GetTokenExpiration(string token)
+        {
+            try
+            {
+                var tokenHandler = new JwtSecurityTokenHandler();
+                var jwtToken = tokenHandler.ReadJwtToken(token);
+                return jwtToken.ValidTo;
+            }
+            catch
+            {
+                return null;
+            }
+        }
+
+        public TimeSpan GetTokenExpirationTimeSpan(string token)
+        {
+            var expiration = GetTokenExpiration(token);
+            if (expiration.HasValue)
+            {
+                var timeUntilExpiration = expiration.Value - DateTime.UtcNow;
+                return timeUntilExpiration > TimeSpan.Zero ? timeUntilExpiration : TimeSpan.Zero;
+            }
+            return TimeSpan.Zero;
         }
     }
 } 

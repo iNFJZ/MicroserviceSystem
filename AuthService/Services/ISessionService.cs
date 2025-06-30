@@ -11,5 +11,9 @@ namespace AuthService.Services
         Task<IEnumerable<string>> GetUserSessionsAsync(Guid userId);
         Task<bool> IsUserLoggedInAsync(Guid userId);
         Task SetUserLoginStatusAsync(Guid userId, bool isLoggedIn, TimeSpan? expiry = null);
+        Task StoreActiveTokenAsync(string token, Guid userId, TimeSpan expiry);
+        Task<bool> IsTokenActiveAsync(string token);
+        Task RemoveActiveTokenAsync(string token);
+        Task<Guid?> GetUserIdFromActiveTokenAsync(string token);
     }
 } 

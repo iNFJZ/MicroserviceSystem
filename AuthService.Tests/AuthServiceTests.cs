@@ -15,6 +15,8 @@ public class AuthServiceTests
     private readonly Mock<IUserRepository> _userRepoMock;
     private readonly Mock<IConfiguration> _configMock;
     private readonly Mock<ISessionService> _sessionServiceMock;
+    private readonly Mock<IJwtService> _jwtServiceMock;
+    private readonly Mock<IPasswordService> _passwordServiceMock;
     private readonly AuthService.Services.AuthService _authService;
 
     public AuthServiceTests()
@@ -22,10 +24,19 @@ public class AuthServiceTests
         _userRepoMock = new Mock<IUserRepository>();
         _configMock = new Mock<IConfiguration>();
         _sessionServiceMock = new Mock<ISessionService>();
+        _jwtServiceMock = new Mock<IJwtService>();
+        _passwordServiceMock = new Mock<IPasswordService>();
+        
         _configMock.Setup(c => c["JwtSettings:Key"]).Returns("supersecretkeysupersecretkey123456");
         _configMock.Setup(c => c["JwtSettings:Issuer"]).Returns("issuer");
         _configMock.Setup(c => c["JwtSettings:Audience"]).Returns("audience");
-        _authService = new AuthService.Services.AuthService(_userRepoMock.Object, _configMock.Object, _sessionServiceMock.Object);
+        
+        _authService = new AuthService.Services.AuthService(
+            _userRepoMock.Object, 
+            _sessionServiceMock.Object, 
+            _jwtServiceMock.Object, 
+            _passwordServiceMock.Object
+        );
     }
 
     [Fact]
@@ -33,17 +44,26 @@ public class AuthServiceTests
     {
         // Arrange
         var dto = new RegisterDto { Username = "user", Email = "user@email.com", Password = "pass" };
+        var user = new User { Id = Guid.NewGuid(), Email = dto.Email, Username = dto.Username };
+        var token = "test.jwt.token";
+        var tokenExpiry = TimeSpan.FromMinutes(60);
+        
         _userRepoMock.Setup(r => r.GetByEmailAsync(dto.Email)).ReturnsAsync((User?)null);
         _userRepoMock.Setup(r => r.AddAsync(It.IsAny<User>())).Returns(Task.CompletedTask);
+        _passwordServiceMock.Setup(p => p.HashPassword(dto.Password)).Returns("hashedpassword");
+        _jwtServiceMock.Setup(j => j.GenerateToken(It.IsAny<User>())).Returns(token);
+        _jwtServiceMock.Setup(j => j.GetTokenExpirationTimeSpan(token)).Returns(tokenExpiry);
+        _sessionServiceMock.Setup(s => s.StoreActiveTokenAsync(token, It.IsAny<Guid>(), tokenExpiry)).Returns(Task.CompletedTask);
         _sessionServiceMock.Setup(s => s.CreateUserSessionAsync(It.IsAny<Guid>(), It.IsAny<string>(), It.IsAny<TimeSpan>())).Returns(Task.CompletedTask);
         _sessionServiceMock.Setup(s => s.SetUserLoginStatusAsync(It.IsAny<Guid>(), true, It.IsAny<TimeSpan>())).Returns(Task.CompletedTask);
 
         // Act
-        var token = await _authService.RegisterAsync(dto);
+        var result = await _authService.RegisterAsync(dto);
 
         // Assert
-        Assert.False(string.IsNullOrEmpty(token));
+        Assert.Equal(token, result);
         _userRepoMock.Verify(r => r.AddAsync(It.IsAny<User>()), Times.Once);
+        _sessionServiceMock.Verify(s => s.StoreActiveTokenAsync(token, It.IsAny<Guid>(), tokenExpiry), Times.Once);
         _sessionServiceMock.Verify(s => s.CreateUserSessionAsync(It.IsAny<Guid>(), It.IsAny<string>(), It.IsAny<TimeSpan>()), Times.Once);
         _sessionServiceMock.Verify(s => s.SetUserLoginStatusAsync(It.IsAny<Guid>(), true, It.IsAny<TimeSpan>()), Times.Once);
     }
@@ -53,18 +73,25 @@ public class AuthServiceTests
     {
         // Arrange
         var password = "pass";
-        var hash = BCrypt.Net.BCrypt.HashPassword(password);
-        var user = new User { Id = Guid.NewGuid(), Email = "user@email.com", Username = "user", PasswordHash = hash };
+        var user = new User { Id = Guid.NewGuid(), Email = "user@email.com", Username = "user", PasswordHash = "hashedpassword" };
         var dto = new LoginDto { Email = user.Email, Password = password };
+        var token = "test.jwt.token";
+        var tokenExpiry = TimeSpan.FromMinutes(60);
+        
         _userRepoMock.Setup(r => r.GetByEmailAsync(user.Email)).ReturnsAsync(user);
+        _passwordServiceMock.Setup(p => p.VerifyPassword(password, user.PasswordHash)).Returns(true);
+        _jwtServiceMock.Setup(j => j.GenerateToken(user)).Returns(token);
+        _jwtServiceMock.Setup(j => j.GetTokenExpirationTimeSpan(token)).Returns(tokenExpiry);
+        _sessionServiceMock.Setup(s => s.StoreActiveTokenAsync(token, user.Id, tokenExpiry)).Returns(Task.CompletedTask);
         _sessionServiceMock.Setup(s => s.CreateUserSessionAsync(user.Id, It.IsAny<string>(), It.IsAny<TimeSpan>())).Returns(Task.CompletedTask);
         _sessionServiceMock.Setup(s => s.SetUserLoginStatusAsync(user.Id, true, It.IsAny<TimeSpan>())).Returns(Task.CompletedTask);
 
         // Act
-        var token = await _authService.LoginAsync(dto);
+        var result = await _authService.LoginAsync(dto);
 
         // Assert
-        Assert.False(string.IsNullOrEmpty(token));
+        Assert.Equal(token, result);
+        _sessionServiceMock.Verify(s => s.StoreActiveTokenAsync(token, user.Id, tokenExpiry), Times.Once);
         _sessionServiceMock.Verify(s => s.CreateUserSessionAsync(user.Id, It.IsAny<string>(), It.IsAny<TimeSpan>()), Times.Once);
         _sessionServiceMock.Verify(s => s.SetUserLoginStatusAsync(user.Id, true, It.IsAny<TimeSpan>()), Times.Once);
     }
@@ -84,28 +111,31 @@ public class AuthServiceTests
     public async Task LogoutAsync_ShouldReturnTrue_WhenTokenValid()
     {
         // Arrange
-        var user = new User { Id = Guid.NewGuid(), Email = "user@email.com", Username = "user" };
-        var token = _authService.GetType().GetMethod("GenerateJwt", System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance)
-            ?.Invoke(_authService, new object[] { user }) as string ?? string.Empty;
+        var userId = Guid.NewGuid();
+        var token = "test.jwt.token";
+        var tokenExpiry = TimeSpan.FromMinutes(60);
+        
+        _jwtServiceMock.Setup(j => j.GetUserIdFromToken(token)).Returns(userId);
+        _jwtServiceMock.Setup(j => j.GetTokenExpirationTimeSpan(token)).Returns(tokenExpiry);
+        _sessionServiceMock.Setup(s => s.RemoveActiveTokenAsync(token)).Returns(Task.CompletedTask);
         _sessionServiceMock.Setup(s => s.BlacklistTokenAsync(It.IsAny<string>(), It.IsAny<TimeSpan>())).Returns(Task.CompletedTask);
-        _sessionServiceMock.Setup(s => s.SetUserLoginStatusAsync(user.Id, false, null)).Returns(Task.CompletedTask);
+        _sessionServiceMock.Setup(s => s.SetUserLoginStatusAsync(userId, false, null)).Returns(Task.CompletedTask);
 
         // Act
         var result = await _authService.LogoutAsync(token);
 
         // Assert
         Assert.True(result);
-        _sessionServiceMock.Verify(s => s.BlacklistTokenAsync(It.IsAny<string>(), It.IsAny<TimeSpan>()), Times.Once);
-        _sessionServiceMock.Verify(s => s.SetUserLoginStatusAsync(user.Id, false, null), Times.Once);
+        _sessionServiceMock.Verify(s => s.RemoveActiveTokenAsync(token), Times.Once);
+        _sessionServiceMock.Verify(s => s.BlacklistTokenAsync(token, tokenExpiry), Times.Once);
+        _sessionServiceMock.Verify(s => s.SetUserLoginStatusAsync(userId, false, null), Times.Once);
     }
 
     [Fact]
     public async Task ValidateTokenAsync_ShouldReturnFalse_IfTokenBlacklisted()
     {
         // Arrange
-        var user = new User { Id = Guid.NewGuid(), Email = "user@email.com", Username = "user" };
-        var token = _authService.GetType().GetMethod("GenerateJwt", System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance)
-            ?.Invoke(_authService, new object[] { user }) as string ?? string.Empty;
+        var token = "test.jwt.token";
         _sessionServiceMock.Setup(s => s.IsTokenBlacklistedAsync(token)).ReturnsAsync(true);
 
         // Act

@@ -9,14 +9,14 @@ namespace AuthService.Tests
 {
     public class UserCacheServiceTests
     {
-        private readonly Mock<IRedisService> _redisServiceMock;
+        private readonly Mock<ICacheService> _cacheServiceMock;
         private readonly UserCacheService _userCacheService;
         private readonly User _testUser;
 
         public UserCacheServiceTests()
         {
-            _redisServiceMock = new Mock<IRedisService>();
-            _userCacheService = new UserCacheService(_redisServiceMock.Object);
+            _cacheServiceMock = new Mock<ICacheService>();
+            _userCacheService = new UserCacheService(_cacheServiceMock.Object);
             _testUser = new User
             {
                 Id = Guid.NewGuid(),
@@ -32,7 +32,7 @@ namespace AuthService.Tests
         {
             // Arrange
             var userId = _testUser.Id;
-            _redisServiceMock.Setup(r => r.GetAsync<User>($"user:{userId}"))
+            _cacheServiceMock.Setup(r => r.GetAsync<User>($"user:{userId}"))
                 .ReturnsAsync(_testUser);
 
             // Act
@@ -42,7 +42,7 @@ namespace AuthService.Tests
             Assert.NotNull(result);
             Assert.Equal(_testUser.Id, result.Id);
             Assert.Equal(_testUser.Email, result.Email);
-            _redisServiceMock.Verify(r => r.GetAsync<User>($"user:{userId}"), Times.Once);
+            _cacheServiceMock.Verify(r => r.GetAsync<User>($"user:{userId}"), Times.Once);
         }
 
         [Fact]
@@ -50,7 +50,7 @@ namespace AuthService.Tests
         {
             // Arrange
             var userId = Guid.NewGuid();
-            _redisServiceMock.Setup(r => r.GetAsync<User>($"user:{userId}"))
+            _cacheServiceMock.Setup(r => r.GetAsync<User>($"user:{userId}"))
                 .ReturnsAsync((User?)null);
 
             // Act
@@ -58,7 +58,7 @@ namespace AuthService.Tests
 
             // Assert
             Assert.Null(result);
-            _redisServiceMock.Verify(r => r.GetAsync<User>($"user:{userId}"), Times.Once);
+            _cacheServiceMock.Verify(r => r.GetAsync<User>($"user:{userId}"), Times.Once);
         }
 
         [Fact]
@@ -66,9 +66,7 @@ namespace AuthService.Tests
         {
             // Arrange
             var email = _testUser.Email;
-            _redisServiceMock.Setup(r => r.GetAsync<Guid>($"user_email:{email}"))
-                .ReturnsAsync(_testUser.Id);
-            _redisServiceMock.Setup(r => r.GetAsync<User>($"user:{_testUser.Id}"))
+            _cacheServiceMock.Setup(r => r.GetAsync<User>($"email:{email}"))
                 .ReturnsAsync(_testUser);
 
             // Act
@@ -78,8 +76,7 @@ namespace AuthService.Tests
             Assert.NotNull(result);
             Assert.Equal(_testUser.Id, result.Id);
             Assert.Equal(_testUser.Email, result.Email);
-            _redisServiceMock.Verify(r => r.GetAsync<Guid>($"user_email:{email}"), Times.Once);
-            _redisServiceMock.Verify(r => r.GetAsync<User>($"user:{_testUser.Id}"), Times.Once);
+            _cacheServiceMock.Verify(r => r.GetAsync<User>($"email:{email}"), Times.Once);
         }
 
         [Fact]
@@ -87,16 +84,15 @@ namespace AuthService.Tests
         {
             // Arrange
             var email = "nonexistent@example.com";
-            _redisServiceMock.Setup(r => r.GetAsync<Guid>($"user_email:{email}"))
-                .ReturnsAsync(Guid.Empty);
+            _cacheServiceMock.Setup(r => r.GetAsync<User>($"email:{email}"))
+                .ReturnsAsync((User?)null);
 
             // Act
             var result = await _userCacheService.GetUserByEmailAsync(email);
 
             // Assert
             Assert.Null(result);
-            _redisServiceMock.Verify(r => r.GetAsync<Guid>($"user_email:{email}"), Times.Once);
-            _redisServiceMock.Verify(r => r.GetAsync<User>(It.IsAny<string>()), Times.Never);
+            _cacheServiceMock.Verify(r => r.GetAsync<User>($"email:{email}"), Times.Once);
         }
 
         [Fact]
@@ -109,8 +105,8 @@ namespace AuthService.Tests
             await _userCacheService.SetUserAsync(user);
 
             // Assert
-            _redisServiceMock.Verify(r => r.SetAsync($"user:{user.Id}", user, It.IsAny<TimeSpan>()), Times.Once);
-            _redisServiceMock.Verify(r => r.SetAsync($"user_email:{user.Email}", user.Id, It.IsAny<TimeSpan>()), Times.Once);
+            _cacheServiceMock.Verify(r => r.SetAsync($"user:{user.Id}", user, null), Times.Once);
+            _cacheServiceMock.Verify(r => r.SetAsync($"email:{user.Email}", user, null), Times.Once);
         }
 
         [Fact]
@@ -124,8 +120,8 @@ namespace AuthService.Tests
             await _userCacheService.SetUserAsync(user, customExpiry);
 
             // Assert
-            _redisServiceMock.Verify(r => r.SetAsync($"user:{user.Id}", user, customExpiry), Times.Once);
-            _redisServiceMock.Verify(r => r.SetAsync($"user_email:{user.Email}", user.Id, customExpiry), Times.Once);
+            _cacheServiceMock.Verify(r => r.SetAsync($"user:{user.Id}", user, customExpiry), Times.Once);
+            _cacheServiceMock.Verify(r => r.SetAsync($"email:{user.Email}", user, customExpiry), Times.Once);
         }
 
         [Fact]
@@ -133,7 +129,7 @@ namespace AuthService.Tests
         {
             // Arrange
             var userId = _testUser.Id;
-            _redisServiceMock.Setup(r => r.GetAsync<User>($"user:{userId}"))
+            _cacheServiceMock.Setup(r => r.GetAsync<User>($"user:{userId}"))
                 .ReturnsAsync(_testUser);
 
             // Act
@@ -141,8 +137,8 @@ namespace AuthService.Tests
 
             // Assert
             Assert.True(result);
-            _redisServiceMock.Verify(r => r.DeleteAsync($"user:{userId}"), Times.Once);
-            _redisServiceMock.Verify(r => r.DeleteAsync($"user_email:{_testUser.Email}"), Times.Once);
+            _cacheServiceMock.Verify(r => r.DeleteAsync($"user:{userId}"), Times.Once);
+            _cacheServiceMock.Verify(r => r.DeleteAsync($"email:{_testUser.Email}"), Times.Once);
         }
 
         [Fact]
@@ -150,7 +146,7 @@ namespace AuthService.Tests
         {
             // Arrange
             var userId = Guid.NewGuid();
-            _redisServiceMock.Setup(r => r.GetAsync<User>($"user:{userId}"))
+            _cacheServiceMock.Setup(r => r.GetAsync<User>($"user:{userId}"))
                 .ReturnsAsync((User?)null);
 
             // Act
@@ -158,7 +154,7 @@ namespace AuthService.Tests
 
             // Assert
             Assert.False(result);
-            _redisServiceMock.Verify(r => r.DeleteAsync(It.IsAny<string>()), Times.Never);
+            _cacheServiceMock.Verify(r => r.DeleteAsync(It.IsAny<string>()), Times.Never);
         }
 
         [Fact]
@@ -166,7 +162,7 @@ namespace AuthService.Tests
         {
             // Arrange
             var userId = _testUser.Id;
-            _redisServiceMock.Setup(r => r.ExistsAsync($"user:{userId}"))
+            _cacheServiceMock.Setup(r => r.ExistsAsync($"user:{userId}"))
                 .ReturnsAsync(true);
 
             // Act
@@ -174,7 +170,7 @@ namespace AuthService.Tests
 
             // Assert
             Assert.True(result);
-            _redisServiceMock.Verify(r => r.ExistsAsync($"user:{userId}"), Times.Once);
+            _cacheServiceMock.Verify(r => r.ExistsAsync($"user:{userId}"), Times.Once);
         }
 
         [Fact]
@@ -182,7 +178,7 @@ namespace AuthService.Tests
         {
             // Arrange
             var email = _testUser.Email;
-            _redisServiceMock.Setup(r => r.ExistsAsync($"user_email:{email}"))
+            _cacheServiceMock.Setup(r => r.ExistsAsync($"email:{email}"))
                 .ReturnsAsync(true);
 
             // Act
@@ -190,7 +186,7 @@ namespace AuthService.Tests
 
             // Assert
             Assert.True(result);
-            _redisServiceMock.Verify(r => r.ExistsAsync($"user_email:{email}"), Times.Once);
+            _cacheServiceMock.Verify(r => r.ExistsAsync($"email:{email}"), Times.Once);
         }
     }
 } 
