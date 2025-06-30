@@ -6,6 +6,7 @@ using AuthService.Exceptions;
 using Microsoft.Extensions.Configuration;
 using Moq;
 using Xunit;
+using Microsoft.Extensions.Logging;
 
 namespace AuthService.Tests
 {
@@ -16,6 +17,7 @@ namespace AuthService.Tests
         private readonly Mock<IJwtService> _mockJwtService;
         private readonly Mock<IPasswordService> _mockPasswordService;
         private readonly Mock<IConfiguration> _mockConfig;
+        private readonly ILogger<AuthService.Services.AuthService> _logger = new LoggerFactory().CreateLogger<AuthService.Services.AuthService>();
         private readonly AuthService.Services.AuthService _authService;
 
         public TokenValidationTests()
@@ -30,7 +32,8 @@ namespace AuthService.Tests
                 _mockUserRepo.Object,
                 _mockSessionService.Object,
                 _mockJwtService.Object,
-                _mockPasswordService.Object
+                _mockPasswordService.Object,
+                _logger
             );
         }
 

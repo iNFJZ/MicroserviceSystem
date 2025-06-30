@@ -107,8 +107,7 @@ builder.Services.Configure<MinioOptions>(builder.Configuration.GetSection("Minio
 builder.Services.AddScoped<IFileService, MinioFileService>();
 
 // Configure RabbitMQ
-builder.Services.Configure<RabbitMQOptions>(builder.Configuration.GetSection("RabbitMQ"));
-builder.Services.AddScoped<IMessageService, RabbitMQMessageService>();
+// builder.Services.Configure<RabbitMQOptions>(builder.Configuration.GetSection("RabbitMQ"));
 builder.Services.AddScoped<IFileEventConsumer, FileEventConsumer>();
 builder.Services.AddScoped<IFileValidationService, FileValidationService>();
 

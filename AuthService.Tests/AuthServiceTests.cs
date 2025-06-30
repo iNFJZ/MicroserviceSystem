@@ -9,6 +9,7 @@ using AuthService.Exceptions;
 using Microsoft.Extensions.Configuration;
 using Moq;
 using Xunit;
+using Microsoft.Extensions.Logging;
 
 public class AuthServiceTests
 {
@@ -17,6 +18,7 @@ public class AuthServiceTests
     private readonly Mock<ISessionService> _sessionServiceMock;
     private readonly Mock<IJwtService> _jwtServiceMock;
     private readonly Mock<IPasswordService> _passwordServiceMock;
+    private readonly ILogger<AuthService.Services.AuthService> _logger = new LoggerFactory().CreateLogger<AuthService.Services.AuthService>();
     private readonly AuthService.Services.AuthService _authService;
 
     public AuthServiceTests()
@@ -35,7 +37,8 @@ public class AuthServiceTests
             _userRepoMock.Object, 
             _sessionServiceMock.Object, 
             _jwtServiceMock.Object, 
-            _passwordServiceMock.Object
+            _passwordServiceMock.Object,
+            _logger
         );
     }
 
