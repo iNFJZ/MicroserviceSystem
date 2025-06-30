@@ -67,6 +67,7 @@ namespace FileService.Services
 
         public async Task<List<string>> ListFilesAsync()
         {
+            await EnsureBucketExists();
             var files = new List<string>();
             var listObjectsArgs = new ListObjectsArgs()
                 .WithBucket(_bucketName)
