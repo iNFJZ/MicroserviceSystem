@@ -1,4 +1,5 @@
 using AuthService.Exceptions;
+using AuthService.DTOs;
 using System.Net;
 using System.Text.Json;
 
@@ -69,12 +70,5 @@ namespace AuthService.Middleware
             var result = JsonSerializer.Serialize(errorResponse);
             await response.WriteAsync(result);
         }
-    }
-
-    public class ErrorResponse
-    {
-        public int StatusCode { get; set; }
-        public string Message { get; set; } = string.Empty;
-        public DateTime Timestamp { get; set; }
     }
 } 

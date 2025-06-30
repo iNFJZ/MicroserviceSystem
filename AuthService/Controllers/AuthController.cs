@@ -79,9 +79,4 @@ namespace AuthService.Controllers
                 return NotFound(new { message = "Session not found" });
         }
     }
-
-    public class ValidateTokenRequest
-    {
-        public string Token { get; set; } = string.Empty;
-    }
 }
