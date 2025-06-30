@@ -3,7 +3,7 @@ using System.Text.Json;
 
 namespace AuthService.Services
 {
-    public class RedisService : IRedisService
+    public class RedisService : ICacheService, IHashService, IRedisKeyService
     {
         private readonly IConnectionMultiplexer _redis;
         private readonly IDatabase _database;
@@ -55,11 +55,11 @@ namespace AuthService.Services
             return await _database.KeyTimeToLiveAsync(key);
         }
 
-        public Task<IEnumerable<string>> GetKeysAsync(string pattern)
+        public async Task<IEnumerable<string>> GetKeysAsync(string pattern)
         {
             var server = _redis.GetServer(_redis.GetEndPoints().First());
             var keys = server.Keys(pattern: pattern);
-            return Task.FromResult(keys.Select(k => k.ToString()));
+            return keys.Select(k => k.ToString());
         }
 
         public async Task<bool> SetHashAsync(string key, string field, string value)
@@ -76,7 +76,7 @@ namespace AuthService.Services
         public async Task<Dictionary<string, string>> GetHashAllAsync(string key)
         {
             var hashEntries = await _database.HashGetAllAsync(key);
-            return hashEntries.ToDictionary(x => x.Name.ToString(), x => x.Value.ToString());
+            return hashEntries.ToDictionary(entry => entry.Name.ToString(), entry => entry.Value.ToString());
         }
 
         public async Task<bool> DeleteHashAsync(string key, string field)

@@ -13,12 +13,18 @@ namespace FileService.Controllers
     {
         private readonly IFileService _fileService;
         private readonly IMessageService _messageService;
+        private readonly IFileValidationService _validationService;
         private readonly ILogger<FileController> _logger;
 
-        public FileController(IFileService fileService, IMessageService messageService, ILogger<FileController> logger)
+        public FileController(
+            IFileService fileService, 
+            IMessageService messageService, 
+            IFileValidationService validationService,
+            ILogger<FileController> logger)
         {
             _fileService = fileService;
             _messageService = messageService;
+            _validationService = validationService;
             _logger = logger;
         }
 
@@ -29,19 +35,17 @@ namespace FileService.Controllers
             var files = request.Files;
             if (files == null || files.Count == 0)
                 return BadRequest("No files uploaded");
+
             var results = new List<object>();
             foreach (var file in files)
             {
-                if (file == null || file.Length == 0)
+                var (isValid, errorMessage) = _validationService.ValidateFile(file);
+                if (!isValid)
                 {
-                    results.Add(new { fileName = "", message = "File is empty" });
+                    results.Add(new { fileName = file?.FileName ?? "", message = errorMessage });
                     continue;
                 }
-                if (file.Length > 10 * 1024 * 1024)
-                {
-                    results.Add(new { fileName = file.FileName, message = "File size exceeds the limit of 10MB" });
-                    continue;
-                }
+
                 try
                 {
                     using var stream = file.OpenReadStream();

@@ -61,12 +61,13 @@ builder.Services.AddCors(options =>
 
 // Configure MinIO
 builder.Services.Configure<MinioOptions>(builder.Configuration.GetSection("Minio"));
-builder.Services.AddSingleton<IFileService, MinioFileService>();
+builder.Services.AddScoped<IFileService, MinioFileService>();
 
 // Configure RabbitMQ
 builder.Services.Configure<RabbitMQOptions>(builder.Configuration.GetSection("RabbitMQ"));
-builder.Services.AddSingleton<IMessageService, RabbitMQMessageService>();
-builder.Services.AddSingleton<IFileEventConsumer, FileEventConsumer>();
+builder.Services.AddScoped<IMessageService, RabbitMQMessageService>();
+builder.Services.AddScoped<IFileEventConsumer, FileEventConsumer>();
+builder.Services.AddScoped<IFileValidationService, FileValidationService>();
 
 var app = builder.Build();
 
