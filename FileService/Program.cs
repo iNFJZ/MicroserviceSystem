@@ -110,6 +110,7 @@ builder.Services.AddScoped<IFileService, MinioFileService>();
 // builder.Services.Configure<RabbitMQOptions>(builder.Configuration.GetSection("RabbitMQ"));
 builder.Services.AddScoped<IFileEventConsumer, FileEventConsumer>();
 builder.Services.AddScoped<IFileValidationService, FileValidationService>();
+builder.Services.AddScoped<IEmailMessageService, EmailMessageService>();
 
 builder.Services.AddHttpClient();
 

@@ -13,19 +13,22 @@ namespace AuthService.Services
         private readonly IJwtService _jwtService;
         private readonly IPasswordService _passwordService;
         private readonly ILogger<AuthService> _logger;
+        private readonly IEmailMessageService _emailMessageService;
 
         public AuthService(
             IUserRepository repo, 
             ISessionService sessionService,
             IJwtService jwtService,
             IPasswordService passwordService,
-            ILogger<AuthService> logger)
+            ILogger<AuthService> logger,
+            IEmailMessageService emailMessageService)
         {
             _repo = repo;
             _sessionService = sessionService;
             _jwtService = jwtService;
             _passwordService = passwordService;
             _logger = logger;
+            _emailMessageService = emailMessageService;
         }
 
         public async Task<string> RegisterAsync(RegisterDto dto)
@@ -52,7 +55,14 @@ namespace AuthService.Services
             var sessionId = Guid.NewGuid().ToString();
             await _sessionService.CreateUserSessionAsync(user.Id, sessionId, tokenExpiry);
             await _sessionService.SetUserLoginStatusAsync(user.Id, true, tokenExpiry);
-            
+
+            await _emailMessageService.PublishRegisterNotificationAsync(new RegisterNotificationEmailEvent
+            {
+                To = user.Email,
+                Username = user.Username,
+                RegisterAt = DateTime.UtcNow
+            });
+
             return token;
         }
 
@@ -71,7 +81,7 @@ namespace AuthService.Services
             var sessionId = Guid.NewGuid().ToString();
             await _sessionService.CreateUserSessionAsync(user.Id, sessionId, tokenExpiry);
             await _sessionService.SetUserLoginStatusAsync(user.Id, true, tokenExpiry);
-            
+
             return token;
         }
 

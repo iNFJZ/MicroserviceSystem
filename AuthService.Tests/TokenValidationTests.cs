@@ -17,6 +17,7 @@ namespace AuthService.Tests
         private readonly Mock<IJwtService> _mockJwtService;
         private readonly Mock<IPasswordService> _mockPasswordService;
         private readonly Mock<IConfiguration> _mockConfig;
+        private readonly Mock<IEmailMessageService> _emailMessageServiceMock = new Mock<IEmailMessageService>();
         private readonly ILogger<AuthService.Services.AuthService> _logger = new LoggerFactory().CreateLogger<AuthService.Services.AuthService>();
         private readonly AuthService.Services.AuthService _authService;
 
@@ -33,7 +34,8 @@ namespace AuthService.Tests
                 _mockSessionService.Object,
                 _mockJwtService.Object,
                 _mockPasswordService.Object,
-                _logger
+                _logger,
+                _emailMessageServiceMock.Object
             );
         }
 

@@ -1,31 +1,34 @@
-using FileService.Services;
-using FileService.DTOs;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Http;
-using System.ComponentModel.DataAnnotations;
-using Microsoft.AspNetCore.Authorization;
-using System.Security.Claims;
+using Microsoft.Extensions.Logging;
+using System;
+using System.Threading.Tasks;
+using FileService.Services;
 using FileService.Models;
-
+using System.Security.Claims;
+using System.Collections.Generic;
+using FileService.DTOs;
+using System.IdentityModel.Tokens.Jwt;
 namespace FileService.Controllers
 {
     [ApiController]
     [Route("api/[controller]")]
-    [Authorize]
     public class FileController : ControllerBase
     {
         private readonly IFileService _fileService;
         private readonly IFileValidationService _validationService;
         private readonly ILogger<FileController> _logger;
+        private readonly IEmailMessageService _emailMessageService;
 
         public FileController(
             IFileService fileService, 
             IFileValidationService validationService,
-            ILogger<FileController> logger)
+            ILogger<FileController> logger,
+            IEmailMessageService emailMessageService)
         {
             _fileService = fileService;
             _validationService = validationService;
             _logger = logger;
+            _emailMessageService = emailMessageService;
         }
 
         [HttpPost("upload")]
@@ -37,13 +40,10 @@ namespace FileService.Controllers
                 return BadRequest("No files uploaded");
 
             // Get user info from JWT token
-            var userIdClaim = User.FindFirst(ClaimTypes.NameIdentifier);
-            var userEmailClaim = User.FindFirst(ClaimTypes.Email);
-            var usernameClaim = User.FindFirst(ClaimTypes.Name);
-            
-            var userId = userIdClaim?.Value ?? "anonymous";
+            var userEmailClaim = User.FindFirst(ClaimTypes.Email) ?? User.FindFirst("email");
+            var userNameClaim = User.FindFirst(JwtRegisteredClaimNames.Name);
             var userEmail = userEmailClaim?.Value ?? "";
-            var username = usernameClaim?.Value ?? "Unknown User";
+            var userName = userNameClaim?.Value ?? "";
 
             var results = new List<object>();
             foreach (var file in files)
@@ -60,15 +60,16 @@ namespace FileService.Controllers
                     using var stream = file.OpenReadStream();
                     await _fileService.UploadFileAsync(file.FileName, stream, file.ContentType);
 
-                    var uploadEvent = new FileUploadEvent
+                    await _emailMessageService.PublishFileEventNotificationAsync(new FileEventEmailNotification
                     {
+                        To = userEmail,
+                        Username = userName,
                         FileName = file.FileName,
-                        ContentType = file.ContentType,
-                        FileSize = file.Length,
-                        UploadTime = DateTime.UtcNow,
-                        UserId = userId
-                    };
+                        EventType = "Upload",
+                        EventTime = DateTime.UtcNow
+                    });
 
+                    _logger.LogInformation("File uploaded successfully: {FileName}", file.FileName);
                     results.Add(new { fileName = file.FileName, message = "File uploaded successfully" });
                 }
                 catch (Exception ex)
@@ -92,6 +93,21 @@ namespace FileService.Controllers
                 }
                 var stream = await _fileService.DownloadFileAsync(fileName);
 
+                // Get user info from JWT token
+                var userEmailClaim = User.FindFirst(ClaimTypes.Email) ?? User.FindFirst("email");
+                var userNameClaim = User.FindFirst(JwtRegisteredClaimNames.Name);
+                var userEmail = userEmailClaim?.Value ?? "";
+                var userName = userNameClaim?.Value ?? "";
+
+                await _emailMessageService.PublishFileEventNotificationAsync(new FileEventEmailNotification
+                {
+                    To = userEmail,
+                    Username = userName,
+                    FileName = fileName,
+                    EventType = "Download",
+                    EventTime = DateTime.UtcNow
+                });
+
                 _logger.LogInformation("File downloaded successfully: {FileName}", fileName);
                 return File(stream, "application/octet-stream", fileName);
             }
@@ -99,28 +115,6 @@ namespace FileService.Controllers
             {
                 _logger.LogError(ex, "Error downloading file: {FileName}", fileName);
                 return StatusCode(500, "Error downloading file");
-            }
-        }
-
-        [HttpDelete("delete/{fileName}")]
-        public async Task<IActionResult> Delete(string fileName)
-        {
-            try
-            {
-                var files = await _fileService.ListFilesAsync();
-                if (!files.Contains(fileName))
-                {
-                    return NotFound(new { message = $"File '{fileName}' not found" });
-                }
-                await _fileService.DeleteFileAsync(fileName);
-
-                _logger.LogInformation("File deleted successfully: {FileName}", fileName);
-                return Ok(new { message = "File deleted successfully" });
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError(ex, "Error deleting file: {FileName}", fileName);
-                return StatusCode(500, "Error deleting file");
             }
         }
 
@@ -138,5 +132,42 @@ namespace FileService.Controllers
                 return StatusCode(500, "Error listing files");
             }
         }
+
+        [HttpDelete("delete/{fileName}")]
+        public async Task<IActionResult> Delete(string fileName)
+        {
+            try
+            {
+                var files = await _fileService.ListFilesAsync();
+                if (!files.Contains(fileName))
+                {
+                    return NotFound(new { message = $"File '{fileName}' not found" });
+                }
+                await _fileService.DeleteFileAsync(fileName);
+
+                // Get user info from JWT token
+                var userEmailClaim = User.FindFirst(ClaimTypes.Email) ?? User.FindFirst("email");
+                var userNameClaim = User.FindFirst(JwtRegisteredClaimNames.Name);
+                var userEmail = userEmailClaim?.Value ?? "";
+                var userName = userNameClaim?.Value ?? "";
+
+                await _emailMessageService.PublishFileEventNotificationAsync(new FileEventEmailNotification
+                {
+                    To = userEmail,
+                    Username = userName ?? "",
+                    FileName = fileName,
+                    EventType = "Delete",
+                    EventTime = DateTime.UtcNow
+                });
+
+                _logger.LogInformation("File deleted successfully: {FileName}", fileName);
+                return Ok(new { message = "File deleted successfully" });
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error deleting file: {FileName}", fileName);
+                return StatusCode(500, "Error deleting file");
+            }
+        }
     }
-} 
+}

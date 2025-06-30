@@ -26,7 +26,7 @@ services:
       - microservice-network
 
   rabbitmq:
-    image: rabbitmq:3-management
+    image: rabbitmq:management
     container_name: rabbitmq
     restart: always
     ports:
@@ -129,6 +129,21 @@ services:
       - microservice-network
     environment:
       - ASPNETCORE_ENVIRONMENT=Development
+
+  email-service:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: email-service
+    working_dir: /app/EmailService
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Development
+    depends_on:
+      - rabbitmq
+    networks:
+      - microservice-network
+    command: dotnet EmailService.dll
+
 volumes:
   pgdata:
   minio-data:
