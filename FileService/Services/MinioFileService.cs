@@ -2,17 +2,10 @@ using Minio;
 using Minio.DataModel;
 using Minio.DataModel.Args;
 using Microsoft.Extensions.Options;
+using FileService.Models;
 
 namespace FileService.Services
 {
-    public class MinioOptions
-    {
-        public string? Endpoint { get; set; }
-        public string? AccessKey { get; set; }
-        public string? SecretKey { get; set; }
-        public string? BucketName { get; set; }
-    }
-
     public class MinioFileService : IFileService
     {
         private readonly IMinioClient _minioClient;
