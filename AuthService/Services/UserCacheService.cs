@@ -4,71 +4,63 @@ namespace AuthService.Services
 {
     public class UserCacheService : IUserCacheService
     {
-        private readonly IRedisService _redisService;
-        private const string USER_PREFIX = "user:";
-        private const string USER_EMAIL_PREFIX = "user_email:";
-        private readonly TimeSpan _defaultExpiry = TimeSpan.FromMinutes(30);
+        private readonly ICacheService _cacheService;
+        private const string UserPrefix = "user:";
+        private const string EmailPrefix = "email:";
 
-        public UserCacheService(IRedisService redisService)
+        public UserCacheService(ICacheService cacheService)
         {
-            _redisService = redisService;
+            _cacheService = cacheService;
         }
 
         public async Task<User?> GetUserByIdAsync(Guid userId)
         {
-            return await _redisService.GetAsync<User>($"{USER_PREFIX}{userId}");
+            return await _cacheService.GetAsync<User>(UserPrefix + userId);
         }
 
         public async Task<User?> GetUserByEmailAsync(string email)
         {
-            var userId = await _redisService.GetAsync<Guid>($"{USER_EMAIL_PREFIX}{email}");
-            if (userId == Guid.Empty)
-                return null;
-
-            return await GetUserByIdAsync(userId);
+            return await _cacheService.GetAsync<User>(EmailPrefix + email);
         }
 
         public async Task SetUserAsync(User user, TimeSpan? expiry = null)
         {
-            var userKey = $"{USER_PREFIX}{user.Id}";
-            var emailKey = $"{USER_EMAIL_PREFIX}{user.Email}";
-
-            await _redisService.SetAsync(userKey, user, expiry ?? _defaultExpiry);
-            await _redisService.SetAsync(emailKey, user.Id, expiry ?? _defaultExpiry);
+            await _cacheService.SetAsync(UserPrefix + user.Id, user, expiry);
+            await _cacheService.SetAsync(EmailPrefix + user.Email, user, expiry);
         }
 
         public async Task<bool> DeleteUserAsync(Guid userId)
         {
             var user = await GetUserByIdAsync(userId);
-            if (user == null)
-                return false;
-
-            var userKey = $"{USER_PREFIX}{userId}";
-            var emailKey = $"{USER_EMAIL_PREFIX}{user.Email}";
-
-            await _redisService.DeleteAsync(userKey);
-            await _redisService.DeleteAsync(emailKey);
-
-            return true;
+            if (user != null)
+            {
+                await _cacheService.DeleteAsync(UserPrefix + userId);
+                await _cacheService.DeleteAsync(EmailPrefix + user.Email);
+                return true;
+            }
+            return false;
         }
 
         public async Task<bool> DeleteUserByEmailAsync(string email)
         {
-            var userId = await _redisService.GetAsync<Guid>($"{USER_EMAIL_PREFIX}{email}");
-            if (userId == Guid.Empty)
-                return false;
-
-            return await DeleteUserAsync(userId);
+            var user = await GetUserByEmailAsync(email);
+            if (user != null)
+            {
+                await _cacheService.DeleteAsync(UserPrefix + user.Id);
+                await _cacheService.DeleteAsync(EmailPrefix + email);
+                return true;
+            }
+            return false;
         }
 
         public async Task<bool> ExistsAsync(Guid userId)
         {
-            return await _redisService.ExistsAsync($"{USER_PREFIX}{userId}");
+            return await _cacheService.ExistsAsync(UserPrefix + userId);
         }
 
         public async Task<bool> ExistsByEmailAsync(string email)
         {
-            return await _redisService.ExistsAsync($"{USER_EMAIL_PREFIX}{email}");
+            return await _cacheService.ExistsAsync(EmailPrefix + email);
         }
     }
 } 

@@ -38,9 +38,13 @@ builder.Services.AddDbContext<DBContext>(options =>
 // Register services
 builder.Services.AddScoped<IUserRepository, UserRepository>();
 builder.Services.AddScoped<IAuthService, AuthService.Services.AuthService>();
-builder.Services.AddScoped<IRedisService, RedisService>();
+builder.Services.AddScoped<ICacheService, RedisService>();
+builder.Services.AddScoped<IHashService, RedisService>();
+builder.Services.AddScoped<IRedisKeyService, RedisService>();
 builder.Services.AddScoped<ISessionService, SessionService>();
 builder.Services.AddScoped<IUserCacheService, UserCacheService>();
+builder.Services.AddScoped<IJwtService, JwtService>();
+builder.Services.AddScoped<IPasswordService, PasswordService>();
 
 builder.Services.AddAuthentication("Bearer")
     .AddJwtBearer("Bearer", options =>
