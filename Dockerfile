@@ -15,8 +15,7 @@ COPY ["AuthService/AuthService.csproj", "AuthService/"]
 COPY ["FileService/FileService.csproj", "FileService/"]
 COPY ["GatewayApi/GatewayApi.csproj", "GatewayApi/"]
 COPY ["AuthService.Tests/AuthService.Tests.csproj", "AuthService.Tests/"]
-COPY ["WorkerService.Tests/WorkerService.Tests.csproj", "WorkerService.Tests/"]
-COPY ["WorkerService/WorkerService.csproj", "WorkerService/"]
+COPY ["EmailService/EmailService.csproj", "EmailService/"]
 
 # Restore all projects
 RUN dotnet restore "MicroserviceSystem.sln"
@@ -29,10 +28,11 @@ RUN dotnet build "MicroserviceSystem.sln" -c Release --no-restore
 
 # Publish stage - publish each project individually
 FROM build AS publish
-RUN dotnet publish "AuthService/AuthService.csproj" -c Release -o /app/publish/AuthService --no-restore --no-build
-RUN dotnet publish "FileService/FileService.csproj" -c Release -o /app/publish/FileService --no-restore --no-build
-RUN dotnet publish "GatewayApi/GatewayApi.csproj" -c Release -o /app/publish/GatewayApi --no-restore --no-build
-RUN dotnet publish "WorkerService/WorkerService.csproj" -c Release -o /app/publish/WorkerService --no-restore --no-build
+RUN dotnet publish "AuthService/AuthService.csproj" -c Release -o /app/publish/AuthService
+RUN dotnet publish "FileService/FileService.csproj" -c Release -o /app/publish/FileService
+RUN dotnet publish "GatewayApi/GatewayApi.csproj" -c Release -o /app/publish/GatewayApi
+RUN dotnet publish "EmailService/EmailService.csproj" -c Release -o /app/publish/EmailService
+
 # Final stage
 FROM base AS final
 WORKDIR /app
@@ -41,7 +41,7 @@ WORKDIR /app
 COPY --from=publish /app/publish/AuthService /app/AuthService
 COPY --from=publish /app/publish/FileService /app/FileService
 COPY --from=publish /app/publish/GatewayApi /app/GatewayApi
-COPY --from=publish /app/publish/WorkerService /app/WorkerService
+COPY --from=publish /app/publish/EmailService /app/EmailService
 
 # Copy configuration files for AuthService
 COPY AuthService/appsettings.json /app/AuthService/appsettings.json
