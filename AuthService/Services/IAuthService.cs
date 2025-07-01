@@ -10,5 +10,8 @@ namespace AuthService.Services
         Task<bool> ValidateTokenAsync(string token);
         Task<IEnumerable<string>> GetUserSessionsAsync(Guid userId);
         Task<bool> RemoveUserSessionAsync(Guid userId, string sessionId);
+        Task<bool> ForgotPasswordAsync(ForgotPasswordDto dto);
+        Task<bool> ResetPasswordAsync(ResetPasswordDto dto);
+        Task<bool> ChangePasswordAsync(Guid userId, ChangePasswordDto dto);
     }
 }

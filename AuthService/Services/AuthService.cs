@@ -3,6 +3,7 @@ using AuthService.Repositories;
 using AuthService.DTOs;
 using AuthService.Exceptions;
 using Microsoft.Extensions.Logging;
+using System.Security.Cryptography;
 
 namespace AuthService.Services
 {
@@ -154,6 +155,89 @@ namespace AuthService.Services
         public async Task<bool> RemoveUserSessionAsync(Guid userId, string sessionId)
         {
             return await _sessionService.RemoveUserSessionAsync(userId, sessionId);
+        }
+
+        public async Task<bool> ForgotPasswordAsync(ForgotPasswordDto dto)
+        {
+            var user = await _repo.GetByEmailAsync(dto.Email);
+            if (user == null)
+            {
+                _logger.LogInformation("Password reset requested for email: {Email}", dto.Email);
+                return true;
+            }
+
+            var resetToken = GenerateResetToken();
+            var tokenExpiry = TimeSpan.FromMinutes(15);
+
+            await _sessionService.StoreResetTokenAsync(resetToken, user.Id, tokenExpiry);
+
+            await _emailMessageService.PublishResetPasswordNotificationAsync(new ResetPasswordEmailEvent
+            {
+                To = user.Email,
+                Username = user.Username,
+                ResetToken = resetToken,
+                RequestedAt = DateTime.UtcNow
+            });
+
+            _logger.LogInformation("Password reset email sent to: {Email}", dto.Email);
+            return true;
+        }
+
+        public async Task<bool> ResetPasswordAsync(ResetPasswordDto dto)
+        {
+            var userId = await _sessionService.GetUserIdFromResetTokenAsync(dto.Token);
+            if (!userId.HasValue)
+                throw new InvalidResetTokenException();
+
+            var user = await _repo.GetByIdAsync(userId.Value);
+            if (user == null)
+                throw new UserNotFoundException(userId.Value);
+
+            user.PasswordHash = _passwordService.HashPassword(dto.NewPassword);
+            user.UpdatedAt = DateTime.UtcNow;
+
+            await _repo.UpdateAsync(user);
+
+            await _sessionService.RemoveResetTokenAsync(dto.Token);
+
+            await _sessionService.RemoveAllUserSessionsAsync(user.Id);
+            await _sessionService.RemoveAllActiveTokensForUserAsync(user.Id);
+            await _sessionService.SetUserLoginStatusAsync(user.Id, false);
+
+            _logger.LogInformation("Password reset successful for user: {UserId}", user.Id);
+            return true;
+        }
+
+        public async Task<bool> ChangePasswordAsync(Guid userId, ChangePasswordDto dto)
+        {
+            var user = await _repo.GetByIdAsync(userId);
+            if (user == null)
+                throw new UserNotFoundException(userId);
+
+            if (!_passwordService.VerifyPassword(dto.CurrentPassword, user.PasswordHash))
+                throw new PasswordMismatchException();
+
+            user.PasswordHash = _passwordService.HashPassword(dto.NewPassword);
+            user.UpdatedAt = DateTime.UtcNow;
+
+            await _repo.UpdateAsync(user);
+
+            await _sessionService.RemoveAllUserSessionsAsync(user.Id);
+            await _sessionService.RemoveAllActiveTokensForUserAsync(user.Id);
+            await _sessionService.SetUserLoginStatusAsync(user.Id, false);
+
+            _logger.LogInformation("Password changed successfully for user: {UserId}", user.Id);
+            return true;
+        }
+
+        private string GenerateResetToken()
+        {
+            var randomBytes = new byte[32];
+            using (var rng = RandomNumberGenerator.Create())
+            {
+                rng.GetBytes(randomBytes);
+            }
+            return Convert.ToBase64String(randomBytes).Replace("+", "-").Replace("/", "_").Replace("=", "");
         }
     }
 }

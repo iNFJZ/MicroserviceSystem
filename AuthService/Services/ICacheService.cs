@@ -8,5 +8,6 @@ namespace AuthService.Services
         Task<bool> ExistsAsync(string key);
         Task SetExpiryAsync(string key, TimeSpan expiry);
         Task<TimeSpan?> GetTimeToLiveAsync(string key);
+        Task<IEnumerable<string>> GetKeysAsync(string pattern);
     }
 } 

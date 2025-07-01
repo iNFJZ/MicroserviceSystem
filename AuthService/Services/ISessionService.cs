@@ -14,6 +14,10 @@ namespace AuthService.Services
         Task StoreActiveTokenAsync(string token, Guid userId, TimeSpan expiry);
         Task<bool> IsTokenActiveAsync(string token);
         Task RemoveActiveTokenAsync(string token);
+        Task RemoveAllActiveTokensForUserAsync(Guid userId);
         Task<Guid?> GetUserIdFromActiveTokenAsync(string token);
+        Task StoreResetTokenAsync(string token, Guid userId, TimeSpan expiry);
+        Task<Guid?> GetUserIdFromResetTokenAsync(string token);
+        Task RemoveResetTokenAsync(string token);
     }
 } 

@@ -81,6 +81,9 @@ docker compose down -v
 - `POST /api/auth/validate` - Kiểm tra token hợp lệ
 - `GET /api/auth/sessions` - Danh sách phiên đăng nhập
 - `DELETE /api/auth/sessions/{sessionId}` - Xóa phiên
+- `POST /api/auth/forgot-password` - Quên mật khẩu (gửi email reset)
+- `POST /api/auth/reset-password` - Đặt lại mật khẩu (dùng token)
+- `POST /api/auth/change-password` - Đổi mật khẩu (yêu cầu đăng nhập)
 
 ### FileService (http://localhost:5002)
 - `POST /api/file/upload` - Upload file (multipart/form-data)
@@ -95,6 +98,7 @@ docker compose down -v
 ## 📨 Email Notification (Event-driven)
 - Đăng ký, upload, download, delete file đều gửi event qua RabbitMQ.
 - EmailService consume event, gửi email với nội dung động.
+- **Reset Password**: Gửi email chứa token reset (có hạn 15 phút).
 
 ## 🗄️ Cấu hình môi trường
 
@@ -113,6 +117,8 @@ dotnet test
 ## 📝 Lưu ý thực tế
 
 - **Migration DB**: Nếu gặp lỗi "relation ... does not exist", hãy chạy migration cho AuthService.
+- **Reset Password**: Token có hạn 15 phút, sau khi reset sẽ vô hiệu hóa tất cả session.
+- **Change Password**: Yêu cầu mật khẩu hiện tại, sau khi đổi sẽ vô hiệu hóa tất cả session.
 
 ## 📊 Monitoring & UI
 

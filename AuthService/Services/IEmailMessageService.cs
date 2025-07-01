@@ -6,5 +6,6 @@ namespace AuthService.Services
     public interface IEmailMessageService
     {
         Task PublishRegisterNotificationAsync(RegisterNotificationEmailEvent emailEvent);
+        Task PublishResetPasswordNotificationAsync(ResetPasswordEmailEvent emailEvent);
     }
 } 

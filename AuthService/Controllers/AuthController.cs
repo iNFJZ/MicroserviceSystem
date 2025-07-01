@@ -78,5 +78,31 @@ namespace AuthService.Controllers
             else
                 return NotFound(new { message = "Session not found" });
         }
+
+        [HttpPost("forgot-password")]
+        public async Task<IActionResult> ForgotPassword(ForgotPasswordDto dto)
+        {
+            var result = await _auth.ForgotPasswordAsync(dto);
+            return Ok(new { message = "If the email exists, a password reset link has been sent." });
+        }
+
+        [HttpPost("reset-password")]
+        public async Task<IActionResult> ResetPassword(ResetPasswordDto dto)
+        {
+            var result = await _auth.ResetPasswordAsync(dto);
+            return Ok(new { message = "Password has been reset successfully." });
+        }
+
+        [Authorize]
+        [HttpPost("change-password")]
+        public async Task<IActionResult> ChangePassword(ChangePasswordDto dto)
+        {
+            var userIdClaim = User.FindFirst(ClaimTypes.NameIdentifier);
+            if (userIdClaim == null || !Guid.TryParse(userIdClaim.Value, out Guid userId))
+                return Unauthorized();
+
+            var result = await _auth.ChangePasswordAsync(userId, dto);
+            return Ok(new { message = "Password has been changed successfully." });
+        }
     }
 }
