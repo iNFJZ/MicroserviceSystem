@@ -12,6 +12,7 @@ namespace AuthService.Services
         private const string UserSessionPrefix = "session:";
         private const string UserLoginPrefix = "login:";
         private const string ActiveTokenPrefix = "token:";
+        private const string ResetTokenPrefix = "reset:";
 
         public SessionService(ICacheService cacheService, IHashService hashService, IRedisKeyService keyService)
         {
@@ -101,6 +102,21 @@ namespace AuthService.Services
             await _cacheService.DeleteAsync(tokenKey);
         }
 
+        public async Task RemoveAllActiveTokensForUserAsync(Guid userId)
+        {
+            var pattern = ActiveTokenPrefix + "*";
+            var keys = await _cacheService.GetKeysAsync(pattern);
+            
+            foreach (var key in keys)
+            {
+                var tokenUserIdString = await _cacheService.GetAsync<string>(key);
+                if (Guid.TryParse(tokenUserIdString, out Guid tokenUserId) && tokenUserId == userId)
+                {
+                    await _cacheService.DeleteAsync(key);
+                }
+            }
+        }
+
         public async Task<Guid?> GetUserIdFromActiveTokenAsync(string token)
         {
             var tokenKey = ActiveTokenPrefix + token;
@@ -108,6 +124,27 @@ namespace AuthService.Services
             if (Guid.TryParse(userIdString, out Guid userId))
                 return userId;
             return null;
+        }
+
+        public async Task StoreResetTokenAsync(string token, Guid userId, TimeSpan expiry)
+        {
+            var tokenKey = ResetTokenPrefix + token;
+            await _cacheService.SetAsync(tokenKey, userId.ToString(), expiry);
+        }
+
+        public async Task<Guid?> GetUserIdFromResetTokenAsync(string token)
+        {
+            var tokenKey = ResetTokenPrefix + token;
+            var userIdString = await _cacheService.GetAsync<string>(tokenKey);
+            if (Guid.TryParse(userIdString, out Guid userId))
+                return userId;
+            return null;
+        }
+
+        public async Task RemoveResetTokenAsync(string token)
+        {
+            var tokenKey = ResetTokenPrefix + token;
+            await _cacheService.DeleteAsync(tokenKey);
         }
     }
 } 

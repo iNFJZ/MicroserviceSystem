@@ -16,7 +16,6 @@ namespace AuthService.Middleware
 
         public async Task InvokeAsync(HttpContext context, ISessionService sessionService)
         {
-            // Skip token validation for non-protected endpoints
             if (ShouldSkipTokenValidation(context))
             {
                 await _next(context);
@@ -31,7 +30,6 @@ namespace AuthService.Middleware
                 return;
             }
 
-            // Check if token is active in Redis
             if (!await sessionService.IsTokenActiveAsync(token))
             {
                 context.Response.StatusCode = (int)HttpStatusCode.Unauthorized;
@@ -39,7 +37,6 @@ namespace AuthService.Middleware
                 return;
             }
 
-            // Check if token is blacklisted
             if (await sessionService.IsTokenBlacklistedAsync(token))
             {
                 context.Response.StatusCode = (int)HttpStatusCode.Unauthorized;
@@ -54,12 +51,13 @@ namespace AuthService.Middleware
         {
             var path = context.Request.Path.Value?.ToLower();
             
-            // Skip validation for these endpoints
             var skipPaths = new[]
             {
                 "/api/auth/login",
                 "/api/auth/register",
                 "/api/auth/validate",
+                "/api/auth/forgot-password",
+                "/api/auth/reset-password",
                 "/health",
                 "/swagger",
                 "/favicon.ico"

@@ -22,6 +22,8 @@ namespace AuthService.Middleware
                 "/api/auth/login",
                 "/api/auth/register",
                 "/api/auth/validate",
+                "/api/auth/forgot-password",
+                "/api/auth/reset-password",
                 "/health",
                 "/swagger",
                 "/favicon.ico"

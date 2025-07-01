@@ -26,4 +26,14 @@ namespace AuthService.Exceptions
     {
         public InvalidTokenException() : base("Invalid or expired token") { }
     }
+
+    public class InvalidResetTokenException : AuthException
+    {
+        public InvalidResetTokenException() : base("Invalid or expired reset token") { }
+    }
+
+    public class PasswordMismatchException : AuthException
+    {
+        public PasswordMismatchException() : base("Current password is incorrect") { }
+    }
 } 

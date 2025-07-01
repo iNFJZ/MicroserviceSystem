@@ -81,7 +81,6 @@ namespace EmailService
                     var root = doc.RootElement;
                     if (root.TryGetProperty("EventType", out _))
                     {
-                        // File event
                         var fileEvent = JsonSerializer.Deserialize<FileEventEmailNotification>(message);
                         if (fileEvent != null && !string.IsNullOrEmpty(fileEvent.To))
                         {
@@ -91,9 +90,19 @@ namespace EmailService
                             return;
                         }
                     }
+                    else if (root.TryGetProperty("ResetToken", out _))
+                    {
+                        var resetEvent = JsonSerializer.Deserialize<ResetPasswordEmailEvent>(message);
+                        if (resetEvent != null && !string.IsNullOrEmpty(resetEvent.To))
+                        {
+                            SendResetPasswordMail(resetEvent);
+                            _logger.LogInformation($"Sent reset password mail to {resetEvent.To}");
+                            _channel.BasicAck(ea.DeliveryTag, false);
+                            return;
+                        }
+                    }
                     else
                     {
-                        // Register event
                         var registerEvent = JsonSerializer.Deserialize<RegisterNotificationEmailEvent>(message);
                         if (registerEvent != null && !string.IsNullOrEmpty(registerEvent.To))
                         {
@@ -208,6 +217,44 @@ namespace EmailService
             catch (Exception ex)
             {
                 _logger.LogError(ex, $"Failed to send {emailEvent.EventType} mail to {emailEvent.To}. Exception: {ex.Message}");
+                throw;
+            }
+        }
+
+        private void SendResetPasswordMail(ResetPasswordEmailEvent emailEvent)
+        {
+            var requestedAt = emailEvent.RequestedAt == DateTime.MinValue ? DateTime.UtcNow : emailEvent.RequestedAt;
+            var vnTime = TimeZoneInfo.ConvertTimeFromUtc(requestedAt, GetVietnamTimeZone());
+            var mail = new MailMessage();
+            mail.To.Add(emailEvent.To);
+            mail.Subject = "Password Reset Request - Microservice System";
+            mail.Body = $"Hello {emailEvent.Username},\n\n" +
+                        "We received a request to reset your password for your Microservice System account.\n\n" +
+                        "Your password reset token is:\n" +
+                        $"{emailEvent.ResetToken}\n\n" +
+                        "Please use this token to reset your password. This token will expire in 15 minutes.\n\n" +
+                        "If you did not request this password reset, please ignore this email or contact support immediately.\n\n" +
+                        $"Request made at: {vnTime:yyyy-MM-dd HH:mm:ss} (Vietnam Time)\n\n" +
+                        "To reset your password, use the following API endpoint:\n" +
+                        "POST /api/auth/reset-password\n" +
+                        "Body: {\"token\": \"your-token\", \"newPassword\": \"your-new-password\"}\n\n" +
+                        "For security reasons, all your active sessions will be invalidated after password reset.\n\n" +
+                        "Thank you for using Microservice System!\n\n" +
+                        "Best regards,\nMicroservice System Team";
+            mail.From = new MailAddress(_smtpUser, "Microservice System");
+            try
+            {
+                using var smtp = new SmtpClient("smtp.gmail.com", 587)
+                {
+                    Credentials = new System.Net.NetworkCredential(_smtpUser, _smtpPass),
+                    EnableSsl = true
+                };
+                smtp.Send(mail);
+                _logger.LogInformation($"Successfully sent reset password mail to {emailEvent.To}");
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, $"Failed to send reset password mail to {emailEvent.To}. Exception: {ex.Message}");
                 throw;
             }
         }
