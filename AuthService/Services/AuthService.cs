@@ -226,6 +226,12 @@ namespace AuthService.Services
             await _sessionService.RemoveAllActiveTokensForUserAsync(user.Id);
             await _sessionService.SetUserLoginStatusAsync(user.Id, false);
 
+            await _emailMessageService.PublishChangePasswordNotificationAsync(new ChangePasswordEmailEvent
+            {
+                To = user.Email,
+                Username = user.Username,
+                ChangeAt = DateTime.UtcNow
+            });
             _logger.LogInformation("Password changed successfully for user: {UserId}", user.Id);
             return true;
         }

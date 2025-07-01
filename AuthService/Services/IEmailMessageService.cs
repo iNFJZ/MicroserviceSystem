@@ -7,5 +7,6 @@ namespace AuthService.Services
     {
         Task PublishRegisterNotificationAsync(RegisterNotificationEmailEvent emailEvent);
         Task PublishResetPasswordNotificationAsync(ResetPasswordEmailEvent emailEvent);
+        Task PublishChangePasswordNotificationAsync(ChangePasswordEmailEvent emailEvent);
     }
 } 

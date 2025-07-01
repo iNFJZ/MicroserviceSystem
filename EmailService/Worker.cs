@@ -101,6 +101,17 @@ namespace EmailService
                             return;
                         }
                     }
+                    else if (root.TryGetProperty("ChangeAt", out _))
+                    {
+                        var changeEvent = JsonSerializer.Deserialize<ChangePasswordEmailEvent>(message);
+                        if (changeEvent != null && !string.IsNullOrEmpty(changeEvent.To))
+                        {
+                            SendChangePasswordMail(changeEvent);
+                            _logger.LogInformation($"Sent change password mail to {changeEvent.To}");
+                            _channel.BasicAck(ea.DeliveryTag, false);
+                            return;
+                        }
+                    }
                     else
                     {
                         var registerEvent = JsonSerializer.Deserialize<RegisterNotificationEmailEvent>(message);
@@ -259,6 +270,37 @@ namespace EmailService
             }
         }
 
+        private void SendChangePasswordMail(ChangePasswordEmailEvent emailEvent)
+        {
+            var changeAt = emailEvent.ChangeAt == DateTime.MinValue ? DateTime.UtcNow : emailEvent.ChangeAt;
+            var vnTime = TimeZoneInfo.ConvertTimeFromUtc(changeAt, GetVietnamTimeZone());
+            var mail = new MailMessage();
+            mail.To.Add(emailEvent.To);
+            mail.Subject = "Password Changed Successfully - Microservice System";
+            mail.Body = $"Hello {emailEvent.Username},\n\n" +
+                        "Your password has been successfully changed for your Microservice System account.\n\n" +
+                        "If you did not request this password change, please contact support immediately.\n\n" +
+                        $"Request made at: {vnTime:yyyy-MM-dd HH:mm:ss} (Vietnam Time)\n\n" +
+                        "For security reasons, all your active sessions will be invalidated after password change.\n\n" +
+                        "Thank you for using Microservice System!\n\n" +
+                        "Best regards,\nMicroservice System Team";
+            mail.From = new MailAddress(_smtpUser, "Microservice System");
+            try
+            {
+                using var smtp = new SmtpClient("smtp.gmail.com", 587)
+                {
+                    Credentials = new System.Net.NetworkCredential(_smtpUser, _smtpPass),
+                    EnableSsl = true
+                };
+                smtp.Send(mail);
+                _logger.LogInformation($"Successfully sent change password mail to {emailEvent.To}");
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, $"Failed to send change password mail to {emailEvent.To}. Exception: {ex.Message}");
+                throw;
+            }
+        }
         public override void Dispose()
         {
             _channel?.Dispose();
