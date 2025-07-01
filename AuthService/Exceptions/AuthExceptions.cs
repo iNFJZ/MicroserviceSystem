@@ -22,6 +22,11 @@ namespace AuthService.Exceptions
         public UserAlreadyExistsException(string email) : base($"User with email '{email}' already exists") { }
     }
 
+    public class UserLockedException : AuthException
+    {
+        public UserLockedException(string message) : base(message) { }
+    }
+
     public class InvalidTokenException : AuthException
     {
         public InvalidTokenException() : base("Invalid or expired token") { }

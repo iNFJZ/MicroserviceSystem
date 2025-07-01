@@ -55,11 +55,11 @@ namespace AuthService.Services
             return await _database.KeyTimeToLiveAsync(key);
         }
 
-        public async Task<IEnumerable<string>> GetKeysAsync(string pattern)
+        public Task<IEnumerable<string>> GetKeysAsync(string pattern)
         {
             var server = _redis.GetServer(_redis.GetEndPoints().First());
             var keys = server.Keys(pattern: pattern);
-            return keys.Select(k => k.ToString());
+            return Task.FromResult(keys.Select(k => k.ToString()));
         }
 
         public async Task<bool> SetHashAsync(string key, string field, string value)

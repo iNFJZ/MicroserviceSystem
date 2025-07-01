@@ -70,8 +70,39 @@ namespace AuthService.Services
         public async Task<string> LoginAsync(LoginDto dto)
         {
             var user = await _repo.GetByEmailAsync(dto.Email);
-            if (user == null || !_passwordService.VerifyPassword(dto.Password, user.PasswordHash))
+            if (user == null)
                 throw new InvalidCredentialsException();
+
+            var isLocked = await _sessionService.IsUserLockedAsync(user.Id);
+            if (isLocked)
+            {
+                var lockExpiry = await _sessionService.GetUserLockExpiryAsync(user.Id);
+                if (lockExpiry.HasValue && lockExpiry.Value > DateTime.UtcNow)
+                {
+                    var remainingMinutes = Math.Ceiling((lockExpiry.Value - DateTime.UtcNow).TotalMinutes);
+                    throw new UserLockedException($"Account is locked. Please try again in {remainingMinutes} minutes.");
+                }
+                else
+                {
+                    await _sessionService.ResetFailedLoginAttemptsAsync(user.Id);
+                }
+            }
+
+            if (!_passwordService.VerifyPassword(dto.Password, user.PasswordHash))
+            {
+                var failedAttempts = await _sessionService.IncrementFailedLoginAttemptsAsync(user.Id);
+                
+                if (failedAttempts >= 3)
+                {
+                    var lockExpiry = DateTime.UtcNow.AddMinutes(5);
+                    await _sessionService.LockUserAsync(user.Id, lockExpiry);
+                    throw new UserLockedException("Account locked due to 3 failed login attempts. Please try again in 5 minutes.");
+                }
+                
+                throw new InvalidCredentialsException();
+            }
+
+            await _sessionService.ResetFailedLoginAttemptsAsync(user.Id);
 
             var token = _jwtService.GenerateToken(user);
             
