@@ -45,7 +45,6 @@ namespace FileService.Services
             var message = JsonSerializer.Serialize(emailEvent);
             var body = Encoding.UTF8.GetBytes(message);
 
-            // Log message JSON gửi lên RabbitMQ
             if (System.Diagnostics.Debugger.IsAttached)
                 Console.WriteLine($"[FileService] PublishFileEventNotificationAsync: {message}");
             else

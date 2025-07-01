@@ -13,6 +13,8 @@ namespace AuthService.Services
         private const string UserLoginPrefix = "login:";
         private const string ActiveTokenPrefix = "token:";
         private const string ResetTokenPrefix = "reset:";
+        private const string UserLockPrefix = "lock:";
+        private const string FailedAttemptsPrefix = "failed:";
 
         public SessionService(ICacheService cacheService, IHashService hashService, IRedisKeyService keyService)
         {
@@ -145,6 +147,43 @@ namespace AuthService.Services
         {
             var tokenKey = ResetTokenPrefix + token;
             await _cacheService.DeleteAsync(tokenKey);
+        }
+
+        public async Task<bool> IsUserLockedAsync(Guid userId)
+        {
+            var lockKey = UserLockPrefix + userId;
+            return await _cacheService.ExistsAsync(lockKey);
+        }
+
+        public async Task<DateTime?> GetUserLockExpiryAsync(Guid userId)
+        {
+            var lockKey = UserLockPrefix + userId;
+            var lockExpiryString = await _cacheService.GetAsync<string>(lockKey);
+            if (DateTime.TryParse(lockExpiryString, out DateTime lockExpiry))
+                return lockExpiry;
+            return null;
+        }
+
+        public async Task LockUserAsync(Guid userId, DateTime lockExpiry)
+        {
+            var lockKey = UserLockPrefix + userId;
+            var expiry = lockExpiry - DateTime.UtcNow;
+            await _cacheService.SetAsync(lockKey, lockExpiry.ToString(), expiry);
+        }
+
+        public async Task<int> IncrementFailedLoginAttemptsAsync(Guid userId)
+        {
+            var failedKey = FailedAttemptsPrefix + userId;
+            var currentAttempts = await _cacheService.GetAsync<int>(failedKey);
+            var newAttempts = currentAttempts + 1;
+            await _cacheService.SetAsync(failedKey, newAttempts, TimeSpan.FromMinutes(30));
+            return newAttempts;
+        }
+
+        public async Task ResetFailedLoginAttemptsAsync(Guid userId)
+        {
+            var failedKey = FailedAttemptsPrefix + userId;
+            await _cacheService.DeleteAsync(failedKey);
         }
     }
 } 

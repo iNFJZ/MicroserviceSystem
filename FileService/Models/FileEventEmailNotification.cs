@@ -5,7 +5,7 @@ namespace FileService.Models
         public string To { get; set; } = string.Empty;
         public string Username { get; set; } = string.Empty;
         public string FileName { get; set; } = string.Empty;
-        public string EventType { get; set; } = string.Empty; // Upload/Download
+        public string EventType { get; set; } = string.Empty;
         public DateTime EventTime { get; set; }
     }
 } 

@@ -39,7 +39,6 @@ namespace FileService.Controllers
             if (files == null || files.Count == 0)
                 return BadRequest("No files uploaded");
 
-            // Get user info from JWT token
             var userEmailClaim = User.FindFirst(ClaimTypes.Email) ?? User.FindFirst("email");
             var userNameClaim = User.FindFirst(JwtRegisteredClaimNames.Name);
             var userEmail = userEmailClaim?.Value ?? "";
@@ -93,7 +92,6 @@ namespace FileService.Controllers
                 }
                 var stream = await _fileService.DownloadFileAsync(fileName);
 
-                // Get user info from JWT token
                 var userEmailClaim = User.FindFirst(ClaimTypes.Email) ?? User.FindFirst("email");
                 var userNameClaim = User.FindFirst(JwtRegisteredClaimNames.Name);
                 var userEmail = userEmailClaim?.Value ?? "";
@@ -145,7 +143,6 @@ namespace FileService.Controllers
                 }
                 await _fileService.DeleteFileAsync(fileName);
 
-                // Get user info from JWT token
                 var userEmailClaim = User.FindFirst(ClaimTypes.Email) ?? User.FindFirst("email");
                 var userNameClaim = User.FindFirst(JwtRegisteredClaimNames.Name);
                 var userEmail = userEmailClaim?.Value ?? "";

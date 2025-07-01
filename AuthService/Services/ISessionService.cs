@@ -19,5 +19,10 @@ namespace AuthService.Services
         Task StoreResetTokenAsync(string token, Guid userId, TimeSpan expiry);
         Task<Guid?> GetUserIdFromResetTokenAsync(string token);
         Task RemoveResetTokenAsync(string token);
+        Task<bool> IsUserLockedAsync(Guid userId);
+        Task<DateTime?> GetUserLockExpiryAsync(Guid userId);
+        Task LockUserAsync(Guid userId, DateTime lockExpiry);
+        Task<int> IncrementFailedLoginAttemptsAsync(Guid userId);
+        Task ResetFailedLoginAttemptsAsync(Guid userId);
     }
 } 
