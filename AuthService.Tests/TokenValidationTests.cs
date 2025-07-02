@@ -29,13 +29,17 @@ namespace AuthService.Tests
             _mockPasswordService = new Mock<IPasswordService>();
             _mockConfig = new Mock<IConfiguration>();
 
+            _mockConfig.Setup(c => c["AuthPolicy:MaxFailedLoginAttempts"]).Returns("3");
+            _mockConfig.Setup(c => c["AuthPolicy:AccountLockMinutes"]).Returns("5");
+            _mockConfig.Setup(c => c["AuthPolicy:ResetPasswordTokenExpiryMinutes"]).Returns("15");
             _authService = new AuthService.Services.AuthService(
                 _mockUserRepo.Object,
                 _mockSessionService.Object,
                 _mockJwtService.Object,
                 _mockPasswordService.Object,
                 _logger,
-                _emailMessageServiceMock.Object
+                _emailMessageServiceMock.Object,
+                _mockConfig.Object
             );
         }
 
@@ -98,13 +102,13 @@ namespace AuthService.Tests
             // Arrange
             var token = "test.jwt.token";
             var userId = Guid.NewGuid();
+            var user = new User { Id = userId, Email = "test@example.com", Username = "testuser" };
 
             _mockSessionService.Setup(x => x.IsTokenBlacklistedAsync(token)).ReturnsAsync(false);
             _mockSessionService.Setup(x => x.IsTokenActiveAsync(token)).ReturnsAsync(true);
             _mockJwtService.Setup(x => x.ValidateToken(token)).Returns(true);
             _mockJwtService.Setup(x => x.GetUserIdFromToken(token)).Returns(userId);
-            _mockSessionService.Setup(x => x.GetUserIdFromActiveTokenAsync(token)).ReturnsAsync(userId);
-            _mockSessionService.Setup(x => x.IsUserLoggedInAsync(userId)).ReturnsAsync(true);
+            _mockUserRepo.Setup(x => x.GetByIdAsync(userId)).ReturnsAsync(user);
 
             // Act
             var result = await _authService.ValidateTokenAsync(token);

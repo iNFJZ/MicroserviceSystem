@@ -20,6 +20,16 @@ namespace EmailService
         private IModel _channel;
         private string _smtpUser;
         private string _smtpPass;
+        private readonly string _smtpHost;
+        private readonly int _smtpPort;
+        private readonly bool _smtpEnableSsl;
+        private readonly int _resetTokenExpiryMinutes;
+        private readonly string _registerSubject;
+        private readonly string _fileUploadSubject;
+        private readonly string _fileDownloadSubject;
+        private readonly string _fileDeleteSubject;
+        private readonly string _resetPasswordSubject;
+        private readonly string _changePasswordSubject;
 
         public Worker(ILogger<Worker> logger, IConfiguration config)
         {
@@ -27,10 +37,20 @@ namespace EmailService
             _config = config;
             _smtpUser = _config["Smtp:User"];
             _smtpPass = _config["Smtp:Password"];
-            InitRabbitMQ();
+            _smtpHost = _config["Smtp:Host"] ?? "smtp.gmail.com";
+            _smtpPort = int.Parse(_config["Smtp:Port"] ?? "587");
+            _smtpEnableSsl = bool.Parse(_config["Smtp:EnableSsl"] ?? "true");
+            _resetTokenExpiryMinutes = int.Parse(_config["EmailPolicy:ResetTokenExpiryMinutes"] ?? "15");
+            _registerSubject = _config["EmailPolicy:RegisterSubject"] ?? "Welcome to Microservice System!";
+            _fileUploadSubject = _config["EmailPolicy:FileUploadSubject"] ?? "File Uploaded Successfully";
+            _fileDownloadSubject = _config["EmailPolicy:FileDownloadSubject"] ?? "File Download Notification";
+            _fileDeleteSubject = _config["EmailPolicy:FileDeleteSubject"] ?? "File Deleted Successfully";
+            _resetPasswordSubject = _config["EmailPolicy:ResetPasswordSubject"] ?? "Password Reset Request - Microservice System";
+            _changePasswordSubject = _config["EmailPolicy:ChangePasswordSubject"] ?? "Password Changed Successfully - Microservice System";
+            Task.Run(() => InitRabbitMQ()).GetAwaiter().GetResult();
         }
 
-        private void InitRabbitMQ()
+        private async Task InitRabbitMQ()
         {
             var factory = new ConnectionFactory
             {
@@ -62,7 +82,7 @@ namespace EmailService
                         _logger.LogError(ex, "Max retry reached. Could not connect to RabbitMQ.");
                         throw;
                     }
-                    Thread.Sleep(delaySeconds * 1000);
+                    await Task.Delay(delaySeconds * 1000);
                 }
             }
         }
@@ -146,7 +166,7 @@ namespace EmailService
             var vnTime = TimeZoneInfo.ConvertTimeFromUtc(registerAt, GetVietnamTimeZone());
             var mail = new MailMessage();
             mail.To.Add(emailEvent.To);
-            mail.Subject = "Welcome to Microservice System!";
+            mail.Subject = _registerSubject;
             mail.Body = $"Welcome to Microservice System, {emailEvent.Username}!\n\n" +
                         "Thank you for registering with our service. Your account has been successfully created.\n\n" +
                         "You can now:\n" +
@@ -159,10 +179,10 @@ namespace EmailService
             mail.From = new MailAddress(_smtpUser, "Microservice System");
             try
             {
-                using var smtp = new SmtpClient("smtp.gmail.com", 587)
+                using var smtp = new SmtpClient(_smtpHost, _smtpPort)
                 {
                     Credentials = new System.Net.NetworkCredential(_smtpUser, _smtpPass),
-                    EnableSsl = true
+                    EnableSsl = _smtpEnableSsl
                 };
                 smtp.Send(mail);
                 _logger.LogInformation($"Successfully sent register mail to {emailEvent.To}");
@@ -184,7 +204,7 @@ namespace EmailService
             switch (emailEvent.EventType?.ToLowerInvariant())
             {
                 case "upload":
-                    mail.Subject = "File Uploaded Successfully";
+                    mail.Subject = _fileUploadSubject;
                     mail.Body = $"Hello {emailEvent.Username},\n\n" +
                                 $"Your file '{emailEvent.FileName}' has been uploaded successfully at {vnTime:yyyy-MM-dd HH:mm:ss} (Vietnam Time).\n\n" +
                                 "You can now manage your files, download, or delete them anytime using our file management service.\n\n" +
@@ -192,7 +212,7 @@ namespace EmailService
                                 "Best regards,\nMicroservice System Team";
                     break;
                 case "download":
-                    mail.Subject = "File Download Notification";
+                    mail.Subject = _fileDownloadSubject;
                     mail.Body = $"Hello {emailEvent.Username},\n\n" +
                                 $"You have successfully downloaded the file '{emailEvent.FileName}' at {vnTime:yyyy-MM-dd HH:mm:ss} (Vietnam Time).\n\n" +
                                 "If you did not perform this action, please review your account activity for security.\n\n" +
@@ -200,7 +220,7 @@ namespace EmailService
                                 "Best regards,\nMicroservice System Team";
                     break;
                 case "delete":
-                    mail.Subject = "File Deleted Successfully";
+                    mail.Subject = _fileDeleteSubject;
                     mail.Body = $"Hello {emailEvent.Username},\n\n" +
                                 $"Your file '{emailEvent.FileName}' has been deleted successfully at {vnTime:yyyy-MM-dd HH:mm:ss} (Vietnam Time).\n\n" +
                                 "If you did not perform this action, please check your account activity or contact support.\n\n" +
@@ -217,10 +237,10 @@ namespace EmailService
             }
             try
             {
-                using var smtp = new SmtpClient("smtp.gmail.com", 587)
+                using var smtp = new SmtpClient(_smtpHost, _smtpPort)
                 {
                     Credentials = new System.Net.NetworkCredential(_smtpUser, _smtpPass),
-                    EnableSsl = true
+                    EnableSsl = _smtpEnableSsl
                 };
                 smtp.Send(mail);
                 _logger.LogInformation($"Successfully sent {emailEvent.EventType} mail to {emailEvent.To}");
@@ -238,12 +258,12 @@ namespace EmailService
             var vnTime = TimeZoneInfo.ConvertTimeFromUtc(requestedAt, GetVietnamTimeZone());
             var mail = new MailMessage();
             mail.To.Add(emailEvent.To);
-            mail.Subject = "Password Reset Request - Microservice System";
+            mail.Subject = _resetPasswordSubject;
             mail.Body = $"Hello {emailEvent.Username},\n\n" +
                         "We received a request to reset your password for your Microservice System account.\n\n" +
                         "Your password reset token is:\n" +
                         $"{emailEvent.ResetToken}\n\n" +
-                        "Please use this token to reset your password. This token will expire in 15 minutes.\n\n" +
+                        "Please use this token to reset your password. This token will expire in {_resetTokenExpiryMinutes} minutes.\n\n" +
                         "If you did not request this password reset, please ignore this email or contact support immediately.\n\n" +
                         $"Request made at: {vnTime:yyyy-MM-dd HH:mm:ss} (Vietnam Time)\n\n" +
                         "To reset your password, use the following API endpoint:\n" +
@@ -255,10 +275,10 @@ namespace EmailService
             mail.From = new MailAddress(_smtpUser, "Microservice System");
             try
             {
-                using var smtp = new SmtpClient("smtp.gmail.com", 587)
+                using var smtp = new SmtpClient(_smtpHost, _smtpPort)
                 {
                     Credentials = new System.Net.NetworkCredential(_smtpUser, _smtpPass),
-                    EnableSsl = true
+                    EnableSsl = _smtpEnableSsl
                 };
                 smtp.Send(mail);
                 _logger.LogInformation($"Successfully sent reset password mail to {emailEvent.To}");
@@ -276,7 +296,7 @@ namespace EmailService
             var vnTime = TimeZoneInfo.ConvertTimeFromUtc(changeAt, GetVietnamTimeZone());
             var mail = new MailMessage();
             mail.To.Add(emailEvent.To);
-            mail.Subject = "Password Changed Successfully - Microservice System";
+            mail.Subject = _changePasswordSubject;
             mail.Body = $"Hello {emailEvent.Username},\n\n" +
                         "Your password has been successfully changed for your Microservice System account.\n\n" +
                         "If you did not request this password change, please contact support immediately.\n\n" +
@@ -287,10 +307,10 @@ namespace EmailService
             mail.From = new MailAddress(_smtpUser, "Microservice System");
             try
             {
-                using var smtp = new SmtpClient("smtp.gmail.com", 587)
+                using var smtp = new SmtpClient(_smtpHost, _smtpPort)
                 {
                     Credentials = new System.Net.NetworkCredential(_smtpUser, _smtpPass),
-                    EnableSsl = true
+                    EnableSsl = _smtpEnableSsl
                 };
                 smtp.Send(mail);
                 _logger.LogInformation($"Successfully sent change password mail to {emailEvent.To}");

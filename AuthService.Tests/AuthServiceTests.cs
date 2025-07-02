@@ -33,6 +33,9 @@ public class AuthServiceTests
         _configMock.Setup(c => c["JwtSettings:Key"]).Returns("supersecretkeysupersecretkey123456");
         _configMock.Setup(c => c["JwtSettings:Issuer"]).Returns("issuer");
         _configMock.Setup(c => c["JwtSettings:Audience"]).Returns("audience");
+        _configMock.Setup(c => c["AuthPolicy:MaxFailedLoginAttempts"]).Returns("3");
+        _configMock.Setup(c => c["AuthPolicy:AccountLockMinutes"]).Returns("5");
+        _configMock.Setup(c => c["AuthPolicy:ResetPasswordTokenExpiryMinutes"]).Returns("15");
         
         _authService = new AuthService.Services.AuthService(
             _userRepoMock.Object, 
@@ -40,7 +43,8 @@ public class AuthServiceTests
             _jwtServiceMock.Object, 
             _passwordServiceMock.Object,
             _logger,
-            _emailMessageServiceMock.Object
+            _emailMessageServiceMock.Object,
+            _configMock.Object
         );
     }
 

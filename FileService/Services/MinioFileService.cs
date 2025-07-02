@@ -73,7 +73,6 @@ namespace FileService.Services
             var listObjectsArgs = new ListObjectsArgs()
                 .WithBucket(_bucketName)
                 .WithRecursive(true);
-            
             var objects = _minioClient.ListObjectsAsync(listObjectsArgs);
             var tcs = new TaskCompletionSource<bool>();
             objects.Subscribe(
@@ -82,14 +81,7 @@ namespace FileService.Services
                     FileUrl = $"/files/{item.Key}",
                     FileSize = (long)item.Size,
                     ContentType = string.Empty,
-                    // Để lưu thông tin người upload (username/email) vào trường UploadedBy,
-                    // bạn cần truyền thông tin này khi upload file (ví dụ: từ token JWT lấy username/email).
-                    // Sau đó, bạn có thể lưu thông tin này vào metadata của object trên MinIO.
-                    // Khi liệt kê file, bạn lấy metadata ra để gán vào UploadedBy.
-                    // Ví dụ (giả sử đã lấy được metadata "uploaded-by"):
-                    UploadedBy = item.UserMetadata != null && item.UserMetadata.ContainsKey("uploaded-by")
-                        ? item.UserMetadata["uploaded-by"]
-                        : string.Empty,
+                    UploadedBy = string.Empty,
                     UploadedAt = item.LastModified.ToString()
                 }),
                 ex => tcs.SetException(ex),

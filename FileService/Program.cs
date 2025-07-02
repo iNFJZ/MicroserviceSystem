@@ -141,7 +141,6 @@ builder.Services.AddScoped<IFileService, MinioFileService>();
 
 // Configure RabbitMQ
 // builder.Services.Configure<RabbitMQOptions>(builder.Configuration.GetSection("RabbitMQ"));
-builder.Services.AddScoped<IFileEventConsumer, FileEventConsumer>();
 builder.Services.AddScoped<IFileValidationService, FileValidationService>();
 builder.Services.AddScoped<IEmailMessageService, EmailMessageService>();
 
@@ -152,13 +151,6 @@ builder.Services.AddHttpClient("AuthService", client =>
 });
 
 var app = builder.Build();
-
-// Start the file event consumer in a background service
-using (var scope = app.Services.CreateScope())
-{
-    var consumer = scope.ServiceProvider.GetRequiredService<IFileEventConsumer>();
-    consumer.StartConsuming();
-}
 
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())

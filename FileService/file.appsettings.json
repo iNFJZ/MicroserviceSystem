@@ -21,12 +21,5 @@
     "SecretKey": "minio123",
     "BucketName": "mybucket",
     "UseSSL": false
-  },
-  "RabbitMQ": {
-    "HostName": "rabbitmq",
-    "Port": 5672,
-    "UserName": "guest",
-    "Password": "guest",
-    "VirtualHost": "/"
   }
 }

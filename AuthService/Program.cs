@@ -49,7 +49,6 @@ builder.Services.AddDbContext<DBContext>(options =>
 
 // Register services
 builder.Services.AddScoped<IUserRepository, UserRepository>();
-builder.Services.AddScoped<IAuthService, AuthService.Services.AuthService>();
 builder.Services.AddScoped<ICacheService, RedisService>();
 builder.Services.AddScoped<IHashService, RedisService>();
 builder.Services.AddScoped<IRedisKeyService, RedisService>();
@@ -107,6 +106,18 @@ builder.Services.AddSwaggerGen(c =>
 
 builder.Services.AddGrpc();
 
+builder.Services.AddScoped<IAuthService, AuthService.Services.AuthService>(sp =>
+    new AuthService.Services.AuthService(
+        sp.GetRequiredService<IUserRepository>(),
+        sp.GetRequiredService<ISessionService>(),
+        sp.GetRequiredService<IJwtService>(),
+        sp.GetRequiredService<IPasswordService>(),
+        sp.GetRequiredService<ILogger<AuthService.Services.AuthService>>(),
+        sp.GetRequiredService<IEmailMessageService>(),
+        sp.GetRequiredService<IConfiguration>()
+    )
+);
+
 var app = builder.Build();
 
 // Auto migrate database
@@ -116,11 +127,10 @@ using (var scope = app.Services.CreateScope())
     try
     {
         context.Database.Migrate();
-        Console.WriteLine("Database migration completed successfully.");
     }
     catch (Exception ex)
     {
-        Console.WriteLine($"Database migration failed: {ex.Message}");
+        // Log the exception
     }
 }
 

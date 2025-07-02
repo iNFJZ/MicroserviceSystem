@@ -16,7 +16,6 @@ namespace GrpcGreeter.Services
 
         public override Task<SendEmailResponse> SendEmail(SendEmailRequest request, ServerCallContext context)
         {
-            _logger.LogInformation("Mock SendEmail: {To}, Subject: {Subject}", request.To, request.Subject);
             return Task.FromResult(new SendEmailResponse
             {
                 Success = true,
@@ -27,7 +26,6 @@ namespace GrpcGreeter.Services
 
         public override Task<SendEmailResponse> SendRegistrationNotification(RegistrationNotificationRequest request, ServerCallContext context)
         {
-            _logger.LogInformation("Mock SendRegistrationNotification: {Email}", request.Email);
             return Task.FromResult(new SendEmailResponse
             {
                 Success = true,
@@ -38,7 +36,6 @@ namespace GrpcGreeter.Services
 
         public override Task<SendEmailResponse> SendPasswordResetEmail(PasswordResetRequest request, ServerCallContext context)
         {
-            _logger.LogInformation("Mock SendPasswordResetEmail: {Email}", request.Email);
             return Task.FromResult(new SendEmailResponse
             {
                 Success = true,
@@ -49,7 +46,6 @@ namespace GrpcGreeter.Services
 
         public override Task<SendEmailResponse> SendChangePasswordNotification(ChangePasswordNotificationRequest request, ServerCallContext context)
         {
-            _logger.LogInformation("Mock SendChangePasswordNotification: {Email}", request.Email);
             return Task.FromResult(new SendEmailResponse
             {
                 Success = true,
@@ -60,7 +56,6 @@ namespace GrpcGreeter.Services
 
         public override Task<SendEmailResponse> SendFileEventNotification(FileEventNotificationRequest request, ServerCallContext context)
         {
-            _logger.LogInformation("Mock SendFileEventNotification: {Email}, Event: {EventType}", request.Email, request.EventType);
             return Task.FromResult(new SendEmailResponse
             {
                 Success = true,

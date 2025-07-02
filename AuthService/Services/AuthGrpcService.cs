@@ -21,12 +21,11 @@ namespace AuthService.Services
         {
             try
             {
-                // Chuyển đổi request sang DTO nếu cần
                 var token = await _authService.RegisterAsync(new DTOs.RegisterDto
                 {
                     Email = request.Email,
                     Password = request.Password,
-                    Username = request.Email // hoặc request.Username nếu proto có
+                    Username = request.Email
                 });
                 return new RegisterResponse { Success = true, Message = "Register successful" };
             }
