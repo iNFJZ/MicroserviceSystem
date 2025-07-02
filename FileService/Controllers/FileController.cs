@@ -96,7 +96,7 @@ namespace FileService.Controllers
             try
             {
                 var files = await _fileService.ListFilesAsync();
-                if (!files.Contains(fileName))
+                if (!files.Any(f => f.FileName == fileName))
                 {
                     return NotFound(new { message = $"File '{fileName}' not found" });
                 }
@@ -156,7 +156,7 @@ namespace FileService.Controllers
             try
             {
                 var files = await _fileService.ListFilesAsync();
-                if (!files.Contains(fileName))
+                if (!files.Any(f => f.FileName == fileName))
                 {
                     return NotFound(new { message = $"File '{fileName}' not found" });
                 }
@@ -192,6 +192,21 @@ namespace FileService.Controllers
             {
                 _logger.LogError(ex, "Error deleting file: {FileName}", fileName);
                 return StatusCode(500, "Error deleting file");
+            }
+        }
+
+        [HttpGet("get-file-info/{fileName}")]
+        public async Task<IActionResult> GetFileInfo(string fileName)
+        {
+            try
+            {
+                var fileInfo = await _fileService.GetFileInfoAsync(fileName);
+                return Ok(fileInfo);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error getting file info: {FileName}", fileName);
+                return StatusCode(500, "Error getting file info");
             }
         }
     }

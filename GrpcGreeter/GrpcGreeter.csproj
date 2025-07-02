@@ -7,9 +7,9 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <Protobuf Include="Protos\auth.proto" GrpcServices="Server" />
-    <Protobuf Include="Protos\file.proto" GrpcServices="Server" />
-    <Protobuf Include="Protos\email.proto" GrpcServices="Server" />
+    <Protobuf Include="Protos\auth.proto" GrpcServices="Both" />
+    <Protobuf Include="Protos\file.proto" GrpcServices="Both" />
+    <Protobuf Include="Protos\email.proto" GrpcServices="Both" />
   </ItemGroup>
 
   <ItemGroup>
@@ -21,11 +21,13 @@
     <PackageReference Include="StackExchange.Redis" Version="2.7.17" />
     <PackageReference Include="System.IdentityModel.Tokens.Jwt" Version="8.3.0" />
     <PackageReference Include="BCrypt.Net-Next" Version="4.0.3" />
+    <PackageReference Include="Grpc.Net.Client" Version="2.71.0" />
+    <PackageReference Include="Google.Protobuf" Version="3.31.1" />
+    <PackageReference Include="Grpc.Tools" Version="2.71.0" PrivateAssets="All" />
   </ItemGroup>
 
   <ItemGroup>
     <ProjectReference Include="../FileService/FileService.csproj" />
-    <ProjectReference Include="../AuthService/AuthService.csproj" />
   </ItemGroup>
 
   <ItemGroup>

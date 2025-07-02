@@ -36,9 +36,9 @@ service AuthService {
 
 // Request/Response messages for authentication
 message RegisterRequest {
-  string email = 1;
-  string password = 2;
-  string fullName = 3;
+  string username = 1;
+  string email = 2;
+  string password = 3;
 }
 
 message RegisterResponse {
@@ -101,8 +101,7 @@ message GetUserSessionsResponse {
 }
 
 message RemoveUserSessionRequest {
-  string userId = 1;
-  string sessionId = 2;
+  string sessionId = 1;
 }
 
 message RemoveUserSessionResponse {
@@ -120,9 +119,9 @@ message ForgotPasswordResponse {
 }
 
 message ResetPasswordRequest {
-  string email = 1;
+  string token = 1;
   string newPassword = 2;
-  string resetToken = 3;
+  string confirmPassword = 3;
 }
 
 message ResetPasswordResponse {
@@ -131,9 +130,9 @@ message ResetPasswordResponse {
 }
 
 message ChangePasswordRequest {
-  string userId = 1;
-  string oldPassword = 2;
-  string newPassword = 3;
+  string currentPassword = 1;
+  string newPassword = 2;
+  string confirmPassword = 3;
 }
 
 message ChangePasswordResponse {

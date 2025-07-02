@@ -42,6 +42,10 @@ builder.WebHost.ConfigureKestrel(options =>
     {
         listenOptions.Protocols = Microsoft.AspNetCore.Server.Kestrel.Core.HttpProtocols.Http2;
     });
+    options.ListenAnyIP(5004, listenOptions =>
+    {
+        listenOptions.Protocols = Microsoft.AspNetCore.Server.Kestrel.Core.HttpProtocols.Http2;
+    });
 });
 
 // Add JWT Authentication
@@ -66,6 +70,7 @@ builder.Services.AddAuthorization();
 // Add services to the container.
 // Learn more about configuring OpenAPI at https://aka.ms/aspnet/openapi
 builder.Services.AddControllers();
+builder.Services.AddGrpc();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen(c =>
 {
@@ -165,13 +170,12 @@ if (app.Environment.IsDevelopment())
 app.UseHttpsRedirection();
 app.UseCors("AllowAll");
 
-// Add authentication and authorization middleware first
 app.UseAuthentication();
 app.UseAuthorization();
 
-// Add custom token validation middleware after authentication
 app.UseTokenValidation();
 
 app.MapControllers();
+app.MapGrpcService<FileService.Services.FileGrpcService>();
 
 app.Run();

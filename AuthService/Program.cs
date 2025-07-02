@@ -11,7 +11,6 @@ using System.Text;
 using Microsoft.OpenApi.Models;
 var builder = WebApplication.CreateBuilder(args);
 
-// Configure Kestrel to listen on port 80 for Docker and 5000 for HTTP/1.1 and 5001 for HTTP/2
 builder.WebHost.ConfigureKestrel(options =>
 {
     options.ListenAnyIP(80);
@@ -22,6 +21,10 @@ builder.WebHost.ConfigureKestrel(options =>
     options.ListenAnyIP(5001, listenOptions =>
     {
         listenOptions.Protocols = Microsoft.AspNetCore.Server.Kestrel.Core.HttpProtocols.Http1AndHttp2;
+    });
+    options.ListenAnyIP(5003, listenOptions =>
+    {
+        listenOptions.Protocols = Microsoft.AspNetCore.Server.Kestrel.Core.HttpProtocols.Http2;
     });
 });
 
@@ -133,6 +136,6 @@ app.UseMiddleware<StrictAuthValidationMiddleware>();
 app.UseAuthentication();
 app.UseAuthorization();
 app.MapControllers();
-app.MapGrpcService<AuthService.Services.GrpcAuthService>();
+app.MapGrpcService<AuthService.Services.AuthGrpcService>();
 
 app.Run();

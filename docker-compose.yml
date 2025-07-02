@@ -62,6 +62,7 @@ services:
     working_dir: /app/AuthService
     ports:
       - "5001:80"
+      - "5003:5003"
     environment:
       - ASPNETCORE_ENVIRONMENT=Development
       - ConnectionStrings__DefaultConnection=Host=postgres;Port=5432;Database=auth_db;Username=postgres;Password=123456
@@ -83,6 +84,7 @@ services:
     working_dir: /app/FileService
     ports:
       - "5002:80"
+      - "5004:5004"
     environment:
       - AuthService__Url=http://auth-service:5001
       - Minio__Endpoint=minio:9000
@@ -148,6 +150,8 @@ services:
       - "5219:5219"
     environment:
       - ASPNETCORE_ENVIRONMENT=Development
+      - GrpcEndpoints__AuthService=http://auth-service:5003
+      - GrpcEndpoints__FileService=http://file-service:5004
     networks:
       - microservice-network
     command: dotnet GrpcGreeter.dll

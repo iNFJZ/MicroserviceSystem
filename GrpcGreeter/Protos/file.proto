@@ -25,8 +25,8 @@ service FileService {
 // Request/Response messages for file operations
 message UploadFileRequest {
   string fileName = 1;
-  bytes fileData = 2;
-  string contentType = 3;
+  string contentType = 2;
+  bytes fileData = 3;
   string userId = 4;
 }
 
@@ -40,7 +40,7 @@ message UploadFileResponse {
 }
 
 message DownloadFileRequest {
-  string fileId = 1;
+  string fileName = 1;
   string userId = 2;
 }
 
@@ -53,7 +53,7 @@ message DownloadFileResponse {
 }
 
 message DeleteFileRequest {
-  string fileId = 1;
+  string fileName = 1;
   string userId = 2;
 }
 
@@ -63,7 +63,7 @@ message DeleteFileResponse {
 }
 
 message GetFileInfoRequest {
-  string fileId = 1;
+  string fileName = 1;
   string userId = 2;
 }
 
@@ -74,14 +74,12 @@ message GetFileInfoResponse {
 }
 
 message FileInfo {
-  string fileId = 1;
-  string fileName = 2;
-  string fileUrl = 3;
-  int64 fileSize = 4;
-  string contentType = 5;
-  string uploadedBy = 6;
-  string uploadedAt = 7;
-  string lastModified = 8;
+  string fileName = 1;
+  string fileUrl = 2;
+  int64 fileSize = 3;
+  string contentType = 4;
+  string uploadedBy = 5;
+  string uploadedAt = 6;
 }
 
 message ListFilesRequest {
