@@ -7,6 +7,7 @@ using System.Security.Cryptography;
 using System.IdentityModel.Tokens.Jwt;
 using Microsoft.IdentityModel.Tokens;
 using System.Text;
+using Microsoft.Extensions.Configuration;
 
 namespace AuthService.Services
 {
@@ -18,6 +19,10 @@ namespace AuthService.Services
         private readonly IPasswordService _passwordService;
         private readonly ILogger<AuthService> _logger;
         private readonly IEmailMessageService _emailMessageService;
+        private readonly IConfiguration _config;
+        private readonly int _maxFailedLoginAttempts;
+        private readonly int _accountLockMinutes;
+        private readonly int _resetPasswordTokenExpiryMinutes;
 
         public AuthService(
             IUserRepository repo, 
@@ -25,7 +30,8 @@ namespace AuthService.Services
             IJwtService jwtService,
             IPasswordService passwordService,
             ILogger<AuthService> logger,
-            IEmailMessageService emailMessageService)
+            IEmailMessageService emailMessageService,
+            IConfiguration config)
         {
             _repo = repo;
             _sessionService = sessionService;
@@ -33,6 +39,10 @@ namespace AuthService.Services
             _passwordService = passwordService;
             _logger = logger;
             _emailMessageService = emailMessageService;
+            _config = config;
+            _maxFailedLoginAttempts = int.Parse(_config["AuthPolicy:MaxFailedLoginAttempts"] ?? "3");
+            _accountLockMinutes = int.Parse(_config["AuthPolicy:AccountLockMinutes"] ?? "5");
+            _resetPasswordTokenExpiryMinutes = int.Parse(_config["AuthPolicy:ResetPasswordTokenExpiryMinutes"] ?? "15");
         }
 
         public async Task<string> RegisterAsync(RegisterDto dto)
@@ -95,11 +105,11 @@ namespace AuthService.Services
             {
                 var failedAttempts = await _sessionService.IncrementFailedLoginAttemptsAsync(user.Id);
                 
-                if (failedAttempts >= 3)
+                if (failedAttempts >= _maxFailedLoginAttempts)
                 {
-                    var lockExpiry = DateTime.UtcNow.AddMinutes(5);
+                    var lockExpiry = DateTime.UtcNow.AddMinutes(_accountLockMinutes);
                     await _sessionService.LockUserAsync(user.Id, lockExpiry);
-                    throw new UserLockedException("Account locked due to 3 failed login attempts. Please try again in 5 minutes.");
+                    throw new UserLockedException($"Account locked due to {_maxFailedLoginAttempts} failed login attempts. Please try again in {_accountLockMinutes} minutes.");
                 }
                 
                 throw new InvalidCredentialsException();
@@ -164,19 +174,9 @@ namespace AuthService.Services
                 if (!isActiveToken)
                     return false;
 
-                var tokenHandler = new JwtSecurityTokenHandler();
-                var key = Encoding.UTF8.GetBytes("thisismyverystrongsecretkey1234567890");
-                tokenHandler.ValidateToken(token, new TokenValidationParameters
-                {
-                    ValidateIssuerSigningKey = true,
-                    IssuerSigningKey = new SymmetricSecurityKey(key),
-                    ValidateIssuer = true,
-                    ValidIssuer = "http://localhost:5001",
-                    ValidateAudience = true,
-                    ValidAudience = "http://localhost:5001",
-                    ValidateLifetime = true,
-                    ClockSkew = TimeSpan.FromMinutes(2)
-                }, out var validatedToken);
+                if (!_jwtService.ValidateToken(token))
+                    return false;
+
                 return true;
             }
             catch
@@ -205,7 +205,7 @@ namespace AuthService.Services
             }
 
             var resetToken = GenerateResetToken();
-            var tokenExpiry = TimeSpan.FromMinutes(15);
+            var tokenExpiry = TimeSpan.FromMinutes(_resetPasswordTokenExpiryMinutes);
 
             await _sessionService.StoreResetTokenAsync(resetToken, user.Id, tokenExpiry);
 
