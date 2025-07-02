@@ -8,7 +8,7 @@ EXPOSE 443
 FROM mcr.microsoft.com/dotnet/sdk:8.0 AS build
 WORKDIR /src
 
-# Copy solution và project files trước
+# Copy solution and project files
 COPY MicroserviceSystem.sln ./
 COPY AuthService/AuthService.csproj AuthService/
 COPY FileService/FileService.csproj FileService/
@@ -16,7 +16,7 @@ COPY GatewayApi/GatewayApi.csproj GatewayApi/
 COPY EmailService/EmailService.csproj EmailService/
 COPY GrpcGreeter/GrpcGreeter.csproj GrpcGreeter/
 
-# Restore từng project thực thi
+# Restore each project
 RUN dotnet restore "AuthService/AuthService.csproj"
 RUN dotnet restore "FileService/FileService.csproj"
 RUN dotnet restore "GatewayApi/GatewayApi.csproj"
@@ -30,21 +30,21 @@ COPY GatewayApi/. GatewayApi/
 COPY EmailService/. EmailService/
 COPY GrpcGreeter/. GrpcGreeter/
 
-# Build từng project thực thi
+# Build each project
 RUN dotnet build "AuthService/AuthService.csproj" -c Release --no-restore
 RUN dotnet build "FileService/FileService.csproj" -c Release --no-restore
 RUN dotnet build "GatewayApi/GatewayApi.csproj" -c Release --no-restore
 RUN dotnet build "EmailService/EmailService.csproj" -c Release --no-restore
 RUN dotnet build "GrpcGreeter/GrpcGreeter.csproj" -c Release --no-restore
 
-# Publish từng project thực thi
+# Publish each project
 RUN dotnet publish "AuthService/AuthService.csproj" -c Release -o /app/publish/AuthService
 RUN dotnet publish "FileService/FileService.csproj" -c Release -o /app/publish/FileService
 RUN dotnet publish "GatewayApi/GatewayApi.csproj" -c Release -o /app/publish/GatewayApi
 RUN dotnet publish "EmailService/EmailService.csproj" -c Release -o /app/publish/EmailService
 RUN dotnet publish "GrpcGreeter/GrpcGreeter.csproj" -c Release -o /app/publish/GrpcGreeter
 
-# Final stage
+# Final stage: Copy published applications and configuration files
 FROM base AS final
 WORKDIR /app
 

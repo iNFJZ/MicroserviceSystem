@@ -1,16 +1,25 @@
 using GrpcGreeter.Services;
 using FileService.Services;
 using FileService.Models;
-using AuthService.Services;
 using Grpc.AspNetCore.Server;
 
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
+builder.Services.AddControllers();
 builder.Services.AddGrpc();
 builder.Services.Configure<FileService.Models.MinioOptions>(builder.Configuration.GetSection("Minio"));
 builder.Services.AddScoped<IFileService, FileService.Services.MinioFileService>();
 builder.Services.AddGrpcReflection();
+builder.Services.AddGrpcClient<GrpcGreeter.AuthService.AuthServiceClient>(o =>
+{
+    o.Address = new Uri(builder.Configuration["GrpcEndpoints:AuthService"]);
+});
+builder.Services.AddGrpcClient<GrpcGreeter.FileService.FileServiceClient>(o =>
+{
+    o.Address = new Uri(builder.Configuration["GrpcEndpoints:FileService"]);
+});
+
 
 builder.WebHost.ConfigureKestrel(options =>
 {
@@ -23,9 +32,10 @@ builder.WebHost.ConfigureKestrel(options =>
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.
+app.MapControllers();
 app.MapGrpcService<SimpleFileGrpcService>();
 app.MapGrpcService<SimpleEmailGrpcService>();
-app.MapGrpcService<GrpcAuthService>();
+app.MapGrpcService<SimpleAuthGrpcService>();
 
 if (app.Environment.IsDevelopment())
 {
