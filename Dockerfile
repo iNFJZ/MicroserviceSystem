@@ -8,7 +8,7 @@ EXPOSE 443
 FROM mcr.microsoft.com/dotnet/sdk:8.0 AS build
 WORKDIR /src
 
-# Copy solution and project files
+# Copy solution and all project files first
 COPY MicroserviceSystem.sln ./
 COPY AuthService/AuthService.csproj AuthService/
 COPY FileService/FileService.csproj FileService/
@@ -16,33 +16,29 @@ COPY GatewayApi/GatewayApi.csproj GatewayApi/
 COPY EmailService/EmailService.csproj EmailService/
 COPY GrpcGreeter/GrpcGreeter.csproj GrpcGreeter/
 
-# Restore each project
-RUN dotnet restore "AuthService/AuthService.csproj"
-RUN dotnet restore "FileService/FileService.csproj"
-RUN dotnet restore "GatewayApi/GatewayApi.csproj"
-RUN dotnet restore "EmailService/EmailService.csproj"
-RUN dotnet restore "GrpcGreeter/GrpcGreeter.csproj"
+# Restore dependencies for all projects
+RUN dotnet restore "AuthService/AuthService.csproj" && \
+    dotnet restore "FileService/FileService.csproj" && \
+    dotnet restore "GatewayApi/GatewayApi.csproj" && \
+    dotnet restore "EmailService/EmailService.csproj" && \
+    dotnet restore "GrpcGreeter/GrpcGreeter.csproj"
 
-# Copy source code
-COPY AuthService/. AuthService/
-COPY FileService/. FileService/
-COPY GatewayApi/. GatewayApi/
-COPY EmailService/. EmailService/
-COPY GrpcGreeter/. GrpcGreeter/
+# Copy the rest of the source code
+COPY . .
 
-# Build each project
-RUN dotnet build "AuthService/AuthService.csproj" -c Release --no-restore
-RUN dotnet build "FileService/FileService.csproj" -c Release --no-restore
-RUN dotnet build "GatewayApi/GatewayApi.csproj" -c Release --no-restore
-RUN dotnet build "EmailService/EmailService.csproj" -c Release --no-restore
-RUN dotnet build "GrpcGreeter/GrpcGreeter.csproj" -c Release --no-restore
+# Build all projects
+RUN dotnet build "AuthService/AuthService.csproj" -c Release --no-restore && \
+    dotnet build "FileService/FileService.csproj" -c Release --no-restore && \
+    dotnet build "GatewayApi/GatewayApi.csproj" -c Release --no-restore && \
+    dotnet build "EmailService/EmailService.csproj" -c Release --no-restore && \
+    dotnet build "GrpcGreeter/GrpcGreeter.csproj" -c Release --no-restore
 
-# Publish each project
-RUN dotnet publish "AuthService/AuthService.csproj" -c Release -o /app/publish/AuthService
-RUN dotnet publish "FileService/FileService.csproj" -c Release -o /app/publish/FileService
-RUN dotnet publish "GatewayApi/GatewayApi.csproj" -c Release -o /app/publish/GatewayApi
-RUN dotnet publish "EmailService/EmailService.csproj" -c Release -o /app/publish/EmailService
-RUN dotnet publish "GrpcGreeter/GrpcGreeter.csproj" -c Release -o /app/publish/GrpcGreeter
+# Publish all projects
+RUN dotnet publish "AuthService/AuthService.csproj" -c Release -o /app/publish/AuthService && \
+    dotnet publish "FileService/FileService.csproj" -c Release -o /app/publish/FileService && \
+    dotnet publish "GatewayApi/GatewayApi.csproj" -c Release -o /app/publish/GatewayApi && \
+    dotnet publish "EmailService/EmailService.csproj" -c Release -o /app/publish/EmailService && \
+    dotnet publish "GrpcGreeter/GrpcGreeter.csproj" -c Release -o /app/publish/GrpcGreeter
 
 # Final stage: Copy published applications and configuration files
 FROM base AS final
