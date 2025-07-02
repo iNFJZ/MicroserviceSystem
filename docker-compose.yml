@@ -57,17 +57,19 @@ services:
     build:
       context: .
       dockerfile: Dockerfile
+    platform: linux/amd64
     container_name: auth-service
     working_dir: /app/AuthService
     ports:
       - "5001:80"
     environment:
-      - ConnectionStrings__DefaultConnection=Host=auth-postgres;Port=5432;Database=auth_db;Username=postgres;Password=123456
-      - Redis__ConnectionString=redis:6379
       - ASPNETCORE_ENVIRONMENT=Development
+      - ConnectionStrings__DefaultConnection=Host=postgres;Port=5432;Database=auth_db;Username=postgres;Password=123456
+      - ConnectionStrings__Redis=redis:6379
     depends_on:
       - postgres
       - redis
+      - rabbitmq
     networks:
       - microservice-network
     command: dotnet AuthService.dll
@@ -76,11 +78,13 @@ services:
     build:
       context: .
       dockerfile: Dockerfile
+    platform: linux/amd64
     container_name: file-service
     working_dir: /app/FileService
     ports:
       - "5002:80"
     environment:
+      - AuthService__Url=http://auth-service:5001
       - Minio__Endpoint=minio:9000
       - Minio__AccessKey=minio
       - Minio__SecretKey=minio123
@@ -93,6 +97,7 @@ services:
       - RabbitMQ__VirtualHost=/
       - ASPNETCORE_ENVIRONMENT=Development
     depends_on:
+      - auth-service
       - minio
       - rabbitmq
     networks:
@@ -103,6 +108,7 @@ services:
     build:
       context: .
       dockerfile: Dockerfile
+    platform: linux/amd64
     container_name: gateway-api
     working_dir: /app/GatewayApi
     ports:
@@ -116,24 +122,11 @@ services:
       - microservice-network
     command: dotnet GatewayApi.dll
 
-  worker-service:
-    build:
-      context: .
-      dockerfile: Dockerfile
-    container_name: worker-service
-    working_dir: /app/WorkerService
-    command: dotnet WorkerService.dll
-    depends_on:
-      - rabbitmq
-    networks:
-      - microservice-network
-    environment:
-      - ASPNETCORE_ENVIRONMENT=Development
-
   email-service:
     build:
       context: .
       dockerfile: Dockerfile
+    platform: linux/amd64
     container_name: email-service
     working_dir: /app/EmailService
     environment:
@@ -143,6 +136,21 @@ services:
     networks:
       - microservice-network
     command: dotnet EmailService.dll
+
+  grpc-server:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    platform: linux/amd64
+    container_name: grpc-server
+    working_dir: /app/GrpcGreeter
+    ports:
+      - "5219:5219"
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Development
+    networks:
+      - microservice-network
+    command: dotnet GrpcGreeter.dll
 
 volumes:
   pgdata:

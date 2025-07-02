@@ -8,10 +8,12 @@ using System.Security.Claims;
 using System.Collections.Generic;
 using FileService.DTOs;
 using System.IdentityModel.Tokens.Jwt;
+using Microsoft.AspNetCore.Authorization;
 namespace FileService.Controllers
 {
     [ApiController]
     [Route("api/[controller]")]
+    [Authorize]
     public class FileController : ControllerBase
     {
         private readonly IFileService _fileService;
@@ -59,17 +61,25 @@ namespace FileService.Controllers
                     using var stream = file.OpenReadStream();
                     await _fileService.UploadFileAsync(file.FileName, stream, file.ContentType);
 
-                    await _emailMessageService.PublishFileEventNotificationAsync(new FileEventEmailNotification
-                    {
-                        To = userEmail,
-                        Username = userName,
-                        FileName = file.FileName,
-                        EventType = "Upload",
-                        EventTime = DateTime.UtcNow
-                    });
-
                     _logger.LogInformation("File uploaded successfully: {FileName}", file.FileName);
                     results.Add(new { fileName = file.FileName, message = "File uploaded successfully" });
+
+                    try
+                    {
+                        await _emailMessageService.PublishFileEventNotificationAsync(new FileEventEmailNotification
+                        {
+                            To = userEmail,
+                            Username = userName,
+                            FileName = file.FileName,
+                            EventType = "Upload",
+                            EventTime = DateTime.UtcNow
+                        });
+                        _logger.LogInformation("Email notification sent for file: {FileName}", file.FileName);
+                    }
+                    catch (Exception emailEx)
+                    {
+                        _logger.LogWarning(emailEx, "Failed to send email notification for file: {FileName}. File was uploaded successfully.", file.FileName);
+                    }
                 }
                 catch (Exception ex)
                 {
@@ -92,21 +102,30 @@ namespace FileService.Controllers
                 }
                 var stream = await _fileService.DownloadFileAsync(fileName);
 
-                var userEmailClaim = User.FindFirst(ClaimTypes.Email) ?? User.FindFirst("email");
-                var userNameClaim = User.FindFirst(JwtRegisteredClaimNames.Name);
-                var userEmail = userEmailClaim?.Value ?? "";
-                var userName = userNameClaim?.Value ?? "";
-
-                await _emailMessageService.PublishFileEventNotificationAsync(new FileEventEmailNotification
-                {
-                    To = userEmail,
-                    Username = userName,
-                    FileName = fileName,
-                    EventType = "Download",
-                    EventTime = DateTime.UtcNow
-                });
-
                 _logger.LogInformation("File downloaded successfully: {FileName}", fileName);
+
+                try
+                {
+                    var userEmailClaim = User.FindFirst(ClaimTypes.Email) ?? User.FindFirst("email");
+                    var userNameClaim = User.FindFirst(JwtRegisteredClaimNames.Name);
+                    var userEmail = userEmailClaim?.Value ?? "";
+                    var userName = userNameClaim?.Value ?? "";
+
+                    await _emailMessageService.PublishFileEventNotificationAsync(new FileEventEmailNotification
+                    {
+                        To = userEmail,
+                        Username = userName,
+                        FileName = fileName,
+                        EventType = "Download",
+                        EventTime = DateTime.UtcNow
+                    });
+                    _logger.LogInformation("Email notification sent for download: {FileName}", fileName);
+                }
+                catch (Exception emailEx)
+                {
+                    _logger.LogWarning(emailEx, "Failed to send email notification for download: {FileName}. File was downloaded successfully.", fileName);
+                }
+
                 return File(stream, "application/octet-stream", fileName);
             }
             catch (Exception ex)
@@ -143,21 +162,30 @@ namespace FileService.Controllers
                 }
                 await _fileService.DeleteFileAsync(fileName);
 
-                var userEmailClaim = User.FindFirst(ClaimTypes.Email) ?? User.FindFirst("email");
-                var userNameClaim = User.FindFirst(JwtRegisteredClaimNames.Name);
-                var userEmail = userEmailClaim?.Value ?? "";
-                var userName = userNameClaim?.Value ?? "";
-
-                await _emailMessageService.PublishFileEventNotificationAsync(new FileEventEmailNotification
-                {
-                    To = userEmail,
-                    Username = userName ?? "",
-                    FileName = fileName,
-                    EventType = "Delete",
-                    EventTime = DateTime.UtcNow
-                });
-
                 _logger.LogInformation("File deleted successfully: {FileName}", fileName);
+
+                try
+                {
+                    var userEmailClaim = User.FindFirst(ClaimTypes.Email) ?? User.FindFirst("email");
+                    var userNameClaim = User.FindFirst(JwtRegisteredClaimNames.Name);
+                    var userEmail = userEmailClaim?.Value ?? "";
+                    var userName = userNameClaim?.Value ?? "";
+
+                    await _emailMessageService.PublishFileEventNotificationAsync(new FileEventEmailNotification
+                    {
+                        To = userEmail,
+                        Username = userName ?? "",
+                        FileName = fileName,
+                        EventType = "Delete",
+                        EventTime = DateTime.UtcNow
+                    });
+                    _logger.LogInformation("Email notification sent for delete: {FileName}", fileName);
+                }
+                catch (Exception emailEx)
+                {
+                    _logger.LogWarning(emailEx, "Failed to send email notification for delete: {FileName}. File was deleted successfully.", fileName);
+                }
+
                 return Ok(new { message = "File deleted successfully" });
             }
             catch (Exception ex)

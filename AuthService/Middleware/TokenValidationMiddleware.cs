@@ -16,6 +16,11 @@ namespace AuthService.Middleware
 
         public async Task InvokeAsync(HttpContext context, ISessionService sessionService)
         {
+            if (context.Request.ContentType?.StartsWith("application/grpc") == true)
+            {
+                await _next(context);
+                return;
+            }
             if (ShouldSkipTokenValidation(context))
             {
                 await _next(context);
