@@ -4,6 +4,10 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using System.Security.Claims;
+using System.Collections.Generic;
+using System.Text.Json;
+using Microsoft.Extensions.Logging;
+using System.IO;
 
 namespace AuthService.Controllers
 {
@@ -12,10 +16,12 @@ namespace AuthService.Controllers
     public class AuthController : ControllerBase
     {
         private readonly IAuthService _auth;
+        private readonly ILogger<AuthController> _logger;
 
-        public AuthController(IAuthService auth)
+        public AuthController(IAuthService auth, ILogger<AuthController> logger)
         {
             _auth = auth;
+            _logger = logger;
         }
 
         [HttpPost("register")]
@@ -48,8 +54,16 @@ namespace AuthService.Controllers
         [HttpPost("validate")]
         public async Task<IActionResult> ValidateToken([FromBody] ValidateTokenRequest request)
         {
+            if (request == null)
+            {
+                return BadRequest(new { message = "Request body is required" });
+            }
+            if (string.IsNullOrEmpty(request.Token))
+            {
+                return BadRequest(new { message = "Token is required" });
+            }
             var isValid = await _auth.ValidateTokenAsync(request.Token);
-            return Ok(new { isValid });
+            return Ok(new { isValid = isValid });
         }
 
         [Authorize]
@@ -104,5 +118,7 @@ namespace AuthService.Controllers
             var result = await _auth.ChangePasswordAsync(userId, dto);
             return Ok(new { message = "Password has been changed successfully." });
         }
+
+
     }
 }

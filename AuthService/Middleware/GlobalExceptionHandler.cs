@@ -18,6 +18,11 @@ namespace AuthService.Middleware
 
         public async Task InvokeAsync(HttpContext context)
         {
+            if (context.Request.ContentType != null && context.Request.ContentType.StartsWith("application/grpc"))
+            {
+                await _next(context);
+                return;
+            }
             try
             {
                 await _next(context);

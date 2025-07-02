@@ -1,0 +1,31 @@
+{
+  "Logging": {
+    "LogLevel": {
+      "Default": "Information",
+      "Microsoft.AspNetCore": "Warning"
+    }
+  },
+  "AuthService": {
+    "Url": "http://localhost:5001"
+  },
+  "JwtSettings": {
+    "Key": "thisismyverystrongsecretkey1234567890",
+    "Issuer": "http://localhost:5001",
+    "Audience": "http://localhost:5001",
+    "ExpiresInMinutes": 60
+  },
+  "Minio": {
+    "Endpoint": "minio:9000",
+    "AccessKey": "minio",
+    "SecretKey": "minio123",
+    "BucketName": "mybucket",
+    "UseSSL": false
+  },
+  "RabbitMQ": {
+    "HostName": "localhost",
+    "Port": 5672,
+    "UserName": "guest",
+    "Password": "guest",
+    "VirtualHost": "/"
+  }
+}

@@ -9,10 +9,11 @@
   "JwtSettings": {
     "Key": "thisismyverystrongsecretkey1234567890",
     "Issuer": "http://localhost:5001",
-    "Audience": "http://localhost:5001"
+    "Audience": "http://localhost:5001",
+    "ExpiresInMinutes": 60
   },
   "AuthService": {
-    "Url": "http://auth-service"
+    "Url": "http://localhost:5001"
   },
   "Minio": {
     "Endpoint": "minio:9000",

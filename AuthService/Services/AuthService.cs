@@ -4,6 +4,9 @@ using AuthService.DTOs;
 using AuthService.Exceptions;
 using Microsoft.Extensions.Logging;
 using System.Security.Cryptography;
+using System.IdentityModel.Tokens.Jwt;
+using Microsoft.IdentityModel.Tokens;
+using System.Text;
 
 namespace AuthService.Services
 {
@@ -149,12 +152,6 @@ namespace AuthService.Services
                 if (await _sessionService.IsTokenBlacklistedAsync(token))
                     return false;
 
-                if (!await _sessionService.IsTokenActiveAsync(token))
-                    return false;
-
-                if (!_jwtService.ValidateToken(token))
-                    return false;
-
                 var userId = _jwtService.GetUserIdFromToken(token);
                 if (!userId.HasValue)
                     return false;
@@ -163,13 +160,23 @@ namespace AuthService.Services
                 if (user == null)
                     return false;
 
-                var storedUserId = await _sessionService.GetUserIdFromActiveTokenAsync(token);
-                if (!storedUserId.HasValue || storedUserId.Value != userId.Value)
+                var isActiveToken = await _sessionService.IsTokenActiveAsync(token);
+                if (!isActiveToken)
                     return false;
 
-                if (!await _sessionService.IsUserLoggedInAsync(userId.Value))
-                    return false;
-
+                var tokenHandler = new JwtSecurityTokenHandler();
+                var key = Encoding.UTF8.GetBytes("thisismyverystrongsecretkey1234567890");
+                tokenHandler.ValidateToken(token, new TokenValidationParameters
+                {
+                    ValidateIssuerSigningKey = true,
+                    IssuerSigningKey = new SymmetricSecurityKey(key),
+                    ValidateIssuer = true,
+                    ValidIssuer = "http://localhost:5001",
+                    ValidateAudience = true,
+                    ValidAudience = "http://localhost:5001",
+                    ValidateLifetime = true,
+                    ClockSkew = TimeSpan.FromMinutes(2)
+                }, out var validatedToken);
                 return true;
             }
             catch
@@ -234,6 +241,13 @@ namespace AuthService.Services
             await _sessionService.RemoveAllUserSessionsAsync(user.Id);
             await _sessionService.RemoveAllActiveTokensForUserAsync(user.Id);
             await _sessionService.SetUserLoginStatusAsync(user.Id, false);
+
+            await _emailMessageService.PublishChangePasswordNotificationAsync(new ChangePasswordEmailEvent
+            {
+                To = user.Email,
+                Username = user.Username,
+                ChangeAt = DateTime.UtcNow
+            });
 
             _logger.LogInformation("Password reset successful for user: {UserId}", user.Id);
             return true;

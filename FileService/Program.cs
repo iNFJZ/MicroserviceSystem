@@ -1,4 +1,5 @@
 using FileService.Services;
+using FileService.Middleware;
 using Minio;
 using Microsoft.OpenApi.Models;
 using Microsoft.AspNetCore.Http;
@@ -6,14 +7,41 @@ using FileService.Models;
 using FileService.DTOs;
 using Microsoft.IdentityModel.Tokens;
 using System.Text;
-using FileService.Middleware;
 
-var builder = WebApplication.CreateBuilder(args);
+var builder = WebApplication.CreateBuilder(new WebApplicationOptions {
+    Args = args,
+    ContentRootPath = Directory.GetCurrentDirectory(),
+});
 
-// Configure Kestrel to listen on port 80 for Docker
-builder.WebHost.ConfigureKestrel(serverOptions =>
+builder.Configuration
+    .SetBasePath(Directory.GetCurrentDirectory())
+    .AddJsonFile("file.appsettings.json", optional: false, reloadOnChange: true)
+    .AddJsonFile($"file.appsettings.{builder.Environment.EnvironmentName}.json", optional: true, reloadOnChange: true)
+    .AddEnvironmentVariables();
+
+builder.Host.ConfigureAppConfiguration((hostingContext, config) =>
 {
-    serverOptions.ListenAnyIP(80);
+    var env = hostingContext.HostingEnvironment;
+    config.AddJsonFile($"file.appsettings.json", optional: false, reloadOnChange: true);
+    if (env.IsDevelopment())
+    {
+        config.AddJsonFile($"file.appsettings.Development.json", optional: true, reloadOnChange: true);
+    }
+    config.AddEnvironmentVariables();
+});
+
+// Configure Kestrel to listen on port 80 for Docker and 5002 for HTTP/1.1 and 5003 for HTTP/2
+builder.WebHost.ConfigureKestrel(options =>
+{
+    options.ListenAnyIP(80);
+    options.ListenAnyIP(5002, listenOptions =>
+    {
+        listenOptions.Protocols = Microsoft.AspNetCore.Server.Kestrel.Core.HttpProtocols.Http1AndHttp2;
+    });
+    options.ListenAnyIP(5003, listenOptions =>
+    {
+        listenOptions.Protocols = Microsoft.AspNetCore.Server.Kestrel.Core.HttpProtocols.Http2;
+    });
 });
 
 // Add JWT Authentication
@@ -112,7 +140,11 @@ builder.Services.AddScoped<IFileEventConsumer, FileEventConsumer>();
 builder.Services.AddScoped<IFileValidationService, FileValidationService>();
 builder.Services.AddScoped<IEmailMessageService, EmailMessageService>();
 
-builder.Services.AddHttpClient();
+// Add HttpClient for token validation with timeout
+builder.Services.AddHttpClient("AuthService", client =>
+{
+    client.Timeout = TimeSpan.FromSeconds(5);
+});
 
 var app = builder.Build();
 
@@ -133,10 +165,12 @@ if (app.Environment.IsDevelopment())
 app.UseHttpsRedirection();
 app.UseCors("AllowAll");
 
-// Add authentication and authorization middleware
+// Add authentication and authorization middleware first
 app.UseAuthentication();
-app.UseMiddleware<AuthValidationMiddleware>();
 app.UseAuthorization();
+
+// Add custom token validation middleware after authentication
+app.UseTokenValidation();
 
 app.MapControllers();
 

@@ -8,40 +8,52 @@ EXPOSE 443
 FROM mcr.microsoft.com/dotnet/sdk:8.0 AS build
 WORKDIR /src
 
-# Copy the solution file and restore dependencies
-COPY ["MicroserviceSystem.sln", "./"]
-COPY GatewayApi/ocelot.json /app/GatewayApi/ocelot.json
-COPY ["AuthService/AuthService.csproj", "AuthService/"]
-COPY ["FileService/FileService.csproj", "FileService/"]
-COPY ["GatewayApi/GatewayApi.csproj", "GatewayApi/"]
-COPY ["AuthService.Tests/AuthService.Tests.csproj", "AuthService.Tests/"]
-COPY ["EmailService/EmailService.csproj", "EmailService/"]
+# Copy solution và project files trước
+COPY MicroserviceSystem.sln ./
+COPY AuthService/AuthService.csproj AuthService/
+COPY FileService/FileService.csproj FileService/
+COPY GatewayApi/GatewayApi.csproj GatewayApi/
+COPY EmailService/EmailService.csproj EmailService/
+COPY GrpcGreeter/GrpcGreeter.csproj GrpcGreeter/
 
-# Restore all projects
-RUN dotnet restore "MicroserviceSystem.sln"
+# Restore từng project thực thi
+RUN dotnet restore "AuthService/AuthService.csproj"
+RUN dotnet restore "FileService/FileService.csproj"
+RUN dotnet restore "GatewayApi/GatewayApi.csproj"
+RUN dotnet restore "EmailService/EmailService.csproj"
+RUN dotnet restore "GrpcGreeter/GrpcGreeter.csproj"
 
-# Copy all source code
-COPY . .
+# Copy source code
+COPY AuthService/. AuthService/
+COPY FileService/. FileService/
+COPY GatewayApi/. GatewayApi/
+COPY EmailService/. EmailService/
+COPY GrpcGreeter/. GrpcGreeter/
 
-# Build all projects
-RUN dotnet build "MicroserviceSystem.sln" -c Release --no-restore
+# Build từng project thực thi
+RUN dotnet build "AuthService/AuthService.csproj" -c Release --no-restore
+RUN dotnet build "FileService/FileService.csproj" -c Release --no-restore
+RUN dotnet build "GatewayApi/GatewayApi.csproj" -c Release --no-restore
+RUN dotnet build "EmailService/EmailService.csproj" -c Release --no-restore
+RUN dotnet build "GrpcGreeter/GrpcGreeter.csproj" -c Release --no-restore
 
-# Publish stage - publish each project individually
-FROM build AS publish
+# Publish từng project thực thi
 RUN dotnet publish "AuthService/AuthService.csproj" -c Release -o /app/publish/AuthService
 RUN dotnet publish "FileService/FileService.csproj" -c Release -o /app/publish/FileService
 RUN dotnet publish "GatewayApi/GatewayApi.csproj" -c Release -o /app/publish/GatewayApi
 RUN dotnet publish "EmailService/EmailService.csproj" -c Release -o /app/publish/EmailService
+RUN dotnet publish "GrpcGreeter/GrpcGreeter.csproj" -c Release -o /app/publish/GrpcGreeter
 
 # Final stage
 FROM base AS final
 WORKDIR /app
 
 # Copy published applications
-COPY --from=publish /app/publish/AuthService /app/AuthService
-COPY --from=publish /app/publish/FileService /app/FileService
-COPY --from=publish /app/publish/GatewayApi /app/GatewayApi
-COPY --from=publish /app/publish/EmailService /app/EmailService
+COPY --from=build /app/publish/AuthService /app/AuthService
+COPY --from=build /app/publish/FileService /app/FileService
+COPY --from=build /app/publish/GatewayApi /app/GatewayApi
+COPY --from=build /app/publish/EmailService /app/EmailService
+COPY --from=build /app/publish/GrpcGreeter /app/GrpcGreeter
 
 # Copy configuration files for AuthService
 COPY AuthService/appsettings.json /app/AuthService/appsettings.json
@@ -51,19 +63,19 @@ COPY AuthService/appsettings.Development.json /app/AuthService/appsettings.Devel
 COPY GatewayApi/ocelot.json /app/GatewayApi/ocelot.json
 
 # Create startup script
-RUN echo '#!/bin/bash\n\
-echo "Starting Microservice System..."\n\
-echo "Available services:"\n\
-echo "1. AuthService - Port 5001"\n\
-echo "2. FileService - Port 5002"\n\
-echo "3. GatewayApi - Port 5000"\n\
-echo ""\n\
-echo "To start a specific service, use:"\n\
-echo "dotnet /app/AuthService/AuthService.dll"\n\
-echo "dotnet /app/FileService/FileService.dll"\n\
-echo "dotnet /app/GatewayApi/GatewayApi.dll"\n\
-echo ""\n\
-echo "Default: Starting GatewayApi on port 5000"\n\
+RUN echo '#!/bin/bash\
+echo "Starting Microservice System..."\
+echo "Available services:"\
+echo "1. AuthService - Port 5001"\
+echo "2. FileService - Port 5002"\
+echo "3. GatewayApi - Port 5000"\
+echo ""\
+echo "To start a specific service, use:"\
+echo "dotnet /app/AuthService/AuthService.dll"\
+echo "dotnet /app/FileService/FileService.dll"\
+echo "dotnet /app/GatewayApi/GatewayApi.dll"\
+echo ""\
+echo "Default: Starting GatewayApi on port 5000"\
 cd /app/GatewayApi && dotnet GatewayApi.dll' > /app/start.sh && chmod +x /app/start.sh
 
 # Set default entry point to GatewayApi

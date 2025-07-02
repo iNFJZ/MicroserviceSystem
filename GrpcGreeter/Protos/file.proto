@@ -1,0 +1,100 @@
+syntax = "proto3";
+
+option csharp_namespace = "GrpcGreeter";
+
+package file;
+
+// File service definition
+service FileService {
+  // Upload file
+  rpc UploadFile (UploadFileRequest) returns (UploadFileResponse);
+  
+  // Download file
+  rpc DownloadFile (DownloadFileRequest) returns (DownloadFileResponse);
+  
+  // Delete file
+  rpc DeleteFile (DeleteFileRequest) returns (DeleteFileResponse);
+  
+  // Get file info
+  rpc GetFileInfo (GetFileInfoRequest) returns (GetFileInfoResponse);
+  
+  // List files
+  rpc ListFiles (ListFilesRequest) returns (ListFilesResponse);
+}
+
+// Request/Response messages for file operations
+message UploadFileRequest {
+  string fileName = 1;
+  bytes fileData = 2;
+  string contentType = 3;
+  string userId = 4;
+}
+
+message UploadFileResponse {
+  bool success = 1;
+  string fileId = 2;
+  string fileName = 3;
+  string fileUrl = 4;
+  int64 fileSize = 5;
+  string message = 6;
+}
+
+message DownloadFileRequest {
+  string fileId = 1;
+  string userId = 2;
+}
+
+message DownloadFileResponse {
+  bool success = 1;
+  bytes fileData = 2;
+  string fileName = 3;
+  string contentType = 4;
+  string message = 5;
+}
+
+message DeleteFileRequest {
+  string fileId = 1;
+  string userId = 2;
+}
+
+message DeleteFileResponse {
+  bool success = 1;
+  string message = 2;
+}
+
+message GetFileInfoRequest {
+  string fileId = 1;
+  string userId = 2;
+}
+
+message GetFileInfoResponse {
+  bool success = 1;
+  FileInfo fileInfo = 2;
+  string message = 3;
+}
+
+message FileInfo {
+  string fileId = 1;
+  string fileName = 2;
+  string fileUrl = 3;
+  int64 fileSize = 4;
+  string contentType = 5;
+  string uploadedBy = 6;
+  string uploadedAt = 7;
+  string lastModified = 8;
+}
+
+message ListFilesRequest {
+  string userId = 1;
+  int32 page = 2;
+  int32 pageSize = 3;
+}
+
+message ListFilesResponse {
+  bool success = 1;
+  repeated FileInfo files = 2;
+  int32 totalCount = 3;
+  int32 currentPage = 4;
+  int32 totalPages = 5;
+  string message = 6;
+} 

@@ -33,6 +33,11 @@ namespace AuthService.Middleware
 
         public async Task InvokeAsync(HttpContext context, IAuthService authService)
         {
+            if (context.Request.ContentType?.StartsWith("application/grpc") == true)
+            {
+                await _next(context);
+                return;
+            }
             if (ShouldSkipTokenValidation(context))
             {
                 await _next(context);

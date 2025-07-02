@@ -11,10 +11,18 @@ using System.Text;
 using Microsoft.OpenApi.Models;
 var builder = WebApplication.CreateBuilder(args);
 
-// Configure Kestrel to listen on port 80 for Docker
-builder.WebHost.ConfigureKestrel(serverOptions =>
+// Configure Kestrel to listen on port 80 for Docker and 5000 for HTTP/1.1 and 5001 for HTTP/2
+builder.WebHost.ConfigureKestrel(options =>
 {
-    serverOptions.ListenAnyIP(80);
+    options.ListenAnyIP(80);
+    options.ListenAnyIP(5000, listenOptions =>
+    {
+        listenOptions.Protocols = Microsoft.AspNetCore.Server.Kestrel.Core.HttpProtocols.Http1AndHttp2;
+    });
+    options.ListenAnyIP(5001, listenOptions =>
+    {
+        listenOptions.Protocols = Microsoft.AspNetCore.Server.Kestrel.Core.HttpProtocols.Http1AndHttp2;
+    });
 });
 
 // Add Redis connection with retry logic
@@ -57,8 +65,8 @@ builder.Services.AddAuthentication("Bearer")
             ValidateAudience = true,
             ValidateLifetime = true,
             ValidateIssuerSigningKey = true,
-            ValidIssuer = builder.Configuration["JwtSettings:Issuer"],
-            ValidAudience = builder.Configuration["JwtSettings:Audience"],
+            ValidIssuer = builder.Configuration["JwtSettings:Issuer"] ?? "http://localhost:5001",
+            ValidAudience = builder.Configuration["JwtSettings:Audience"] ?? "http://localhost:5001",
             IssuerSigningKey = new SymmetricSecurityKey(
                 Encoding.UTF8.GetBytes(builder.Configuration["JwtSettings:Key"]!))
         };
@@ -94,6 +102,8 @@ builder.Services.AddSwaggerGen(c =>
     });
 });
 
+builder.Services.AddGrpc();
+
 var app = builder.Build();
 
 // Auto migrate database
@@ -118,16 +128,11 @@ if (app.Environment.IsDevelopment())
     app.UseSwaggerUI();
 }
 
-app.UseHttpsRedirection();
-
 app.UseMiddleware<GlobalExceptionHandler>();
-
-app.UseTokenValidation();
-
 app.UseMiddleware<StrictAuthValidationMiddleware>();
 app.UseAuthentication();
 app.UseAuthorization();
-
 app.MapControllers();
+app.MapGrpcService<AuthService.Services.GrpcAuthService>();
 
 app.Run();

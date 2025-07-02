@@ -1,0 +1,142 @@
+syntax = "proto3";
+
+option csharp_namespace = "GrpcGreeter";
+
+package auth;
+
+// Authentication service definition
+service AuthService {
+  // User registration
+  rpc Register (RegisterRequest) returns (RegisterResponse);
+  
+  // User login
+  rpc Login (LoginRequest) returns (LoginResponse);
+  
+  // User logout
+  rpc Logout (LogoutRequest) returns (LogoutResponse);
+  
+  // Validate token
+  rpc ValidateToken (ValidateTokenRequest) returns (ValidateTokenResponse);
+  
+  // Get user sessions
+  rpc GetUserSessions (GetUserSessionsRequest) returns (GetUserSessionsResponse);
+  
+  // Remove user session
+  rpc RemoveUserSession (RemoveUserSessionRequest) returns (RemoveUserSessionResponse);
+  
+  // Forgot password
+  rpc ForgotPassword (ForgotPasswordRequest) returns (ForgotPasswordResponse);
+  
+  // Reset password
+  rpc ResetPassword (ResetPasswordRequest) returns (ResetPasswordResponse);
+  
+  // Change password
+  rpc ChangePassword (ChangePasswordRequest) returns (ChangePasswordResponse);
+}
+
+// Request/Response messages for authentication
+message RegisterRequest {
+  string email = 1;
+  string password = 2;
+  string fullName = 3;
+}
+
+message RegisterResponse {
+  bool success = 1;
+  string message = 2;
+}
+
+message LoginRequest {
+  string email = 1;
+  string password = 2;
+}
+
+message LoginResponse {
+  bool success = 1;
+  string token = 2;
+  string message = 3;
+}
+
+message AuthResponse {
+  bool success = 1;
+  string token = 2;
+  string message = 3;
+  UserInfo user = 4;
+}
+
+message UserInfo {
+  string id = 1;
+  string email = 2;
+  string firstName = 3;
+  string lastName = 4;
+  string role = 5;
+}
+
+message LogoutRequest {
+  string token = 1;
+}
+
+message LogoutResponse {
+  bool success = 1;
+  string message = 2;
+}
+
+message ValidateTokenRequest {
+  string token = 1;
+}
+
+message ValidateTokenResponse {
+  bool isValid = 1;
+  string userId = 2;
+  string message = 3;
+}
+
+message GetUserSessionsRequest {
+  string userId = 1;
+}
+
+message GetUserSessionsResponse {
+  repeated string sessions = 1;
+  string message = 2;
+}
+
+message RemoveUserSessionRequest {
+  string userId = 1;
+  string sessionId = 2;
+}
+
+message RemoveUserSessionResponse {
+  bool success = 1;
+  string message = 2;
+}
+
+message ForgotPasswordRequest {
+  string email = 1;
+}
+
+message ForgotPasswordResponse {
+  bool success = 1;
+  string message = 2;
+}
+
+message ResetPasswordRequest {
+  string email = 1;
+  string newPassword = 2;
+  string resetToken = 3;
+}
+
+message ResetPasswordResponse {
+  bool success = 1;
+  string message = 2;
+}
+
+message ChangePasswordRequest {
+  string userId = 1;
+  string oldPassword = 2;
+  string newPassword = 3;
+}
+
+message ChangePasswordResponse {
+  bool success = 1;
+  string message = 2;
+}
