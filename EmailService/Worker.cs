@@ -70,16 +70,13 @@ namespace EmailService
                     _connection = factory.CreateConnection();
                     _channel = _connection.CreateModel();
                     _channel.QueueDeclare(queue: "email.notifications", durable: true, exclusive: false, autoDelete: false);
-                    _logger.LogInformation("Connected to RabbitMQ successfully.");
                     break;
                 }
                 catch (Exception ex)
                 {
                     retry++;
-                    _logger.LogWarning($"Failed to connect to RabbitMQ (attempt {retry}/{maxRetry}): {ex.Message}");
                     if (retry >= maxRetry)
                     {
-                        _logger.LogError(ex, "Max retry reached. Could not connect to RabbitMQ.");
                         throw;
                     }
                     await Task.Delay(delaySeconds * 1000);
@@ -94,7 +91,6 @@ namespace EmailService
             {
                 var body = ea.Body.ToArray();
                 var message = Encoding.UTF8.GetString(body);
-                _logger.LogInformation($"[EmailService] Received message: {message}");
                 try
                 {
                     using var doc = JsonDocument.Parse(message);
@@ -105,7 +101,6 @@ namespace EmailService
                         if (fileEvent != null && !string.IsNullOrEmpty(fileEvent.To))
                         {
                             SendFileEventMail(fileEvent);
-                            _logger.LogInformation($"Sent {fileEvent.EventType} mail to {fileEvent.To}");
                             _channel.BasicAck(ea.DeliveryTag, false);
                             return;
                         }
@@ -116,7 +111,6 @@ namespace EmailService
                         if (resetEvent != null && !string.IsNullOrEmpty(resetEvent.To))
                         {
                             SendResetPasswordMail(resetEvent);
-                            _logger.LogInformation($"Sent reset password mail to {resetEvent.To}");
                             _channel.BasicAck(ea.DeliveryTag, false);
                             return;
                         }
@@ -127,7 +121,6 @@ namespace EmailService
                         if (changeEvent != null && !string.IsNullOrEmpty(changeEvent.To))
                         {
                             SendChangePasswordMail(changeEvent);
-                            _logger.LogInformation($"Sent change password mail to {changeEvent.To}");
                             _channel.BasicAck(ea.DeliveryTag, false);
                             return;
                         }
@@ -138,7 +131,6 @@ namespace EmailService
                         if (registerEvent != null && !string.IsNullOrEmpty(registerEvent.To))
                         {
                             SendRegisterMail(registerEvent);
-                            _logger.LogInformation($"Sent register mail to {registerEvent.To}");
                             _channel.BasicAck(ea.DeliveryTag, false);
                             return;
                         }
@@ -146,7 +138,7 @@ namespace EmailService
                 }
                 catch (Exception ex)
                 {
-                    _logger.LogError(ex, "Error processing email event");
+                    _logger.LogError(ex, ex.Message);
                 }
                 _channel.BasicAck(ea.DeliveryTag, false);
             };
@@ -185,7 +177,6 @@ namespace EmailService
                     EnableSsl = _smtpEnableSsl
                 };
                 smtp.Send(mail);
-                _logger.LogInformation($"Successfully sent register mail to {emailEvent.To}");
             }
             catch (Exception ex)
             {
@@ -243,7 +234,6 @@ namespace EmailService
                     EnableSsl = _smtpEnableSsl
                 };
                 smtp.Send(mail);
-                _logger.LogInformation($"Successfully sent {emailEvent.EventType} mail to {emailEvent.To}");
             }
             catch (Exception ex)
             {
@@ -281,7 +271,6 @@ namespace EmailService
                     EnableSsl = _smtpEnableSsl
                 };
                 smtp.Send(mail);
-                _logger.LogInformation($"Successfully sent reset password mail to {emailEvent.To}");
             }
             catch (Exception ex)
             {
@@ -312,8 +301,7 @@ namespace EmailService
                     Credentials = new System.Net.NetworkCredential(_smtpUser, _smtpPass),
                     EnableSsl = _smtpEnableSsl
                 };
-                smtp.Send(mail);
-                _logger.LogInformation($"Successfully sent change password mail to {emailEvent.To}");
+                smtp.Send(mail); 
             }
             catch (Exception ex)
             {

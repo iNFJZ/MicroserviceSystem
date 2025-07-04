@@ -16,11 +16,13 @@ namespace AuthService.Controllers
     public class AuthController : ControllerBase
     {
         private readonly IAuthService _auth;
+        private readonly IGoogleAuthService _googleAuth;
         private readonly ILogger<AuthController> _logger;
 
-        public AuthController(IAuthService auth, ILogger<AuthController> logger)
+        public AuthController(IAuthService auth, IGoogleAuthService googleAuth, ILogger<AuthController> logger)
         {
             _auth = auth;
+            _googleAuth = googleAuth;
             _logger = logger;
         }
 
@@ -36,6 +38,22 @@ namespace AuthService.Controllers
         {
             var token = await _auth.LoginAsync(dto);
             return Ok(new { token });
+        }
+
+        [HttpPost("login/google")]
+        public async Task<IActionResult> LoginWithGoogle([FromBody] GoogleLoginDto dto)
+        {
+            if (dto == null || string.IsNullOrEmpty(dto.AccessToken))
+                return BadRequest(new { message = "Request body is required or AccessToken is required" });
+            try
+            {
+                var token = await _googleAuth.LoginWithGoogleAsync(dto);
+                return Ok(new { token });
+            }
+            catch (Exceptions.InvalidGoogleTokenException ex)
+            {
+                return BadRequest(new { message = ex.Message });
+            }
         }
 
         [Authorize]

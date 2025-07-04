@@ -66,6 +66,35 @@
 					"response": []
 				},
 				{
+					"name": "Login with Google",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"accessToken\": \"{{googleAccessToken}}\"\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/api/Auth/login/google",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"api",
+								"Auth",
+								"login",
+								"google"
+							]
+						}
+					},
+					"response": []
+				},
+				{
 					"name": "Logout User",
 					"request": {
 						"method": "POST",
