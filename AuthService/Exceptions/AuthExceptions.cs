@@ -41,4 +41,9 @@ namespace AuthService.Exceptions
     {
         public PasswordMismatchException() : base("Current password is incorrect") { }
     }
+
+    public class InvalidGoogleTokenException : AuthException
+    {
+        public InvalidGoogleTokenException(string message) : base(message) { }
+    }
 } 

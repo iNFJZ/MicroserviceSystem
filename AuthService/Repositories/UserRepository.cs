@@ -36,7 +36,7 @@ namespace AuthService.Repositories
                     await _cacheService.DeleteUserByEmailAsync(email);
                     return null;
                 }
-                return cachedUser;
+                return userInDb; 
             }
 
             var user = await _context.Users.FirstOrDefaultAsync(u => u.Email == email);
@@ -61,11 +61,26 @@ namespace AuthService.Repositories
             }
         }
 
+        public async Task<User?> GetByGoogleIdAsync(string googleId)
+        {
+            var user = await _context.Users.FirstOrDefaultAsync(u => u.GoogleId == googleId);
+            if (user != null)
+            {
+                await _cacheService.SetUserAsync(user);
+                return user;
+            }
+            return null;
+        }
+
         public async Task UpdateAsync(User user)
         {
-            _context.Users.Update(user);
-            await _context.SaveChangesAsync();
-            await _cacheService.SetUserAsync(user);
+            var existingUser = await _context.Users.FindAsync(user.Id);
+            if (existingUser != null)
+            {
+                _context.Entry(existingUser).CurrentValues.SetValues(user);
+                await _context.SaveChangesAsync();
+                await _cacheService.SetUserAsync(existingUser);
+            }
         }
 
         public async Task DeleteAsync(Guid id)

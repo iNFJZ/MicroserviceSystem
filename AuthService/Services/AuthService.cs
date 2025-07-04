@@ -54,8 +54,10 @@ namespace AuthService.Services
             var user = new User
             {
                 Username = dto.Username,
+                FullName = dto.FullName,
                 Email = dto.Email,
                 PasswordHash = _passwordService.HashPassword(dto.Password),
+                LoginProvider = "Local",
                 CreatedAt = DateTime.UtcNow
             };
 
@@ -101,7 +103,7 @@ namespace AuthService.Services
                 }
             }
 
-            if (!_passwordService.VerifyPassword(dto.Password, user.PasswordHash))
+            if (string.IsNullOrEmpty(user.PasswordHash) || !_passwordService.VerifyPassword(dto.Password, user.PasswordHash))
             {
                 var failedAttempts = await _sessionService.IncrementFailedLoginAttemptsAsync(user.Id);
                 
@@ -116,6 +118,13 @@ namespace AuthService.Services
             }
 
             await _sessionService.ResetFailedLoginAttemptsAsync(user.Id);
+
+            if (user.LoginProvider != "Local")
+            {
+                user.LoginProvider = "Local";
+                user.UpdatedAt = DateTime.UtcNow;
+                await _repo.UpdateAsync(user);
+            }
 
             var token = _jwtService.GenerateToken(user);
             
@@ -212,7 +221,7 @@ namespace AuthService.Services
             await _emailMessageService.PublishResetPasswordNotificationAsync(new ResetPasswordEmailEvent
             {
                 To = user.Email,
-                Username = user.Username,
+                Username = user.FullName ?? user.Username,
                 ResetToken = resetToken,
                 RequestedAt = DateTime.UtcNow
             });
@@ -245,7 +254,7 @@ namespace AuthService.Services
             await _emailMessageService.PublishChangePasswordNotificationAsync(new ChangePasswordEmailEvent
             {
                 To = user.Email,
-                Username = user.Username,
+                Username = user.FullName ?? user.Username,
                 ChangeAt = DateTime.UtcNow
             });
 
@@ -259,7 +268,7 @@ namespace AuthService.Services
             if (user == null)
                 throw new UserNotFoundException(userId);
 
-            if (!_passwordService.VerifyPassword(dto.CurrentPassword, user.PasswordHash))
+            if (string.IsNullOrEmpty(user.PasswordHash) || !_passwordService.VerifyPassword(dto.CurrentPassword, user.PasswordHash))
                 throw new PasswordMismatchException();
 
             user.PasswordHash = _passwordService.HashPassword(dto.NewPassword);
@@ -274,7 +283,7 @@ namespace AuthService.Services
             await _emailMessageService.PublishChangePasswordNotificationAsync(new ChangePasswordEmailEvent
             {
                 To = user.Email,
-                Username = user.Username,
+                Username = user.FullName ?? user.Username,
                 ChangeAt = DateTime.UtcNow
             });
             _logger.LogInformation("Password changed successfully for user: {UserId}", user.Id);
