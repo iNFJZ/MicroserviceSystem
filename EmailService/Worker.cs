@@ -159,15 +159,27 @@ namespace EmailService
             var mail = new MailMessage();
             mail.To.Add(emailEvent.To);
             mail.Subject = _registerSubject;
-            mail.Body = $"Welcome to Microservice System, {emailEvent.Username}!\n\n" +
-                        "Thank you for registering with our service. Your account has been successfully created.\n\n" +
-                        "You can now:\n" +
-                        "- Upload and manage your files securely using our MinIO-powered storage.\n" +
-                        "- Register, log in, and manage your sessions using JWT authentication.\n" +
-                        "- Enjoy seamless and secure access to all our microservices.\n\n" +
-                        $"Account registered at: {vnTime:yyyy-MM-dd HH:mm:ss} (Vietnam Time)\n\n" +
-                        "If you have any questions or need support, feel free to contact us.\n\n" +
-                        "Best regards,\nMicroservice System Team";
+            if (!string.IsNullOrEmpty(emailEvent.VerifyLink))
+            {
+                mail.Body = $"Hello {emailEvent.Username},\n\n" +
+                           "Thank you for registering with our service. Please verify your email by clicking the link below within 1 hour:\n\n" +
+                           $"{emailEvent.VerifyLink}\n\n" +
+                           "If you did not register, please ignore this email.\n\n" +
+                           $"Account registered at: {vnTime:yyyy-MM-dd HH:mm:ss} (Vietnam Time)\n\n" +
+                           "Best regards,\nMicroservice System Team";
+            }
+            else
+            {
+                mail.Body = $"Welcome to Microservice System, {emailEvent.Username}!\n\n" +
+                           "Thank you for registering with our service. Your account has been successfully created.\n\n" +
+                           "You can now:\n" +
+                           "- Upload and manage your files securely using our MinIO-powered storage.\n" +
+                           "- Register, log in, and manage your sessions using JWT authentication.\n" +
+                           "- Enjoy seamless and secure access to all our microservices.\n\n" +
+                           $"Account registered at: {vnTime:yyyy-MM-dd HH:mm:ss} (Vietnam Time)\n\n" +
+                           "If you have any questions or need support, feel free to contact us.\n\n" +
+                           "Best regards,\nMicroservice System Team";
+            }
             mail.From = new MailAddress(_smtpUser, "Microservice System");
             try
             {
@@ -180,7 +192,6 @@ namespace EmailService
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, $"Failed to send register mail to {emailEvent.To}. Exception: {ex.Message}");
                 throw;
             }
         }
@@ -237,7 +248,6 @@ namespace EmailService
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, $"Failed to send {emailEvent.EventType} mail to {emailEvent.To}. Exception: {ex.Message}");
                 throw;
             }
         }
@@ -274,7 +284,6 @@ namespace EmailService
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, $"Failed to send reset password mail to {emailEvent.To}. Exception: {ex.Message}");
                 throw;
             }
         }
@@ -305,7 +314,6 @@ namespace EmailService
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, $"Failed to send change password mail to {emailEvent.To}. Exception: {ex.Message}");
                 throw;
             }
         }
