@@ -59,6 +59,7 @@ builder.Services.AddScoped<IPasswordService, PasswordService>();
 builder.Services.AddScoped<IEmailMessageService, EmailMessageService>();
 
 builder.Services.AddHttpClient<IGoogleAuthService, GoogleAuthService>();
+builder.Services.AddHttpClient<IHunterEmailVerifierService, HunterEmailVerifierService>();
 
 builder.Services.AddScoped<IGoogleAuthService, GoogleAuthService>();
 
@@ -128,7 +129,8 @@ builder.Services.AddScoped<IAuthService, AuthService.Services.AuthService>(sp =>
         sp.GetRequiredService<IPasswordService>(),
         sp.GetRequiredService<ILogger<AuthService.Services.AuthService>>(),
         sp.GetRequiredService<IEmailMessageService>(),
-        sp.GetRequiredService<IConfiguration>()
+        sp.GetRequiredService<IConfiguration>(),
+        sp.GetRequiredService<IHunterEmailVerifierService>()
     )
 );
 

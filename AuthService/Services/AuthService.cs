@@ -23,6 +23,7 @@ namespace AuthService.Services
         private readonly int _maxFailedLoginAttempts;
         private readonly int _accountLockMinutes;
         private readonly int _resetPasswordTokenExpiryMinutes;
+        private readonly IHunterEmailVerifierService _emailVerifierService;
 
         public AuthService(
             IUserRepository repo, 
@@ -31,7 +32,8 @@ namespace AuthService.Services
             IPasswordService passwordService,
             ILogger<AuthService> logger,
             IEmailMessageService emailMessageService,
-            IConfiguration config)
+            IConfiguration config,
+            IHunterEmailVerifierService emailVerifierService)
         {
             _repo = repo;
             _sessionService = sessionService;
@@ -40,6 +42,7 @@ namespace AuthService.Services
             _logger = logger;
             _emailMessageService = emailMessageService;
             _config = config;
+            _emailVerifierService = emailVerifierService;
             _maxFailedLoginAttempts = int.Parse(_config["AuthPolicy:MaxFailedLoginAttempts"] ?? "3");
             _accountLockMinutes = int.Parse(_config["AuthPolicy:AccountLockMinutes"] ?? "5");
             _resetPasswordTokenExpiryMinutes = int.Parse(_config["AuthPolicy:ResetPasswordTokenExpiryMinutes"] ?? "15");
@@ -47,6 +50,10 @@ namespace AuthService.Services
 
         public async Task<string> RegisterAsync(RegisterDto dto)
         {
+            var emailExists = await _emailVerifierService.VerifyEmailAsync(dto.Email);
+            if (!emailExists)
+                throw new EmailNotExistsException(dto.Email);
+
             var existingUser = await _repo.GetByEmailAsync(dto.Email);
             if (existingUser != null)
                 throw new UserAlreadyExistsException(dto.Email);

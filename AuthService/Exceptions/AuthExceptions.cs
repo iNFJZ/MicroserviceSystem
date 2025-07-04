@@ -46,4 +46,14 @@ namespace AuthService.Exceptions
     {
         public InvalidGoogleTokenException(string message) : base(message) { }
     }
+
+    public class EmailNotExistsException : AuthException
+    {
+        public EmailNotExistsException(string email) : base($"Email does not exist: {email}") { }
+    }
+
+    public class EmailNotVerifiedException : AuthException
+    {
+        public EmailNotVerifiedException(string email) : base($"Email is not verified: {email}") { }
+    }
 } 
