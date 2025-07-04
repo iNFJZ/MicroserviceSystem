@@ -63,6 +63,7 @@ namespace AuthService.Middleware
                 "/api/auth/validate",
                 "/api/auth/forgot-password",
                 "/api/auth/reset-password",
+                "/api/auth/verify-email",
                 "/health",
                 "/swagger",
                 "/favicon.ico"

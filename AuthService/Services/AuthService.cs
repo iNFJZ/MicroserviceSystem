@@ -8,6 +8,7 @@ using System.IdentityModel.Tokens.Jwt;
 using Microsoft.IdentityModel.Tokens;
 using System.Text;
 using Microsoft.Extensions.Configuration;
+using System.Security.Claims;
 
 namespace AuthService.Services
 {
@@ -70,23 +71,65 @@ namespace AuthService.Services
 
             await _repo.AddAsync(user);
             var token = _jwtService.GenerateToken(user);
-            
             var tokenExpiry = _jwtService.GetTokenExpirationTimeSpan(token);
-            
             await _sessionService.StoreActiveTokenAsync(token, user.Id, tokenExpiry);
-            
             var sessionId = Guid.NewGuid().ToString();
             await _sessionService.CreateUserSessionAsync(user.Id, sessionId, tokenExpiry);
             await _sessionService.SetUserLoginStatusAsync(user.Id, true, tokenExpiry);
 
+            var verifyToken = GenerateEmailVerifyToken(user.Id, user.Email);
+            var verifyLink = $"{_config["Frontend:BaseUrl"]}/verify-email?token={verifyToken}";
             await _emailMessageService.PublishRegisterNotificationAsync(new RegisterNotificationEmailEvent
             {
                 To = user.Email,
                 Username = user.Username,
-                RegisterAt = DateTime.UtcNow
+                RegisterAt = DateTime.UtcNow,
+                VerifyLink = verifyLink
             });
-
+            
             return token;
+        }
+
+        private string GenerateEmailVerifyToken(Guid userId, string email)
+        {
+            var claims = new[]
+            {
+                new Claim(JwtRegisteredClaimNames.Sub, userId.ToString()),
+                new Claim(JwtRegisteredClaimNames.Email, email),
+                new Claim("type", "verify")
+            };
+            var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_config["JwtSettings:Key"]!));
+            var creds = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);
+            var expirationTime = DateTime.UtcNow.AddHours(1);
+            var token = new JwtSecurityToken(
+                issuer: _config["JwtSettings:Issuer"],
+                audience: _config["JwtSettings:Audience"],
+                claims: claims,
+                expires: expirationTime,
+                signingCredentials: creds
+            );
+            return new JwtSecurityTokenHandler().WriteToken(token);
+        }
+
+        public async Task<bool> VerifyEmailAsync(string token)
+        {
+            var handler = new JwtSecurityTokenHandler();
+            try
+            {
+                var jwt = handler.ReadJwtToken(token);
+                var typeClaim = jwt.Claims.FirstOrDefault(c => c.Type == "type");
+                if (typeClaim == null || typeClaim.Value != "verify") return false;
+                var userIdClaim = jwt.Claims.FirstOrDefault(c => c.Type == JwtRegisteredClaimNames.Sub);
+                if (userIdClaim == null || !Guid.TryParse(userIdClaim.Value, out Guid userId)) return false;
+                var user = await _repo.GetByIdAsync(userId);
+                if (user == null) return false;
+                if (user.IsVerified) return true;
+                user.IsVerified = true;
+                user.UpdatedAt = DateTime.UtcNow;
+                await _repo.UpdateAsync(user);
+                return true;
+            }
+            catch { return false; }
         }
 
         public async Task<string> LoginAsync(LoginDto dto)
@@ -216,7 +259,6 @@ namespace AuthService.Services
             var user = await _repo.GetByEmailAsync(dto.Email);
             if (user == null)
             {
-                _logger.LogInformation("Password reset requested for email: {Email}", dto.Email);
                 return true;
             }
 
@@ -233,7 +275,6 @@ namespace AuthService.Services
                 RequestedAt = DateTime.UtcNow
             });
 
-            _logger.LogInformation("Password reset email sent to: {Email}", dto.Email);
             return true;
         }
 
@@ -265,7 +306,6 @@ namespace AuthService.Services
                 ChangeAt = DateTime.UtcNow
             });
 
-            _logger.LogInformation("Password reset successful for user: {UserId}", user.Id);
             return true;
         }
 
@@ -293,7 +333,7 @@ namespace AuthService.Services
                 Username = user.FullName ?? user.Username,
                 ChangeAt = DateTime.UtcNow
             });
-            _logger.LogInformation("Password changed successfully for user: {UserId}", user.Id);
+
             return true;
         }
 

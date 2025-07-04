@@ -39,4 +39,5 @@ public class User
     
     public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
     public DateTime? UpdatedAt { get; set; }
+    public bool IsVerified { get; set; } = false;
 }

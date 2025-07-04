@@ -88,7 +88,7 @@ namespace AuthService.Services
                     existingUser.ProfilePicture = googleUserInfo.Picture;
                     existingUser.LoginProvider = "Google";
                     existingUser.UpdatedAt = DateTime.UtcNow;
-                    
+                    existingUser.IsVerified = true;
                     await _userRepository.UpdateAsync(existingUser);
                 }
                 else
@@ -101,7 +101,8 @@ namespace AuthService.Services
                         GoogleId = googleUserInfo.Sub,
                         ProfilePicture = googleUserInfo.Picture,
                         LoginProvider = "Google",
-                        CreatedAt = DateTime.UtcNow
+                        CreatedAt = DateTime.UtcNow,
+                        IsVerified = true
                     };
 
                     await _userRepository.AddAsync(existingUser);

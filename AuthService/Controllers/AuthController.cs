@@ -137,6 +137,14 @@ namespace AuthService.Controllers
             return Ok(new { message = "Password has been changed successfully." });
         }
 
-
+        [HttpGet("verify-email")]
+        public async Task<IActionResult> VerifyEmail([FromQuery] string token)
+        {
+            var result = await _auth.VerifyEmailAsync(token);
+            if (result)
+                return Ok(new { message = "Email verified successfully." });
+            else
+                return BadRequest(new { message = "Invalid or expired token." });
+        }
     }
 }
