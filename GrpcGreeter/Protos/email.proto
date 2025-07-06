@@ -4,25 +4,17 @@ option csharp_namespace = "GrpcGreeter";
 
 package email;
 
-// Email service definition
 service EmailService {
-  // Send email
   rpc SendEmail (SendEmailRequest) returns (SendEmailResponse);
   
-  // Send registration notification
   rpc SendRegistrationNotification (RegistrationNotificationRequest) returns (SendEmailResponse);
   
-  // Send password reset email
   rpc SendPasswordResetEmail (PasswordResetRequest) returns (SendEmailResponse);
   
-  // Send change password notification
   rpc SendChangePasswordNotification (ChangePasswordNotificationRequest) returns (SendEmailResponse);
   
-  // Send file event notification
   rpc SendFileEventNotification (FileEventNotificationRequest) returns (SendEmailResponse);
 }
-
-// Request/Response messages for email operations
 message SendEmailRequest {
   string to = 1;
   string subject = 2;
@@ -67,7 +59,7 @@ message ChangePasswordNotificationRequest {
 message FileEventNotificationRequest {
   string email = 1;
   string firstName = 2;
-  string eventType = 3; // "upload", "download", "delete"
+  string eventType = 3;
   string fileName = 4;
   string fileSize = 5;
   string timestamp = 6;

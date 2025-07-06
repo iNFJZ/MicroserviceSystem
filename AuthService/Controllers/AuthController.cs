@@ -1,13 +1,8 @@
 ﻿using AuthService.DTOs;
 using AuthService.Services;
-using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Authorization;               
 using Microsoft.AspNetCore.Mvc;
 using System.Security.Claims;
-using System.Collections.Generic;
-using System.Text.Json;
-using Microsoft.Extensions.Logging;
-using System.IO;
 
 namespace AuthService.Controllers
 {
@@ -17,34 +12,68 @@ namespace AuthService.Controllers
     {
         private readonly IAuthService _auth;
         private readonly IGoogleAuthService _googleAuth;
-        private readonly ILogger<AuthController> _logger;
 
-        public AuthController(IAuthService auth, IGoogleAuthService googleAuth, ILogger<AuthController> logger)
+        public AuthController(IAuthService auth, IGoogleAuthService googleAuth)
         {
             _auth = auth;
             _googleAuth = googleAuth;
-            _logger = logger;
         }
 
         [HttpPost("register")]
         public async Task<IActionResult> Register(RegisterDto dto)
         {
-            var token = await _auth.RegisterAsync(dto);
-            return Ok(new { token });
+            if (!ModelState.IsValid)
+            {
+                var errors = ModelState.Values
+                    .SelectMany(v => v.Errors)
+                    .Select(e => e.ErrorMessage)
+                    .ToList();
+                return BadRequest(new { message = "Validation failed", errors });
+            }
+
+            try
+            {
+                var token = await _auth.RegisterAsync(dto);
+                return Ok(new { token });
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(new { message = ex.Message });
+            }
         }
 
         [HttpPost("login")]
         public async Task<IActionResult> Login(LoginDto dto)
         {
-            var token = await _auth.LoginAsync(dto);
-            return Ok(new { token });
+            if (!ModelState.IsValid)
+            {
+                var errors = ModelState.Values
+                    .SelectMany(v => v.Errors)
+                    .Select(e => e.ErrorMessage)
+                    .ToList();
+                return BadRequest(new { message = "Validation failed", errors });
+            }
+
+            try
+            {
+                var token = await _auth.LoginAsync(dto);
+                return Ok(new { token });
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(new { message = ex.Message });
+            }
         }
 
         [HttpPost("login/google")]
         public async Task<IActionResult> LoginWithGoogle([FromBody] GoogleLoginDto dto)
         {
-            if (dto == null || string.IsNullOrEmpty(dto.AccessToken))
-                return BadRequest(new { message = "Request body is required or AccessToken is required" });
+            
+            if (dto == null || string.IsNullOrEmpty(dto.Code) || string.IsNullOrEmpty(dto.RedirectUri))
+            {
+                return BadRequest(new { message = "Code and RedirectUri are required" });
+            }
+            
             try
             {
                 var token = await _googleAuth.LoginWithGoogleAsync(dto);
@@ -53,6 +82,10 @@ namespace AuthService.Controllers
             catch (Exceptions.InvalidGoogleTokenException ex)
             {
                 return BadRequest(new { message = ex.Message });
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(new { message = "An unexpected error occurred during Google login" });
             }
         }
 
@@ -114,27 +147,75 @@ namespace AuthService.Controllers
         [HttpPost("forgot-password")]
         public async Task<IActionResult> ForgotPassword(ForgotPasswordDto dto)
         {
-            var result = await _auth.ForgotPasswordAsync(dto);
-            return Ok(new { message = "If the email exists, a password reset link has been sent." });
+            if (!ModelState.IsValid)
+            {
+                var errors = ModelState.Values
+                    .SelectMany(v => v.Errors)
+                    .Select(e => e.ErrorMessage)
+                    .ToList();
+                return BadRequest(new { message = "Validation failed", errors });
+            }
+
+            try
+            {
+                var result = await _auth.ForgotPasswordAsync(dto);
+                return Ok(new { message = "If the email exists, a password reset link has been sent." });
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(new { message = ex.Message });
+            }
         }
 
         [HttpPost("reset-password")]
         public async Task<IActionResult> ResetPassword(ResetPasswordDto dto)
         {
-            var result = await _auth.ResetPasswordAsync(dto);
-            return Ok(new { message = "Password has been reset successfully." });
+            if (!ModelState.IsValid)
+            {
+                var errors = ModelState.Values
+                    .SelectMany(v => v.Errors)
+                    .Select(e => e.ErrorMessage)
+                    .ToList();
+                return BadRequest(new { message = "Validation failed", errors });
+            }
+
+            try
+            {
+                var result = await _auth.ResetPasswordAsync(dto);
+                return Ok(new { message = "Password has been reset successfully." });
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(new { message = ex.Message });
+            }
         }
 
         [Authorize]
         [HttpPost("change-password")]
         public async Task<IActionResult> ChangePassword(ChangePasswordDto dto)
         {
+            if (!ModelState.IsValid)
+            {
+                var errors = ModelState.Values
+                    .SelectMany(v => v.Errors)
+                    .Select(e => e.ErrorMessage)
+                    .ToList();
+                return BadRequest(new { message = "Validation failed", errors });
+            }
+
             var userIdClaim = User.FindFirst(ClaimTypes.NameIdentifier);
             if (userIdClaim == null || !Guid.TryParse(userIdClaim.Value, out Guid userId))
                 return Unauthorized();
 
-            var result = await _auth.ChangePasswordAsync(userId, dto);
-            return Ok(new { message = "Password has been changed successfully." });
+            try
+            {
+                var result = await _auth.ChangePasswordAsync(userId, dto);
+                return Ok(new { message = "Password has been changed successfully." });
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(new { message = ex.Message });
+            }
         }
 
         [HttpGet("verify-email")]
@@ -145,6 +226,76 @@ namespace AuthService.Controllers
                 return Ok(new { message = "Email verified successfully." });
             else
                 return BadRequest(new { message = "Invalid or expired token." });
+        }
+
+        [Authorize]
+        [HttpGet("users")]
+        public async Task<IActionResult> GetAllUsers()
+        {
+            var users = await _auth.GetAllUsersAsync();
+            var result = users.Select(u => new {
+                u.Id,
+                u.Username,
+                u.FullName,
+                u.Email,
+                u.PhoneNumber,
+                u.DateOfBirth,
+                u.Address,
+                u.Bio,
+                u.Status,
+                u.LoginProvider,
+                u.IsVerified,
+                u.CreatedAt,
+                u.LastLoginAt,
+                u.DeletedAt,
+                IsDeleted = u.IsDeleted
+            });
+            return Ok(result);
+        }
+
+        [Authorize]
+        [HttpPatch("users/{id}")]
+        public async Task<IActionResult> UpdateUser(Guid id, [FromBody] UpdateUserDto dto)
+        {
+            if (!ModelState.IsValid)
+            {
+                var errors = ModelState.Values
+                    .SelectMany(v => v.Errors)
+                    .Select(e => e.ErrorMessage)
+                    .ToList();
+                return BadRequest(new { message = "Validation failed", errors });
+            }
+
+            try
+            {
+                var result = await _auth.UpdateUserAsync(id, dto);
+                if (result)
+                    return Ok(new { message = "User updated successfully" });
+                else
+                    return NotFound(new { message = "User not found" });
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(new { message = ex.Message });
+            }
+        }
+
+        [Authorize]
+        [HttpDelete("users/{id}")]
+        public async Task<IActionResult> DeleteUser(Guid id)
+        {
+            try
+            {
+                var result = await _auth.DeleteUserAsync(id);
+                if (result)
+                    return Ok(new { message = "User has been deactivated successfully" });
+                else
+                    return NotFound(new { message = "User not found or already deactivated" });
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(new { message = ex.Message });
+            }
         }
     }
 }

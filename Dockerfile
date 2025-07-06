@@ -15,6 +15,7 @@ COPY FileService/FileService.csproj FileService/
 COPY GatewayApi/GatewayApi.csproj GatewayApi/
 COPY EmailService/EmailService.csproj EmailService/
 COPY GrpcGreeter/GrpcGreeter.csproj GrpcGreeter/
+COPY nuget.config ./
 
 # Restore dependencies for all projects
 RUN dotnet restore "AuthService/AuthService.csproj" && \
@@ -55,25 +56,13 @@ COPY --from=build /app/publish/GrpcGreeter /app/GrpcGreeter
 COPY AuthService/appsettings.json /app/AuthService/appsettings.json
 COPY AuthService/appsettings.Development.json /app/AuthService/appsettings.Development.json
 
+# Copy configuration files for FileService
+COPY FileService/file.appsettings.json /app/FileService/file.appsettings.json
+COPY FileService/file.appsettings.Development.json /app/FileService/file.appsettings.Development.json
+
+# Copy configuration files for EmailService
+COPY EmailService/appsettings.json /app/EmailService/appsettings.json
+COPY EmailService/appsettings.Development.json /app/EmailService/appsettings.Development.json
+
 # Copy ocelot.json for GatewayApi
 COPY GatewayApi/ocelot.json /app/GatewayApi/ocelot.json
-
-# Create startup script
-RUN echo '#!/bin/bash\
-echo "Starting Microservice System..."\
-echo "Available services:"\
-echo "1. AuthService - Port 5001"\
-echo "2. FileService - Port 5002"\
-echo "3. GatewayApi - Port 5000"\
-echo ""\
-echo "To start a specific service, use:"\
-echo "dotnet /app/AuthService/AuthService.dll"\
-echo "dotnet /app/FileService/FileService.dll"\
-echo "dotnet /app/GatewayApi/GatewayApi.dll"\
-echo ""\
-echo "Default: Starting GatewayApi on port 5000"\
-cd /app/GatewayApi && dotnet GatewayApi.dll' > /app/start.sh && chmod +x /app/start.sh
-
-# Set default entry point to GatewayApi
-WORKDIR /app
-# ENTRYPOINT is now set per service in docker-compose.yml

@@ -1,4 +1,5 @@
 ﻿using AuthService.DTOs;
+using AuthService.Models;
 
 namespace AuthService.Services
 {
@@ -14,5 +15,8 @@ namespace AuthService.Services
         Task<bool> ResetPasswordAsync(ResetPasswordDto dto);
         Task<bool> ChangePasswordAsync(Guid userId, ChangePasswordDto dto);
         Task<bool> VerifyEmailAsync(string token);
+        Task<List<User>> GetAllUsersAsync();
+        Task<bool> UpdateUserAsync(Guid userId, UpdateUserDto dto);
+        Task<bool> DeleteUserAsync(Guid userId);
     }
 }

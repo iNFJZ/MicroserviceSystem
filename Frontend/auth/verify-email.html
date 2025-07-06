@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Email Verification</title>
+            <link rel="stylesheet" href="../shared/styles.css">
+    <style>
+        body { display: flex; align-items: center; justify-content: center; height: 100vh; background: #f7f9fc; }
+        .verify-card { background: #fff; padding: 2rem 2.5rem; border-radius: 12px; box-shadow: 0 2px 16px #0001; text-align: center; min-width: 350px; }
+        .btn { margin-top: 1.5rem; }
+    </style>
+</head>
+<body>
+    <div class="verify-card">
+        <h2 id="verify-title">Verifying your email...</h2>
+        <p id="verify-message"></p>
+        <a href="login.html" id="back-to-login" class="btn btn-primary" style="display:none;">Back to Login</a>
+    </div>
+    <script src="../shared/toast.js"></script>
+    <script type="module" src="../shared/app.js"></script>
+    <script>
+    const API_BASE_URL = 'http://localhost:5050';
+    function getToken() {
+        const params = new URLSearchParams(window.location.search);
+        return params.get('token');
+    }
+    async function verifyEmail() {
+        const token = getToken();
+        const title = document.getElementById('verify-title');
+        const msg = document.getElementById('verify-message');
+        const backBtn = document.getElementById('back-to-login');
+        if (!token) {
+            title.textContent = 'Verification Failed';
+            msg.textContent = 'Invalid verification link.';
+            backBtn.style.display = '';
+            return;
+        }
+        try {
+            const res = await fetch(`${API_BASE_URL}/api/Auth/verify-email?token=${encodeURIComponent(token)}`);
+            const data = await res.json();
+            if (res.ok) {
+                title.textContent = 'Email Verified!';
+                msg.textContent = 'Your account has been successfully verified. You can now log in.';
+            } else {
+                title.textContent = 'Verification Failed';
+                msg.textContent = data.message || 'Verification failed or the token has expired.';
+            }
+        } catch (err) {
+            title.textContent = 'Verification Failed';
+            msg.textContent = 'An error occurred during verification.';
+        }
+        backBtn.style.display = '';
+    }
+    verifyEmail();
+    </script>
+</body>
+</html> 

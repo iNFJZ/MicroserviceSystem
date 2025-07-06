@@ -5,7 +5,6 @@ using Grpc.AspNetCore.Server;
 
 var builder = WebApplication.CreateBuilder(args);
 
-// Add services to the container.
 builder.Services.AddControllers();
 builder.Services.AddGrpc();
 builder.Services.Configure<FileService.Models.MinioOptions>(builder.Configuration.GetSection("Minio"));
@@ -31,7 +30,7 @@ builder.WebHost.ConfigureKestrel(options =>
 
 var app = builder.Build();
 
-// Configure the HTTP request pipeline.
+if (app.Environment.IsDevelopment())
 app.MapControllers();
 app.MapGrpcService<SimpleFileGrpcService>();
 app.MapGrpcService<SimpleEmailGrpcService>();

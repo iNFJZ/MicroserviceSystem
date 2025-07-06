@@ -30,7 +30,7 @@ namespace AuthService.Repositories
             var cachedUser = await _cacheService.GetUserByEmailAsync(email);
             if (cachedUser != null)
             {
-                var userInDb = await _context.Users.FirstOrDefaultAsync(u => u.Email == email);
+                var userInDb = await _context.Users.FirstOrDefaultAsync(u => u.Email == email && u.DeletedAt == null);
                 if (userInDb == null)
                 {
                     await _cacheService.DeleteUserByEmailAsync(email);
@@ -39,7 +39,7 @@ namespace AuthService.Repositories
                 return userInDb; 
             }
 
-            var user = await _context.Users.FirstOrDefaultAsync(u => u.Email == email);
+            var user = await _context.Users.FirstOrDefaultAsync(u => u.Email == email && u.DeletedAt == null);
             if (user != null)
                 await _cacheService.SetUserAsync(user);
 
@@ -48,7 +48,7 @@ namespace AuthService.Repositories
 
         public async Task<User?> GetByIdAsync(Guid id)
         {
-            var user = await _context.Users.FirstOrDefaultAsync(u => u.Id == id);
+            var user = await _context.Users.FirstOrDefaultAsync(u => u.Id == id && u.DeletedAt == null);
             if (user != null)
             {
                 await _cacheService.SetUserAsync(user);
@@ -63,7 +63,18 @@ namespace AuthService.Repositories
 
         public async Task<User?> GetByGoogleIdAsync(string googleId)
         {
-            var user = await _context.Users.FirstOrDefaultAsync(u => u.GoogleId == googleId);
+            var user = await _context.Users.FirstOrDefaultAsync(u => u.GoogleId == googleId && u.DeletedAt == null);
+            if (user != null)
+            {
+                await _cacheService.SetUserAsync(user);
+                return user;
+            }
+            return null;
+        }
+
+        public async Task<User?> GetByUsernameAsync(string username)
+        {
+            var user = await _context.Users.FirstOrDefaultAsync(u => u.Username == username && u.DeletedAt == null);
             if (user != null)
             {
                 await _cacheService.SetUserAsync(user);
@@ -93,6 +104,16 @@ namespace AuthService.Repositories
                 await _cacheService.DeleteUserAsync(id);
                 await _sessionService.RemoveAllUserSessionsAsync(id);
             }
+        }
+
+        public async Task<List<User>> GetAllAsync()
+        {
+            return await _context.Users.ToListAsync();
+        }
+
+        public async Task<List<User>> GetAllActiveAsync()
+        {
+            return await _context.Users.Where(u => u.DeletedAt == null).ToListAsync();
         }
     }
 }

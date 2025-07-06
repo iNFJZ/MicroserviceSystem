@@ -4,37 +4,25 @@ option csharp_namespace = "GrpcGreeter";
 
 package auth;
 
-// Authentication service definition
 service AuthService {
-  // User registration
   rpc Register (RegisterRequest) returns (RegisterResponse);
   
-  // User login
   rpc Login (LoginRequest) returns (LoginResponse);
   
-  // User logout
   rpc Logout (LogoutRequest) returns (LogoutResponse);
   
-  // Validate token
   rpc ValidateToken (ValidateTokenRequest) returns (ValidateTokenResponse);
   
-  // Get user sessions
   rpc GetUserSessions (GetUserSessionsRequest) returns (GetUserSessionsResponse);
   
-  // Remove user session
   rpc RemoveUserSession (RemoveUserSessionRequest) returns (RemoveUserSessionResponse);
   
-  // Forgot password
   rpc ForgotPassword (ForgotPasswordRequest) returns (ForgotPasswordResponse);
   
-  // Reset password
   rpc ResetPassword (ResetPasswordRequest) returns (ResetPasswordResponse);
   
-  // Change password
   rpc ChangePassword (ChangePasswordRequest) returns (ChangePasswordResponse);
 }
-
-// Request/Response messages for authentication
 message RegisterRequest {
   string username = 1;
   string email = 2;

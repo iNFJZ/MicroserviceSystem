@@ -170,4 +170,6 @@ app.UseTokenValidation();
 app.MapControllers();
 app.MapGrpcService<FileService.Services.FileGrpcService>();
 
+app.MapGet("/health", () => Results.Ok(new { status = "healthy", service = "FileService", timestamp = DateTime.UtcNow }));
+
 app.Run();

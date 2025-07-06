@@ -41,7 +41,6 @@ namespace FileService.Middleware
                 return;
             }
 
-            // Only validate token for endpoints that require authorization
             var authorizeAttribute = endpoint?.Metadata?.GetMetadata<Microsoft.AspNetCore.Authorization.AuthorizeAttribute>();
             if (authorizeAttribute == null)
             {

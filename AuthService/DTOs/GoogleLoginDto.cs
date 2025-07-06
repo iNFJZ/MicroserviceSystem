@@ -5,6 +5,8 @@ namespace AuthService.DTOs
     public class GoogleLoginDto
     {
         [Required]
-        public string AccessToken { get; set; } = string.Empty;
+        public string Code { get; set; } = string.Empty;
+        [Required]
+        public string RedirectUri { get; set; } = string.Empty;
     }
 } 

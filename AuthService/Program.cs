@@ -9,6 +9,7 @@ using StackExchange.Redis;
 using System;
 using System.Text;
 using Microsoft.OpenApi.Models;
+using System.Threading.RateLimiting;
 var builder = WebApplication.CreateBuilder(args);
 
 builder.WebHost.ConfigureKestrel(options =>
@@ -28,13 +29,11 @@ builder.WebHost.ConfigureKestrel(options =>
     });
 });
 
-// Add Redis connection with retry logic
 builder.Services.AddSingleton<IConnectionMultiplexer>(sp =>
 {
     var configuration = sp.GetRequiredService<IConfiguration>();
     var redisConnectionString = configuration.GetConnectionString("Redis") ?? "localhost:6379";
     
-    // Add retry options to Redis connection
     var options = ConfigurationOptions.Parse(redisConnectionString);
     options.AbortOnConnectFail = false;
     options.ConnectRetry = 5;
@@ -47,7 +46,6 @@ builder.Services.AddSingleton<IConnectionMultiplexer>(sp =>
 builder.Services.AddDbContext<DBContext>(options =>
     options.UseNpgsql(builder.Configuration.GetConnectionString("DefaultConnection")));
 
-// Register services
 builder.Services.AddScoped<IUserRepository, UserRepository>();
 builder.Services.AddScoped<ICacheService, RedisService>();
 builder.Services.AddScoped<IHashService, RedisService>();
@@ -91,9 +89,30 @@ builder.Services.AddCors(options =>
     });
 });
 
-// Add services to the container.
+builder.Services.AddRateLimiter(options =>
+{
+    options.GlobalLimiter = PartitionedRateLimiter.Create<HttpContext, string>(context =>
+        RateLimitPartition.GetFixedWindowLimiter(
+            partitionKey: context.User.Identity?.Name ?? context.Request.Headers.Host.ToString(),
+            factory: partition => new FixedWindowRateLimiterOptions
+            {
+                AutoReplenishment = true,
+                PermitLimit = 100,
+                Window = TimeSpan.FromMinutes(1)
+            }));
+    
+    options.AddPolicy<string>("auth", context =>
+        RateLimitPartition.GetFixedWindowLimiter(
+            partitionKey: context.User.Identity?.Name ?? context.Request.Headers.Host.ToString(),
+            factory: partition => new FixedWindowRateLimiterOptions
+            {
+                AutoReplenishment = true,
+                PermitLimit = 5,
+                Window = TimeSpan.FromMinutes(1)
+            }));
+});
+
 builder.Services.AddControllers();
-// Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen(c =>
 {
@@ -136,7 +155,6 @@ builder.Services.AddScoped<IAuthService, AuthService.Services.AuthService>(sp =>
 
 var app = builder.Build();
 
-// Auto migrate database
 using (var scope = app.Services.CreateScope())
 {
     var context = scope.ServiceProvider.GetRequiredService<DBContext>();
@@ -151,7 +169,6 @@ using (var scope = app.Services.CreateScope())
     }
 }
 
-// Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
 {
     app.UseSwagger();
@@ -159,13 +176,17 @@ if (app.Environment.IsDevelopment())
 }
 
 app.UseMiddleware<GlobalExceptionHandler>();
+app.UseMiddleware<SecurityHeadersMiddleware>();
 app.UseMiddleware<StrictAuthValidationMiddleware>();
 
 app.UseCors("AllowAll");
+app.UseRateLimiter();
 
 app.UseAuthentication();
 app.UseAuthorization();
 app.MapControllers();
 app.MapGrpcService<AuthService.Services.AuthGrpcService>();
+
+app.MapGet("/health", () => Results.Ok(new { status = "healthy", service = "AuthService", timestamp = DateTime.UtcNow }));
 
 app.Run();

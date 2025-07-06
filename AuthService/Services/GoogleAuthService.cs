@@ -24,7 +24,6 @@ namespace AuthService.Services
             ISessionService sessionService,
             IJwtService jwtService,
             IEmailMessageService emailMessageService,
-            ILogger<GoogleAuthService> logger,
             IConfiguration config,
             HttpClient httpClient)
         {
@@ -32,7 +31,6 @@ namespace AuthService.Services
             _sessionService = sessionService;
             _jwtService = jwtService;
             _emailMessageService = emailMessageService;
-            _logger = logger;
             _config = config;
             _httpClient = httpClient;
         }
@@ -74,7 +72,31 @@ namespace AuthService.Services
 
         public async Task<string> LoginWithGoogleAsync(GoogleLoginDto dto)
         {
-            var googleUserInfo = await GetGoogleUserInfoAsync(dto.AccessToken);
+            var clientId = _config["GoogleAuth:ClientId"];
+            var clientSecret = _config["GoogleAuth:ClientSecret"];
+            
+            var tokenRequest = new HttpRequestMessage(HttpMethod.Post, "https://oauth2.googleapis.com/token")
+            {
+                Content = new FormUrlEncodedContent(new Dictionary<string, string>
+                {
+                    { "code", dto.Code },
+                    { "client_id", clientId ?? throw new InvalidOperationException("Google ClientId is not configured") },
+                    { "client_secret", clientSecret ?? throw new InvalidOperationException("Google ClientSecret is not configured") },
+                    { "redirect_uri", dto.RedirectUri },
+                    { "grant_type", "authorization_code" }
+                })
+            };
+            
+            var tokenResponse = await _httpClient.SendAsync(tokenRequest);
+            var tokenContent = await tokenResponse.Content.ReadAsStringAsync();
+            
+            if (!tokenResponse.IsSuccessStatusCode)
+                throw new InvalidGoogleTokenException("Failed to exchange code for access token: " + tokenContent);
+
+            var tokenData = JsonSerializer.Deserialize<JsonElement>(tokenContent);
+            var accessToken = tokenData.GetProperty("access_token").GetString() ?? throw new InvalidGoogleTokenException("Access token is null");
+
+            var googleUserInfo = await GetGoogleUserInfoAsync(accessToken);
 
             var existingUser = await _userRepository.GetByGoogleIdAsync(googleUserInfo.Sub);
             
@@ -95,7 +117,9 @@ namespace AuthService.Services
                 {
                     existingUser = new User
                     {
-                        Username = GenerateUsernameFromGoogleInfo(googleUserInfo),
+                        Username = googleUserInfo.Email != null && googleUserInfo.Email.Contains("@")
+                            ? googleUserInfo.Email.Split('@')[0]
+                            : GenerateUsernameFromGoogleInfo(googleUserInfo),
                         FullName = googleUserInfo.Name,
                         Email = googleUserInfo.Email,
                         GoogleId = googleUserInfo.Sub,

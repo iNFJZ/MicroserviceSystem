@@ -159,28 +159,31 @@ namespace EmailService
             var mail = new MailMessage();
             mail.To.Add(emailEvent.To);
             mail.Subject = _registerSubject;
+            mail.From = new MailAddress(_smtpUser, "Microservice System");
+            mail.IsBodyHtml = true;
             if (!string.IsNullOrEmpty(emailEvent.VerifyLink))
             {
-                mail.Body = $"Hello {emailEvent.Username},\n\n" +
-                           "Thank you for registering with our service. Please verify your email by clicking the link below within 1 hour:\n\n" +
-                           $"{emailEvent.VerifyLink}\n\n" +
-                           "If you did not register, please ignore this email.\n\n" +
-                           $"Account registered at: {vnTime:yyyy-MM-dd HH:mm:ss} (Vietnam Time)\n\n" +
-                           "Best regards,\nMicroservice System Team";
+                mail.Body = $@"<p>Dear {emailEvent.Username},</p>
+<p>Thank you for registering an account with <strong>Microservice System</strong>.</p>
+<p>To complete your registration, please verify your email address by clicking the button below within 1 hour:</p>
+<p><a href='{emailEvent.VerifyLink}' style='display:inline-block;padding:10px 20px;background:#667eea;color:#fff;text-decoration:none;border-radius:5px;font-weight:bold;'>Verify Email</a></p>
+<p>If you did not create this account, please ignore this email.</p>
+<p style='color:#888;'>Registration time: {vnTime:yyyy-MM-dd HH:mm:ss} (Vietnam Time)</p>
+<p>Best regards,<br/>Microservice System Team</p>";
             }
             else
             {
-                mail.Body = $"Welcome to Microservice System, {emailEvent.Username}!\n\n" +
-                           "Thank you for registering with our service. Your account has been successfully created.\n\n" +
-                           "You can now:\n" +
-                           "- Upload and manage your files securely using our MinIO-powered storage.\n" +
-                           "- Register, log in, and manage your sessions using JWT authentication.\n" +
-                           "- Enjoy seamless and secure access to all our microservices.\n\n" +
-                           $"Account registered at: {vnTime:yyyy-MM-dd HH:mm:ss} (Vietnam Time)\n\n" +
-                           "If you have any questions or need support, feel free to contact us.\n\n" +
-                           "Best regards,\nMicroservice System Team";
+                mail.Body = $@"<p>Dear {emailEvent.Username},</p>
+<p>Welcome to <strong>Microservice System</strong>! Your account has been successfully created.</p>
+<ul>
+    <li>Securely upload and manage your files with our MinIO-powered storage.</li>
+    <li>Register, log in, and manage your sessions using JWT authentication.</li>
+    <li>Enjoy seamless and secure access to all our microservices.</li>
+</ul>
+<p style='color:#888;'>Registration time: {vnTime:yyyy-MM-dd HH:mm:ss} (Vietnam Time)</p>
+<p>If you have any questions or need support, please contact us.</p>
+<p>Best regards,<br/>Microservice System Team</p>";
             }
-            mail.From = new MailAddress(_smtpUser, "Microservice System");
             try
             {
                 using var smtp = new SmtpClient(_smtpHost, _smtpPort)
@@ -203,38 +206,43 @@ namespace EmailService
             var mail = new MailMessage();
             mail.To.Add(emailEvent.To);
             mail.From = new MailAddress(_smtpUser, "Microservice System");
+            mail.IsBodyHtml = true;
             switch (emailEvent.EventType?.ToLowerInvariant())
             {
                 case "upload":
                     mail.Subject = _fileUploadSubject;
-                    mail.Body = $"Hello {emailEvent.Username},\n\n" +
-                                $"Your file '{emailEvent.FileName}' has been uploaded successfully at {vnTime:yyyy-MM-dd HH:mm:ss} (Vietnam Time).\n\n" +
-                                "You can now manage your files, download, or delete them anytime using our file management service.\n\n" +
-                                "Thank you for using Microservice System!\n\n" +
-                                "Best regards,\nMicroservice System Team";
+                    mail.Body = $@"<p>Dear {emailEvent.Username},</p>
+<p>Your file <strong>'{emailEvent.FileName}'</strong> has been <strong>successfully uploaded</strong> to your account.</p>
+<p>Upload time: {vnTime:yyyy-MM-dd HH:mm:ss} (Vietnam Time)</p>
+<p>You can now manage, download, or delete your files at any time using our file management service.</p>
+<p>If you did not perform this action, please review your account activity for security.</p>
+<p>Thank you for using Microservice System!</p>
+<p>Best regards,<br/>Microservice System Team</p>";
                     break;
                 case "download":
                     mail.Subject = _fileDownloadSubject;
-                    mail.Body = $"Hello {emailEvent.Username},\n\n" +
-                                $"You have successfully downloaded the file '{emailEvent.FileName}' at {vnTime:yyyy-MM-dd HH:mm:ss} (Vietnam Time).\n\n" +
-                                "If you did not perform this action, please review your account activity for security.\n\n" +
-                                "Thank you for using Microservice System!\n\n" +
-                                "Best regards,\nMicroservice System Team";
+                    mail.Body = $@"<p>Dear {emailEvent.Username},</p>
+<p>You have <strong>successfully downloaded</strong> the file <strong>'{emailEvent.FileName}'</strong>.</p>
+<p>Download time: {vnTime:yyyy-MM-dd HH:mm:ss} (Vietnam Time)</p>
+<p>If you did not perform this action, please review your account activity for security.</p>
+<p>Thank you for using Microservice System!</p>
+<p>Best regards,<br/>Microservice System Team</p>";
                     break;
                 case "delete":
                     mail.Subject = _fileDeleteSubject;
-                    mail.Body = $"Hello {emailEvent.Username},\n\n" +
-                                $"Your file '{emailEvent.FileName}' has been deleted successfully at {vnTime:yyyy-MM-dd HH:mm:ss} (Vietnam Time).\n\n" +
-                                "If you did not perform this action, please check your account activity or contact support.\n\n" +
-                                "Thank you for using Microservice System!\n\n" +
-                                "Best regards,\nMicroservice System Team";
+                    mail.Body = $@"<p>Dear {emailEvent.Username},</p>
+<p>Your file <strong>'{emailEvent.FileName}'</strong> has been <strong>deleted</strong> from your account.</p>
+<p>Deletion time: {vnTime:yyyy-MM-dd HH:mm:ss} (Vietnam Time)</p>
+<p>If you did not perform this action, please check your account activity or contact support.</p>
+<p>Thank you for using Microservice System!</p>
+<p>Best regards,<br/>Microservice System Team</p>";
                     break;
                 default:
                     mail.Subject = $"File {emailEvent.EventType} Notification";
-                    mail.Body = $"Hello {emailEvent.Username},\n\n" +
-                                $"Your file '{emailEvent.FileName}' was {emailEvent.EventType?.ToLowerInvariant()}ed successfully at {vnTime:yyyy-MM-dd HH:mm:ss} (Vietnam Time).\n\n" +
-                                "Thank you for using Microservice System!\n\n" +
-                                "Best regards,\nMicroservice System Team";
+                    mail.Body = $@"<p>Dear {emailEvent.Username},</p>
+<p>Your file <strong>'{emailEvent.FileName}'</strong> was <strong>{emailEvent.EventType?.ToLowerInvariant()}ed</strong> at {vnTime:yyyy-MM-dd HH:mm:ss} (Vietnam Time).</p>
+<p>Thank you for using Microservice System!</p>
+<p>Best regards,<br/>Microservice System Team</p>";
                     break;
             }
             try
@@ -259,20 +267,37 @@ namespace EmailService
             var mail = new MailMessage();
             mail.To.Add(emailEvent.To);
             mail.Subject = _resetPasswordSubject;
-            mail.Body = $"Hello {emailEvent.Username},\n\n" +
-                        "We received a request to reset your password for your Microservice System account.\n\n" +
-                        "Your password reset token is:\n" +
-                        $"{emailEvent.ResetToken}\n\n" +
-                        "Please use this token to reset your password. This token will expire in {_resetTokenExpiryMinutes} minutes.\n\n" +
-                        "If you did not request this password reset, please ignore this email or contact support immediately.\n\n" +
-                        $"Request made at: {vnTime:yyyy-MM-dd HH:mm:ss} (Vietnam Time)\n\n" +
-                        "To reset your password, use the following API endpoint:\n" +
-                        "POST /api/auth/reset-password\n" +
-                        "Body: {\"token\": \"your-token\", \"newPassword\": \"your-new-password\"}\n\n" +
-                        "For security reasons, all your active sessions will be invalidated after password reset.\n\n" +
-                        "Thank you for using Microservice System!\n\n" +
-                        "Best regards,\nMicroservice System Team";
             mail.From = new MailAddress(_smtpUser, "Microservice System");
+            mail.IsBodyHtml = true;
+            
+            if (!string.IsNullOrEmpty(emailEvent.ResetLink))
+            {
+                mail.Body = $@"<p>Dear {emailEvent.Username},</p>
+<p>We received a request to <strong>reset your password</strong> for your Microservice System account.</p>
+<p>To reset your password, please click the button below within <strong>{_resetTokenExpiryMinutes} minutes</strong>:</p>
+<p><a href='{emailEvent.ResetLink}' style='display:inline-block;padding:10px 20px;background:#667eea;color:#fff;text-decoration:none;border-radius:5px;font-weight:bold;'>Reset Password</a></p>
+<p>If you did not request a password reset, please ignore this email or contact support immediately.</p>
+<p style='color:#888;'>Request time: {vnTime:yyyy-MM-dd HH:mm:ss} (Vietnam Time)</p>
+<p>For security reasons, all your active sessions will be invalidated after password reset.</p>
+<p>Thank you for using Microservice System!</p>
+<p>Best regards,<br/>Microservice System Team</p>";
+            }
+            else
+            {
+                mail.Body = $@"<p>Dear {emailEvent.Username},</p>
+<p>We received a request to <strong>reset your password</strong> for your Microservice System account.</p>
+<p>Your password reset token is:</p>
+<p style='font-size:18px;font-weight:bold;color:#667eea'>{emailEvent.ResetToken}</p>
+<p>This token will expire in <strong>{_resetTokenExpiryMinutes} minutes</strong>.</p>
+<p>If you did not request a password reset, please ignore this email or contact support immediately.</p>
+<p style='color:#888;'>Request time: {vnTime:yyyy-MM-dd HH:mm:ss} (Vietnam Time)</p>
+<p>To reset your password, use the following API endpoint:</p>
+<pre style='background:#f8f9fa;padding:10px;border-radius:5px;'>POST /api/auth/reset-password
+Body: {{ ""token"": ""your-token"", ""newPassword"": ""your-new-password"" }}</pre>
+<p>For security reasons, all your active sessions will be invalidated after password reset.</p>
+<p>Thank you for using Microservice System!</p>
+<p>Best regards,<br/>Microservice System Team</p>";
+            }
             try
             {
                 using var smtp = new SmtpClient(_smtpHost, _smtpPort)
@@ -295,14 +320,15 @@ namespace EmailService
             var mail = new MailMessage();
             mail.To.Add(emailEvent.To);
             mail.Subject = _changePasswordSubject;
-            mail.Body = $"Hello {emailEvent.Username},\n\n" +
-                        "Your password has been successfully changed for your Microservice System account.\n\n" +
-                        "If you did not request this password change, please contact support immediately.\n\n" +
-                        $"Request made at: {vnTime:yyyy-MM-dd HH:mm:ss} (Vietnam Time)\n\n" +
-                        "For security reasons, all your active sessions will be invalidated after password change.\n\n" +
-                        "Thank you for using Microservice System!\n\n" +
-                        "Best regards,\nMicroservice System Team";
             mail.From = new MailAddress(_smtpUser, "Microservice System");
+            mail.IsBodyHtml = true;
+            mail.Body = $@"<p>Dear {emailEvent.Username},</p>
+<p>Your password for your Microservice System account has been <strong>successfully changed</strong>.</p>
+<p>If you did not request this password change, please contact support immediately.</p>
+<p style='color:#888;'>Change time: {vnTime:yyyy-MM-dd HH:mm:ss} (Vietnam Time)</p>
+<p>For security reasons, all your active sessions will be invalidated after password change.</p>
+<p>Thank you for using Microservice System!</p>
+<p>Best regards,<br/>Microservice System Team</p>";
             try
             {
                 using var smtp = new SmtpClient(_smtpHost, _smtpPort)
@@ -310,7 +336,7 @@ namespace EmailService
                     Credentials = new System.Net.NetworkCredential(_smtpUser, _smtpPass),
                     EnableSsl = _smtpEnableSsl
                 };
-                smtp.Send(mail); 
+                smtp.Send(mail);
             }
             catch (Exception ex)
             {

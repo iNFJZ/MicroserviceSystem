@@ -13,7 +13,7 @@ namespace AuthService.Services
         public HunterEmailVerifierService(HttpClient httpClient, IConfiguration config)
         {
             _httpClient = httpClient;
-            _apiKey = config["HunterApiKey"];
+            _apiKey = config["HunterApiKey"] ?? throw new ArgumentNullException(nameof(config), "HunterApiKey configuration is required");
         }
 
         public async Task<bool> VerifyEmailAsync(string email)
