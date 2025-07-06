@@ -7,8 +7,11 @@ namespace AuthService.Repositories
         Task<User?> GetByEmailAsync(string email);
         Task<User?> GetByIdAsync(Guid id);
         Task<User?> GetByGoogleIdAsync(string googleId);
+        Task<User?> GetByUsernameAsync(string username);
         Task AddAsync(User user);
         Task UpdateAsync(User user);
         Task DeleteAsync(Guid id);
+        Task<List<User>> GetAllAsync();
+        Task<List<User>> GetAllActiveAsync();
     }
 }

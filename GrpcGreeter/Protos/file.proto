@@ -4,25 +4,17 @@ option csharp_namespace = "GrpcGreeter";
 
 package file;
 
-// File service definition
 service FileService {
-  // Upload file
   rpc UploadFile (UploadFileRequest) returns (UploadFileResponse);
   
-  // Download file
   rpc DownloadFile (DownloadFileRequest) returns (DownloadFileResponse);
   
-  // Delete file
   rpc DeleteFile (DeleteFileRequest) returns (DeleteFileResponse);
   
-  // Get file info
   rpc GetFileInfo (GetFileInfoRequest) returns (GetFileInfoResponse);
   
-  // List files
   rpc ListFiles (ListFilesRequest) returns (ListFilesResponse);
 }
-
-// Request/Response messages for file operations
 message UploadFileRequest {
   string fileName = 1;
   string contentType = 2;

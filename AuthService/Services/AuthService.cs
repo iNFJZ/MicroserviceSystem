@@ -51,19 +51,55 @@ namespace AuthService.Services
 
         public async Task<string> RegisterAsync(RegisterDto dto)
         {
-            var emailExists = await _emailVerifierService.VerifyEmailAsync(dto.Email);
+            var sanitizedEmail = dto.Email?.Trim().ToLowerInvariant();
+            var sanitizedUsername = dto.Username?.Trim();
+            var sanitizedFullName = dto.FullName?.Trim();
+            
+            if (string.IsNullOrWhiteSpace(sanitizedEmail) || string.IsNullOrWhiteSpace(sanitizedUsername))
+                throw new AuthException("Email and username are required");
+            
+            try
+            {
+                var emailAddress = new System.Net.Mail.MailAddress(sanitizedEmail);
+                if (emailAddress.Address != sanitizedEmail)
+                    throw new AuthException("Invalid email format");
+            }
+            catch
+            {
+                throw new AuthException("Invalid email format");
+            }
+            
+            if (sanitizedUsername.Length < 3 || sanitizedUsername.Length > 50)
+                throw new AuthException("Username must be between 3 and 50 characters");
+            
+            if (!System.Text.RegularExpressions.Regex.IsMatch(sanitizedUsername, @"^[a-zA-Z0-9]+$"))
+                throw new AuthException("Username can only contain letters and numbers");
+            
+            if (sanitizedFullName != null && !System.Text.RegularExpressions.Regex.IsMatch(sanitizedFullName, @"^[a-zA-ZÀ-ỹ\s]+$"))
+                throw new AuthException("Full name can only contain letters, spaces, and Vietnamese characters");
+            
+            var emailExists = await _emailVerifierService.VerifyEmailAsync(sanitizedEmail);
             if (!emailExists)
-                throw new EmailNotExistsException(dto.Email);
+                throw new EmailNotExistsException(sanitizedEmail);
 
-            var existingUser = await _repo.GetByEmailAsync(dto.Email);
+            var existingUser = await _repo.GetByEmailAsync(sanitizedEmail);
             if (existingUser != null)
-                throw new UserAlreadyExistsException(dto.Email);
+                throw new UserAlreadyExistsException(sanitizedEmail);
 
+            if (string.IsNullOrWhiteSpace(dto.Password))
+                throw new AuthException("Password is required");
+            
+            if (dto.Password.Length < 6)
+                throw new AuthException("Password must be at least 6 characters");
+            
+            if (!System.Text.RegularExpressions.Regex.IsMatch(dto.Password, @"^(?=.*[a-z])(?=.*[A-Z])(?=.*\d).{6,}$"))
+                throw new AuthException("Password must contain at least one uppercase letter, one lowercase letter, and one number");
+            
             var user = new User
             {
-                Username = dto.Username,
-                FullName = dto.FullName,
-                Email = dto.Email,
+                Username = sanitizedUsername,
+                FullName = sanitizedFullName,
+                Email = sanitizedEmail,
                 PasswordHash = _passwordService.HashPassword(dto.Password),
                 LoginProvider = "Local",
                 CreatedAt = DateTime.UtcNow
@@ -78,7 +114,7 @@ namespace AuthService.Services
             await _sessionService.SetUserLoginStatusAsync(user.Id, true, tokenExpiry);
 
             var verifyToken = GenerateEmailVerifyToken(user.Id, user.Email);
-            var verifyLink = $"{_config["Frontend:BaseUrl"]}/verify-email?token={verifyToken}";
+            var verifyLink = $"{_config["Frontend:BaseUrl"]}/auth/verify-email.html?token={verifyToken}";
             await _emailMessageService.PublishRegisterNotificationAsync(new RegisterNotificationEmailEvent
             {
                 To = user.Email,
@@ -134,9 +170,34 @@ namespace AuthService.Services
 
         public async Task<string> LoginAsync(LoginDto dto)
         {
-            var user = await _repo.GetByEmailAsync(dto.Email);
+            var sanitizedEmail = dto.Email?.Trim().ToLowerInvariant();
+            
+            if (string.IsNullOrWhiteSpace(sanitizedEmail))
+                throw new AuthException("Email is required");
+            
+            try
+            {
+                var emailAddress = new System.Net.Mail.MailAddress(sanitizedEmail);
+                if (emailAddress.Address != sanitizedEmail)
+                    throw new AuthException("Invalid email format");
+            }
+            catch
+            {
+                throw new AuthException("Invalid email format");
+            }
+            
+            if (string.IsNullOrWhiteSpace(dto.Password))
+                throw new AuthException("Password is required");
+            
+            if (dto.Password.Length < 6)
+                throw new AuthException("Password must be at least 6 characters");
+            
+            var user = await _repo.GetByEmailAsync(sanitizedEmail);
             if (user == null)
                 throw new InvalidCredentialsException();
+
+            if (user.IsDeleted)
+                throw new AuthException("Account has been deleted");
 
             var isLocked = await _sessionService.IsUserLockedAsync(user.Id);
             if (isLocked)
@@ -186,6 +247,9 @@ namespace AuthService.Services
             await _sessionService.CreateUserSessionAsync(user.Id, sessionId, tokenExpiry);
             await _sessionService.SetUserLoginStatusAsync(user.Id, true, tokenExpiry);
 
+            user.LastLoginAt = DateTime.UtcNow;
+            await _repo.UpdateAsync(user);
+
             return token;
         }
 
@@ -218,6 +282,16 @@ namespace AuthService.Services
         {
             try
             {
+                if (string.IsNullOrWhiteSpace(token))
+                    return false;
+                
+                var tokenParts = token.Split('.');
+                if (tokenParts.Length != 3)
+                    return false;
+                
+                if (token.Length < 50 || token.Length > 2000)
+                    return false;
+
                 if (await _sessionService.IsTokenBlacklistedAsync(token))
                     return false;
 
@@ -267,11 +341,13 @@ namespace AuthService.Services
 
             await _sessionService.StoreResetTokenAsync(resetToken, user.Id, tokenExpiry);
 
+            var resetLink = $"{_config["Frontend:BaseUrl"]}/auth/reset-password.html?token={resetToken}";
             await _emailMessageService.PublishResetPasswordNotificationAsync(new ResetPasswordEmailEvent
             {
                 To = user.Email,
                 Username = user.FullName ?? user.Username,
                 ResetToken = resetToken,
+                ResetLink = resetLink,
                 RequestedAt = DateTime.UtcNow
             });
 
@@ -280,6 +356,24 @@ namespace AuthService.Services
 
         public async Task<bool> ResetPasswordAsync(ResetPasswordDto dto)
         {
+            if (string.IsNullOrWhiteSpace(dto.Token))
+                throw new AuthException("Reset token is required");
+            
+            if (string.IsNullOrWhiteSpace(dto.NewPassword))
+                throw new AuthException("New password is required");
+            
+            if (dto.NewPassword.Length < 6)
+                throw new AuthException("New password must be at least 6 characters");
+            
+            if (!System.Text.RegularExpressions.Regex.IsMatch(dto.NewPassword, @"^(?=.*[a-z])(?=.*[A-Z])(?=.*\d).{6,}$"))
+                throw new AuthException("New password must contain at least one uppercase letter, one lowercase letter, and one number");
+            
+            if (string.IsNullOrWhiteSpace(dto.ConfirmPassword))
+                throw new AuthException("Confirm password is required");
+            
+            if (dto.NewPassword != dto.ConfirmPassword)
+                throw new AuthException("Passwords do not match");
+            
             var userId = await _sessionService.GetUserIdFromResetTokenAsync(dto.Token);
             if (!userId.HasValue)
                 throw new InvalidResetTokenException();
@@ -315,8 +409,29 @@ namespace AuthService.Services
             if (user == null)
                 throw new UserNotFoundException(userId);
 
+            if (string.IsNullOrWhiteSpace(dto.CurrentPassword))
+                throw new AuthException("Current password is required");
+            
+            if (dto.CurrentPassword.Length < 6)
+                throw new AuthException("Current password must be at least 6 characters");
+
             if (string.IsNullOrEmpty(user.PasswordHash) || !_passwordService.VerifyPassword(dto.CurrentPassword, user.PasswordHash))
                 throw new PasswordMismatchException();
+
+            if (string.IsNullOrWhiteSpace(dto.NewPassword))
+                throw new AuthException("New password is required");
+            
+            if (dto.NewPassword.Length < 6)
+                throw new AuthException("New password must be at least 6 characters");
+            
+            if (!System.Text.RegularExpressions.Regex.IsMatch(dto.NewPassword, @"^(?=.*[a-z])(?=.*[A-Z])(?=.*\d).{6,}$"))
+                throw new AuthException("New password must contain at least one uppercase letter, one lowercase letter, and one number");
+            
+            if (string.IsNullOrWhiteSpace(dto.ConfirmPassword))
+                throw new AuthException("Confirm password is required");
+            
+            if (dto.NewPassword != dto.ConfirmPassword)
+                throw new AuthException("Passwords do not match");
 
             user.PasswordHash = _passwordService.HashPassword(dto.NewPassword);
             user.UpdatedAt = DateTime.UtcNow;
@@ -345,6 +460,86 @@ namespace AuthService.Services
                 rng.GetBytes(randomBytes);
             }
             return Convert.ToBase64String(randomBytes).Replace("+", "-").Replace("/", "_").Replace("=", "");
+        }
+
+        public async Task<List<User>> GetAllUsersAsync()
+        {
+            return await _repo.GetAllActiveAsync();
+        }
+
+        public async Task<bool> UpdateUserAsync(Guid userId, UpdateUserDto dto)
+        {
+            var user = await _repo.GetByIdAsync(userId);
+            if (user == null || user.IsDeleted)
+                return false;
+
+            // Only update allowed fields
+            if (!string.IsNullOrWhiteSpace(dto.FullName))
+            {
+                if (!System.Text.RegularExpressions.Regex.IsMatch(dto.FullName, @"^[a-zA-ZÀ-ỹ\s]*$"))
+                    throw new AuthException("Full name can only contain letters, spaces, and Vietnamese characters");
+                user.FullName = dto.FullName.Trim();
+            }
+
+            if (!string.IsNullOrWhiteSpace(dto.PhoneNumber))
+            {
+                if (dto.PhoneNumber.Length > 20)
+                    throw new AuthException("Phone number must be less than 20 characters");
+                user.PhoneNumber = dto.PhoneNumber.Trim();
+            }
+
+            if (dto.DateOfBirth.HasValue)
+            {
+                if (dto.DateOfBirth.Value > DateTime.UtcNow)
+                    throw new AuthException("Date of birth cannot be in the future");
+                user.DateOfBirth = dto.DateOfBirth.Value;
+            }
+
+            if (!string.IsNullOrWhiteSpace(dto.Address))
+            {
+                if (dto.Address.Length > 200)
+                    throw new AuthException("Address must be less than 200 characters");
+                user.Address = dto.Address.Trim();
+            }
+
+            if (!string.IsNullOrWhiteSpace(dto.Bio))
+            {
+                if (dto.Bio.Length > 500)
+                    throw new AuthException("Bio must be less than 500 characters");
+                user.Bio = dto.Bio.Trim();
+            }
+
+            if (dto.Status.HasValue)
+            {
+                user.Status = dto.Status.Value;
+            }
+
+            if (dto.IsVerified.HasValue)
+            {
+                user.IsVerified = dto.IsVerified.Value;
+            }
+
+            user.UpdatedAt = DateTime.UtcNow;
+
+            await _repo.UpdateAsync(user);
+            return true;
+        }
+
+        public async Task<bool> DeleteUserAsync(Guid userId)
+        {
+            var user = await _repo.GetByIdAsync(userId);
+            if (user == null || user.IsDeleted)
+                return false;
+
+            user.DeletedAt = DateTime.UtcNow;
+            user.Status = UserStatus.Banned;
+            await _repo.UpdateAsync(user);
+
+            await _sessionService.RemoveAllUserSessionsAsync(user.Id);
+            await _sessionService.RemoveAllActiveTokensForUserAsync(user.Id);
+            await _sessionService.SetUserLoginStatusAsync(user.Id, false);
+
+            return true;
         }
     }
 }

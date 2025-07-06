@@ -12,6 +12,13 @@
     "Audience": "http://localhost:5001",
     "ExpiresInMinutes": 60
   },
+  "RabbitMQ": {
+    "HostName": "rabbitmq",
+    "Port": 5672,
+    "UserName": "guest",
+    "Password": "guest",
+    "VirtualHost": "/"
+  },
   "AuthService": {
     "Url": "http://localhost:5001"
   },

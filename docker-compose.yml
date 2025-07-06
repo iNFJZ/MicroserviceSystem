@@ -156,6 +156,18 @@ services:
       - microservice-network
     command: dotnet GrpcGreeter.dll
 
+  frontend:
+    build:
+      context: ./Frontend
+      dockerfile: Dockerfile
+    container_name: frontend
+    ports:
+      - "8080:80"
+    depends_on:
+      - gateway-api
+    networks:
+      - microservice-network
+
 volumes:
   pgdata:
   minio-data:
