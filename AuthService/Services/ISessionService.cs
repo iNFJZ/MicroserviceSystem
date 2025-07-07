@@ -24,5 +24,8 @@ namespace AuthService.Services
         Task LockUserAsync(Guid userId, DateTime lockExpiry);
         Task<int> IncrementFailedLoginAttemptsAsync(Guid userId);
         Task ResetFailedLoginAttemptsAsync(Guid userId);
+        Task SetEmailVerifyTokenAsync(Guid userId, string token, TimeSpan expiry);
+        Task<Guid?> GetUserIdFromEmailVerifyTokenAsync(string token);
+        Task RemoveEmailVerifyTokenAsync(string token);
     }
 } 

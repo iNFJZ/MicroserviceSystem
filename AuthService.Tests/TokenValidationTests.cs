@@ -18,6 +18,7 @@ namespace AuthService.Tests
         private readonly Mock<IPasswordService> _mockPasswordService;
         private readonly Mock<IConfiguration> _mockConfig;
         private readonly Mock<IEmailMessageService> _emailMessageServiceMock = new Mock<IEmailMessageService>();
+        private readonly Mock<IHunterEmailVerifierService> _emailVerifierServiceMock = new Mock<IHunterEmailVerifierService>();
         private readonly ILogger<AuthService.Services.AuthService> _logger = new LoggerFactory().CreateLogger<AuthService.Services.AuthService>();
         private readonly AuthService.Services.AuthService _authService;
 
@@ -39,7 +40,8 @@ namespace AuthService.Tests
                 _mockPasswordService.Object,
                 _logger,
                 _emailMessageServiceMock.Object,
-                _mockConfig.Object
+                _mockConfig.Object,
+                _emailVerifierServiceMock.Object
             );
         }
 

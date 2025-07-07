@@ -4,6 +4,7 @@ using RabbitMQ.Client;
 using System.Text;
 using System.Text.Json;
 using System.Threading.Tasks;
+using Shared.EmailModels;
 
 namespace AuthService.Services
 {
@@ -75,6 +76,30 @@ namespace AuthService.Services
         }
 
         public Task PublishChangePasswordNotificationAsync(ChangePasswordEmailEvent emailEvent)
+        {
+            var factory = new ConnectionFactory
+            {
+                HostName = _host,
+                Port = _port,
+                UserName = _user,
+                Password = _pass,
+                VirtualHost = _vhost
+            };
+
+            using var connection = factory.CreateConnection();
+            using var channel = connection.CreateModel();
+
+            channel.QueueDeclare(queue: "email.notifications", durable: true, exclusive: false, autoDelete: false);
+
+            var message = JsonSerializer.Serialize(emailEvent);
+            var body = Encoding.UTF8.GetBytes(message);
+
+            channel.BasicPublish(exchange: "", routingKey: "email.notifications", basicProperties: null, body: body);
+
+            return Task.CompletedTask;
+        }
+
+        public Task PublishDeactivateAccountNotificationAsync(DeactivateAccountEmailEvent emailEvent)
         {
             var factory = new ConnectionFactory
             {

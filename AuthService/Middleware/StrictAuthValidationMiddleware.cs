@@ -16,7 +16,7 @@ namespace AuthService.Middleware
 
         private bool ShouldSkipTokenValidation(HttpContext context)
         {
-            var path = context.Request.Path.Value?.ToLower();
+            var path = context.Request.Path.Value?.ToLowerInvariant();
             var skipPaths = new[]
             {
                 "/api/auth/login",
@@ -29,7 +29,7 @@ namespace AuthService.Middleware
                 "/swagger",
                 "/favicon.ico"
             };
-            return skipPaths.Any(skipPath => path?.StartsWith(skipPath) == true);
+            return skipPaths.Any(skipPath => path != null && path.StartsWith(skipPath));
         }
 
         public async Task InvokeAsync(HttpContext context, IAuthService authService)

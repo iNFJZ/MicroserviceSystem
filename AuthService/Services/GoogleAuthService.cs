@@ -6,6 +6,7 @@ using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Configuration;
 using System.Text.Json;
 using System.Text;
+using Shared.EmailModels;
 
 namespace AuthService.Services
 {
