@@ -304,7 +304,7 @@ namespace EmailService
 <p style='color:#888;'>Request time: {vnTime:yyyy-MM-dd HH:mm:ss} (Vietnam Time)</p>
 <p>To reset your password, use the following API endpoint:</p>
 <pre style='background:#f8f9fa;padding:10px;border-radius:5px;'>POST /api/auth/reset-password
-Body: {{ ""token"": ""your-token"", ""newPassword"": ""your-new-password"" }}</pre>
+Body: {{ ""token"": ""your-token"", ""newPassword"": ""your-new-password"", ""confirmPassword"": ""your-new-password-confirm"" }}</pre>
 <p>For security reasons, all your active sessions will be invalidated after password reset.</p>
 <p>Thank you for using Microservice System!</p>
 <p>Best regards,<br/>Microservice System Team</p>";
@@ -334,13 +334,14 @@ Body: {{ ""token"": ""your-token"", ""newPassword"": ""your-new-password"" }}</p
             mail.Subject = _changePasswordSubject;
             mail.From = new MailAddress(_smtpUser, "Microservice System");
             mail.IsBodyHtml = true;
-            mail.Body = $@"<p>Dear {emailEvent.Username},</p>
-<p>Your password for your Microservice System account has been <strong>successfully changed</strong>.</p>
-<p>If you did not request this password change, please contact support immediately.</p>
-<p style='color:#888;'>Change time: {vnTime:yyyy-MM-dd HH:mm:ss} (Vietnam Time)</p>
-<p>For security reasons, all your active sessions will be invalidated after password change.</p>
-<p>Thank you for using Microservice System!</p>
-<p>Best regards,<br/>Microservice System Team</p>";
+            mail.Body = _emailTemplateService.ReplacePlaceholders(
+                _emailTemplateService.LoadTemplate("change-password"),
+                new Dictionary<string, string>
+                {
+                    {"Username", emailEvent.Username ?? "User"},
+                    {"ChangeTime", vnTime.ToString("yyyy-MM-dd HH:mm:ss")}
+                }
+            );
             try
             {
                 using var smtp = new SmtpClient(_smtpHost, _smtpPort)

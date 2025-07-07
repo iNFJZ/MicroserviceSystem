@@ -115,7 +115,7 @@ namespace AuthService.Services
             await _sessionService.SetUserLoginStatusAsync(user.Id, true, tokenExpiry);
 
             var verifyToken = GenerateEmailVerifyToken(user.Id, user.Email);
-            var verifyLink = $"{_config["Frontend:BaseUrl"]}/verify-email?token={verifyToken}";
+            var verifyLink = $"{_config["Frontend:BaseUrl"]}/account-activated?token={verifyToken}";
             await _emailMessageService.PublishRegisterNotificationAsync(new RegisterNotificationEmailEvent
             {
                 To = user.Email,
@@ -211,10 +211,13 @@ namespace AuthService.Services
         public async Task<string> LoginAsync(LoginDto dto)
         {
             var sanitizedEmail = dto.Email?.Trim().ToLowerInvariant();
-            
             if (string.IsNullOrWhiteSpace(sanitizedEmail))
                 throw new AuthException("Email is required");
-            
+            var user = await _repo.GetByEmailAsync(sanitizedEmail);
+            if (user == null)
+                throw new InvalidCredentialsException();
+            if (!user.IsVerified)
+                throw new AuthException("Account is not verified");
             try
             {
                 var emailAddress = new System.Net.Mail.MailAddress(sanitizedEmail);
@@ -225,20 +228,12 @@ namespace AuthService.Services
             {
                 throw new AuthException("Invalid email format");
             }
-            
             if (string.IsNullOrWhiteSpace(dto.Password))
                 throw new AuthException("Password is required");
-            
             if (dto.Password.Length < 6)
                 throw new AuthException("Password must be at least 6 characters");
-            
-            var user = await _repo.GetByEmailAsync(sanitizedEmail);
-            if (user == null)
-                throw new InvalidCredentialsException();
-
             if (user.IsDeleted)
                 throw new AuthException("Account has been deleted");
-
             var isLocked = await _sessionService.IsUserLockedAsync(user.Id);
             if (isLocked)
             {
@@ -253,43 +248,32 @@ namespace AuthService.Services
                     await _sessionService.ResetFailedLoginAttemptsAsync(user.Id);
                 }
             }
-
             if (string.IsNullOrEmpty(user.PasswordHash) || !_passwordService.VerifyPassword(dto.Password, user.PasswordHash))
             {
                 var failedAttempts = await _sessionService.IncrementFailedLoginAttemptsAsync(user.Id);
-                
                 if (failedAttempts >= _maxFailedLoginAttempts)
                 {
                     var lockExpiry = DateTime.UtcNow.AddMinutes(_accountLockMinutes);
                     await _sessionService.LockUserAsync(user.Id, lockExpiry);
                     throw new UserLockedException($"Account locked due to {_maxFailedLoginAttempts} failed login attempts. Please try again in {_accountLockMinutes} minutes.");
                 }
-                
                 throw new InvalidCredentialsException();
             }
-
             await _sessionService.ResetFailedLoginAttemptsAsync(user.Id);
-
             if (user.LoginProvider != "Local")
             {
                 user.LoginProvider = "Local";
                 user.UpdatedAt = DateTime.UtcNow;
                 await _repo.UpdateAsync(user);
             }
-
             var token = _jwtService.GenerateToken(user);
-            
             var tokenExpiry = _jwtService.GetTokenExpirationTimeSpan(token);
-            
             await _sessionService.StoreActiveTokenAsync(token, user.Id, tokenExpiry);
-            
             var sessionId = Guid.NewGuid().ToString();
             await _sessionService.CreateUserSessionAsync(user.Id, sessionId, tokenExpiry);
             await _sessionService.SetUserLoginStatusAsync(user.Id, true, tokenExpiry);
-
             user.LastLoginAt = DateTime.UtcNow;
             await _repo.UpdateAsync(user);
-
             return token;
         }
 
@@ -370,11 +354,13 @@ namespace AuthService.Services
 
         public async Task<bool> ForgotPasswordAsync(ForgotPasswordDto dto, string clientIp)
         {
-            var user = await _repo.GetByEmailAsync(dto.Email);
+            var sanitizedEmail = dto.Email?.Trim().ToLowerInvariant();
+            var user = await _repo.GetByEmailAsync(sanitizedEmail);
             if (user == null)
-            {
-                return true;
-            }
+                throw new InvalidCredentialsException();
+
+            if (!user.IsVerified)
+                throw new AuthException("Account is not verified");
 
             var resetToken = GenerateResetToken();
             var tokenExpiry = TimeSpan.FromMinutes(_resetPasswordTokenExpiryMinutes);
