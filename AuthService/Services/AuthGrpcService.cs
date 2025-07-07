@@ -80,7 +80,6 @@ namespace AuthService.Services
             }
             catch (System.Exception ex)
             {
-                _logger.LogError(ex, "Reset password failed");
                 return new ResetPasswordResponse { Success = false, Message = ex.Message };
             }
         }

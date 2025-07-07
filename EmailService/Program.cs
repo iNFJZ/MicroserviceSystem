@@ -1,4 +1,5 @@
 using EmailService;
+using EmailService.Services;
 
 var builder = Host.CreateDefaultBuilder(args)
     .ConfigureAppConfiguration((hostingContext, config) =>
@@ -7,6 +8,7 @@ var builder = Host.CreateDefaultBuilder(args)
     })
     .ConfigureServices((hostContext, services) =>
     {
+        services.AddSingleton<IEmailTemplateService, EmailTemplateService>();
         services.AddHostedService<Worker>();
     });
 

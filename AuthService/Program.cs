@@ -1,7 +1,6 @@
 using AuthService.Data;
 using AuthService.Repositories;
 using AuthService.Services;
-using AuthService.Models;
 using AuthService.Middleware;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;

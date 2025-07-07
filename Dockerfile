@@ -15,10 +15,12 @@ COPY FileService/FileService.csproj FileService/
 COPY GatewayApi/GatewayApi.csproj GatewayApi/
 COPY EmailService/EmailService.csproj EmailService/
 COPY GrpcGreeter/GrpcGreeter.csproj GrpcGreeter/
+COPY Shared/Shared.csproj Shared/
 COPY nuget.config ./
 
 # Restore dependencies for all projects
-RUN dotnet restore "AuthService/AuthService.csproj" && \
+RUN dotnet restore "Shared/Shared.csproj" && \
+    dotnet restore "AuthService/AuthService.csproj" && \
     dotnet restore "FileService/FileService.csproj" && \
     dotnet restore "GatewayApi/GatewayApi.csproj" && \
     dotnet restore "EmailService/EmailService.csproj" && \
@@ -63,6 +65,9 @@ COPY FileService/file.appsettings.Development.json /app/FileService/file.appsett
 # Copy configuration files for EmailService
 COPY EmailService/appsettings.json /app/EmailService/appsettings.json
 COPY EmailService/appsettings.Development.json /app/EmailService/appsettings.Development.json
+
+# Copy EmailService Templates
+COPY EmailService/Templates /app/EmailService/Templates
 
 # Copy ocelot.json for GatewayApi
 COPY GatewayApi/ocelot.json /app/GatewayApi/ocelot.json

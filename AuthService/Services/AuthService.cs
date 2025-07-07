@@ -9,6 +9,7 @@ using Microsoft.IdentityModel.Tokens;
 using System.Text;
 using Microsoft.Extensions.Configuration;
 using System.Security.Claims;
+using Shared.EmailModels;
 
 namespace AuthService.Services
 {
@@ -114,7 +115,7 @@ namespace AuthService.Services
             await _sessionService.SetUserLoginStatusAsync(user.Id, true, tokenExpiry);
 
             var verifyToken = GenerateEmailVerifyToken(user.Id, user.Email);
-            var verifyLink = $"{_config["Frontend:BaseUrl"]}/auth/verify-email.html?token={verifyToken}";
+            var verifyLink = $"{_config["Frontend:BaseUrl"]}/verify-email?token={verifyToken}";
             await _emailMessageService.PublishRegisterNotificationAsync(new RegisterNotificationEmailEvent
             {
                 To = user.Email,
@@ -166,6 +167,45 @@ namespace AuthService.Services
                 return true;
             }
             catch { return false; }
+        }
+
+        public async Task<bool> ResendVerificationEmailAsync(string email)
+        {
+            if (string.IsNullOrWhiteSpace(email))
+                throw new AuthException("Email is required");
+
+            var user = await _repo.GetByEmailAsync(email);
+            if (user == null)
+                throw new UserNotFoundException(email);
+
+            if (user.IsVerified)
+                throw new AuthException("Email is already verified");
+
+            var token = GenerateEmailVerifyToken(user.Id, user.Email);
+            await _sessionService.SetEmailVerifyTokenAsync(user.Id, token, TimeSpan.FromMinutes(15));
+
+            await _emailMessageService.PublishRegisterNotificationAsync(new RegisterNotificationEmailEvent
+            {
+                To = user.Email,
+                Username = user.FullName ?? user.Username,
+                VerifyLink = $"{_config["Frontend:BaseUrl"]}/verify-email?token={token}",
+                RegisterAt = user.CreatedAt
+            });
+
+            return true;
+        }
+
+        public async Task<string> GetEmailFromResetTokenAsync(string token)
+        {
+            if (string.IsNullOrWhiteSpace(token))
+                return null;
+
+            var userId = await _sessionService.GetUserIdFromResetTokenAsync(token);
+            if (!userId.HasValue)
+                return null;
+
+            var user = await _repo.GetByIdAsync(userId.Value);
+            return user?.Email;
         }
 
         public async Task<string> LoginAsync(LoginDto dto)
@@ -328,7 +368,7 @@ namespace AuthService.Services
             return await _sessionService.RemoveUserSessionAsync(userId, sessionId);
         }
 
-        public async Task<bool> ForgotPasswordAsync(ForgotPasswordDto dto)
+        public async Task<bool> ForgotPasswordAsync(ForgotPasswordDto dto, string clientIp)
         {
             var user = await _repo.GetByEmailAsync(dto.Email);
             if (user == null)
@@ -348,7 +388,9 @@ namespace AuthService.Services
                 Username = user.FullName ?? user.Username,
                 ResetToken = resetToken,
                 ResetLink = resetLink,
-                RequestedAt = DateTime.UtcNow
+                RequestedAt = DateTime.UtcNow,
+                UserId = user.Id.GetHashCode(),
+                IpAddress = clientIp
             });
 
             return true;
@@ -473,7 +515,6 @@ namespace AuthService.Services
             if (user == null || user.IsDeleted)
                 return false;
 
-            // Only update allowed fields
             if (!string.IsNullOrWhiteSpace(dto.FullName))
             {
                 if (!System.Text.RegularExpressions.Regex.IsMatch(dto.FullName, @"^[a-zA-ZÀ-ỹ\s]*$"))
@@ -538,6 +579,14 @@ namespace AuthService.Services
             await _sessionService.RemoveAllUserSessionsAsync(user.Id);
             await _sessionService.RemoveAllActiveTokensForUserAsync(user.Id);
             await _sessionService.SetUserLoginStatusAsync(user.Id, false);
+
+            await _emailMessageService.PublishDeactivateAccountNotificationAsync(new DeactivateAccountEmailEvent
+            {
+                To = user.Email,
+                Username = user.FullName ?? user.Username,
+                DeactivatedAt = DateTime.UtcNow,
+                Reason = "Account deactivated by administrator"
+            });
 
             return true;
         }

@@ -37,7 +37,6 @@ namespace AuthService.Tests
                 _mockSessionService.Object,
                 _mockJwtService.Object,
                 _mockEmailService.Object,
-                _mockLogger.Object,
                 _mockConfig.Object,
                 _mockHttpClient.Object
             );
@@ -47,7 +46,7 @@ namespace AuthService.Tests
         public async Task LoginWithGoogleAsync_NewUser_ShouldCreateUserAndReturnToken()
         {
             // Arrange
-            var googleLoginDto = new GoogleLoginDto { AccessToken = "valid-token" };
+            var googleLoginDto = new GoogleLoginDto { Code = "valid-code", RedirectUri = "http://localhost:3000/callback" };
             var googleUserInfo = new GoogleUserInfo
             {
                 Sub = "google123",
@@ -84,7 +83,7 @@ namespace AuthService.Tests
         public async Task LoginWithGoogleAsync_ExistingUserByGoogleId_ShouldReturnToken()
         {
             // Arrange
-            var googleLoginDto = new GoogleLoginDto { AccessToken = "valid-token" };
+            var googleLoginDto = new GoogleLoginDto { Code = "valid-code", RedirectUri = "http://localhost:3000/callback" };
             var existingUser = new User
             {
                 Id = Guid.NewGuid(),
@@ -113,7 +112,7 @@ namespace AuthService.Tests
         public async Task LoginWithGoogleAsync_ExistingUserByEmail_ShouldLinkGoogleAccount()
         {
             // Arrange
-            var googleLoginDto = new GoogleLoginDto { AccessToken = "valid-token" };
+            var googleLoginDto = new GoogleLoginDto { Code = "valid-code", RedirectUri = "http://localhost:3000/callback" };
             var existingUser = new User
             {
                 Id = Guid.NewGuid(),

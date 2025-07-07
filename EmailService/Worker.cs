@@ -6,9 +6,11 @@ using RabbitMQ.Client.Events;
 using System.Text;
 using System.Text.Json;
 using System.Net.Mail;
-using EmailService.Models;
+using EmailService.Services;
 using System.Threading;
 using System.Globalization;
+using Shared.EmailModels;
+using EmailService.Models;
 
 namespace EmailService
 {
@@ -16,6 +18,7 @@ namespace EmailService
     {
         private readonly ILogger<Worker> _logger;
         private readonly IConfiguration _config;
+        private readonly IEmailTemplateService _emailTemplateService;
         private IConnection _connection;
         private IModel _channel;
         private string _smtpUser;
@@ -30,11 +33,13 @@ namespace EmailService
         private readonly string _fileDeleteSubject;
         private readonly string _resetPasswordSubject;
         private readonly string _changePasswordSubject;
+        private readonly string _deactivateAccountSubject;
 
-        public Worker(ILogger<Worker> logger, IConfiguration config)
+        public Worker(ILogger<Worker> logger, IConfiguration config, IEmailTemplateService emailTemplateService)
         {
             _logger = logger;
             _config = config;
+            _emailTemplateService = emailTemplateService;
             _smtpUser = _config["Smtp:User"];
             _smtpPass = _config["Smtp:Password"];
             _smtpHost = _config["Smtp:Host"] ?? "smtp.gmail.com";
@@ -47,6 +52,7 @@ namespace EmailService
             _fileDeleteSubject = _config["EmailPolicy:FileDeleteSubject"] ?? "File Deleted Successfully";
             _resetPasswordSubject = _config["EmailPolicy:ResetPasswordSubject"] ?? "Password Reset Request - Microservice System";
             _changePasswordSubject = _config["EmailPolicy:ChangePasswordSubject"] ?? "Password Changed Successfully - Microservice System";
+            _deactivateAccountSubject = _config["EmailPolicy:DeactivateAccountSubject"] ?? "Account Deactivated - Microservice System";
             Task.Run(() => InitRabbitMQ()).GetAwaiter().GetResult();
         }
 
@@ -125,6 +131,16 @@ namespace EmailService
                             return;
                         }
                     }
+                    else if (root.TryGetProperty("DeactivatedAt", out _))
+                    {
+                        var deactivateEvent = JsonSerializer.Deserialize<DeactivateAccountEmailEvent>(message);
+                        if (deactivateEvent != null && !string.IsNullOrEmpty(deactivateEvent.To))
+                        {
+                            SendDeactivateAccountMail(deactivateEvent);
+                            _channel.BasicAck(ea.DeliveryTag, false);
+                            return;
+                        }
+                    }
                     else
                     {
                         var registerEvent = JsonSerializer.Deserialize<RegisterNotificationEmailEvent>(message);
@@ -161,15 +177,10 @@ namespace EmailService
             mail.Subject = _registerSubject;
             mail.From = new MailAddress(_smtpUser, "Microservice System");
             mail.IsBodyHtml = true;
+            
             if (!string.IsNullOrEmpty(emailEvent.VerifyLink))
             {
-                mail.Body = $@"<p>Dear {emailEvent.Username},</p>
-<p>Thank you for registering an account with <strong>Microservice System</strong>.</p>
-<p>To complete your registration, please verify your email address by clicking the button below within 1 hour:</p>
-<p><a href='{emailEvent.VerifyLink}' style='display:inline-block;padding:10px 20px;background:#667eea;color:#fff;text-decoration:none;border-radius:5px;font-weight:bold;'>Verify Email</a></p>
-<p>If you did not create this account, please ignore this email.</p>
-<p style='color:#888;'>Registration time: {vnTime:yyyy-MM-dd HH:mm:ss} (Vietnam Time)</p>
-<p>Best regards,<br/>Microservice System Team</p>";
+                mail.Body = _emailTemplateService.GenerateVerifyEmailContent(emailEvent.Username, emailEvent.VerifyLink);
             }
             else
             {
@@ -184,6 +195,7 @@ namespace EmailService
 <p>If you have any questions or need support, please contact us.</p>
 <p>Best regards,<br/>Microservice System Team</p>";
             }
+            
             try
             {
                 using var smtp = new SmtpClient(_smtpHost, _smtpPort)
@@ -272,15 +284,14 @@ namespace EmailService
             
             if (!string.IsNullOrEmpty(emailEvent.ResetLink))
             {
-                mail.Body = $@"<p>Dear {emailEvent.Username},</p>
-<p>We received a request to <strong>reset your password</strong> for your Microservice System account.</p>
-<p>To reset your password, please click the button below within <strong>{_resetTokenExpiryMinutes} minutes</strong>:</p>
-<p><a href='{emailEvent.ResetLink}' style='display:inline-block;padding:10px 20px;background:#667eea;color:#fff;text-decoration:none;border-radius:5px;font-weight:bold;'>Reset Password</a></p>
-<p>If you did not request a password reset, please ignore this email or contact support immediately.</p>
-<p style='color:#888;'>Request time: {vnTime:yyyy-MM-dd HH:mm:ss} (Vietnam Time)</p>
-<p>For security reasons, all your active sessions will be invalidated after password reset.</p>
-<p>Thank you for using Microservice System!</p>
-<p>Best regards,<br/>Microservice System Team</p>";
+                mail.Body = _emailTemplateService.GenerateResetPasswordContent(
+                    emailEvent.Username, 
+                    emailEvent.To, 
+                    emailEvent.UserId?.ToString() ?? "N/A", 
+                    emailEvent.IpAddress ?? "Unknown", 
+                    emailEvent.ResetLink, 
+                    _resetTokenExpiryMinutes
+                );
             }
             else
             {
@@ -298,6 +309,7 @@ Body: {{ ""token"": ""your-token"", ""newPassword"": ""your-new-password"" }}</p
 <p>Thank you for using Microservice System!</p>
 <p>Best regards,<br/>Microservice System Team</p>";
             }
+            
             try
             {
                 using var smtp = new SmtpClient(_smtpHost, _smtpPort)
@@ -343,6 +355,34 @@ Body: {{ ""token"": ""your-token"", ""newPassword"": ""your-new-password"" }}</p
                 throw;
             }
         }
+
+        private void SendDeactivateAccountMail(DeactivateAccountEmailEvent emailEvent)
+        {
+            var deactivatedAt = emailEvent.DeactivatedAt == DateTime.MinValue ? DateTime.UtcNow : emailEvent.DeactivatedAt;
+            var vnTime = TimeZoneInfo.ConvertTimeFromUtc(deactivatedAt, GetVietnamTimeZone());
+            var mail = new MailMessage();
+            mail.To.Add(emailEvent.To);
+            mail.Subject = _deactivateAccountSubject;
+            mail.From = new MailAddress(_smtpUser, "Microservice System");
+            mail.IsBodyHtml = true;
+            
+            mail.Body = _emailTemplateService.GenerateDeactivateAccountContent(emailEvent.Username);
+            
+            try
+            {
+                using var smtp = new SmtpClient(_smtpHost, _smtpPort)
+                {
+                    Credentials = new System.Net.NetworkCredential(_smtpUser, _smtpPass),
+                    EnableSsl = _smtpEnableSsl
+                };
+                smtp.Send(mail);
+            }
+            catch (Exception ex)
+            {
+                throw;
+            }
+        }
+        
         public override void Dispose()
         {
             _channel?.Dispose();

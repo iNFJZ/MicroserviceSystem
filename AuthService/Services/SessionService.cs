@@ -15,6 +15,7 @@ namespace AuthService.Services
         private const string ResetTokenPrefix = "reset:";
         private const string UserLockPrefix = "lock:";
         private const string FailedAttemptsPrefix = "failed:";
+        private const string EmailVerifyTokenPrefix = "email_verify:";
 
         public SessionService(ICacheService cacheService, IHashService hashService, IRedisKeyService keyService)
         {
@@ -184,6 +185,27 @@ namespace AuthService.Services
         {
             var failedKey = FailedAttemptsPrefix + userId;
             await _cacheService.DeleteAsync(failedKey);
+        }
+
+        public async Task SetEmailVerifyTokenAsync(Guid userId, string token, TimeSpan expiry)
+        {
+            var tokenKey = EmailVerifyTokenPrefix + token;
+            await _cacheService.SetAsync(tokenKey, userId.ToString(), expiry);
+        }
+
+        public async Task<Guid?> GetUserIdFromEmailVerifyTokenAsync(string token)
+        {
+            var tokenKey = EmailVerifyTokenPrefix + token;
+            var userIdString = await _cacheService.GetAsync<string>(tokenKey);
+            if (Guid.TryParse(userIdString, out Guid userId))
+                return userId;
+            return null;
+        }
+
+        public async Task RemoveEmailVerifyTokenAsync(string token)
+        {
+            var tokenKey = EmailVerifyTokenPrefix + token;
+            await _cacheService.DeleteAsync(tokenKey);
         }
     }
 } 

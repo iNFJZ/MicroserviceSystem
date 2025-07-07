@@ -1,5 +1,6 @@
 ﻿using AuthService.DTOs;
 using AuthService.Services;
+using AuthService.Extensions;
 using Microsoft.AspNetCore.Authorization;               
 using Microsoft.AspNetCore.Mvc;
 using System.Security.Claims;
@@ -12,11 +13,13 @@ namespace AuthService.Controllers
     {
         private readonly IAuthService _auth;
         private readonly IGoogleAuthService _googleAuth;
+        private readonly IConfiguration _config;
 
-        public AuthController(IAuthService auth, IGoogleAuthService googleAuth)
+        public AuthController(IAuthService auth, IGoogleAuthService googleAuth, IConfiguration config)
         {
             _auth = auth;
             _googleAuth = googleAuth;
+            _config = config;
         }
 
         [HttpPost("register")]
@@ -28,17 +31,22 @@ namespace AuthService.Controllers
                     .SelectMany(v => v.Errors)
                     .Select(e => e.ErrorMessage)
                     .ToList();
-                return BadRequest(new { message = "Validation failed", errors });
+                return BadRequest(new { success = false, message = "Validation failed", errors });
             }
 
             try
             {
                 var token = await _auth.RegisterAsync(dto);
-                return Ok(new { token });
+                return Ok(new { 
+                    success = true, 
+                    message = "Registration successful. Please check your email to verify your account.",
+                    token,
+                    redirectUrl = $"{_config["Frontend:BaseUrl"]}/auth/verify-email.html"
+                });
             }
             catch (Exception ex)
             {
-                return BadRequest(new { message = ex.Message });
+                return BadRequest(new { success = false, message = ex.Message });
             }
         }
 
@@ -51,17 +59,22 @@ namespace AuthService.Controllers
                     .SelectMany(v => v.Errors)
                     .Select(e => e.ErrorMessage)
                     .ToList();
-                return BadRequest(new { message = "Validation failed", errors });
+                return BadRequest(new { success = false, message = "Validation failed", errors });
             }
 
             try
             {
                 var token = await _auth.LoginAsync(dto);
-                return Ok(new { token });
+                return Ok(new { 
+                    success = true, 
+                    message = "Login successful",
+                    token,
+                    redirectUrl = $"{_config["Frontend:BaseUrl"]}/dashboard.html"
+                });
             }
             catch (Exception ex)
             {
-                return BadRequest(new { message = ex.Message });
+                return BadRequest(new { success = false, message = ex.Message });
             }
         }
 
@@ -153,17 +166,22 @@ namespace AuthService.Controllers
                     .SelectMany(v => v.Errors)
                     .Select(e => e.ErrorMessage)
                     .ToList();
-                return BadRequest(new { message = "Validation failed", errors });
+                return BadRequest(new { success = false, message = "Validation failed", errors });
             }
 
             try
             {
-                var result = await _auth.ForgotPasswordAsync(dto);
-                return Ok(new { message = "If the email exists, a password reset link has been sent." });
+                var clientIp = HttpContext.GetClientIpAddress();
+                var result = await _auth.ForgotPasswordAsync(dto, clientIp);
+                return Ok(new { 
+                    success = true, 
+                    message = "If the email exists, a password reset link has been sent to your email address.",
+                    redirectUrl = $"{_config["Frontend:BaseUrl"]}/auth/login.html?message=reset_link_sent"
+                });
             }
             catch (Exception ex)
             {
-                return BadRequest(new { message = ex.Message });
+                return BadRequest(new { success = false, message = ex.Message });
             }
         }
 
@@ -176,17 +194,21 @@ namespace AuthService.Controllers
                     .SelectMany(v => v.Errors)
                     .Select(e => e.ErrorMessage)
                     .ToList();
-                return BadRequest(new { message = "Validation failed", errors });
+                return BadRequest(new { success = false, message = "Validation failed", errors });
             }
 
             try
             {
                 var result = await _auth.ResetPasswordAsync(dto);
-                return Ok(new { message = "Password has been reset successfully." });
+                return Ok(new { 
+                    success = true, 
+                    message = "Password has been reset successfully.",
+                    redirectUrl = $"{_config["Frontend:BaseUrl"]}/auth/login.html?message=password_reset_success"
+                });
             }
             catch (Exception ex)
             {
-                return BadRequest(new { message = ex.Message });
+                return BadRequest(new { success = false, message = ex.Message });
             }
         }
 
@@ -221,11 +243,68 @@ namespace AuthService.Controllers
         [HttpGet("verify-email")]
         public async Task<IActionResult> VerifyEmail([FromQuery] string token)
         {
+            if (string.IsNullOrEmpty(token))
+            {
+                return BadRequest(new { success = false, message = "Token is required" });
+            }
+
             var result = await _auth.VerifyEmailAsync(token);
             if (result)
-                return Ok(new { message = "Email verified successfully." });
+                return Ok(new { success = true, message = "Email verified successfully" });
             else
-                return BadRequest(new { message = "Invalid or expired token." });
+                return BadRequest(new { success = false, message = "Invalid or expired token" });
+        }
+
+        [HttpPost("resend-verification")]
+        public async Task<IActionResult> ResendVerificationEmail([FromBody] ForgotPasswordDto dto)
+        {
+            if (!ModelState.IsValid)
+            {
+                var errors = ModelState.Values
+                    .SelectMany(v => v.Errors)
+                    .Select(e => e.ErrorMessage)
+                    .ToList();
+                return BadRequest(new { success = false, message = "Validation failed", errors });
+            }
+
+            try
+            {
+                var result = await _auth.ResendVerificationEmailAsync(dto.Email);
+                return Ok(new { 
+                    success = true, 
+                    message = "Verification email has been resent successfully."
+                });
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(new { success = false, message = ex.Message });
+            }
+        }
+
+        [HttpGet("validate-reset-token")]
+        public async Task<IActionResult> ValidateResetToken([FromQuery] string token)
+        {
+            if (string.IsNullOrEmpty(token))
+            {
+                return BadRequest(new { success = false, message = "Token is required" });
+            }
+
+            try
+            {
+                var email = await _auth.GetEmailFromResetTokenAsync(token);
+                if (!string.IsNullOrEmpty(email))
+                {
+                    return Ok(new { success = true, email });
+                }
+                else
+                {
+                    return BadRequest(new { success = false, message = "Invalid or expired token" });
+                }
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(new { success = false, message = ex.Message });
+            }
         }
 
         [Authorize]
