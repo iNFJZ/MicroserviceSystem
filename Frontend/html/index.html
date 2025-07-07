@@ -4,15 +4,11 @@
     <meta charset="UTF-8">
     <title>Microservice System</title>
     <script>
-        if (window.location.hash.startsWith('#verify-email')) {
-            console.log('Verify email hash detected, staying on page');
+        const token = localStorage.getItem('authToken');
+        if (token) {
+            window.location.href = '/admin-dashboard';
         } else {
-            const token = localStorage.getItem('authToken');
-            if (token) {
-                window.location.href = '/admin-dashboard';
-            } else {
-                window.location.href = '/login';
-            }
+            window.location.href = '/login';
         }
     </script>
     <script src="../js/app.js"></script>

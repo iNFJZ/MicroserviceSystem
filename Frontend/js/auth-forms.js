@@ -40,7 +40,6 @@ if (document.getElementById('login-form')) {
     const loginForm = document.getElementById('login-form');
     loginForm.addEventListener('submit', async function(e) {
         e.preventDefault();
-        console.log('Login form submitted');
         
         const email = sanitizeInput(document.getElementById('login-email').value);
         const password = document.getElementById('login-password').value;
@@ -96,12 +95,12 @@ if (document.getElementById('register-form')) {
     const registerForm = document.getElementById('register-form');
     registerForm.addEventListener('submit', async function(e) {
         e.preventDefault();
-        console.log('Register form submitted');
         
         const username = sanitizeInput(document.getElementById('register-username').value);
         const fullName = sanitizeInput(document.getElementById('register-fullname').value);
         const email = sanitizeInput(document.getElementById('register-email').value);
         const password = document.getElementById('register-password').value;
+        const termsChecked = document.getElementById('terms-conditions')?.checked;
         
         const errors = [];
         
@@ -125,6 +124,10 @@ if (document.getElementById('register-form')) {
         
         if (fullName && !/^[a-zA-ZÀ-ỹ\s]+$/.test(fullName)) {
             errors.push('Full name can only contain letters, spaces, and Vietnamese characters');
+        }
+        
+        if (!termsChecked) {
+            errors.push('You must agree to the privacy policy & terms to register.');
         }
         
         if (errors.length > 0) {
@@ -169,7 +172,6 @@ if (document.getElementById('forgot-password-form')) {
     const forgotPasswordForm = document.getElementById('forgot-password-form');
     forgotPasswordForm.addEventListener('submit', async function(e) {
         e.preventDefault();
-        console.log('Forgot password form submitted');
         
         const email = sanitizeInput(document.getElementById('forgot-password-email').value);
         
@@ -212,7 +214,6 @@ if (document.getElementById('reset-password-form')) {
     const resetPasswordForm = document.getElementById('reset-password-form');
     resetPasswordForm.addEventListener('submit', async function(e) {
         e.preventDefault();
-        console.log('Reset password form submitted');
         
         const password = document.getElementById('reset-password-password').value;
         const confirmPassword = document.getElementById('reset-password-confirm-password').value;
@@ -245,8 +246,9 @@ if (document.getElementById('reset-password-form')) {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ 
-                    token,
-                    newPassword: password 
+                    token: token,
+                    newPassword: password,
+                    confirmPassword: confirmPassword
                 })
             });
             const data = await res.json();
@@ -259,8 +261,7 @@ if (document.getElementById('reset-password-form')) {
             } else {
                 showToast(data.message || 'Password reset failed!', true);
             }
-        } catch (err) {
-            console.error('Reset password error:', err);
+        } catch (err) { 
             showToast('Password reset failed! Please try again.', true);
         }
     });
@@ -270,7 +271,6 @@ if (document.getElementById('change-password-form')) {
     const changePasswordForm = document.getElementById('change-password-form');
     changePasswordForm.addEventListener('submit', async function(e) {
         e.preventDefault();
-        console.log('Change password form submitted');
         
         const currentPassword = document.getElementById('change-password-current').value;
         const newPassword = document.getElementById('change-password-new').value;
@@ -323,10 +323,7 @@ if (document.getElementById('change-password-form')) {
                 showToast(data.message || 'Password change failed!', true);
             }
         } catch (err) {
-            console.error('Change password error:', err);
             showToast('Password change failed! Please try again.', true);
         }
     });
 }
-
-console.log('Auth forms handler loaded'); 
