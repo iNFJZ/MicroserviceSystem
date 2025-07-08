@@ -69,7 +69,7 @@ namespace AuthService.Controllers
                     success = true, 
                     message = "Login successful",
                     token,
-                    redirectUrl = $"{_config["Frontend:BaseUrl"]}/dashboard.html"
+                    redirectUrl = $"{_config["Frontend:BaseUrl"]}/admin/app-user-list.html"
                 });
             }
             catch (Exception ex)
@@ -307,74 +307,6 @@ namespace AuthService.Controllers
             }
         }
 
-        [Authorize]
-        [HttpGet("users")]
-        public async Task<IActionResult> GetAllUsers()
-        {
-            var users = await _auth.GetAllUsersAsync();
-            var result = users.Select(u => new {
-                u.Id,
-                u.Username,
-                u.FullName,
-                u.Email,
-                u.PhoneNumber,
-                u.DateOfBirth,
-                u.Address,
-                u.Bio,
-                u.Status,
-                u.LoginProvider,
-                u.IsVerified,
-                u.CreatedAt,
-                u.LastLoginAt,
-                u.DeletedAt,
-                IsDeleted = u.IsDeleted
-            });
-            return Ok(result);
-        }
 
-        [Authorize]
-        [HttpPatch("users/{id}")]
-        public async Task<IActionResult> UpdateUser(Guid id, [FromBody] UpdateUserDto dto)
-        {
-            if (!ModelState.IsValid)
-            {
-                var errors = ModelState.Values
-                    .SelectMany(v => v.Errors)
-                    .Select(e => e.ErrorMessage)
-                    .ToList();
-                return BadRequest(new { message = "Validation failed", errors });
-            }
-
-            try
-            {
-                var result = await _auth.UpdateUserAsync(id, dto);
-                if (result)
-                    return Ok(new { message = "User updated successfully" });
-                else
-                    return NotFound(new { message = "User not found" });
-            }
-            catch (Exception ex)
-            {
-                return BadRequest(new { message = ex.Message });
-            }
-        }
-
-        [Authorize]
-        [HttpDelete("users/{id}")]
-        public async Task<IActionResult> DeleteUser(Guid id)
-        {
-            try
-            {
-                var result = await _auth.DeleteUserAsync(id);
-                if (result)
-                    return Ok(new { message = "User has been deactivated successfully" });
-                else
-                    return NotFound(new { message = "User not found or already deactivated" });
-            }
-            catch (Exception ex)
-            {
-                return BadRequest(new { message = ex.Message });
-            }
-        }
     }
 }

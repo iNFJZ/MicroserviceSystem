@@ -1,3 +1,32 @@
+const TOKEN_KEY = 'authToken';
+
+export function getToken() {
+    return localStorage.getItem(TOKEN_KEY);
+}
+
+export function setToken(token) {
+    localStorage.setItem(TOKEN_KEY, token);
+}
+
+export function removeToken() {
+    localStorage.removeItem(TOKEN_KEY);
+}
+
+export function isAuthenticated() {
+    const token = getToken();
+    if (!token) return false;
+    const payload = parseJwt(token);
+    if (!payload || !payload.exp) return false;
+    const now = Math.floor(Date.now() / 1000);
+    return payload.exp > now;
+}
+
+export function getCurrentUser() {
+    const token = getToken();
+    if (!token) return null;
+    return parseJwt(token);
+}
+
 export function sanitizeHtml(str) {
     if (typeof str !== 'string') return str;
     const div = document.createElement('div');
@@ -49,5 +78,23 @@ export function parseJwt(token) {
         return JSON.parse(jsonPayload);
     } catch {
         return {};
+    }
+}
+
+export function logout() {
+    removeToken();
+    window.location.href = '/auth/login.html';
+}
+
+export function showToast(message, isError = false) {
+    if (!message || (typeof message === 'string' && message.trim() === '')) return;
+    if (typeof toastr !== 'undefined') {
+        if (isError) {
+            toastr.error(message);
+        } else {
+            toastr.success(message);
+        }
+    } else {
+        alert(message);
     }
 } 

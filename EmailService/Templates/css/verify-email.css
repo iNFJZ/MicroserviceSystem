@@ -1,0 +1,7 @@
+.hover-underline:hover { text-decoration: underline !important; }
+@media (max-width: 600px) {
+  .sm-w-full { width: 100% !important; }
+  .sm-px-24 { padding-left: 24px !important; padding-right: 24px !important; }
+  .sm-py-32 { padding-top: 32px !important; padding-bottom: 32px !important; }
+  .sm-leading-32 { line-height: 32px !important; }
+} 

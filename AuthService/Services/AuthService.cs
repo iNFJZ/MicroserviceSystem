@@ -103,6 +103,7 @@ namespace AuthService.Services
                 Email = sanitizedEmail,
                 PasswordHash = _passwordService.HashPassword(dto.Password),
                 LoginProvider = "Local",
+                Status = UserStatus.Inactive,
                 CreatedAt = DateTime.UtcNow
             };
 
@@ -162,6 +163,7 @@ namespace AuthService.Services
                 if (user == null) return false;
                 if (user.IsVerified) return true;
                 user.IsVerified = true;
+                user.Status = UserStatus.Active;
                 user.UpdatedAt = DateTime.UtcNow;
                 await _repo.UpdateAsync(user);
                 return true;
@@ -490,91 +492,6 @@ namespace AuthService.Services
             return Convert.ToBase64String(randomBytes).Replace("+", "-").Replace("/", "_").Replace("=", "");
         }
 
-        public async Task<List<User>> GetAllUsersAsync()
-        {
-            return await _repo.GetAllActiveAsync();
-        }
 
-        public async Task<bool> UpdateUserAsync(Guid userId, UpdateUserDto dto)
-        {
-            var user = await _repo.GetByIdAsync(userId);
-            if (user == null || user.IsDeleted)
-                return false;
-
-            if (!string.IsNullOrWhiteSpace(dto.FullName))
-            {
-                if (!System.Text.RegularExpressions.Regex.IsMatch(dto.FullName, @"^[a-zA-ZÀ-ỹ\s]*$"))
-                    throw new AuthException("Full name can only contain letters, spaces, and Vietnamese characters");
-                user.FullName = dto.FullName.Trim();
-            }
-
-            if (!string.IsNullOrWhiteSpace(dto.PhoneNumber))
-            {
-                if (dto.PhoneNumber.Length > 20)
-                    throw new AuthException("Phone number must be less than 20 characters");
-                user.PhoneNumber = dto.PhoneNumber.Trim();
-            }
-
-            if (dto.DateOfBirth.HasValue)
-            {
-                if (dto.DateOfBirth.Value > DateTime.UtcNow)
-                    throw new AuthException("Date of birth cannot be in the future");
-                user.DateOfBirth = dto.DateOfBirth.Value;
-            }
-
-            if (!string.IsNullOrWhiteSpace(dto.Address))
-            {
-                if (dto.Address.Length > 200)
-                    throw new AuthException("Address must be less than 200 characters");
-                user.Address = dto.Address.Trim();
-            }
-
-            if (!string.IsNullOrWhiteSpace(dto.Bio))
-            {
-                if (dto.Bio.Length > 500)
-                    throw new AuthException("Bio must be less than 500 characters");
-                user.Bio = dto.Bio.Trim();
-            }
-
-            if (dto.Status.HasValue)
-            {
-                user.Status = dto.Status.Value;
-            }
-
-            if (dto.IsVerified.HasValue)
-            {
-                user.IsVerified = dto.IsVerified.Value;
-            }
-
-            user.UpdatedAt = DateTime.UtcNow;
-
-            await _repo.UpdateAsync(user);
-            return true;
-        }
-
-        public async Task<bool> DeleteUserAsync(Guid userId)
-        {
-            var user = await _repo.GetByIdAsync(userId);
-            if (user == null || user.IsDeleted)
-                return false;
-
-            user.DeletedAt = DateTime.UtcNow;
-            user.Status = UserStatus.Banned;
-            await _repo.UpdateAsync(user);
-
-            await _sessionService.RemoveAllUserSessionsAsync(user.Id);
-            await _sessionService.RemoveAllActiveTokensForUserAsync(user.Id);
-            await _sessionService.SetUserLoginStatusAsync(user.Id, false);
-
-            await _emailMessageService.PublishDeactivateAccountNotificationAsync(new DeactivateAccountEmailEvent
-            {
-                To = user.Email,
-                Username = user.FullName ?? user.Username,
-                DeactivatedAt = DateTime.UtcNow,
-                Reason = "Account deactivated by administrator"
-            });
-
-            return true;
-        }
     }
 }

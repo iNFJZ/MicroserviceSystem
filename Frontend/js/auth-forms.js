@@ -1,40 +1,70 @@
+import { sanitizeInput, isValidEmail, isValidPassword, isValidUsername, showToast, parseJwt } from './auth-utils.js';
+import { apiRequest } from './api.js';
+
 const API_BASE_URL = 'http://localhost:5050';
 
-function sanitizeInput(input) {
-    if (typeof input !== 'string') return '';
-    return input.trim().replace(/[<>]/g, '');
+const GOOGLE_CLIENT_ID = '157841978934-fmgq60lshk9iq65s7h37mc7ta78m8nu3.apps.googleusercontent.com';
+const GOOGLE_REDIRECT_URI = window.location.origin + '/auth/login.html';
+
+function getGoogleOAuthUrl() {
+  const params = new URLSearchParams({
+    client_id: GOOGLE_CLIENT_ID,
+    redirect_uri: GOOGLE_REDIRECT_URI,
+    response_type: 'code',
+    scope: 'openid email profile',
+    access_type: 'offline',
+    prompt: 'consent'
+  });
+  return `https://accounts.google.com/o/oauth2/v2/auth?${params.toString()}`;
 }
 
-function isValidEmail(email) {
-    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-    return emailRegex.test(email);
-}
+document.getElementById('google-login-btn')?.addEventListener('click', function() {
+  window.location.href = getGoogleOAuthUrl();
+});
 
-function isValidPassword(password) {
-    return password.length >= 6 && 
-           /[A-Z]/.test(password) && 
-           /[a-z]/.test(password) && 
-           /\d/.test(password);
-}
-
-function isValidUsername(username) {
-    return username.length >= 3 && 
-           username.length <= 50 && 
-           /^[a-zA-Z0-9]+$/.test(username);
-}
-
-function showToast(message, isError = false) {
-    if (!message || (typeof message === 'string' && message.trim() === '')) return;
-    if (typeof toastr !== 'undefined') {
-        if (isError) {
-            toastr.error(message);
-        } else {
-            toastr.success(message);
-        }
-    } else {
-        alert(message);
+window.addEventListener('DOMContentLoaded', async function() {
+  const urlParams = new URLSearchParams(window.location.search);
+  const code = urlParams.get('code');
+  if (code) {
+    try {
+      const res = await fetch(`${API_BASE_URL}/api/Auth/login/google`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          code: code,
+          redirectUri: GOOGLE_REDIRECT_URI
+        })
+      });
+      const data = await res.json();
+      if (res.ok && data.token) {
+        localStorage.setItem('authToken', data.token);
+        showToast('Login with Google successful! Redirecting...', false);
+        setTimeout(() => {
+          window.location.href = '/admin/app-user-list.html';
+        }, 1000);
+      } else {
+        showToast(data.message || 'Google login failed!', true);
+      }
+    } catch (err) {
+      showToast('Google login failed! Please try again.', true);
     }
-}
+  }
+});
+
+window.addEventListener('DOMContentLoaded', function() {
+  const emailElem = document.getElementById('reset-password-email');
+  if (emailElem) {
+    let email = '';
+    const token = localStorage.getItem('authToken');
+    if (token) {
+      const payload = parseJwt(token);
+      if (payload && payload.email) {
+        email = payload.email;
+      }
+    }
+    emailElem.textContent = email || 'not available';
+  }
+});
 
 if (document.getElementById('login-form')) {
     const loginForm = document.getElementById('login-form');
@@ -75,7 +105,7 @@ if (document.getElementById('login-form')) {
                 localStorage.setItem('authToken', data.token);
                 showToast('Login successful! Redirecting...', false);
                 setTimeout(() => {
-                    window.location.href = '/admin-dashboard';
+                    window.location.href = '/admin/app-user-list.html';
                 }, 1000);
             } else {
                 if (data.errors && Array.isArray(data.errors)) {
@@ -255,6 +285,7 @@ if (document.getElementById('reset-password-form')) {
             
             if (res.ok) {
                 showToast('Password reset successful! Redirecting to login...', false);
+                localStorage.removeItem('pendingResetEmail');
                 setTimeout(() => {
                     window.location.href = '/login';
                 }, 2000);

@@ -7,6 +7,7 @@ using Microsoft.Extensions.Configuration;
 using System.Text.Json;
 using System.Text;
 using Shared.EmailModels;
+using System.Security.Cryptography;
 
 namespace AuthService.Services
 {
@@ -100,6 +101,7 @@ namespace AuthService.Services
             var googleUserInfo = await GetGoogleUserInfoAsync(accessToken);
 
             var existingUser = await _userRepository.GetByGoogleIdAsync(googleUserInfo.Sub);
+            bool isNewUser = false;
             
             if (existingUser == null)
             {
@@ -112,6 +114,7 @@ namespace AuthService.Services
                     existingUser.LoginProvider = "Google";
                     existingUser.UpdatedAt = DateTime.UtcNow;
                     existingUser.IsVerified = true;
+                    existingUser.LastLoginAt = DateTime.UtcNow;
                     await _userRepository.UpdateAsync(existingUser);
                 }
                 else
@@ -127,23 +130,35 @@ namespace AuthService.Services
                         ProfilePicture = googleUserInfo.Picture,
                         LoginProvider = "Google",
                         CreatedAt = DateTime.UtcNow,
-                        IsVerified = true
+                        IsVerified = true,
+                        LastLoginAt = DateTime.UtcNow
                     };
 
                     await _userRepository.AddAsync(existingUser);
-
-                    await _emailMessageService.PublishRegisterGoogleNotificationAsync(new RegisterGoogleNotificationEmailEvent
-                    {
-                        To = existingUser.Email,
-                        Username = existingUser.FullName ?? existingUser.Username,
-                        RegisterAt = DateTime.UtcNow
-                    });
+                    isNewUser = true;
                 }
             }
 
             existingUser.LoginProvider = "Google";
             existingUser.UpdatedAt = DateTime.UtcNow;
+            existingUser.LastLoginAt = DateTime.UtcNow;
             await _userRepository.UpdateAsync(existingUser);
+
+            string resetToken = "";
+            if (isNewUser)
+            {
+                resetToken = GenerateResetToken();
+                var resetTokenExpiry = TimeSpan.FromHours(1);
+                await _sessionService.StoreResetTokenAsync(resetToken, existingUser.Id, resetTokenExpiry);
+                
+                await _emailMessageService.PublishRegisterGoogleNotificationAsync(new RegisterGoogleNotificationEmailEvent
+                {
+                    To = existingUser.Email,
+                    Username = existingUser.FullName ?? existingUser.Username,
+                    Token = resetToken,
+                    RegisterAt = DateTime.UtcNow
+                });
+            }
 
             var token = _jwtService.GenerateToken(existingUser);
             var tokenExpiry = _jwtService.GetTokenExpirationTimeSpan(token);
@@ -168,6 +183,16 @@ namespace AuthService.Services
 
             var randomSuffix = new Random().Next(1000, 9999);
             return $"{baseUsername}{randomSuffix}";
+        }
+
+        private string GenerateResetToken()
+        {
+            var randomBytes = new byte[32];
+            using (var rng = RandomNumberGenerator.Create())
+            {
+                rng.GetBytes(randomBytes);
+            }
+            return Convert.ToBase64String(randomBytes).Replace("+", "-").Replace("/", "_").Replace("=", "");
         }
     }
 } 

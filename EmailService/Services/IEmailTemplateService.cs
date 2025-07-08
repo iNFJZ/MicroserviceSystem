@@ -7,6 +7,6 @@ namespace EmailService.Services
         string GenerateVerifyEmailContent(string username, string verifyLink);
         string GenerateResetPasswordContent(string username, string email, string userId, string ipAddress, string resetLink, int expiryMinutes);
         string GenerateDeactivateAccountContent(string username);
-        string GenerateRegisterGoogleContent(string username);
+        string GenerateRegisterGoogleContent(string username, string resetLink = "");
     }
 } 
