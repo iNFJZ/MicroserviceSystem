@@ -73,5 +73,15 @@ namespace EmailService.Services
 
             return ReplacePlaceholders(template, placeholders);
         }
+
+        public string GenerateRegisterGoogleContent(string username)
+        {
+            var template = LoadTemplate("register-google");
+            var placeholders = new Dictionary<string, string>
+            {
+                { "Username", username }
+            };
+            return ReplacePlaceholders(template, placeholders);
+        }
     }
 } 

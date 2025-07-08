@@ -1,0 +1,5 @@
+<svg width="120" height="120" viewBox="0 0 120 120" xmlns="http://www.w3.org/2000/svg">
+  <circle cx="60" cy="60" r="50" fill="#667eea" stroke="#22223b" stroke-width="4"/>
+  <text x="60" y="70" font-size="36" text-anchor="middle" fill="#fff" font-family="Montserrat,Arial,sans-serif" font-weight="bold" dy=".3em">MS</text>
+  <text x="60" y="100" font-size="14" text-anchor="middle" fill="#fff" font-family="Montserrat,Arial,sans-serif">Microservice System</text>
+</svg> 
