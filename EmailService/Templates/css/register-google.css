@@ -1,0 +1,21 @@
+.hover-underline:hover { text-decoration: underline !important; }
+.btn-primary {
+  background-color: #7367f0 !important;
+  border-color: #7367f0 !important;
+  color: #ffffff !important;
+  padding: 12px 24px !important;
+  text-decoration: none !important;
+  border-radius: 6px !important;
+  display: inline-block !important;
+  font-weight: 600 !important;
+  font-size: 16px !important;
+}
+.btn-primary:hover {
+  background-color: #5e50ee !important;
+  border-color: #5e50ee !important;
+}
+@media (max-width: 600px) {
+  .sm-w-full { width: 100% !important; }
+  .sm-px-24 { padding-left: 24px !important; padding-right: 24px !important; }
+  .sm-py-32 { padding-top: 32px !important; padding-bottom: 32px !important; }
+} 

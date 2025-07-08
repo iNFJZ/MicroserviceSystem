@@ -11,7 +11,5 @@ namespace AuthService.Repositories
         Task AddAsync(User user);
         Task UpdateAsync(User user);
         Task DeleteAsync(Guid id);
-        Task<List<User>> GetAllAsync();
-        Task<List<User>> GetAllActiveAsync();
     }
 }

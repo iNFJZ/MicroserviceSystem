@@ -139,6 +139,26 @@ services:
       - microservice-network
     command: dotnet EmailService.dll
 
+  user-service:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    platform: linux/amd64
+    container_name: user-service
+    working_dir: /app/UserService
+    ports:
+      - "5005:80"
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Development
+      - ConnectionStrings__DefaultConnection=Host=auth-postgres;Port=5432;Database=auth_db;Username=postgres;Password=123456
+      - AuthService__Url=http://auth-service:5001
+    depends_on:
+      - postgres
+      - auth-service
+    networks:
+      - microservice-network
+    command: dotnet UserService.dll
+
   grpc-server:
     build:
       context: .

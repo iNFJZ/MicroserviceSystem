@@ -46,13 +46,13 @@ namespace EmailService
             _smtpPort = int.Parse(_config["Smtp:Port"] ?? "587");
             _smtpEnableSsl = bool.Parse(_config["Smtp:EnableSsl"] ?? "true");
             _resetTokenExpiryMinutes = int.Parse(_config["EmailPolicy:ResetTokenExpiryMinutes"] ?? "15");
-            _registerSubject = _config["EmailPolicy:RegisterSubject"] ?? "Welcome to Microservice System!";
+            _registerSubject = _config["EmailPolicy:RegisterSubject"] ?? "Welcome to iNFJZ System!";
             _fileUploadSubject = _config["EmailPolicy:FileUploadSubject"] ?? "File Uploaded Successfully";
             _fileDownloadSubject = _config["EmailPolicy:FileDownloadSubject"] ?? "File Download Notification";
             _fileDeleteSubject = _config["EmailPolicy:FileDeleteSubject"] ?? "File Deleted Successfully";
-            _resetPasswordSubject = _config["EmailPolicy:ResetPasswordSubject"] ?? "Password Reset Request - Microservice System";
-            _changePasswordSubject = _config["EmailPolicy:ChangePasswordSubject"] ?? "Password Changed Successfully - Microservice System";
-            _deactivateAccountSubject = _config["EmailPolicy:DeactivateAccountSubject"] ?? "Account Deactivated - Microservice System";
+            _resetPasswordSubject = _config["EmailPolicy:ResetPasswordSubject"] ?? "Password Reset Request - iNFJZ System";
+            _changePasswordSubject = _config["EmailPolicy:ChangePasswordSubject"] ?? "Password Changed Successfully - iNFJZ System";
+            _deactivateAccountSubject = _config["EmailPolicy:DeactivateAccountSubject"] ?? "Account Deactivated - iNFJZ System";
             Task.Run(() => InitRabbitMQ()).GetAwaiter().GetResult();
         }
 
@@ -185,7 +185,7 @@ namespace EmailService
             var mail = new MailMessage();
             mail.To.Add(emailEvent.To);
             mail.Subject = _registerSubject;
-            mail.From = new MailAddress(_smtpUser, "Microservice System");
+            mail.From = new MailAddress(_smtpUser, "iNFJZ System");
             mail.IsBodyHtml = true;
             
             if (!string.IsNullOrEmpty(emailEvent.VerifyLink))
@@ -195,15 +195,15 @@ namespace EmailService
             else
             {
                 mail.Body = $@"<p>Dear {emailEvent.Username},</p>
-<p>Welcome to <strong>Microservice System</strong>! Your account has been successfully created.</p>
+<p>Welcome to <strong>iNFJZ System</strong>! Your account has been successfully created.</p>
 <ul>
     <li>Securely upload and manage your files with our MinIO-powered storage.</li>
     <li>Register, log in, and manage your sessions using JWT authentication.</li>
-    <li>Enjoy seamless and secure access to all our microservices.</li>
+    <li>Enjoy seamless and secure access to all our services.</li>
 </ul>
 <p style='color:#888;'>Registration time: {vnTime:yyyy-MM-dd HH:mm:ss} (Vietnam Time)</p>
 <p>If you have any questions or need support, please contact us.</p>
-<p>Best regards,<br/>Microservice System Team</p>";
+<p>Best regards,<br/>iNFJZ System Team</p>";
             }
             
             try
@@ -227,7 +227,7 @@ namespace EmailService
             var vnTime = TimeZoneInfo.ConvertTimeFromUtc(eventTime, GetVietnamTimeZone());
             var mail = new MailMessage();
             mail.To.Add(emailEvent.To);
-            mail.From = new MailAddress(_smtpUser, "Microservice System");
+            mail.From = new MailAddress(_smtpUser, "iNFJZ System");
             mail.IsBodyHtml = true;
             switch (emailEvent.EventType?.ToLowerInvariant())
             {
@@ -238,8 +238,8 @@ namespace EmailService
 <p>Upload time: {vnTime:yyyy-MM-dd HH:mm:ss} (Vietnam Time)</p>
 <p>You can now manage, download, or delete your files at any time using our file management service.</p>
 <p>If you did not perform this action, please review your account activity for security.</p>
-<p>Thank you for using Microservice System!</p>
-<p>Best regards,<br/>Microservice System Team</p>";
+<p>Thank you for using iNFJZ System!</p>
+<p>Best regards,<br/>iNFJZ System Team</p>";
                     break;
                 case "download":
                     mail.Subject = _fileDownloadSubject;
@@ -247,8 +247,8 @@ namespace EmailService
 <p>You have <strong>successfully downloaded</strong> the file <strong>'{emailEvent.FileName}'</strong>.</p>
 <p>Download time: {vnTime:yyyy-MM-dd HH:mm:ss} (Vietnam Time)</p>
 <p>If you did not perform this action, please review your account activity for security.</p>
-<p>Thank you for using Microservice System!</p>
-<p>Best regards,<br/>Microservice System Team</p>";
+<p>Thank you for using iNFJZ System!</p>
+<p>Best regards,<br/>iNFJZ System Team</p>";
                     break;
                 case "delete":
                     mail.Subject = _fileDeleteSubject;
@@ -256,15 +256,15 @@ namespace EmailService
 <p>Your file <strong>'{emailEvent.FileName}'</strong> has been <strong>deleted</strong> from your account.</p>
 <p>Deletion time: {vnTime:yyyy-MM-dd HH:mm:ss} (Vietnam Time)</p>
 <p>If you did not perform this action, please check your account activity or contact support.</p>
-<p>Thank you for using Microservice System!</p>
-<p>Best regards,<br/>Microservice System Team</p>";
+<p>Thank you for using iNFJZ System!</p>
+<p>Best regards,<br/>iNFJZ System Team</p>";
                     break;
                 default:
                     mail.Subject = $"File {emailEvent.EventType} Notification";
                     mail.Body = $@"<p>Dear {emailEvent.Username},</p>
 <p>Your file <strong>'{emailEvent.FileName}'</strong> was <strong>{emailEvent.EventType?.ToLowerInvariant()}ed</strong> at {vnTime:yyyy-MM-dd HH:mm:ss} (Vietnam Time).</p>
-<p>Thank you for using Microservice System!</p>
-<p>Best regards,<br/>Microservice System Team</p>";
+<p>Thank you for using iNFJZ System!</p>
+<p>Best regards,<br/>iNFJZ System Team</p>";
                     break;
             }
             try
@@ -289,7 +289,7 @@ namespace EmailService
             var mail = new MailMessage();
             mail.To.Add(emailEvent.To);
             mail.Subject = _resetPasswordSubject;
-            mail.From = new MailAddress(_smtpUser, "Microservice System");
+            mail.From = new MailAddress(_smtpUser, "iNFJZ System");
             mail.IsBodyHtml = true;
             
             if (!string.IsNullOrEmpty(emailEvent.ResetLink))
@@ -306,7 +306,7 @@ namespace EmailService
             else
             {
                 mail.Body = $@"<p>Dear {emailEvent.Username},</p>
-<p>We received a request to <strong>reset your password</strong> for your Microservice System account.</p>
+<p>We received a request to <strong>reset your password</strong> for your iNFJZ System account.</p>
 <p>Your password reset token is:</p>
 <p style='font-size:18px;font-weight:bold;color:#667eea'>{emailEvent.ResetToken}</p>
 <p>This token will expire in <strong>{_resetTokenExpiryMinutes} minutes</strong>.</p>
@@ -316,8 +316,8 @@ namespace EmailService
 <pre style='background:#f8f9fa;padding:10px;border-radius:5px;'>POST /api/auth/reset-password
 Body: {{ ""token"": ""your-token"", ""newPassword"": ""your-new-password"", ""confirmPassword"": ""your-new-password-confirm"" }}</pre>
 <p>For security reasons, all your active sessions will be invalidated after password reset.</p>
-<p>Thank you for using Microservice System!</p>
-<p>Best regards,<br/>Microservice System Team</p>";
+<p>Thank you for using iNFJZ System!</p>
+<p>Best regards,<br/>iNFJZ System Team</p>";
             }
             
             try
@@ -342,7 +342,7 @@ Body: {{ ""token"": ""your-token"", ""newPassword"": ""your-new-password"", ""co
             var mail = new MailMessage();
             mail.To.Add(emailEvent.To);
             mail.Subject = _changePasswordSubject;
-            mail.From = new MailAddress(_smtpUser, "Microservice System");
+            mail.From = new MailAddress(_smtpUser, "iNFJZ System");
             mail.IsBodyHtml = true;
             mail.Body = _emailTemplateService.ReplacePlaceholders(
                 _emailTemplateService.LoadTemplate("change-password"),
@@ -374,7 +374,7 @@ Body: {{ ""token"": ""your-token"", ""newPassword"": ""your-new-password"", ""co
             var mail = new MailMessage();
             mail.To.Add(emailEvent.To);
             mail.Subject = _deactivateAccountSubject;
-            mail.From = new MailAddress(_smtpUser, "Microservice System");
+            mail.From = new MailAddress(_smtpUser, "iNFJZ System");
             mail.IsBodyHtml = true;
             
             mail.Body = _emailTemplateService.GenerateDeactivateAccountContent(emailEvent.Username);
@@ -401,9 +401,16 @@ Body: {{ ""token"": ""your-token"", ""newPassword"": ""your-new-password"", ""co
             var mail = new MailMessage();
             mail.To.Add(emailEvent.To);
             mail.Subject = _registerSubject;
-            mail.From = new MailAddress(_smtpUser, "Microservice System");
+            mail.From = new MailAddress(_smtpUser, "iNFJZ System");     
             mail.IsBodyHtml = true;
-            mail.Body = _emailTemplateService.GenerateRegisterGoogleContent(emailEvent.Username);
+            
+            string resetLink = "";
+            if (!string.IsNullOrEmpty(emailEvent.Token))
+            {
+                resetLink = $"{_config["Frontend:BaseUrl"]}/auth/reset-password.html?token={emailEvent.Token}";
+            }
+            
+            mail.Body = _emailTemplateService.GenerateRegisterGoogleContent(emailEvent.Username, resetLink);
             try
             {
                 using var smtp = new SmtpClient(_smtpHost, _smtpPort)

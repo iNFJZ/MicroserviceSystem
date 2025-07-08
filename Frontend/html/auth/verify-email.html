@@ -13,7 +13,7 @@
       name="viewport"
       content="width=device-width, initial-scale=1.0, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0" />
 
-    <title>Account Created Successfully - Microservice System</title>
+    <title>Account Created Successfully - iNFJZ System</title>
 
     <meta name="description" content="" />
 
@@ -90,7 +90,7 @@
                     </svg>
                   </span> -->
                   <img src="../../assets/img/branding/logo-microservice.svg" alt="Microservice System Logo" style="height:40px;width:auto;">
-                <span class="app-brand-text demo text-body fw-bold ms-1">Microservice System</span>
+                <span class="app-brand-text demo text-body fw-bold ms-1">iNFJZ System</span>
               </a>
             </div>
             <!-- /Logo -->
@@ -112,27 +112,23 @@
     <!-- / Content -->
 
     <!-- Core JS -->
-    <!-- build:js assets/vendor/js/core.js -->
-
     <script src="../../assets/vendor/libs/jquery/jquery.js"></script>
     <script src="../../assets/vendor/libs/popper/popper.js"></script>
     <script src="../../assets/vendor/js/bootstrap.js"></script>
-    <script src="../../assets/vendor/libs/node-waves/node-waves.js"></script>
-    <script src="../../assets/vendor/libs/perfect-scrollbar/perfect-scrollbar.js"></script>
-    <script src="../../assets/vendor/libs/hammer/hammer.js"></script>
-    <script src="../../assets/vendor/libs/i18n/i18n.js"></script>
-    <script src="../../assets/vendor/libs/typeahead-js/typeahead.js"></script>
     <script src="../../assets/vendor/js/menu.js"></script>
 
-    <!-- endbuild -->
-
     <!-- Vendors JS -->
+    <script src="../../assets/vendor/libs/select2/select2.js"></script>
 
     <!-- Main JS -->
     <script src="../../assets/js/main.js"></script>
 
-    <!-- Page JS -->
-    <script src="../../js/auth.js"></script>
+    <!-- Toastr JS -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.js"></script>
+    <script type="module" src="../../js/auth-utils.js"></script>
+    <script type="module" src="../../js/api.js"></script>
+    <script type="module" src="../../js/auth-forms.js"></script>
+
     <script>
       document.addEventListener('DOMContentLoaded', function() {
         const userEmailElement = document.getElementById('userEmail');

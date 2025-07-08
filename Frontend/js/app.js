@@ -1,35 +1,7 @@
-import { sanitizeHtml, sanitizeInput, isValidEmail, isValidPassword, isValidUsername } from './utils.js';
-import { getToken, setToken, removeToken, isAuthenticated, getCurrentUser, logout } from './auth.js';
-import { fetchUsers, deleteUser, updateUser, apiRequest, logoutUser } from './api.js';
+import { sanitizeHtml, isAuthenticated, logout } from './auth-utils.js';
+import { fetchUsers, updateUser, deleteUser, logoutUser, restoreUser, statistics, getUserById, getUserByEmail, getUserByUsername } from './api.js';
 
 const API_BASE_URL = 'http://localhost:5050';
-
-const sections = {
-    login: document.getElementById('login-section'),
-    register: document.getElementById('register-section'),
-    home: document.getElementById('home-section'),
-    users: document.getElementById('users-section'),
-    verifyEmail: document.getElementById('verify-email-section')
-};
-const navs = {
-    login: document.getElementById('nav-login'),
-    register: document.getElementById('nav-register'),
-    home: document.getElementById('nav-home'),
-    users: document.getElementById('nav-users'),
-    logout: document.getElementById('nav-logout')
-};
-
-function showSection(name) {
-    Object.values(sections).forEach(sec => sec.classList.remove('active'));
-    sections[name].classList.add('active');
-}
-function updateNavbar(isLoggedIn) {
-    navs.login.style.display = isLoggedIn ? 'none' : '';
-    navs.register.style.display = isLoggedIn ? 'none' : '';
-    navs.home.style.display = isLoggedIn ? '' : 'none';
-    navs.users.style.display = isLoggedIn ? '' : 'none';
-    navs.logout.style.display = isLoggedIn ? '' : 'none';
-}
 
 let currentUser = null;
 let authToken = localStorage.getItem('authToken') || null;
@@ -37,28 +9,6 @@ let allUsersCache = [];
 let filteredUsersCache = [];
 let currentPage = 1;
 const USERS_PER_PAGE = 10;
-
-function parseJwt(token) {
-    try {
-        if (!token || typeof token !== 'string') {
-            return {};
-        }
-        
-        const parts = token.split('.');
-        if (parts.length !== 3) {
-            return {};
-        }
-        
-        const base64Url = parts[1];
-        const base64 = base64Url.replace(/-/g, '+').replace(/_/g, '/');
-        const jsonPayload = decodeURIComponent(atob(base64).split('').map(function(c) {
-            return '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2);
-        }).join(''));
-        return JSON.parse(jsonPayload);
-    } catch {
-        return {};
-    }
-}
 
 if (window.self !== window.top) {
     window.top.location = window.self.location;
@@ -81,7 +31,7 @@ function showMessage(elementId, message, isError = false) {
 
 window.toggleUserStatus = async function(id, isActive) {
     try {
-        await fetch(`${API_BASE_URL}/api/Auth/users/${id}/status`, {
+        await fetch(`${API_BASE_URL}/api/User/${id}/status`, {
             method: 'PATCH',
             headers: {
                 'Authorization': `Bearer ${authToken}`,
@@ -141,7 +91,7 @@ window.addEventListener('DOMContentLoaded', async () => {
                 localStorage.setItem('authToken', data.token);
                 toastr.success('Google login successful! Redirecting...');
                 setTimeout(() => {
-                    window.location.href = '/admin/dashboard.html';
+                    window.location.href = '/admin/app-user-list.html';
                 }, 1000);
                 success = true;
             } else {
@@ -161,39 +111,6 @@ window.addEventListener('DOMContentLoaded', async () => {
 });
 
 document.addEventListener('DOMContentLoaded', function() {
-    const navUsers = document.getElementById('nav-users');
-    const navSessions = document.getElementById('nav-sessions');
-    const navSettings = document.getElementById('nav-settings');
-    const usersSection = document.getElementById('users-section');
-    const sessionsSection = document.getElementById('sessions-section');
-    const settingsSection = document.getElementById('settings-section');
-    if (navUsers && navSessions && navSettings && usersSection && sessionsSection && settingsSection) {
-        navUsers.onclick = function() {
-            navUsers.classList.add('active');
-            navSessions.classList.remove('active');
-            navSettings.classList.remove('active');
-            usersSection.style.display = '';
-            sessionsSection.style.display = 'none';
-            settingsSection.style.display = 'none';
-        };
-        navSessions.onclick = function() {
-            navUsers.classList.remove('active');
-            navSessions.classList.add('active');
-            navSettings.classList.remove('active');
-            usersSection.style.display = 'none';
-            sessionsSection.style.display = '';
-            settingsSection.style.display = 'none';
-        };
-        navSettings.onclick = function() {
-            navUsers.classList.remove('active');
-            navSessions.classList.remove('active');
-            navSettings.classList.add('active');
-            usersSection.style.display = 'none';
-            sessionsSection.style.display = 'none';
-            settingsSection.style.display = '';
-        };
-    }
-    
     setupLogoutHandlers();
 });
 
@@ -201,45 +118,37 @@ document.addEventListener('DOMContentLoaded', function() {
     const isAdminPage = window.location.pathname.startsWith('/admin/');
     const isLoginPage = window.location.pathname.endsWith('/login');
     if (isAdminPage && !isAuthenticated()) {
-        window.location.href = '/login';
+        window.location.href = '/admin/auth/login.html';
     }
     if (isLoginPage && isAuthenticated()) {
-        window.location.href = '/admin/dashboard.html';
+        window.location.href = '/admin/app-user-list.html';
     }
-})();
+});
 
 function setupLogoutHandlers() {
     const logoutBtn = document.getElementById('logout-btn');
-    console.log('Setting up logout handlers, logout button found:', !!logoutBtn);
+    if (!logoutBtn) return;
     if (logoutBtn && !logoutBtn.hasAttribute('data-logout-handler')) {
-        console.log('Adding logout handler to button');
         logoutBtn.setAttribute('data-logout-handler', 'true');
         logoutBtn.addEventListener('click', async function(e) {
-            console.log('Logout button clicked!');
             e.preventDefault();
             e.stopPropagation();
             logoutBtn.disabled = true;
             logoutBtn.textContent = 'Logging out...';
             try {
-                console.log('Calling logout API...');
                 await logoutUser();
-                console.log('Logout API call completed successfully');
             } catch (error) {
-                console.log('Logout API call failed, continuing with local logout:', error);
             }
-            console.log('Clearing local data...');
             localStorage.removeItem('authToken');
             sessionStorage.clear();
             currentUser = null;
             authToken = null;
             toastr.success('Logged out successfully!');
-            console.log('Redirecting to login page...');
             setTimeout(() => {
                 window.location.href = '/login';
             }, 500);
         });
         logoutBtn.onclick = logoutBtn.onclick || function(e) {
-            console.log('Fallback logout handler triggered');
             e.preventDefault();
             e.stopPropagation();
             localStorage.removeItem('authToken');
@@ -277,16 +186,7 @@ function goToLogin() {
     window.location.href = '/login';
 }
 function goToDashboard() {
-    window.location.href = '/admin/dashboard.html';
-}
-function goToUsers() {
-    window.location.href = '/admin/users.html';
-}
-function goToSessions() {
-    window.location.href = '/admin/sessions.html';
-}
-function goToSettings() {
-    window.location.href = '/admin/settings.html';
+    window.location.href = '/admin/app-user-list.html';
 }
 
 window.addEventListener('DOMContentLoaded', async function() {
@@ -350,23 +250,38 @@ function renderUserTableWithPagination(users, page) {
     const end = start + USERS_PER_PAGE;
     const pageUsers = users.slice(start, end);
     userTableBody.innerHTML = '';
-    pageUsers.forEach(user => {
+    pageUsers.forEach((user, rowIdx) => {
         const tr = document.createElement('tr');
+        let statusText = '';
+        switch (user.status) {
+            case 1: statusText = 'Active'; break;
+            case 2: statusText = 'Inactive'; break;
+            case 3: statusText = 'Suspended'; break;
+            case 4: statusText = 'Banned'; break;
+            default: statusText = sanitizeHtml(user.status || '');
+        }
         tr.innerHTML = `
             <td>${sanitizeHtml(user.id)}</td>
             <td>${sanitizeHtml(user.username)}</td>
             <td>${sanitizeHtml(user.fullName || '-')}</td>
             <td>${sanitizeHtml(user.email)}</td>
             <td>${sanitizeHtml(user.phoneNumber || '-')}</td>
-            <td>${user.status || 'Active'}</td>
-            <td>${user.isVerified ? 'Yes' : 'No'}</td>
-            <td>${user.lastLoginAt ? new Date(user.lastLoginAt).toLocaleDateString() : 'Never'}</td>
-            <td>${new Date(user.createdAt).toLocaleDateString()}</td>
+            <td>${statusText}</td>
+            <td>${user.lastLoginAt ? new Date(user.lastLoginAt).toLocaleString('en-GB', { year: 'numeric', month: '2-digit', day: '2-digit', hour: '2-digit', minute: '2-digit', second: '2-digit' }) : 'Never'}</td>
             <td>
                 <button class="btn btn-edit-user">Edit</button>
                 <button class="btn btn-danger btn-delete-user">Delete</button>
             </td>
         `;
+        Array.from(tr.children).forEach((td, idx) => {
+            if (idx < tr.children.length - 1) {
+                td.style.cursor = 'pointer';
+                td.onclick = function(e) {
+                    e.stopPropagation();
+                    showUserDetailModal(user);
+                };
+            }
+        });
         userTableBody.appendChild(tr);
     });
     document.querySelectorAll('.btn-edit-user').forEach((btn, idx) => {
@@ -415,7 +330,7 @@ window.addEventListener('DOMContentLoaded', function() {
         closeBtn.onclick = function() {
             closeEditModal();
         };
-        window.onclick = function(event) {
+        modal.onclick = function(event) {
             if (event.target === modal) {
                 closeEditModal();
             }
@@ -498,9 +413,7 @@ function editUser(userId) {
         return;
     }
 
-    document.getElementById('edit-user-id').value = user.id;
     document.getElementById('edit-username').value = user.username;
-    document.getElementById('edit-email').value = user.email;
     document.getElementById('edit-fullname').value = user.fullName || '';
     document.getElementById('edit-phone').value = user.phoneNumber || '';
     document.getElementById('edit-dob').value = user.dateOfBirth ? user.dateOfBirth.split('T')[0] : '';
@@ -515,7 +428,54 @@ function editUser(userId) {
 function closeEditModal() {
     document.getElementById('edit-user-modal').style.display = 'none';
 }
-document.getElementById('close-edit-modal').onclick = closeEditModal;
-document.getElementById('edit-user-modal').onclick = function(e) {
-    if (e.target === this) closeEditModal();
+
+window.addEventListener('DOMContentLoaded', function() {
+    const usernameElem = document.getElementById('current-username');
+    if (usernameElem) {
+        try {
+            const token = localStorage.getItem('authToken');
+            if (token) {
+                const payload = JSON.parse(atob(token.split('.')[1].replace(/-/g, '+').replace(/_/g, '/')));
+                if (payload && payload.username) {
+                    usernameElem.textContent = payload.username;
+                } else if (payload && payload.fullName) {
+                    usernameElem.textContent = payload.fullName;
+                } else if (payload && payload.email) {
+                    usernameElem.textContent = payload.email;
+                } else {
+                    usernameElem.textContent = 'User';
+                }
+            } else {
+                usernameElem.textContent = 'User';
+            }
+        } catch {
+            usernameElem.textContent = 'User';
+        }
+    }
+});
+
+function showUserDetailModal(user) {
+    const modal = document.getElementById('user-detail-modal');
+    const content = document.getElementById('user-detail-content');
+    content.innerHTML = `
+      <div><b>ID:</b> ${sanitizeHtml(user.id)}</div>
+      <div><b>Username:</b> ${sanitizeHtml(user.username)}</div>
+      <div><b>Full Name:</b> ${sanitizeHtml(user.fullName || '-')}</div>
+      <div><b>Email:</b> ${sanitizeHtml(user.email)}</div>
+      <div><b>Phone:</b> ${sanitizeHtml(user.phoneNumber || '-')}</div>
+      <div><b>Status:</b> ${(() => { switch(user.status){case 1: return 'Active';case 2: return 'Inactive';case 3: return 'Suspended';case 4: return 'Banned';default: return sanitizeHtml(user.status || '');}})()}</div>
+      <div><b>Last Login:</b> ${user.lastLoginAt ? new Date(user.lastLoginAt).toLocaleString('en-GB', { year: 'numeric', month: '2-digit', day: '2-digit', hour: '2-digit', minute: '2-digit', second: '2-digit' }) : 'Never'}</div>
+      <div><b>Address:</b> ${sanitizeHtml(user.address || '-')}</div>
+      <div><b>Bio:</b> ${sanitizeHtml(user.bio || '-')}</div>
+      <div><b>Date of Birth:</b> ${user.dateOfBirth ? new Date(user.dateOfBirth).toLocaleDateString('en-GB') : '-'}</div>
+      <div><b>Provider:</b> ${sanitizeHtml(user.loginProvider || '-')}</div>
+      <div><b>Profile Picture:</b> ${user.profilePicture ? `<img src='${user.profilePicture}' alt='avatar' style='max-width:60px;max-height:60px;border-radius:50%;'/>` : '-'}</div>
+    `;
+    modal.style.display = 'block';
+}
+document.getElementById('close-user-detail-modal').onclick = function() {
+    document.getElementById('user-detail-modal').style.display = 'none';
+};
+document.getElementById('user-detail-modal').onclick = function(e) {
+    if (e.target === this) this.style.display = 'none';
 }; 

@@ -54,11 +54,7 @@ namespace AuthService.Repositories
                 await _cacheService.SetUserAsync(user);
                 return user;
             }
-            else
-            {
-                await _cacheService.DeleteUserAsync(id);
-                return null;
-            }
+            return null;
         }
 
         public async Task<User?> GetByGoogleIdAsync(string googleId)
@@ -99,21 +95,14 @@ namespace AuthService.Repositories
             var user = await _context.Users.FindAsync(id);
             if (user != null)
             {
-                _context.Users.Remove(user);
+                user.DeletedAt = DateTime.UtcNow;
+                user.Status = UserStatus.Banned;
                 await _context.SaveChangesAsync();
-                await _cacheService.DeleteUserAsync(id);
+                await _cacheService.DeleteUserByEmailAsync(user.Email);
                 await _sessionService.RemoveAllUserSessionsAsync(id);
             }
         }
 
-        public async Task<List<User>> GetAllAsync()
-        {
-            return await _context.Users.ToListAsync();
-        }
 
-        public async Task<List<User>> GetAllActiveAsync()
-        {
-            return await _context.Users.Where(u => u.DeletedAt == null).ToListAsync();
-        }
     }
 }

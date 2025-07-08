@@ -2,23 +2,18 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Microservice System</title>
+    <title>iNFJZ System</title>
     <script>
-        if (window.location.pathname === '/login' || window.location.pathname === '/login.html') {
-            window.location.replace('/auth/login.html');
-        }
-        const token = localStorage.getItem('authToken');
-        if (token) {
-            window.location.href = '/admin-dashboard';
-        } else {
-            window.location.href = '/auth/login.html';
-        }
+        (function() {
+            var token = localStorage.getItem('authToken');
+            var path = window.location.pathname;
+            if (!token) {
+                window.location.replace('/auth/login.html');
+            }
+        })();
     </script>
-    <script src="../js/app.js"></script>
 </head>
 <body>
-    <noscript>
-        Please enable JavaScript to use this application.
-    </noscript>
+    <noscript>Please enable JavaScript to use this application. If you are not redirected, <a href="/auth/login.html">click here to login</a>.</noscript>
 </body>
 </html> 

@@ -13,32 +13,20 @@ namespace AuthService.Services
             _cacheService = cacheService;
         }
 
-        public async Task<User?> GetUserByIdAsync(Guid userId)
-        {
-            return await _cacheService.GetAsync<User>(UserPrefix + userId);
-        }
-
         public async Task<User?> GetUserByEmailAsync(string email)
         {
             return await _cacheService.GetAsync<User>(EmailPrefix + email);
+        }
+
+        public async Task<User?> GetUserByIdAsync(Guid userId)
+        {
+            return await _cacheService.GetAsync<User>(UserPrefix + userId);
         }
 
         public async Task SetUserAsync(User user, TimeSpan? expiry = null)
         {
             await _cacheService.SetAsync(UserPrefix + user.Id, user, expiry);
             await _cacheService.SetAsync(EmailPrefix + user.Email, user, expiry);
-        }
-
-        public async Task<bool> DeleteUserAsync(Guid userId)
-        {
-            var user = await GetUserByIdAsync(userId);
-            if (user != null)
-            {
-                await _cacheService.DeleteAsync(UserPrefix + userId);
-                await _cacheService.DeleteAsync(EmailPrefix + user.Email);
-                return true;
-            }
-            return false;
         }
 
         public async Task<bool> DeleteUserByEmailAsync(string email)
@@ -53,14 +41,26 @@ namespace AuthService.Services
             return false;
         }
 
-        public async Task<bool> ExistsAsync(Guid userId)
+        public async Task<bool> DeleteUserAsync(Guid userId)
         {
-            return await _cacheService.ExistsAsync(UserPrefix + userId);
+            var user = await GetUserByIdAsync(userId);
+            if (user != null)
+            {
+                await _cacheService.DeleteAsync(UserPrefix + userId);
+                await _cacheService.DeleteAsync(EmailPrefix + user.Email);
+                return true;
+            }
+            return false;
         }
 
         public async Task<bool> ExistsByEmailAsync(string email)
         {
             return await _cacheService.ExistsAsync(EmailPrefix + email);
+        }
+
+        public async Task<bool> ExistsAsync(Guid userId)
+        {
+            return await _cacheService.ExistsAsync(UserPrefix + userId);
         }
     }
 } 

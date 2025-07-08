@@ -17,8 +17,5 @@ namespace AuthService.Services
         Task<bool> VerifyEmailAsync(string token);
         Task<bool> ResendVerificationEmailAsync(string email);
         Task<string> GetEmailFromResetTokenAsync(string token);
-        Task<List<User>> GetAllUsersAsync();
-        Task<bool> UpdateUserAsync(Guid userId, UpdateUserDto dto);
-        Task<bool> DeleteUserAsync(Guid userId);
     }
 }
