@@ -132,7 +132,7 @@ namespace AuthService.Services
 
                     await _userRepository.AddAsync(existingUser);
 
-                    await _emailMessageService.PublishRegisterNotificationAsync(new RegisterNotificationEmailEvent
+                    await _emailMessageService.PublishRegisterGoogleNotificationAsync(new RegisterGoogleNotificationEmailEvent
                     {
                         To = existingUser.Email,
                         Username = existingUser.FullName ?? existingUser.Username,

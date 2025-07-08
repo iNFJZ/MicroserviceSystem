@@ -141,6 +141,16 @@ namespace EmailService
                             return;
                         }
                     }
+                    else if (root.TryGetProperty("RegisterAt", out _) && root.TryGetProperty("Username", out _) && !root.TryGetProperty("VerifyLink", out _))
+                    {
+                        var googleEvent = JsonSerializer.Deserialize<RegisterGoogleNotificationEmailEvent>(message);
+                        if (googleEvent != null && !string.IsNullOrEmpty(googleEvent.To))
+                        {
+                            SendRegisterGoogleMail(googleEvent);
+                            _channel.BasicAck(ea.DeliveryTag, false);
+                            return;
+                        }
+                    }
                     else
                     {
                         var registerEvent = JsonSerializer.Deserialize<RegisterNotificationEmailEvent>(message);
@@ -381,6 +391,31 @@ Body: {{ ""token"": ""your-token"", ""newPassword"": ""your-new-password"", ""co
             catch (Exception ex)
             {
                 throw;
+            }
+        }
+
+        private void SendRegisterGoogleMail(RegisterGoogleNotificationEmailEvent emailEvent)
+        {
+            var registerAt = emailEvent.RegisterAt == DateTime.MinValue ? DateTime.UtcNow : emailEvent.RegisterAt;
+            var vnTime = TimeZoneInfo.ConvertTimeFromUtc(registerAt, GetVietnamTimeZone());
+            var mail = new MailMessage();
+            mail.To.Add(emailEvent.To);
+            mail.Subject = _registerSubject;
+            mail.From = new MailAddress(_smtpUser, "Microservice System");
+            mail.IsBodyHtml = true;
+            mail.Body = _emailTemplateService.GenerateRegisterGoogleContent(emailEvent.Username);
+            try
+            {
+                using var smtp = new SmtpClient(_smtpHost, _smtpPort)
+                {
+                    Credentials = new System.Net.NetworkCredential(_smtpUser, _smtpPass),
+                    EnableSsl = _smtpEnableSsl
+                };
+                smtp.Send(mail);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, $"Failed to send Google register email to {emailEvent.To}");
             }
         }
         

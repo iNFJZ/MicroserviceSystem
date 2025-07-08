@@ -1,6 +1,6 @@
-import { sanitizeHtml, sanitizeInput, isValidEmail, isValidPassword, isValidUsername } from '/shared/utils.js';
-import { getToken, setToken, removeToken, isAuthenticated, getCurrentUser, logout } from '/shared/auth.js';
-import { fetchUsers, deleteUser, updateUser, apiRequest, logoutUser } from '/shared/api.js';
+import { sanitizeHtml, sanitizeInput, isValidEmail, isValidPassword, isValidUsername } from './utils.js';
+import { getToken, setToken, removeToken, isAuthenticated, getCurrentUser, logout } from './auth.js';
+import { fetchUsers, deleteUser, updateUser, apiRequest, logoutUser } from './api.js';
 
 const API_BASE_URL = 'http://localhost:5050';
 

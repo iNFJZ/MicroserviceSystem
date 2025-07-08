@@ -4,11 +4,14 @@
     <meta charset="UTF-8">
     <title>Microservice System</title>
     <script>
+        if (window.location.pathname === '/login' || window.location.pathname === '/login.html') {
+            window.location.replace('/auth/login.html');
+        }
         const token = localStorage.getItem('authToken');
         if (token) {
             window.location.href = '/admin-dashboard';
         } else {
-            window.location.href = '/login';
+            window.location.href = '/auth/login.html';
         }
     </script>
     <script src="../js/app.js"></script>
