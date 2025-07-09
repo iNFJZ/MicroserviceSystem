@@ -227,16 +227,17 @@ public class UserService : IUserService
 
         if (dto.Status.HasValue)
         {
-            user.Status = dto.Status.Value;
-        }
-
-        if (dto.IsVerified.HasValue)
-        {
-            user.IsVerified = dto.IsVerified.Value;
-            if (dto.IsVerified.Value)
-                user.Status = UserStatus.Active;
-            else
-                user.Status = UserStatus.Inactive;
+            var newStatus = dto.Status.Value;
+            var oldStatus = user.Status;
+            user.Status = newStatus;
+            if (newStatus == UserStatus.Banned && user.DeletedAt == null)
+            {
+                user.DeletedAt = DateTime.UtcNow;
+            }
+            else if (oldStatus == UserStatus.Banned && newStatus != UserStatus.Banned && user.DeletedAt != null)
+            {
+                user.DeletedAt = null;
+            }
         }
 
         if (!string.IsNullOrWhiteSpace(dto.ProfilePicture))
@@ -246,6 +247,12 @@ public class UserService : IUserService
             user.ProfilePicture = dto.ProfilePicture.Trim();
         }
 
+        if (user.Status == UserStatus.Active || user.Status == UserStatus.Suspended)
+        {
+            user.IsVerified = true;
+        } else {
+            user.IsVerified = false;
+        }
         user.UpdatedAt = DateTime.UtcNow;
 
         await _userRepository.UpdateAsync(user);
@@ -263,6 +270,7 @@ public class UserService : IUserService
 
         user.DeletedAt = DateTime.UtcNow;
         user.Status = UserStatus.Banned;
+        user.IsVerified = false;
         await _userRepository.UpdateAsync(user);
 
         await _userCacheService.DeleteUserAsync(userId);

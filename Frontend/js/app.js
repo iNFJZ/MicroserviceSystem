@@ -1,4 +1,4 @@
-import { sanitizeHtml, isAuthenticated, logout } from './auth-utils.js';
+import { sanitizeHtml, isAuthenticated, logout, sanitizeInput, isValidEmail } from './auth-utils.js';
 import { fetchUsers, fetchDeletedUsers, updateUser, deleteUser, logoutUser, restoreUser, statistics, getUserById, getUserByEmail, getUserByUsername } from './api.js';
 
 if (typeof toastr !== 'undefined') {
@@ -216,11 +216,16 @@ function goToDashboard() {
 }
 
 window.addEventListener('DOMContentLoaded', async function() {
-    await loadActiveUsers();
-    
-    await loadDeletedUsers();
-    
-    setupTabSwitching();
+    try {
+        await loadActiveUsers();
+        await loadDeletedUsers();
+        await updateUserStats();
+        setupTabSwitching();
+        setupLogoutHandlers();
+    } catch (error) {
+        console.error('Error initializing app:', error);
+        toastr.error('Failed to initialize application');
+    }
 });
 
 async function loadActiveUsers() {
@@ -357,11 +362,21 @@ function renderUserTableWithPagination(users, page) {
             <td>${sanitizeHtml(user.fullName || '-')}</td>
             <td>${sanitizeHtml(user.email)}</td>
             <td>${sanitizeHtml(user.phoneNumber || '-')}</td>
-            <td>${user.status === 1 ? '<span class="badge bg-success">Active</span>' : '<span class="badge bg-secondary">Inactive</span>'}</td>
+            <td>${
+                Number(user.status) === 1
+                    ? '<span class="badge bg-success">Active</span>'
+                    : Number(user.status) === 2
+                    ? '<span class="badge bg-secondary">Inactive</span>'
+                    : Number(user.status) === 3
+                    ? '<span class="badge bg-warning">Suspended</span>'
+                    : Number(user.status) === 4
+                    ? '<span class="badge bg-danger">Banned</span>'
+                    : '<span class="badge bg-secondary">Unknown</span>'
+            }</td>
             <td>${user.lastLoginAt ? new Date(user.lastLoginAt).toLocaleString('en-GB', { year: 'numeric', month: '2-digit', day: '2-digit', hour: '2-digit', minute: '2-digit', second: '2-digit' }) : '-'}</td>
             <td>
-                <button class="btn btn-sm btn-primary btn-edit-user" data-user-idx="${idx}">Edit</button>
-                <button class="btn btn-sm btn-danger btn-delete-user" data-user-idx="${idx}">Delete</button>
+                <button class="btn btn-sm btn-primary btn-edit-user" style="min-width:80px" data-user-idx="${idx}">Edit</button>
+                <button class="btn btn-sm btn-danger btn-delete-user" style="min-width:80px" data-user-idx="${idx}">Delete</button>
             </td>
         </tr>
     `).join('');
@@ -501,41 +516,109 @@ function renderDeletedUserTableWithPagination(users, page) {
 window.addEventListener('DOMContentLoaded', function() {
     const modal = document.getElementById('edit-user-modal');
     const closeBtn = document.getElementById('close-edit-modal');
+    const closeBtnAlt = document.getElementById('close-edit-modal-btn');
+    
     if (modal && closeBtn) {
-        closeBtn.onclick = function() {
+        closeBtn.onclick = function(e) {
+            e.preventDefault();
+            e.stopPropagation();
             closeEditModal();
         };
-        modal.addEventListener('mousedown', function(event) {
-            if (event.target === event.currentTarget) {
+        
+        if (closeBtnAlt) {
+            closeBtnAlt.onclick = function(e) {
+                e.preventDefault();
+                e.stopPropagation();
+                closeEditModal();
+            };
+        }
+        
+        modal.addEventListener('click', function(event) {
+            if (event.target === modal) {
                 closeEditModal();
             }
         });
-        modal.querySelector('.modal-dialog').addEventListener('mousedown', function(event) {
-            event.stopPropagation();
+        
+        const modalDialog = modal.querySelector('.modal-dialog');
+        if (modalDialog) {
+            modalDialog.addEventListener('click', function(event) {
+                event.stopPropagation();
+            });
+            
+            const form = modalDialog.querySelector('form');
+            if (form) {
+                form.addEventListener('click', function(event) {
+                    event.stopPropagation();
+                });
+            }
+            
+            const modalContent = modalDialog.querySelector('.modal-content');
+            if (modalContent) {
+                modalContent.addEventListener('click', function(event) {
+                    event.stopPropagation();
+                });
+            }
+        }
+        
+        document.addEventListener('keydown', function(event) {
+            if (event.key === 'Escape' && modal.classList.contains('show')) {
+                closeEditModal();
+            }
         });
     }
+    
     const editForm = document.getElementById('edit-user-form');
     if (editForm) {
         editForm.onsubmit = async function(e) {
             e.preventDefault();
+            e.stopPropagation();
+            
             const userId = document.getElementById('edit-user-id').value;
             const username = document.getElementById('edit-username').value.trim();
-            const fullName = document.getElementById('edit-fullname').value.trim();
-            const email = document.getElementById('edit-email').value.trim();
+            const fullName = sanitizeInput(document.getElementById('edit-fullname').value.trim());
+            const email = sanitizeInput(document.getElementById('edit-email').value.trim());
             const phone = document.getElementById('edit-phone').value.trim();
             const dob = document.getElementById('edit-dob').value.trim();
-            const address = document.getElementById('edit-address').value.trim();
-            const bio = document.getElementById('edit-bio').value.trim();
+            const address = sanitizeInput(document.getElementById('edit-address').value.trim());
+            const bio = sanitizeInput(document.getElementById('edit-bio').value.trim());
             const status = document.getElementById('edit-status').value.trim();
             const isVerified = false;
+
+            const errors = [];
+            if (!fullName) {
+                errors.push('Full name is required');
+            } else if (!/^[a-zA-ZÀ-ỹ\s]+$/.test(fullName)) {
+                errors.push('Full name can only contain letters, spaces, and Vietnamese characters');
+            }
+            if (phone && !/^[0-9]{10,11}$/.test(phone)) {
+                errors.push('Phone number must be 10-11 digits and contain only numbers.');
+            }
+            if (address && address.length > 200) {
+                errors.push('Address is too long (max 200 characters)');
+            }
+            if (bio && bio.length > 500) {
+                errors.push('Bio is too long (max 500 characters)');
+            }
+            if (!status || !['1','2','3','4'].includes(status)) {
+                errors.push('Status is required and must be one of: Active, Inactive, Suspended, Banned');
+            }
+            if (errors.length > 0) {
+                toastr.error(errors.filter(Boolean).join('<br>'));
+                return;
+            }
+            
             const saveBtn = editForm.querySelector('button[type="submit"]');
             saveBtn.disabled = true;
             saveBtn.textContent = 'Saving...';
+            
             try {
                 const updateData = {};
                 if (fullName) updateData.fullName = fullName;
                 if (phone) updateData.phoneNumber = phone;
-                if (dob) updateData.dateOfBirth = dob;
+                if (dob) {
+                    const dateObj = new Date(dob);
+                    updateData.dateOfBirth = dateObj.toISOString();
+                }
                 if (address) updateData.address = address;
                 if (bio) updateData.bio = bio;
                 if (status) updateData.status = parseInt(status);
@@ -568,10 +651,17 @@ window.addEventListener('DOMContentLoaded', function() {
                     }
                 }
                 
-                // Cập nhật thống kê nếu thay đổi trạng thái verified
                 await updateUserStats();
             } catch (err) {
-                toastr.error('Update failed: ' + (err.message || 'Unknown error'));
+                let msg = 'Update failed: ';
+                if (err && err.response && err.response.data && err.response.data.message) {
+                    msg += err.response.data.message;
+                } else if (err && err.message) {
+                    msg += err.message;
+                } else {
+                    msg += 'Unknown error';
+                }
+                toastr.error(msg);
             } finally {
                 saveBtn.disabled = false;
                 saveBtn.textContent = 'Save Changes';
@@ -599,6 +689,32 @@ window.addEventListener('DOMContentLoaded', async function() {
     }
 });
 
+function preventBodyScroll() {
+    document.body.style.overflow = 'hidden';
+    document.body.style.paddingRight = '0px';
+}
+
+function restoreBodyScroll() {
+    document.body.style.overflow = '';
+    document.body.style.paddingRight = '';
+}
+
+let activeModal = null;
+
+function setActiveModal(modal) {
+    if (activeModal && activeModal !== modal) {
+        activeModal.classList.remove('show');
+        setTimeout(() => {
+            activeModal.style.display = 'none';
+        }, 300);
+    }
+    activeModal = modal;
+}
+
+function clearActiveModal() {
+    activeModal = null;
+}
+
 function editUser(userId) {
     const user = allUsersCache.find(u => u.id === userId);
     if (!user) {
@@ -614,15 +730,118 @@ function editUser(userId) {
     document.getElementById('edit-dob').value = user.dateOfBirth ? user.dateOfBirth.split('T')[0] : '';
     document.getElementById('edit-address').value = user.address || '';
     document.getElementById('edit-bio').value = user.bio || '';
-    document.getElementById('edit-status').value = user.status || 1;
+    let statusVal = [1,2,3,4].includes(Number(user.status)) ? String(user.status) : "2";
+    document.getElementById('edit-status').value = statusVal;
 
     const modal = document.getElementById('edit-user-modal');
+    if (!modal) {
+        toastr.error('Modal not found');
+        return;
+    }
+
+    setActiveModal(modal);
     modal.style.display = 'block';
+    
+    setTimeout(() => {
+        modal.classList.add('show');
+        preventBodyScroll();
+        
+        const firstInput = modal.querySelector('input:not([disabled])');
+        if (firstInput) {
+            firstInput.focus();
+        }
+    }, 50);
 }
 
 function closeEditModal() {
-    document.getElementById('edit-user-modal').style.display = 'none';
+    const modal = document.getElementById('edit-user-modal');
+    if (!modal) return;
+    
+    modal.classList.remove('show');
+    
+    restoreBodyScroll();
+    
+    clearActiveModal();
+    
+    setTimeout(() => {
+        modal.style.display = 'none';
+        
+        const form = document.getElementById('edit-user-form');
+        if (form) {
+            form.reset();
+        }
+    }, 300);
 }
+
+function showUserDetailModal(user) {
+    const modal = document.getElementById('user-detail-modal');
+    const content = document.getElementById('user-detail-content');
+    let deletedAtRow = '';
+    if (user.deletedAt) {
+        deletedAtRow = `<div><b>Deleted At:</b> ${new Date(user.deletedAt).toLocaleString('en-GB', { year: 'numeric', month: '2-digit', day: '2-digit', hour: '2-digit', minute: '2-digit' })}</div>`;
+    }
+    content.innerHTML = `
+      <div><b>ID:</b> ${sanitizeHtml(user.id)}</div>
+      <div><b>Username:</b> ${sanitizeHtml(user.username)}</div>
+      <div><b>Full Name:</b> ${sanitizeHtml(user.fullName || '-')}</div>
+      <div><b>Email:</b> ${sanitizeHtml(user.email)}</div>
+      <div><b>Phone:</b> ${sanitizeHtml(user.phoneNumber || '-')}</div>
+      <div><b>Status:</b> ${(() => { switch(user.status){case 1: return 'Active';case 2: return 'Inactive';case 3: return 'Suspended';case 4: return 'Banned';default: return sanitizeHtml(user.status || '');}})()}</div>
+      <div><b>Last Login:</b> ${user.lastLoginAt ? new Date(user.lastLoginAt).toLocaleString('en-GB', { year: 'numeric', month: '2-digit', day: '2-digit', hour: '2-digit', minute: '2-digit', second: '2-digit' }) : 'Never'}</div>
+      ${deletedAtRow}
+      <div><b>Address:</b> ${sanitizeHtml(user.address || '-')}</div>
+      <div><b>Bio:</b> ${sanitizeHtml(user.bio || '-')}</div>
+      <div><b>Date of Birth:</b> ${user.dateOfBirth ? new Date(user.dateOfBirth).toLocaleDateString('en-GB') : '-'}</div>
+      <div><b>Provider:</b> ${sanitizeHtml(user.loginProvider || '-')}</div>
+      <div><b>Profile Picture:</b> ${user.profilePicture ? `<img src='${user.profilePicture}' alt='avatar' style='max-width:60px;max-height:60px;border-radius:50%;'/>` : '-'}</div>
+    `;
+    setActiveModal(modal);
+    modal.style.display = 'block';
+    modal.classList.add('show');
+    preventBodyScroll();
+}
+
+function closeUserDetailModal() {
+    const modal = document.getElementById('user-detail-modal');
+    modal.classList.remove('show');
+    restoreBodyScroll();
+    clearActiveModal();
+    setTimeout(() => {
+        modal.style.display = 'none';
+    }, 300);
+}
+
+window.addEventListener('DOMContentLoaded', function() {
+    const userDetailModal = document.getElementById('user-detail-modal');
+    const closeUserDetailBtn = document.getElementById('close-user-detail-modal');
+    
+    if (userDetailModal && closeUserDetailBtn) {
+        closeUserDetailBtn.onclick = function(e) {
+            e.preventDefault();
+            e.stopPropagation();
+            closeUserDetailModal();
+        };
+        
+        userDetailModal.addEventListener('click', function(event) {
+            if (event.target === userDetailModal) {
+                closeUserDetailModal();
+            }
+        });
+        
+        const modalDialog = userDetailModal.querySelector('.modal-dialog');
+        if (modalDialog) {
+            modalDialog.addEventListener('click', function(event) {
+                event.stopPropagation();
+            });
+        }
+        
+        document.addEventListener('keydown', function(event) {
+            if (event.key === 'Escape' && userDetailModal.classList.contains('show')) {
+                closeUserDetailModal();
+            }
+        });
+    }
+});
 
 window.addEventListener('DOMContentLoaded', function() {
     const usernameElem = document.getElementById('current-username');
@@ -648,37 +867,6 @@ window.addEventListener('DOMContentLoaded', function() {
         }
     }
 });
-
-function showUserDetailModal(user) {
-    const modal = document.getElementById('user-detail-modal');
-    const content = document.getElementById('user-detail-content');
-    let deletedAtRow = '';
-    if (user.deletedAt) {
-        deletedAtRow = `<div><b>Deleted At:</b> ${new Date(user.deletedAt).toLocaleString('en-GB', { year: 'numeric', month: '2-digit', day: '2-digit', hour: '2-digit', minute: '2-digit' })}</div>`;
-    }
-    content.innerHTML = `
-      <div><b>ID:</b> ${sanitizeHtml(user.id)}</div>
-      <div><b>Username:</b> ${sanitizeHtml(user.username)}</div>
-      <div><b>Full Name:</b> ${sanitizeHtml(user.fullName || '-')}</div>
-      <div><b>Email:</b> ${sanitizeHtml(user.email)}</div>
-      <div><b>Phone:</b> ${sanitizeHtml(user.phoneNumber || '-')}</div>
-      <div><b>Status:</b> ${(() => { switch(user.status){case 1: return 'Active';case 2: return 'Inactive';case 3: return 'Suspended';case 4: return 'Banned';default: return sanitizeHtml(user.status || '');}})()}</div>
-      <div><b>Last Login:</b> ${user.lastLoginAt ? new Date(user.lastLoginAt).toLocaleString('en-GB', { year: 'numeric', month: '2-digit', day: '2-digit', hour: '2-digit', minute: '2-digit', second: '2-digit' }) : 'Never'}</div>
-      ${deletedAtRow}
-      <div><b>Address:</b> ${sanitizeHtml(user.address || '-')}</div>
-      <div><b>Bio:</b> ${sanitizeHtml(user.bio || '-')}</div>
-      <div><b>Date of Birth:</b> ${user.dateOfBirth ? new Date(user.dateOfBirth).toLocaleDateString('en-GB') : '-'}</div>
-      <div><b>Provider:</b> ${sanitizeHtml(user.loginProvider || '-')}</div>
-      <div><b>Profile Picture:</b> ${user.profilePicture ? `<img src='${user.profilePicture}' alt='avatar' style='max-width:60px;max-height:60px;border-radius:50%;'/>` : '-'}</div>
-    `;
-    modal.style.display = 'block';
-}
-document.getElementById('close-user-detail-modal').onclick = function() {
-    document.getElementById('user-detail-modal').style.display = 'none';
-};
-document.getElementById('user-detail-modal').onclick = function(e) {
-    if (e.target === this) this.style.display = 'none';
-};
 
 async function updateUserStats() {
     const userStatsContainer = document.getElementById('user-stats-container');

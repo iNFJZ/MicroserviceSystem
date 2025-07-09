@@ -662,25 +662,113 @@ body { background: #f5f6fa; margin: 0; font-family: 'Segoe UI', Arial, sans-seri
 }
 
 /* Modal styles */
-.modal {
+#edit-user-modal, #user-detail-modal {
     display: none;
     position: fixed;
-    z-index: 1000;
-    left: 0; top: 0; width: 100vw; height: 100vh;
-    background: rgba(0,0,0,0.3);
-    justify-content: center;
-    align-items: center;
+    z-index: 9999;
+    left: 0;
+    top: 0;
+    width: 100vw;
+    height: 100vh;
+    overflow: auto;
+    background-color: rgba(0, 0, 0, 0.5);
+    backdrop-filter: blur(2px);
+    transition: opacity 0.3s ease;
+    opacity: 0;
 }
-.modal-content {
+
+#edit-user-modal.show, #user-detail-modal.show {
+    opacity: 1;
+    animation: modalFadeIn 0.3s ease;
+}
+
+@keyframes modalFadeIn {
+    from { opacity: 0; }
+    to { opacity: 1; }
+}
+
+#edit-user-modal .modal-dialog, #user-detail-modal .modal-dialog {
+    max-width: 500px;
+    margin: 5% auto;
     background: #fff;
-    margin: 10vh auto;
-    padding: 32px 28px 24px 28px;
-    border-radius: 10px;
-    width: 100%;
-    max-width: 400px;
-    box-shadow: 0 4px 24px rgba(0,0,0,0.15);
+    border-radius: 8px;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
     position: relative;
+    animation: modalSlideIn 0.3s ease;
 }
+
+@keyframes modalSlideIn {
+    from { transform: translateY(-50px); opacity: 0; }
+    to { transform: translateY(0); opacity: 1; }
+}
+
+.modal-backdrop {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    background: rgba(0, 0, 0, 0.5);
+    z-index: 9998;
+}
+
+#edit-user-modal, #user-detail-modal {
+    z-index: 9999;
+}
+
+#edit-user-form .form-control:focus,
+#edit-user-form .form-select:focus {
+    border-color: #667eea;
+    box-shadow: 0 0 0 0.2rem rgba(102, 126, 234, 0.25);
+    outline: none;
+}
+
+#edit-user-form .form-control:disabled {
+    background-color: #f8f9fa;
+    opacity: 0.6;
+    cursor: not-allowed;
+}
+
+#edit-user-form .btn {
+    padding: 0.5rem 1rem;
+    font-size: 0.9rem;
+    font-weight: 500;
+    border-radius: 6px;
+    transition: all 0.2s ease;
+}
+
+#edit-user-form .btn-primary {
+    background-color: #667eea;
+    border-color: #667eea;
+    color: white;
+}
+
+#edit-user-form .btn-primary:hover {
+    background-color: #5a67d8;
+    border-color: #5a67d8;
+    transform: translateY(-1px);
+}
+
+#edit-user-form .btn-primary:disabled {
+    background-color: #6c757d;
+    border-color: #6c757d;
+    opacity: 0.6;
+    cursor: not-allowed;
+    transform: none;
+}
+
+#edit-user-form .btn-secondary {
+    background-color: #6c757d;
+    border-color: #6c757d;
+    color: white;
+}
+
+#edit-user-form .btn-secondary:hover {
+    background-color: #5a6268;
+    border-color: #5a6268;
+    transform: translateY(-1px);
+}
+
 .close-modal {
     position: absolute;
     top: 12px;
@@ -688,49 +776,18 @@ body { background: #f5f6fa; margin: 0; font-family: 'Segoe UI', Arial, sans-seri
     font-size: 1.5rem;
     color: #e94560;
     cursor: pointer;
-}
-.form-group {
-    margin-bottom: 18px;
+    background: none;
+    border: none;
+    padding: 0;
+    width: 30px;
+    height: 30px;
     display: flex;
-    flex-direction: column;
+    align-items: center;
+    justify-content: center;
 }
-.form-group label {
-    margin-bottom: 6px;
-    font-weight: 500;
-}
-.form-group input[type="text"],
-.form-group input[type="email"] {
-    padding: 8px 10px;
-    border-radius: 6px;
-    border: 1px solid #eebbc3;
-    font-size: 1rem;
-}
-.btn-primary {
-    background: #232946;
-    color: #fff;
-    border: none;
-    border-radius: 6px;
-    padding: 8px 18px;
-    font-weight: bold;
-    cursor: pointer;
-    transition: background 0.2s;
-}
-.btn-primary:hover {
-    background: #394867;
-}
-.btn-edit {
-    background: #3da9fc;
-    color: #fff;
-    border: none;
-    border-radius: 4px;
-    padding: 6px 14px;
-    cursor: pointer;
-    font-size: 0.95rem;
-    margin-right: 6px;
-    transition: background 0.2s;
-}
-.btn-edit:hover {
-    background: #155fa0;
+
+.close-modal:hover {
+    color: #d63384;
 }
 
 /* Status Badges */
@@ -1154,4 +1211,292 @@ body {
 #toast-container > .toast.toast-warning {
   color: #fff !important;
   background-color: #f39c12 !important;
+}
+
+
+
+/* User detail modal improvements */
+#user-detail-content {
+    line-height: 1.6;
+}
+
+#user-detail-content > div {
+    margin-bottom: 0.75rem;
+    padding: 0.5rem 0;
+    border-bottom: 1px solid #f1f3f4;
+}
+
+#user-detail-content > div:last-child {
+    border-bottom: none;
+}
+
+#user-detail-content b {
+    color: #495057;
+    font-weight: 600;
+    min-width: 120px;
+    display: inline-block;
+}
+
+/* Responsive improvements */
+@media (max-width: 768px) {
+    #edit-user-modal .modal-dialog,
+    #user-detail-modal .modal-dialog {
+        margin: 10% auto;
+        max-width: 95%;
+    }
+    
+    #edit-user-form {
+        padding: 16px !important;
+    }
+    
+    #user-detail-modal > div {
+        padding: 16px !important;
+    }
+}
+
+/* Modal specific styles to prevent conflicts */
+#edit-user-modal .modal-content {
+    background: #fff;
+    border: none;
+    box-shadow: none;
+    border-radius: 8px;
+}
+
+#edit-user-modal .modal-header {
+    border-bottom: 1px solid #dee2e6;
+    padding: 1rem 1.5rem;
+    background: #f8f9fa;
+    border-radius: 8px 8px 0 0;
+}
+
+#edit-user-modal .modal-body {
+    padding: 1.5rem;
+}
+
+#edit-user-modal .modal-title {
+    margin: 0;
+    font-weight: 600;
+    color: #333;
+}
+
+#edit-user-modal .btn-close {
+    background: none;
+    border: none;
+    font-size: 1.5rem;
+    cursor: pointer;
+    padding: 0;
+    width: 1.5rem;
+    height: 1.5rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #6c757d;
+    transition: color 0.2s ease;
+}
+
+#edit-user-modal .btn-close:hover {
+    color: #333;
+}
+
+#edit-user-modal .form-control,
+#edit-user-modal .form-select {
+    border: 1px solid #ced4da;
+    border-radius: 6px;
+    padding: 0.5rem 0.75rem;
+    font-size: 0.9rem;
+    transition: border-color 0.2s ease, box-shadow 0.2s ease;
+    background-color: #fff;
+    cursor: text;
+}
+
+#edit-user-modal .form-control:focus,
+#edit-user-modal .form-select:focus {
+    border-color: #667eea;
+    box-shadow: 0 0 0 0.2rem rgba(102, 126, 234, 0.25);
+    outline: none;
+    background-color: #fff;
+}
+
+#edit-user-modal .form-control:disabled {
+    background-color: #f8f9fa;
+    opacity: 0.6;
+    cursor: not-allowed;
+}
+
+#edit-user-modal .form-label {
+    font-weight: 500;
+    color: #333;
+    margin-bottom: 0.5rem;
+    font-size: 0.9rem;
+}
+
+#edit-user-modal .btn {
+    padding: 0.5rem 1rem;
+    font-size: 0.9rem;
+    font-weight: 500;
+    border-radius: 6px;
+    transition: all 0.2s ease;
+    cursor: pointer;
+    border: 1px solid transparent;
+}
+
+#edit-user-modal .btn-primary {
+    background-color: #667eea;
+    border-color: #667eea;
+    color: white;
+}
+
+#edit-user-modal .btn-primary:hover {
+    background-color: #5a67d8;
+    border-color: #5a67d8;
+    transform: translateY(-1px);
+}
+
+#edit-user-modal .btn-primary:disabled {
+    background-color: #6c757d;
+    border-color: #6c757d;
+    opacity: 0.6;
+    cursor: not-allowed;
+    transform: none;
+}
+
+#edit-user-modal .btn-secondary {
+    background-color: #6c757d;
+    border-color: #6c757d;
+    color: white;
+}
+
+#edit-user-modal .btn-secondary:hover {
+    background-color: #5a6268;
+    border-color: #5a6268;
+    transform: translateY(-1px);
+}
+
+/* Ensure modal backdrop doesn't interfere */
+#edit-user-modal::before {
+    content: '';
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    background: rgba(0, 0, 0, 0.5);
+    z-index: -1;
+}
+
+/* Prevent any Bootstrap modal interference */
+.modal-backdrop.show {
+    opacity: 0;
+    pointer-events: none;
+}
+
+.bootstrap-modal-backdrop {
+    display: none !important;
+}
+
+/* User table action buttons */
+.btn-action {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 80px;
+    height: 32px;
+    padding: 0 18px;
+    font-size: 0.97rem;
+    font-weight: 500;
+    border-radius: 20px;
+    border: none;
+    outline: none;
+    transition: background 0.18s, color 0.18s, box-shadow 0.18s;
+    box-shadow: 0 1px 4px rgba(102,126,234,0.07);
+    cursor: pointer;
+    margin-right: 8px;
+}
+.btn-action:last-child { margin-right: 0; }
+
+.btn-action-edit {
+    background: #f4f7ff;
+    color: #4f5bd5;
+    border: 1.5px solid #b3c6ff;
+}
+.btn-action-edit:hover {
+    background: #e0e7ff;
+    color: #2d3a8c;
+    border-color: #667eea;
+}
+
+.btn-action-delete {
+    background: #fff5f5;
+    color: #e53e3e;
+    border: 1.5px solid #feb2b2;
+}
+.btn-action-delete:hover {
+    background: #ffe5e5;
+    color: #b91c1c;
+    border-color: #f56565;
+}
+
+.btn-action:active {
+    box-shadow: 0 2px 8px rgba(44,62,80,0.10);
+}
+
+@media (max-width: 600px) {
+    .btn-action {
+        min-width: 60px;
+        font-size: 0.92rem;
+        padding: 0 10px;
+        height: 28px;
+    }
+}
+
+/* Harmonize Edit and Delete buttons in user table */
+#user-table .btn-primary, #user-table .btn-danger {
+    min-width: 80px;
+    height: 32px;
+    border-radius: 20px;
+    font-size: 0.97rem;
+    font-weight: 500;
+    padding: 0 18px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 1px 4px rgba(102,126,234,0.07);
+    margin-right: 8px;
+    transition: background 0.18s, color 0.18s, box-shadow 0.18s, border 0.18s;
+}
+#user-table .btn-primary:last-child, #user-table .btn-danger:last-child { margin-right: 0; }
+
+#user-table .btn-primary {
+    background: #f4f7ff;
+    color: #4f5bd5;
+    border: 1.5px solid #b3c6ff;
+}
+#user-table .btn-primary:hover {
+    background: #e0e7ff;
+    color: #2d3a8c;
+    border-color: #667eea;
+}
+
+#user-table .btn-danger {
+    background: #fff5f5;
+    color: #e53e3e;
+    border: 1.5px solid #feb2b2;
+}
+#user-table .btn-danger:hover {
+    background: #ffe5e5;
+    color: #b91c1c;
+    border-color: #f56565;
+}
+
+#user-table .btn-primary:active, #user-table .btn-danger:active {
+    box-shadow: 0 2px 8px rgba(44,62,80,0.10);
+}
+
+@media (max-width: 600px) {
+    #user-table .btn-primary, #user-table .btn-danger {
+        min-width: 60px;
+        font-size: 0.92rem;
+        padding: 0 10px;
+        height: 28px;
+    }
 } 

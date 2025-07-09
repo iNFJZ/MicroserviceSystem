@@ -435,58 +435,66 @@
     <script type="module" src="../../js/app.js"></script>
 
     <!-- Edit User Modal -->
-    <div id="edit-user-modal" class="modal" tabindex="-1" style="display:none; position:fixed; z-index:9999; left:0; top:0; width:100vw; height:100vh; overflow:auto; background:rgba(0,0,0,0.5);">
+    <div id="edit-user-modal" class="modal" tabindex="-1" style="display:none; position:fixed; z-index:9999; left:0; top:0; width:100vw; height:100vh; overflow:auto; background:rgba(0,0,0,0.5);" data-bs-backdrop="static" data-bs-keyboard="false">
       <div class="modal-dialog" style="max-width:500px; margin:5% auto; background:#fff; border-radius:8px; box-shadow:0 2px 10px rgba(0,0,0,0.2); position:relative;">
-        <form id="edit-user-form" style="padding:24px;">
-          <input type="hidden" id="edit-user-id" />
-          <div class="mb-3">
-            <label for="edit-username" class="form-label">Username</label>
-            <input type="text" id="edit-username" class="form-control" disabled />
+        <div class="modal-content" style="border: none; box-shadow: none;">
+          <div class="modal-header" style="border-bottom: 1px solid #dee2e6; padding: 1rem 1.5rem;">
+            <h5 class="modal-title">Edit User</h5>
+            <button type="button" id="close-edit-modal" class="btn-close" aria-label="Close"></button>
           </div>
-          <div class="mb-3">
-            <label for="edit-fullname" class="form-label">Full Name</label>
-            <input type="text" id="edit-fullname" class="form-control" />
+          <div class="modal-body" style="padding: 1.5rem;">
+            <form id="edit-user-form" novalidate>
+              <input type="hidden" id="edit-user-id" />
+              <div class="mb-3">
+                <label for="edit-username" class="form-label">Username</label>
+                <input type="text" id="edit-username" class="form-control" disabled />
+              </div>
+              <div class="mb-3">
+                <label for="edit-fullname" class="form-label">Full Name</label>
+                <input type="text" id="edit-fullname" class="form-control" />
+              </div>
+              <div class="mb-3">
+                <label for="edit-email" class="form-label">Email</label>
+                <input type="email" id="edit-email" class="form-control" disabled />
+              </div>
+              <div class="mb-3">
+                <label for="edit-phone" class="form-label">Phone</label>
+                <input type="text" id="edit-phone" class="form-control" />
+              </div>
+              <div class="mb-3">
+                <label for="edit-dob" class="form-label">Date of Birth</label>
+                <input type="date" id="edit-dob" class="form-control" />
+              </div>
+              <div class="mb-3">
+                <label for="edit-address" class="form-label">Address</label>
+                <input type="text" id="edit-address" class="form-control" />
+              </div>
+              <div class="mb-3">
+                <label for="edit-bio" class="form-label">Bio</label>
+                <textarea id="edit-bio" class="form-control" rows="3"></textarea>
+              </div>
+              <div class="mb-3">
+                <label for="edit-status" class="form-label">Status</label>
+                <select id="edit-status" class="form-select">
+                  <option value="1">Active</option>
+                  <option value="2">Inactive</option>
+                  <option value="3">Suspended</option>
+                  <option value="4">Banned</option>
+                </select>
+              </div>
+              <div class="d-flex justify-content-end gap-2">
+                <button type="button" id="close-edit-modal-btn" class="btn btn-secondary">Cancel</button>
+                <button type="submit" class="btn btn-primary">Save Changes</button>
+              </div>
+            </form>
           </div>
-          <div class="mb-3">
-            <label for="edit-email" class="form-label">Email</label>
-            <input type="email" id="edit-email" class="form-control" disabled />
-          </div>
-          <div class="mb-3">
-            <label for="edit-phone" class="form-label">Phone</label>
-            <input type="text" id="edit-phone" class="form-control" />
-          </div>
-          <div class="mb-3">
-            <label for="edit-dob" class="form-label">Date of Birth</label>
-            <input type="date" id="edit-dob" class="form-control" />
-          </div>
-          <div class="mb-3">
-            <label for="edit-address" class="form-label">Address</label>
-            <input type="text" id="edit-address" class="form-control" />
-          </div>
-          <div class="mb-3">
-            <label for="edit-bio" class="form-label">Bio</label>
-            <textarea id="edit-bio" class="form-control"></textarea>
-          </div>
-          <div class="mb-3">
-            <label for="edit-status" class="form-label">Status</label>
-            <select id="edit-status" class="form-select">
-              <option value="1">Active</option>
-              <option value="2">Inactive</option>
-              <option value="3">Suspended</option>
-              <option value="4">Banned</option>
-            </select>
-          </div>
-          <div class="d-flex justify-content-end">
-            <button type="button" id="close-edit-modal" class="btn btn-secondary me-2">Cancel</button>
-            <button type="submit" class="btn btn-primary">Save Changes</button>
-          </div>
-        </form>
+        </div>
       </div>
     </div>
     <!-- End Edit User Modal -->
 
     <!-- User Detail Modal -->
-    <div id="user-detail-modal" class="modal" tabindex="-1" style="display:none; position:fixed; z-index:1050; left:0; top:0; width:100vw; height:100vh; overflow:auto; background:rgba(0,0,0,0.5);">
+    <div id="user-detail-modal" class="modal" tabindex="-1" style="display:none; position:fixed; z-index:1050; left:0; top:0; width:100vw; height:100vh; overflow:auto; background:rgba(0,0,0,0.5);" data-bs-backdrop="static" data-bs-keyboard="false">
       <div class="modal-dialog" style="max-width:500px; margin:5% auto; background:#fff; border-radius:8px; box-shadow:0 2px 10px rgba(0,0,0,0.2);">
         <div style="padding:24px;">
           <h5>User Details</h5>
