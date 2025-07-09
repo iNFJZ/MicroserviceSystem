@@ -83,9 +83,14 @@ namespace AuthService.Services
             if (!emailExists)
                 throw new EmailNotExistsException(sanitizedEmail);
 
-            var existingUser = await _repo.GetByEmailAsync(sanitizedEmail);
+            var existingUser = await _repo.GetByEmailIncludeDeletedAsync(sanitizedEmail);
             if (existingUser != null)
-                throw new UserAlreadyExistsException(sanitizedEmail);
+            {
+                if (existingUser.IsDeleted)
+                    throw new AuthException("An account with this email was previously deleted. Please contact support for assistance.");
+                else
+                    throw new UserAlreadyExistsException(sanitizedEmail);
+            }
 
             if (string.IsNullOrWhiteSpace(dto.Password))
                 throw new AuthException("Password is required");
@@ -176,9 +181,12 @@ namespace AuthService.Services
             if (string.IsNullOrWhiteSpace(email))
                 throw new AuthException("Email is required");
 
-            var user = await _repo.GetByEmailAsync(email);
+            var user = await _repo.GetByEmailIncludeDeletedAsync(email);
             if (user == null)
                 throw new UserNotFoundException(email);
+
+            if (user.IsDeleted)
+                throw new AuthException("Account has been deleted. Please contact support for assistance.");
 
             if (user.IsVerified)
                 throw new AuthException("Email is already verified");
@@ -215,9 +223,14 @@ namespace AuthService.Services
             var sanitizedEmail = dto.Email?.Trim().ToLowerInvariant();
             if (string.IsNullOrWhiteSpace(sanitizedEmail))
                 throw new AuthException("Email is required");
-            var user = await _repo.GetByEmailAsync(sanitizedEmail);
+            
+            var user = await _repo.GetByEmailIncludeDeletedAsync(sanitizedEmail);
             if (user == null)
                 throw new InvalidCredentialsException();
+            
+            if (user.IsDeleted)
+                throw new AuthException("Account has been deleted. Please contact support for assistance.");
+            
             if (!user.IsVerified)
                 throw new AuthException("Account is not verified");
             try
@@ -234,8 +247,7 @@ namespace AuthService.Services
                 throw new AuthException("Password is required");
             if (dto.Password.Length < 6)
                 throw new AuthException("Password must be at least 6 characters");
-            if (user.IsDeleted)
-                throw new AuthException("Account has been deleted");
+            
             var isLocked = await _sessionService.IsUserLockedAsync(user.Id);
             if (isLocked)
             {
@@ -357,9 +369,12 @@ namespace AuthService.Services
         public async Task<bool> ForgotPasswordAsync(ForgotPasswordDto dto, string clientIp)
         {
             var sanitizedEmail = dto.Email?.Trim().ToLowerInvariant();
-            var user = await _repo.GetByEmailAsync(sanitizedEmail);
+            var user = await _repo.GetByEmailIncludeDeletedAsync(sanitizedEmail);
             if (user == null)
                 throw new InvalidCredentialsException();
+
+            if (user.IsDeleted)
+                throw new AuthException("Account has been deleted. Please contact support for assistance.");
 
             if (!user.IsVerified)
                 throw new AuthException("Account is not verified");

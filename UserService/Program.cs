@@ -8,6 +8,7 @@ using Microsoft.IdentityModel.Tokens;
 using System;
 using System.Text;
 using Microsoft.OpenApi.Models;
+using StackExchange.Redis;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -38,6 +39,15 @@ builder.Services.AddDbContext<UserDbContext>(options =>
 
 builder.Services.AddAutoMapper(typeof(AutoMapperProfile));
 
+var redisConnection = builder.Configuration.GetConnectionString("Redis") ?? "localhost:6379";
+builder.Services.AddSingleton<IConnectionMultiplexer>(sp =>
+{
+    var configuration = ConfigurationOptions.Parse(redisConnection);
+    configuration.ConnectRetry = 5;
+    configuration.ReconnectRetryPolicy = new ExponentialRetry(5000);
+    return ConnectionMultiplexer.Connect(configuration);
+});
+
 builder.Services.AddHttpClient("AuthService", client =>
 {
     client.BaseAddress = new Uri(builder.Configuration["AuthService:Url"] ?? "http://localhost:5001");
@@ -46,6 +56,14 @@ builder.Services.AddHttpClient("AuthService", client =>
 builder.Services.AddScoped<IUserRepository, UserRepository>();
 
 builder.Services.AddScoped<IUserService, UserService.Services.UserService>();
+
+builder.Services.AddScoped<ICacheService, RedisService>();
+builder.Services.AddScoped<IHashService, RedisService>();
+builder.Services.AddScoped<IRedisKeyService, RedisService>();
+builder.Services.AddScoped<IUserCacheService, UserCacheService>();
+
+builder.Services.AddScoped<ISessionService, SessionService>();
+builder.Services.AddScoped<IEmailMessageService, EmailMessageService>();
 
 builder.Services.AddAuthentication("Bearer")
     .AddJwtBearer("Bearer", options =>
@@ -99,9 +117,6 @@ builder.Services.AddSwaggerGen(c =>
     });
 });
 
-builder.Services.AddScoped<UserService.Services.ISessionService, SessionServiceStub>();
-builder.Services.AddScoped<UserService.Services.IEmailMessageService, EmailMessageServiceStub>();
-
 builder.WebHost.UseUrls("http://0.0.0.0:80");
 
 var app = builder.Build();
@@ -123,16 +138,3 @@ app.UseAuthorization();
 app.MapControllers();
 
 app.Run();
-
-// Add stub classes for DI
-public class SessionServiceStub : UserService.Services.ISessionService
-{
-    public Task RemoveAllUserSessionsAsync(Guid userId) => Task.CompletedTask;
-    public Task RemoveAllActiveTokensForUserAsync(Guid userId) => Task.CompletedTask;
-    public Task SetUserLoginStatusAsync(Guid userId, bool isLoggedIn) => Task.CompletedTask;
-}
-
-public class EmailMessageServiceStub : UserService.Services.IEmailMessageService
-{
-    public Task PublishDeactivateAccountNotificationAsync(Shared.EmailModels.DeactivateAccountEmailEvent emailEvent) => Task.CompletedTask;
-}

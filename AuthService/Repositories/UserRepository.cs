@@ -41,8 +41,19 @@ namespace AuthService.Repositories
 
             var user = await _context.Users.FirstOrDefaultAsync(u => u.Email == email && u.DeletedAt == null);
             if (user != null)
+            {
                 await _cacheService.SetUserAsync(user);
+            }
+            return user;
+        }
 
+        public async Task<User?> GetByEmailIncludeDeletedAsync(string email)
+        {
+            var user = await _context.Users.FirstOrDefaultAsync(u => u.Email == email);
+            if (user != null && user.DeletedAt == null)
+            {
+                await _cacheService.SetUserAsync(user);
+            }
             return user;
         }
 
@@ -63,9 +74,18 @@ namespace AuthService.Repositories
             if (user != null)
             {
                 await _cacheService.SetUserAsync(user);
-                return user;
             }
-            return null;
+            return user;
+        }
+
+        public async Task<User?> GetByGoogleIdIncludeDeletedAsync(string googleId)
+        {
+            var user = await _context.Users.FirstOrDefaultAsync(u => u.GoogleId == googleId);
+            if (user != null && user.DeletedAt == null)
+            {
+                await _cacheService.SetUserAsync(user);
+            }
+            return user;
         }
 
         public async Task<User?> GetByUsernameAsync(string username)

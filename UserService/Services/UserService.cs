@@ -13,13 +13,20 @@ public class UserService : IUserService
     private readonly IMapper _mapper;
     private readonly ISessionService _sessionService;
     private readonly IEmailMessageService _emailMessageService;
+    private readonly IUserCacheService _userCacheService;
 
-    public UserService(IUserRepository userRepository, IMapper mapper, ISessionService sessionService, IEmailMessageService emailMessageService)
+    public UserService(
+        IUserRepository userRepository, 
+        IMapper mapper, 
+        ISessionService sessionService, 
+        IEmailMessageService emailMessageService,
+        IUserCacheService userCacheService)
     {
         _userRepository = userRepository;
         _mapper = mapper;
         _sessionService = sessionService;
         _emailMessageService = emailMessageService;
+        _userCacheService = userCacheService;
     }
 
     public async Task<(List<UserDto> Users, int TotalCount, int TotalPages)> GetUsersAsync(UserQueryDto query)
@@ -82,21 +89,98 @@ public class UserService : IUserService
         return (userDtos, totalCount, totalPages);
     }
 
+    public async Task<(List<UserDto> Users, int TotalCount, int TotalPages)> GetDeletedUsersAsync(UserQueryDto query)
+    {
+        var users = await _userRepository.GetAllDeletedAsync();
+
+        if (!string.IsNullOrEmpty(query.Search))
+        {
+            users = users.Where(u => 
+                u.Username.Contains(query.Search, StringComparison.OrdinalIgnoreCase) ||
+                u.Email.Contains(query.Search, StringComparison.OrdinalIgnoreCase) ||
+                (u.FullName != null && u.FullName.Contains(query.Search, StringComparison.OrdinalIgnoreCase))
+            ).ToList();
+        }
+
+        if (!string.IsNullOrEmpty(query.SortBy))
+        {
+            users = query.SortBy.ToLower() switch
+            {
+                "username" => query.SortOrder?.ToLower() == "desc" 
+                    ? users.OrderByDescending(u => u.Username).ToList()
+                    : users.OrderBy(u => u.Username).ToList(),
+                "email" => query.SortOrder?.ToLower() == "desc"
+                    ? users.OrderByDescending(u => u.Email).ToList()
+                    : users.OrderBy(u => u.Email).ToList(),
+                "fullname" => query.SortOrder?.ToLower() == "desc"
+                    ? users.OrderByDescending(u => u.FullName).ToList()
+                    : users.OrderBy(u => u.FullName).ToList(),
+                "deletedat" => query.SortOrder?.ToLower() == "desc"
+                    ? users.OrderByDescending(u => u.DeletedAt).ToList()
+                    : users.OrderBy(u => u.DeletedAt).ToList(),
+                "createdat" => query.SortOrder?.ToLower() == "desc"
+                    ? users.OrderByDescending(u => u.CreatedAt).ToList()
+                    : users.OrderBy(u => u.CreatedAt).ToList(),
+                _ => users.OrderByDescending(u => u.DeletedAt).ToList()
+            };
+        }
+        else
+        {
+            users = users.OrderByDescending(u => u.DeletedAt).ToList();
+        }
+
+        var totalCount = users.Count;
+        var totalPages = (int)Math.Ceiling((double)totalCount / query.PageSize);
+        var skip = (query.Page - 1) * query.PageSize;
+        var pagedUsers = users.Skip(skip).Take(query.PageSize).ToList();
+
+        var userDtos = _mapper.Map<List<UserDto>>(pagedUsers);
+
+        return (userDtos, totalCount, totalPages);
+    }
+
     public async Task<UserDto?> GetUserByIdAsync(Guid id)
     {
+        var cachedUser = await _userCacheService.GetUserByIdAsync(id);
+        if (cachedUser != null)
+        {
+            return _mapper.Map<UserDto>(cachedUser);
+        }
+
         var user = await _userRepository.GetByIdAsync(id);
+        if (user != null)
+        {
+            await _userCacheService.SetUserAsync(user, TimeSpan.FromMinutes(30));
+        }
+        
         return _mapper.Map<UserDto>(user);
     }
 
     public async Task<UserDto?> GetUserByEmailAsync(string email)
     {
+        var cachedUser = await _userCacheService.GetUserByEmailAsync(email);
+        if (cachedUser != null)
+        {
+            return _mapper.Map<UserDto>(cachedUser);
+        }
+
         var user = await _userRepository.GetByEmailAsync(email);
+        if (user != null)
+        {
+            await _userCacheService.SetUserAsync(user, TimeSpan.FromMinutes(30));
+        }
+        
         return _mapper.Map<UserDto>(user);
     }
 
     public async Task<UserDto?> GetUserByUsernameAsync(string username)
     {
         var user = await _userRepository.GetByUsernameAsync(username);
+        if (user != null)
+        {
+            await _userCacheService.SetUserAsync(user, TimeSpan.FromMinutes(30));
+        }
+        
         return _mapper.Map<UserDto>(user);
     }
 
@@ -165,6 +249,9 @@ public class UserService : IUserService
         user.UpdatedAt = DateTime.UtcNow;
 
         await _userRepository.UpdateAsync(user);
+        
+        await _userCacheService.SetUserAsync(user, TimeSpan.FromMinutes(30));
+        
         return true;
     }
 
@@ -177,6 +264,8 @@ public class UserService : IUserService
         user.DeletedAt = DateTime.UtcNow;
         user.Status = UserStatus.Banned;
         await _userRepository.UpdateAsync(user);
+
+        await _userCacheService.DeleteUserAsync(userId);
 
         await _sessionService.RemoveAllUserSessionsAsync(user.Id);
         await _sessionService.RemoveAllActiveTokensForUserAsync(user.Id);
@@ -195,32 +284,61 @@ public class UserService : IUserService
 
     public async Task<bool> RestoreUserAsync(Guid id)
     {
-        return await _userRepository.RestoreAsync(id);
-    }
+        var user = await _userRepository.GetByIdAsync(id);
+        if (user == null || !user.IsDeleted)
+            return false;
 
-    public async Task<UserStatisticsDto> GetUserStatisticsAsync()
-    {
-        var users = await _userRepository.GetAllAsync();
-        
-        return new UserStatisticsDto
+        var result = await _userRepository.RestoreAsync(id);
+        if (result)
         {
-            TotalUsers = users.Count,
-            ActiveUsers = users.Count(u => u.Status == UserStatus.Active && !u.IsDeleted),
-            InactiveUsers = users.Count(u => u.Status == UserStatus.Inactive && !u.IsDeleted),
-            SuspendedUsers = users.Count(u => u.Status == UserStatus.Suspended && !u.IsDeleted),
-            BannedUsers = users.Count(u => u.Status == UserStatus.Banned && !u.IsDeleted),
-            VerifiedUsers = users.Count(u => u.IsVerified && !u.IsDeleted),
-            UnverifiedUsers = users.Count(u => !u.IsVerified && !u.IsDeleted),
-            DeletedUsers = users.Count(u => u.IsDeleted),
-            GoogleUsers = users.Count(u => u.LoginProvider == "Google" && !u.IsDeleted),
-            LocalUsers = users.Count(u => u.LoginProvider == "Local" && !u.IsDeleted),
-            RecentUsers = users.Count(u => u.CreatedAt >= DateTime.UtcNow.AddDays(-7) && !u.IsDeleted)
-        };
+            await _userCacheService.SetUserAsync(user, TimeSpan.FromMinutes(30));
+            
+            await _emailMessageService.PublishRestoreAccountNotificationAsync(new RestoreAccountEmailEvent
+            {
+                To = user.Email,
+                Username = user.FullName ?? user.Username,
+                RestoredAt = DateTime.UtcNow,
+                Reason = "Account restored by administrator"
+            });
+        }
+        return result;
     }
 
     public async Task<UserDto> CreateUserAsync(User user)
     {
         var createdUser = await _userRepository.AddAsync(user);
+        
+        await _userCacheService.SetUserAsync(createdUser, TimeSpan.FromMinutes(30));
+        
         return _mapper.Map<UserDto>(createdUser);
+    }
+
+    public async Task<object> GetStatisticsAsync()
+    {
+        var users = await _userRepository.GetAllActiveAsync();
+        
+        var totalUsers = users.Count;
+        var activeUsers = users.Count(u => u.Status == UserStatus.Active);
+        var inactiveUsers = users.Count(u => u.Status == UserStatus.Inactive);
+        var bannedUsers = users.Count(u => u.Status == UserStatus.Banned);
+        var verifiedUsers = users.Count(u => u.IsVerified);
+        var unverifiedUsers = users.Count(u => !u.IsVerified);
+        
+        var usersByProvider = users.GroupBy(u => u.LoginProvider)
+            .ToDictionary(g => g.Key, g => g.Count());
+        
+        var recentUsers = users.Where(u => u.CreatedAt >= DateTime.UtcNow.AddDays(7)).Count();
+        
+        return new
+        {
+            TotalUsers = totalUsers,
+            ActiveUsers = activeUsers,
+            InactiveUsers = inactiveUsers,
+            BannedUsers = bannedUsers,
+            VerifiedUsers = verifiedUsers,
+            UnverifiedUsers = unverifiedUsers,
+            UsersByProvider = usersByProvider,
+            RecentUsers = recentUsers
+        };
     }
 } 

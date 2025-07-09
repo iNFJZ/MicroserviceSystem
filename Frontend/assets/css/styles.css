@@ -1,0 +1,36 @@
+/* Modal z-index fix */
+.modal {
+  z-index: 9999 !important;
+}
+.modal-dialog {
+  z-index: 10000 !important;
+}
+.form-control:focus {
+  border-color: #7367f0;
+  box-shadow: 0 0 0 0.2rem rgba(115, 103, 240, 0.25);
+}
+.btn:focus {
+  box-shadow: 0 0 0 0.2rem rgba(115, 103, 240, 0.25);
+}
+/* Fix toastr background and text color */
+#toast-container > .toast {
+  background-color: #323232 !important;
+  color: #fff !important;
+  z-index: 99999 !important;
+}
+#toast-container > .toast-success {
+  background-color: #51A351 !important;
+  color: #fff !important;
+}
+#toast-container > .toast-error {
+  background-color: #BD362F !important;
+  color: #fff !important;
+}
+#toast-container > .toast-info {
+  background-color: #2F96B4 !important;
+  color: #fff !important;
+}
+#toast-container > .toast-warning {
+  background-color: #F89406 !important;
+  color: #fff !important;
+} 

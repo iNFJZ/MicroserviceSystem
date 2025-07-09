@@ -34,13 +34,18 @@ export async function fetchUsers() {
     return res.data;
 }
 
+export async function fetchDeletedUsers() {
+    const res = await apiRequest('/api/User/deleted', { method: 'GET' });
+    return res.data;
+}
+
 export async function getUserById(userId) {
     return apiRequest(`/api/User/${userId}`, { method: 'GET' });
 }
 
 export async function updateUser(userId, userData) {
     return apiRequest(`/api/User/${userId}`, {
-        method: 'PATCH',
+        method: 'PUT',
         body: JSON.stringify(userData)
     });
 }

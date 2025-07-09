@@ -267,12 +267,58 @@ public class UserController : ControllerBase
     {
         try
         {
-            var statistics = await _userService.GetUserStatisticsAsync();
+            var statistics = await _userService.GetStatisticsAsync();
             return Ok(new { success = true, data = statistics });
         }
         catch (Exception ex)
         {
             return StatusCode(500, new { success = false, message = "An error occurred while fetching statistics", error = ex.Message });
+        }
+    }
+
+    /// <summary>
+    /// Get deleted users
+    /// </summary>
+    [HttpGet("deleted")]
+    public async Task<IActionResult> GetDeletedUsers(
+        [FromQuery] int page = 1,
+        [FromQuery] int pageSize = 10,
+        [FromQuery] string? search = null,
+        [FromQuery] string? sortBy = null,
+        [FromQuery] string? sortOrder = "asc")
+    {
+        try
+        {
+            var query = new UserQueryDto
+            {
+                Page = page,
+                PageSize = pageSize,
+                Search = search,
+                SortBy = sortBy,
+                SortOrder = sortOrder,
+                IncludeDeleted = true
+            };
+
+            var (users, totalCount, totalPages) = await _userService.GetDeletedUsersAsync(query);
+
+            return Ok(new
+            {
+                success = true,
+                data = users,
+                pagination = new
+                {
+                    page,
+                    pageSize,
+                    totalCount,
+                    totalPages,
+                    hasNextPage = page < totalPages,
+                    hasPreviousPage = page > 1
+                }
+            });
+        }
+        catch (Exception ex)
+        {
+            return StatusCode(500, new { success = false, message = "An error occurred while fetching deleted users", error = ex.Message });
         }
     }
 } 
