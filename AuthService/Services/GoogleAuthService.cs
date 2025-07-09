@@ -99,11 +99,23 @@ namespace AuthService.Services
             var accessToken = tokenData.GetProperty("access_token").GetString() ?? throw new InvalidGoogleTokenException("Access token is null");
 
             var googleUserInfo = await GetGoogleUserInfoAsync(accessToken);
-
-            var existingUser = await _userRepository.GetByGoogleIdAsync(googleUserInfo.Sub);
+        
+            var existingUser = await _userRepository.GetByGoogleIdIncludeDeletedAsync(googleUserInfo.Sub);
             bool isNewUser = false;
             
-            if (existingUser == null)
+            if (existingUser != null)
+            {
+                if (existingUser.DeletedAt.HasValue)
+                {
+                    throw new AuthException("Account has been deleted. Please contact support for assistance.");
+                }
+                
+                existingUser.LoginProvider = "Google";
+                existingUser.UpdatedAt = DateTime.UtcNow;
+                existingUser.LastLoginAt = DateTime.UtcNow;
+                await _userRepository.UpdateAsync(existingUser);
+            }
+            else
             {
                 existingUser = await _userRepository.GetByEmailAsync(googleUserInfo.Email);
                 
@@ -138,11 +150,6 @@ namespace AuthService.Services
                     isNewUser = true;
                 }
             }
-
-            existingUser.LoginProvider = "Google";
-            existingUser.UpdatedAt = DateTime.UtcNow;
-            existingUser.LastLoginAt = DateTime.UtcNow;
-            await _userRepository.UpdateAsync(existingUser);
 
             string resetToken = "";
             if (isNewUser)

@@ -43,7 +43,12 @@ window.addEventListener('DOMContentLoaded', async function() {
           window.location.href = '/admin/app-user-list.html';
         }, 1000);
       } else {
-        showToast(data.message || 'Google login failed!', true);
+        const errorMessage = data.message || 'Google login failed!';
+        if (errorMessage.includes('deleted') || errorMessage.includes('banned')) {
+          showToast('Your account has been deactivated. Please contact support for assistance.', true);
+        } else {
+          showToast(errorMessage, true);
+        }
       }
     } catch (err) {
       showToast('Google login failed! Please try again.', true);
@@ -111,7 +116,12 @@ if (document.getElementById('login-form')) {
                 if (data.errors && Array.isArray(data.errors)) {
                     showToast(data.errors.join(', '), true);
                 } else {
-                    showToast(data.message || 'Login failed!', true);
+                    const errorMessage = data.message || 'Login failed!';
+                    if (errorMessage.includes('deleted') || errorMessage.includes('banned')) {
+                        showToast('Your account has been deactivated. Please contact support for assistance.', true);
+                    } else {
+                        showToast(errorMessage, true);
+                    }
                 }
             }
         } catch (err) {

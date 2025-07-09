@@ -466,7 +466,7 @@ if (typeof $ !== 'undefined') {
               name: 'pages',
               display: 'name',
               limit: 5,
-              source: filterConfig(searchData.pages),
+              source: filterConfig((searchData && searchData.pages) ? searchData.pages : []),
               templates: {
                 header: '<h6 class="suggestions-header text-primary mb-0 mx-3 mt-3 pb-2">Pages</h6>',
                 suggestion: function ({ url, icon, name }) {
@@ -497,7 +497,7 @@ if (typeof $ !== 'undefined') {
               name: 'files',
               display: 'name',
               limit: 4,
-              source: filterConfig(searchData.files),
+              source: filterConfig((searchData && searchData.files) ? searchData.files : []),
               templates: {
                 header: '<h6 class="suggestions-header text-primary mb-0 mx-3 mt-3 pb-2">Files</h6>',
                 suggestion: function ({ src, name, subtitle, meta }) {
@@ -537,7 +537,7 @@ if (typeof $ !== 'undefined') {
               name: 'members',
               display: 'name',
               limit: 4,
-              source: filterConfig(searchData.members),
+              source: filterConfig((searchData && searchData.members) ? searchData.members : []),
               templates: {
                 header: '<h6 class="suggestions-header text-primary mb-0 mx-3 mt-3 pb-2">Members</h6>',
                 suggestion: function ({ name, src, subtitle }) {

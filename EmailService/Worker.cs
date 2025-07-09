@@ -101,65 +101,73 @@ namespace EmailService
                 {
                     using var doc = JsonDocument.Parse(message);
                     var root = doc.RootElement;
-                    if (root.TryGetProperty("EventType", out _))
+                    
+                    string? eventType = null;
+                    if (ea.BasicProperties.Headers != null && 
+                        ea.BasicProperties.Headers.ContainsKey("event_type"))
                     {
-                        var fileEvent = JsonSerializer.Deserialize<FileEventEmailNotification>(message);
-                        if (fileEvent != null && !string.IsNullOrEmpty(fileEvent.To))
-                        {
-                            SendFileEventMail(fileEvent);
-                            _channel.BasicAck(ea.DeliveryTag, false);
-                            return;
-                        }
+                        eventType = Encoding.UTF8.GetString((byte[])ea.BasicProperties.Headers["event_type"]);
                     }
-                    else if (root.TryGetProperty("ResetToken", out _))
+                    
+                    switch (eventType)
                     {
-                        var resetEvent = JsonSerializer.Deserialize<ResetPasswordEmailEvent>(message);
-                        if (resetEvent != null && !string.IsNullOrEmpty(resetEvent.To))
-                        {
-                            SendResetPasswordMail(resetEvent);
-                            _channel.BasicAck(ea.DeliveryTag, false);
-                            return;
-                        }
-                    }
-                    else if (root.TryGetProperty("ChangeAt", out _))
-                    {
-                        var changeEvent = JsonSerializer.Deserialize<ChangePasswordEmailEvent>(message);
-                        if (changeEvent != null && !string.IsNullOrEmpty(changeEvent.To))
-                        {
-                            SendChangePasswordMail(changeEvent);
-                            _channel.BasicAck(ea.DeliveryTag, false);
-                            return;
-                        }
-                    }
-                    else if (root.TryGetProperty("DeactivatedAt", out _))
-                    {
-                        var deactivateEvent = JsonSerializer.Deserialize<DeactivateAccountEmailEvent>(message);
-                        if (deactivateEvent != null && !string.IsNullOrEmpty(deactivateEvent.To))
-                        {
-                            SendDeactivateAccountMail(deactivateEvent);
-                            _channel.BasicAck(ea.DeliveryTag, false);
-                            return;
-                        }
-                    }
-                    else if (root.TryGetProperty("RegisterAt", out _) && root.TryGetProperty("Username", out _) && !root.TryGetProperty("VerifyLink", out _))
-                    {
-                        var googleEvent = JsonSerializer.Deserialize<RegisterGoogleNotificationEmailEvent>(message);
-                        if (googleEvent != null && !string.IsNullOrEmpty(googleEvent.To))
-                        {
-                            SendRegisterGoogleMail(googleEvent);
-                            _channel.BasicAck(ea.DeliveryTag, false);
-                            return;
-                        }
-                    }
-                    else
-                    {
-                        var registerEvent = JsonSerializer.Deserialize<RegisterNotificationEmailEvent>(message);
-                        if (registerEvent != null && !string.IsNullOrEmpty(registerEvent.To))
-                        {
-                            SendRegisterMail(registerEvent);
-                            _channel.BasicAck(ea.DeliveryTag, false);
-                            return;
-                        }
+                        case "RestoreAccountEmailEvent":
+                            var restoreEvent = JsonSerializer.Deserialize<RestoreAccountEmailEvent>(message);
+                            if (restoreEvent != null)
+                            {
+                                SendRestoreAccountMail(restoreEvent);
+                            }
+                            break;
+                        default:
+                            if (root.TryGetProperty("EventType", out _))
+                            {
+                                var fileEvent = JsonSerializer.Deserialize<FileEventEmailNotification>(message);
+                                if (fileEvent != null && !string.IsNullOrEmpty(fileEvent.To))
+                                {
+                                    SendFileEventMail(fileEvent);
+                                }
+                            }
+                            else if (root.TryGetProperty("ResetToken", out _))
+                            {
+                                var resetEvent = JsonSerializer.Deserialize<ResetPasswordEmailEvent>(message);
+                                if (resetEvent != null && !string.IsNullOrEmpty(resetEvent.To))
+                                {
+                                    SendResetPasswordMail(resetEvent);
+                                }
+                            }
+                            else if (root.TryGetProperty("ChangeAt", out _))
+                            {
+                                var changeEvent = JsonSerializer.Deserialize<ChangePasswordEmailEvent>(message);
+                                if (changeEvent != null && !string.IsNullOrEmpty(changeEvent.To))
+                                {
+                                    SendChangePasswordMail(changeEvent);
+                                }
+                            }
+                            else if (root.TryGetProperty("DeactivatedAt", out _))
+                            {
+                                var deactivateEvent = JsonSerializer.Deserialize<DeactivateAccountEmailEvent>(message);
+                                if (deactivateEvent != null && !string.IsNullOrEmpty(deactivateEvent.To))
+                                {
+                                    SendDeactivateAccountMail(deactivateEvent);
+                                }
+                            }
+                            else if (root.TryGetProperty("RegisterAt", out _) && root.TryGetProperty("Username", out _) && !root.TryGetProperty("VerifyLink", out _))
+                            {
+                                var googleEvent = JsonSerializer.Deserialize<RegisterGoogleNotificationEmailEvent>(message);
+                                if (googleEvent != null && !string.IsNullOrEmpty(googleEvent.To))
+                                {
+                                    SendRegisterGoogleMail(googleEvent);
+                                }
+                            }
+                            else
+                            {
+                                var registerEvent = JsonSerializer.Deserialize<RegisterNotificationEmailEvent>(message);
+                                if (registerEvent != null && !string.IsNullOrEmpty(registerEvent.To))
+                                {
+                                    SendRegisterMail(registerEvent);
+                                }
+                            }
+                            break;
                     }
                 }
                 catch (Exception ex)
@@ -426,6 +434,38 @@ Body: {{ ""token"": ""your-token"", ""newPassword"": ""your-new-password"", ""co
             }
         }
         
+        private async Task SendRestoreAccountMail(RestoreAccountEmailEvent restoreEvent)
+        {
+            try
+            {
+                var subject = "Account Restored - iNFJZ System";
+                var body = _emailTemplateService.GenerateRestoreAccountContent(
+                    restoreEvent.Username,
+                    restoreEvent.RestoredAt,
+                    restoreEvent.Reason
+                );
+
+                var mail = new MailMessage();
+                mail.To.Add(restoreEvent.To);
+                mail.Subject = subject;
+                mail.From = new MailAddress(_smtpUser, "iNFJZ System");
+                mail.IsBodyHtml = true;
+                mail.Body = body;
+
+                using var smtp = new SmtpClient(_smtpHost, _smtpPort)
+                {
+                    Credentials = new System.Net.NetworkCredential(_smtpUser, _smtpPass),
+                    EnableSsl = _smtpEnableSsl
+                };
+                smtp.Send(mail);
+                _logger.LogInformation($"Restore account email sent to {restoreEvent.To}");
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, $"Failed to send restore account email to {restoreEvent.To}");
+            }
+        }
+
         public override void Dispose()
         {
             _channel?.Dispose();

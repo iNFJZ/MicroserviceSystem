@@ -151,9 +151,17 @@ services:
     environment:
       - ASPNETCORE_ENVIRONMENT=Development
       - ConnectionStrings__DefaultConnection=Host=auth-postgres;Port=5432;Database=auth_db;Username=postgres;Password=123456
+      - ConnectionStrings__Redis=redis:6379
       - AuthService__Url=http://auth-service:5001
+      - RabbitMQ__HostName=rabbitmq
+      - RabbitMQ__Port=5672
+      - RabbitMQ__UserName=guest
+      - RabbitMQ__Password=guest
+      - RabbitMQ__VirtualHost=/
     depends_on:
       - postgres
+      - redis
+      - rabbitmq
       - auth-service
     networks:
       - microservice-network

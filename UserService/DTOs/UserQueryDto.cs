@@ -9,4 +9,5 @@ public class UserQueryDto
     public string? Role { get; set; }
     public string? SortBy { get; set; }
     public string? SortOrder { get; set; } = "asc";
+    public bool IncludeDeleted { get; set; } = false;
 } 
