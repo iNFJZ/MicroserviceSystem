@@ -87,6 +87,7 @@ public class UserRepository : IUserRepository
 
         user.DeletedAt = null;
         user.Status = UserStatus.Active;
+        user.IsVerified = true;
         user.UpdatedAt = DateTime.UtcNow;
         await _context.SaveChangesAsync();
         return true;

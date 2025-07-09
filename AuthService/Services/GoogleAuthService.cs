@@ -109,8 +109,11 @@ namespace AuthService.Services
                 {
                     throw new AuthException("Account has been deleted. Please contact support for assistance.");
                 }
-                
                 existingUser.LoginProvider = "Google";
+                if (existingUser.Status != UserStatus.Suspended)
+                {
+                    existingUser.Status = UserStatus.Active;
+                }
                 existingUser.UpdatedAt = DateTime.UtcNow;
                 existingUser.LastLoginAt = DateTime.UtcNow;
                 await _userRepository.UpdateAsync(existingUser);
@@ -124,6 +127,10 @@ namespace AuthService.Services
                     existingUser.GoogleId = googleUserInfo.Sub;
                     existingUser.ProfilePicture = googleUserInfo.Picture;
                     existingUser.LoginProvider = "Google";
+                    if (existingUser.Status != UserStatus.Suspended)
+                    {
+                        existingUser.Status = UserStatus.Active;
+                    }
                     existingUser.UpdatedAt = DateTime.UtcNow;
                     existingUser.IsVerified = true;
                     existingUser.LastLoginAt = DateTime.UtcNow;
@@ -143,6 +150,7 @@ namespace AuthService.Services
                         LoginProvider = "Google",
                         CreatedAt = DateTime.UtcNow,
                         IsVerified = true,
+                        Status = UserStatus.Active,
                         LastLoginAt = DateTime.UtcNow
                     };
 
