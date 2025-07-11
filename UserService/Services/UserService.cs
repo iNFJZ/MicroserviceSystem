@@ -31,7 +31,16 @@ public class UserService : IUserService
 
     public async Task<(List<UserDto> Users, int TotalCount, int TotalPages)> GetUsersAsync(UserQueryDto query)
     {
-        var users = await _userRepository.GetAllActiveAsync();
+        List<User> users;
+        
+        if (query.IncludeDeleted)
+        {
+            users = await _userRepository.GetAllAsync();
+        }
+        else
+        {
+            users = await _userRepository.GetAllActiveAsync();
+        }
 
         if (!string.IsNullOrEmpty(query.Search))
         {

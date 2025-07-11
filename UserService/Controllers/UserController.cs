@@ -70,7 +70,8 @@ public class UserController : ControllerBase
         [FromQuery] string? status = null,
         [FromQuery] string? role = null,
         [FromQuery] string? sortBy = null,
-        [FromQuery] string? sortOrder = "asc")
+        [FromQuery] string? sortOrder = "asc",
+        [FromQuery] bool includeDeleted = false)
     {
         try
         {
@@ -82,7 +83,8 @@ public class UserController : ControllerBase
                 Status = status,
                 Role = role,
                 SortBy = sortBy,
-                SortOrder = sortOrder
+                SortOrder = sortOrder,
+                IncludeDeleted = includeDeleted
             };
 
             var (users, totalCount, totalPages) = await _userService.GetUsersAsync(query);

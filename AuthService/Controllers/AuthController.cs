@@ -69,7 +69,7 @@ namespace AuthService.Controllers
                     success = true, 
                     message = "Login successful",
                     token,
-                    redirectUrl = $"{_config["Frontend:BaseUrl"]}/admin/app-user-list.html"
+                    redirectUrl = $"{_config["Frontend:BaseUrl"]}/admin/user-list.html"
                 });
             }
             catch (Exception ex)

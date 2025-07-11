@@ -51,7 +51,7 @@ public class UserRepository : IUserRepository
     public async Task<List<User>> GetAllDeletedAsync()
     {
         return await _context.Users
-            .Where(u => u.DeletedAt != null)
+            .Where(u => u.DeletedAt != null || u.Status == UserStatus.Banned)
             .ToListAsync();
     }
 

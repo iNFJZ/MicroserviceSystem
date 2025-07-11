@@ -58,6 +58,12 @@
   </head>
 
   <body>
+    <script>
+      const token = localStorage.getItem('authToken');
+      if (token) {
+        window.location.href = '/admin/user-list.html';
+      }
+    </script>
     <!-- Content -->
 
     <div class="container-xxl">
@@ -68,7 +74,7 @@
             <div class="card-body">
               <!-- Logo -->
               <div class="app-brand justify-content-center mb-4 mt-2">
-                <a href="index.html" class="app-brand-link gap-2">
+                <a href="/" class="app-brand-link gap-2">
                   <!-- <span class="app-brand-logo demo">
                     <svg width="32" height="22" viewBox="0 0 32 22" fill="none" xmlns="http://www.w3.org/2000/svg">
                       <path
