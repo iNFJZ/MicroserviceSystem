@@ -4,7 +4,7 @@ import { apiRequest } from './api.js';
 const API_BASE_URL = 'http://localhost:5050';
 
 const GOOGLE_CLIENT_ID = '157841978934-fmgq60lshk9iq65s7h37mc7ta78m8nu3.apps.googleusercontent.com';
-const GOOGLE_REDIRECT_URI = window.location.origin + '/auth/login.html';
+const GOOGLE_REDIRECT_URI = window.location.origin + '/login';
 
 function getGoogleOAuthUrl() {
   const params = new URLSearchParams({
@@ -40,7 +40,7 @@ window.addEventListener('DOMContentLoaded', async function() {
         localStorage.setItem('authToken', data.token);
         showToast('Login with Google successful! Redirecting...', false);
         setTimeout(() => {
-          window.location.href = '/admin/app-user-list.html';
+                          window.location.href = '/admin/';
         }, 1000);
       } else {
         const errorMessage = data.message || 'Google login failed!';
@@ -56,15 +56,23 @@ window.addEventListener('DOMContentLoaded', async function() {
   }
 });
 
-window.addEventListener('DOMContentLoaded', function() {
+window.addEventListener('DOMContentLoaded', async function() {
   const emailElem = document.getElementById('reset-password-email');
   if (emailElem) {
     let email = '';
-    const token = localStorage.getItem('authToken');
+    const urlParams = new URLSearchParams(window.location.search);
+    const token = urlParams.get('token');
     if (token) {
-      const payload = parseJwt(token);
-      if (payload && payload.email) {
-        email = payload.email;
+      try {
+        const res = await fetch(`${API_BASE_URL}/api/Auth/validate-reset-token?token=${encodeURIComponent(token)}`);
+        const data = await res.json();
+        if (res.ok && data.success && data.email) {
+          email = data.email;
+        } else {
+          showToast(data.message || 'Invalid or expired reset token', true);
+        }
+      } catch (err) {
+        showToast('Failed to validate reset token', true);
       }
     }
     emailElem.textContent = email || 'not available';
@@ -110,7 +118,7 @@ if (document.getElementById('login-form')) {
                 localStorage.setItem('authToken', data.token);
                 showToast('Login successful! Redirecting...', false);
                 setTimeout(() => {
-                    window.location.href = '/admin/app-user-list.html';
+                    window.location.href = '/admin/';
                 }, 1000);
             } else {
                 if (data.errors && Array.isArray(data.errors)) {
@@ -192,7 +200,7 @@ if (document.getElementById('register-form')) {
                 localStorage.setItem('pendingVerificationEmail', email);
                 showToast('Registration successful! Please check your email to verify your account.', false);
                 setTimeout(() => {
-                    window.location.href = '/verify-email';
+                    window.location.href = '/auth/verify-email.html';
                 }, 1000);
             } else {
                 if (data.errors && Array.isArray(data.errors)) {
@@ -237,7 +245,7 @@ if (document.getElementById('forgot-password-form')) {
                 localStorage.setItem('pendingResetEmail', email);
                 showToast('Password reset email sent! Please check your email.', false);
                 setTimeout(() => {
-                    window.location.href = '/login';
+                    window.location.href = '/auth/login.html';
                 }, 1500);
                 forgotPasswordForm.reset();
             } else {
@@ -297,7 +305,7 @@ if (document.getElementById('reset-password-form')) {
                 showToast('Password reset successful! Redirecting to login...', false);
                 localStorage.removeItem('pendingResetEmail');
                 setTimeout(() => {
-                    window.location.href = '/login';
+                    window.location.href = '/auth/login.html';
                 }, 2000);
             } else {
                 showToast(data.message || 'Password reset failed!', true);

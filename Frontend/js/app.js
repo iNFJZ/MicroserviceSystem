@@ -82,7 +82,7 @@ window.deleteUser = async function(id) {
 }
 
 const GOOGLE_CLIENT_ID = '157841978934-fmgq60lshk9iq65s7h37mc7ta78m8nu3.apps.googleusercontent.com';
-const GOOGLE_REDIRECT_URI = 'http://localhost:8080/login';
+const GOOGLE_REDIRECT_URI = 'http://localhost:8080/';
 const GOOGLE_SCOPE = 'openid email profile';
 const GOOGLE_AUTH_URL =
     'https://accounts.google.com/o/oauth2/v2/auth' +
@@ -117,7 +117,7 @@ window.addEventListener('DOMContentLoaded', async () => {
                 localStorage.setItem('authToken', data.token);
                 toastr.success('Google login successful! Redirecting...');
                 setTimeout(() => {
-                    window.location.href = '/admin/app-user-list.html';
+                    window.location.href = '/admin/';
                 }, 1000);
                 success = true;
             } else {
@@ -141,15 +141,12 @@ document.addEventListener('DOMContentLoaded', function() {
 });
 
 (function() {
-    const isAdminPage = window.location.pathname.startsWith('/admin/');
-    const isLoginPage = window.location.pathname.endsWith('/login');
-    if (isAdminPage && !isAuthenticated()) {
-        window.location.href = '/admin/auth/login.html';
+    const isLoginPage = window.location.pathname.endsWith('/login') || window.location.pathname.endsWith('/auth/login.html');
+    const token = localStorage.getItem('authToken');
+    if (!isLoginPage && !token) {
+        window.location.href = '/auth/login.html';
     }
-    if (isLoginPage && isAuthenticated()) {
-        window.location.href = '/admin/app-user-list.html';
-    }
-});
+})();
 
 function setupLogoutHandlers() {
     const logoutBtn = document.getElementById('logout-btn');
@@ -171,7 +168,7 @@ function setupLogoutHandlers() {
             authToken = null;
             toastr.success('Logged out successfully!');
             setTimeout(() => {
-                window.location.href = '/login';
+                window.location.href = '/auth/login.html';
             }, 500);
         });
         logoutBtn.onclick = logoutBtn.onclick || function(e) {
@@ -181,7 +178,7 @@ function setupLogoutHandlers() {
             sessionStorage.clear();
             currentUser = null;
             authToken = null;
-            window.location.href = '/login';
+            window.location.href = '/auth/login.html';
         };
     }
 }
@@ -209,10 +206,10 @@ setTimeout(setupLogoutHandlers, 500);
 setTimeout(setupLogoutHandlers, 1000);
 
 function goToLogin() {
-    window.location.href = '/login';
+    window.location.href = '/auth/login.html';
 }
 function goToDashboard() {
-    window.location.href = '/admin/app-user-list.html';
+    window.location.href = '/admin/';
 }
 
 window.addEventListener('DOMContentLoaded', async function() {

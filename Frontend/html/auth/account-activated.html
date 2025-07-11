@@ -62,7 +62,7 @@
           <div class="card-body">
             <!-- Logo -->
             <div class="app-brand justify-content-center mb-4 mt-2">
-              <a href="index.html" class="app-brand-link gap-2">
+              <a href="/" class="app-brand-link gap-2">
                                   <!-- <span class="app-brand-logo demo">
                     <svg width="32" height="22" viewBox="0 0 32 22" fill="none" xmlns="http://www.w3.org/2000/svg">
                       <path
@@ -113,7 +113,7 @@
               <p class="mb-2">Redirecting to login page in <span id="countdown" class="fw-bold text-primary">5</span> seconds...</p>
             </div>
             
-            <a class="btn btn-primary w-100 mb-3" href="login.html">Go to Login Now</a>
+            <a class="btn btn-primary w-100 mb-3" href="/">Go to Login Now</a>
             
             <p class="text-center mb-0">
               <small class="text-muted">If you are not redirected automatically, click the button above.</small>
@@ -166,7 +166,7 @@
                   <h4 class="mb-1 pt-2 text-center">Account Activated Successfully! 🎉</h4>
                   <p class="text-center mb-4">Your account has been successfully activated. You can now sign in to your account and start using our services.</p>
                   <div class="text-center mb-4"><p class="mb-2">Redirecting to login page in <span id='countdown' class='fw-bold text-primary'>5</span> seconds...</p></div>
-                  <a class="btn btn-primary w-100 mb-3" href="login.html">Go to Login Now</a>
+                  <a class="btn btn-primary w-100 mb-3" href="/">Go to Login Now</a>
                   <p class="text-center mb-0"><small class="text-muted">If you are not redirected automatically, click the button above.</small></p>
                 `;
                 let countdown = 5;
@@ -190,7 +190,7 @@
                   </div>
                   <h4 class="mb-1 pt-2 text-center text-danger">Activation Failed</h4>
                   <p class="text-center mb-4">${data.message || 'Email verification failed. The link may be invalid or expired.'}</p>
-                  <a class="btn btn-primary w-100 mb-3" href="login.html">Go to Login</a>
+                  <a class="btn btn-primary w-100 mb-3" href="/">Go to Login</a>
                 `;
               }
             })
@@ -205,7 +205,7 @@
                 </div>
                 <h4 class="mb-1 pt-2 text-center text-danger">Activation Failed</h4>
                 <p class="text-center mb-4">An error occurred during verification. Please try again later.</p>
-                <a class="btn btn-primary w-100 mb-3" href="login.html">Go to Login</a>
+                <a class="btn btn-primary w-100 mb-3" href="/">Go to Login</a>
               `;
             });
         }
