@@ -141,7 +141,8 @@ window.addEventListener('DOMContentLoaded', async () => {
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify(requestBody)
             });
-            const data = await res.json();
+            let data = {};
+            try { data = await res.json(); } catch {}
             if (res.ok && data.token) {
                 localStorage.setItem('authToken', data.token);
                 toastr.success('Google login successful! Redirecting...');
@@ -150,12 +151,17 @@ window.addEventListener('DOMContentLoaded', async () => {
                 }, 1000);
                 success = true;
             } else {
-                const errorMsg = data.message || 'Google login failed!';
+                let errorMsg = data.message || 'Google login failed!';
+                if (errorMsg.toLowerCase().includes('banned')) {
+                    errorMsg = 'Your account has been banned. Please contact support for assistance.';
+                } else if (errorMsg.toLowerCase().includes('deleted')) {
+                    errorMsg = 'Your account has been deleted. Please contact support for assistance.';
+                }
                 if (msg) msg.textContent = errorMsg;
                 toastr.error(errorMsg);
             }
         } catch (err) {
-            const errorMsg = 'Google login failed!';
+            let errorMsg = (err && err.message) ? err.message : 'Google login failed!';
             if (msg) msg.textContent = errorMsg;
             toastr.error(errorMsg);
         }

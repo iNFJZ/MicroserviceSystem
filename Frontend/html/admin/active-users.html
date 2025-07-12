@@ -1056,10 +1056,13 @@
       <div class="modal-body">
         <div class="row">
           <div class="col-md-3 text-center mb-3">
-            <div class="avatar avatar-xl mb-2 d-flex justify-content-center align-items-center" style="margin: 0 auto;">
-              <img id="view-user-avatar" src="" alt="User Avatar" class="rounded-circle" style="width: 100px; height: 100px; object-fit: cover;" />
+            <div class="d-flex flex-column align-items-center justify-content-center" style="gap: 12px;">
+              <div class="avatar avatar-xl d-flex align-items-center justify-content-center" style="width: 100px; height: 100px; margin: 0 auto;">
+                <img id="view-user-avatar" src="" alt="User Avatar" class="rounded-circle" style="width: 100px; height: 100px; object-fit: cover; display: none;" />
+                <div id="avatar-fallback" class="avatar-initial rounded-circle" style="width: 100px; height: 100px; display: none; align-items: center; justify-content: center; font-weight: bold; font-size: 40px;"></div>
+              </div>
+              <div class="user-status-badge d-flex justify-content-center"></div>
             </div>
-            <div class="user-status-badge mt-4 d-flex justify-content-center" style="margin-left: 0; margin-top: 45px !important;"></div>
           </div>
           <div class="col-md-9">
             <div class="row">

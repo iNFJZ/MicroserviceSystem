@@ -912,23 +912,16 @@ function openViewUserModal(userId) {
       $('.user-provider').text(user.loginProvider || 'Local');
       $('.user-bio').text(user.bio || 'No bio available');
       const $avatar = $('#view-user-avatar');
-      $avatar.off('error').on('error', function() {
-        console.warn('Avatar image failed to load, fallback to letter avatar.');
-        $avatar.hide();
-        $('#avatar-fallback').remove();
-        const letter = (user.username || '').charAt(0).toUpperCase();
-        const color = '#'+((1<<24)*Math.random()|0).toString(16);
-        $avatar.after(`<div id="avatar-fallback" class="avatar-initial rounded-circle" style="width:100px;height:100px;background:${color};color:#fff;display:flex;align-items:center;justify-content:center;font-weight:bold;font-size:40px;">${letter}</div>`);
-      });
-      if (user.profilePicture) {
+      const $fallback = $('#avatar-fallback');
+      if (user.profilePicture && user.profilePicture.trim() !== '') {
         $avatar.attr('src', user.profilePicture).show();
-        $('#avatar-fallback').remove();
+        $fallback.hide();
       } else {
         $avatar.hide();
-        $('#avatar-fallback').remove();
         const letter = (user.username || '').charAt(0).toUpperCase();
         const color = '#'+((1<<24)*Math.random()|0).toString(16);
-        $avatar.after(`<div id="avatar-fallback" class="avatar-initial rounded-circle" style="width:100px;height:100px;background:${color};color:#fff;display:flex;align-items:center;justify-content:center;font-weight:bold;font-size:40px;">${letter}</div>`);
+        $fallback.text(letter).css({ background: color, color: '#fff', display: 'flex' });
+        $fallback.show();
       }
       const statusBadge = $('.user-status-badge');
       statusBadge.html(getStatusBadge(user.status));
