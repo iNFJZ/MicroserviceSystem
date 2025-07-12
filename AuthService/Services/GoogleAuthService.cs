@@ -109,6 +109,12 @@ namespace AuthService.Services
                 {
                     throw new AuthException("Account has been deleted. Please contact support for assistance.");
                 }
+                
+                if (existingUser.Status == UserStatus.Banned)
+                {
+                    throw new AuthException("Your account has been banned. Please contact support for assistance.");
+                }
+                
                 existingUser.LoginProvider = "Google";
                 if (existingUser.Status != UserStatus.Suspended)
                 {
@@ -124,6 +130,16 @@ namespace AuthService.Services
                 
                 if (existingUser != null)
                 {
+                    if (existingUser.DeletedAt.HasValue)
+                    {
+                        throw new AuthException("Account has been deleted. Please contact support for assistance.");
+                    }
+                    
+                    if (existingUser.Status == UserStatus.Banned)
+                    {
+                        throw new AuthException("Your account has been banned. Please contact support for assistance.");
+                    }
+                    
                     existingUser.GoogleId = googleUserInfo.Sub;
                     existingUser.ProfilePicture = googleUserInfo.Picture;
                     existingUser.LoginProvider = "Google";

@@ -356,7 +356,7 @@ class UserManagement {
     }
 
     formatDate(dateString) {
-        return new Date(dateString).toLocaleDateString();
+        return new Date(dateString).toLocaleDateString('en-GB');
     }
 
     debounce(func, wait) {

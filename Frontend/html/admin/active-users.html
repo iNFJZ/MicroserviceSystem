@@ -56,6 +56,8 @@
     <script src="../../assets/vendor/js/template-customizer.js"></script>
     <!--? Config:  Mandatory theme config file contain global vars & default theme options, Set your preferred theme option in this file.  -->
     <script src="../../assets/js/config.js"></script>
+    <!-- CropperJS CSS CDN -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.6.1/cropper.min.css" rel="stylesheet" />
   </head>
 
   <body>
@@ -910,6 +912,7 @@
     <script src="../../assets/js/main.js"></script>
 
     <!-- Page JS -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.6.1/cropper.min.js"></script>
     <script src="../../js/admin-auth.js"></script>
     <script>loadActiveUsersTable();</script>
   </body>
@@ -1056,7 +1059,7 @@
             <div class="avatar avatar-xl mb-2 d-flex justify-content-center align-items-center" style="margin: 0 auto;">
               <img id="view-user-avatar" src="" alt="User Avatar" class="rounded-circle" style="width: 100px; height: 100px; object-fit: cover;" />
             </div>
-            <div class="user-status-badge mt-4 d-flex justify-content-center" style="margin-left: 0; margin-top: 45px !important; padding-left: 25px;"></div>
+            <div class="user-status-badge mt-4 d-flex justify-content-center" style="margin-left: 0; margin-top: 45px !important;"></div>
           </div>
           <div class="col-md-9">
             <div class="row">
@@ -1078,8 +1081,8 @@
                   <p class="mb-0 user-phone"></p>
                 </div>
                 <div class="mb-3">
-                  <label class="form-label fw-semibold text-muted">Status</label>
-                  <p class="mb-0 user-status"></p>
+                  <label class="form-label fw-semibold text-muted">Last Login</label>
+                  <p class="mb-0 user-lastlogin"></p>
                 </div>
               </div>
               <div class="col-md-6">
@@ -1098,10 +1101,6 @@
                 <div class="mb-3">
                   <label class="form-label fw-semibold text-muted">Login Provider</label>
                   <p class="mb-0 user-provider"></p>
-                </div>
-                <div class="mb-3">
-                  <label class="form-label fw-semibold text-muted">Last Login</label>
-                  <p class="mb-0 user-lastlogin"></p>
                 </div>
               </div>
             </div>
@@ -1132,7 +1131,7 @@
   <div class="modal-dialog modal-dialog-centered">
     <div class="modal-content" style="background: #fff; border-radius: 12px; border: 2px solid #ea5455;">
       <div class="modal-header" style="background: #fff0f0; border-bottom: 1px solid #ea5455;">
-        <h5 class="modal-title fw-bold text-danger" id="deleteUserModalLabel">
+        <h5 class="modal-title fw-bold text-danger" id="deleteUserModalLabel" style="padding-left: 130px;">
           <i class="ti ti-alert-triangle me-2"></i>Delete User Confirmation
         </h5>
         <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
@@ -1156,7 +1155,7 @@
               <i class="ti ti-user me-2"></i>User Information
             </h6>
           </div>
-          <div class="card-body">
+          <div class="card-body" style="padding-top: 25px;">
             <div class="row">
               <div class="col-md-6">
                 <div class="mb-2"><strong>Username:</strong> <span class="delete-user-username"></span></div>
@@ -1181,6 +1180,27 @@
         <button type="button" class="btn btn-danger fw-bold" id="confirmDeleteUser">
           <i class="ti ti-trash me-1"></i>Delete User
         </button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Modal Crop Image -->
+<div class="modal fade" id="cropImageModal" tabindex="-1" aria-labelledby="cropImageModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="cropImageModalLabel">Crop Profile Picture</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body text-center">
+        <div style="max-width: 100%; max-height: 350px;">
+          <img id="cropper-image" src="" style="max-width: 100%; max-height: 350px; display: block; margin: 0 auto;" />
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+        <button type="button" class="btn btn-primary" id="cropImageBtn">Crop & Save</button>
       </div>
     </div>
   </div>

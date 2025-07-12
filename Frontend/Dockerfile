@@ -1,4 +1,3 @@
-# Stage 1: Build static files (nếu dùng build tool, ở đây chỉ copy)
 FROM nginx:alpine
 WORKDIR /usr/share/nginx/html
 COPY . .

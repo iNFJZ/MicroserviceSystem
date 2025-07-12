@@ -210,14 +210,19 @@ public class UserService : IUserService
         {
             if (dto.PhoneNumber.Length > 11)
                 throw new ArgumentException("Phone number must be less than 11 characters");
+            if (!System.Text.RegularExpressions.Regex.IsMatch(dto.PhoneNumber, @"^[0-9]{10,11}$"))
+                throw new ArgumentException("Phone number must be 10-11 digits and contain only numbers");
             user.PhoneNumber = dto.PhoneNumber.Trim();
         }
 
         if (dto.DateOfBirth.HasValue)
         {
-            if (dto.DateOfBirth.Value > DateTime.UtcNow)
+            var dateOfBirth = dto.DateOfBirth.Value;
+            dateOfBirth = dateOfBirth.Date;
+            
+            if (dateOfBirth > DateTime.UtcNow.Date)
                 throw new ArgumentException("Date of birth cannot be in the future");
-            user.DateOfBirth = dto.DateOfBirth.Value;
+            user.DateOfBirth = dateOfBirth;
         }
 
         if (!string.IsNullOrWhiteSpace(dto.Address))
@@ -238,6 +243,12 @@ public class UserService : IUserService
         {
             var newStatus = dto.Status.Value;
             var oldStatus = user.Status;
+            
+            if (!Enum.IsDefined(typeof(UserStatus), newStatus))
+            {
+                throw new ArgumentException($"Invalid status value: {newStatus}");
+            }
+            
             user.Status = newStatus;
             if (newStatus == UserStatus.Banned && user.DeletedAt == null)
             {
@@ -249,23 +260,35 @@ public class UserService : IUserService
             }
         }
 
-        if (!string.IsNullOrWhiteSpace(dto.ProfilePicture))
+        if (dto.ProfilePicture != null)
         {
-            if (dto.ProfilePicture.Length > 500)
-                throw new ArgumentException("Profile picture URL must be less than 500 characters");
+            if (dto.ProfilePicture.Length > 200000)
+                throw new ArgumentException("Profile picture must be less than 200,000 characters");
             user.ProfilePicture = dto.ProfilePicture.Trim();
         }
-
-        if (user.Status == UserStatus.Active || user.Status == UserStatus.Suspended)
+        else
         {
-            user.IsVerified = true;
-        } else {
-            user.IsVerified = false;
+            user.ProfilePicture = null;
+        }
+
+        if (dto.IsVerified.HasValue)
+        {
+            user.IsVerified = dto.IsVerified.Value;
+        }
+        else
+        {
+            if (user.Status == UserStatus.Active || user.Status == UserStatus.Suspended)
+            {
+                user.IsVerified = true;
+            } else {
+                user.IsVerified = false;
+            }
         }
         user.UpdatedAt = DateTime.UtcNow;
 
         await _userRepository.UpdateAsync(user);
         
+        await _userCacheService.DeleteUserAsync(user.Id);
         await _userCacheService.SetUserAsync(user, TimeSpan.FromMinutes(30));
         
         return true;

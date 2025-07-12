@@ -181,7 +181,7 @@ public class UserController : ControllerBase
     /// </summary>
     [HttpPut("{id}")]
     public async Task<IActionResult> UpdateUser(Guid id, [FromBody] UpdateUserDto dto)
-    {
+    {   
         if (!ModelState.IsValid)
         {
             var errors = ModelState.Values

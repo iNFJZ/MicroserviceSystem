@@ -231,6 +231,9 @@ namespace AuthService.Services
             if (user.IsDeleted)
                 throw new AuthException("Account has been deleted. Please contact support for assistance.");
             
+            if (user.Status == UserStatus.Banned)
+                throw new AuthException("Your account has been banned. Please contact support for assistance.");
+            
             if (!user.IsVerified)
                 throw new AuthException("Account is not verified");
             try
@@ -375,6 +378,9 @@ namespace AuthService.Services
 
             if (user.IsDeleted)
                 throw new AuthException("Account has been deleted. Please contact support for assistance.");
+
+            if (user.Status == UserStatus.Banned)
+                throw new AuthException("Your account has been banned. Please contact support for assistance.");
 
             if (!user.IsVerified)
                 throw new AuthException("Account is not verified");

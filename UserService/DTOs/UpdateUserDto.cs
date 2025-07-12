@@ -9,8 +9,8 @@ public class UpdateUserDto
     [RegularExpression(@"^[a-zA-ZÀ-ỹ\s]*$", ErrorMessage = "Full name can only contain letters, spaces, and Vietnamese characters")]
     public string? FullName { get; set; }
 
-    [Phone]
     [StringLength(20)]
+    [RegularExpression(@"^[0-9]{10,11}$", ErrorMessage = "Phone number must be 10-11 digits and contain only numbers")]
     public string? PhoneNumber { get; set; }
 
     [DataType(DataType.Date)]
@@ -26,5 +26,6 @@ public class UpdateUserDto
 
     public bool? IsVerified { get; set; }
 
+    [StringLength(200000)]
     public string? ProfilePicture { get; set; }
 } 

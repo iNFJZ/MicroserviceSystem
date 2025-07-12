@@ -50,7 +50,6 @@ class AdminAuth {
             }
             return true;
         } catch (error) {
-            // Don't remove token on network errors, only on validation failures
             return false;
         }
     }
@@ -232,7 +231,6 @@ function loadAllUsersTable() {
   }
 }
 
-// Load bảng Deactive Users
 function loadDeactiveUsersTable() {
   const token = localStorage.getItem('authToken');
   if (!token) {
@@ -282,7 +280,7 @@ function getUserTableColumnDefs(isDeactive) {
     {
       targets: 0, // Avatar
       render: function (data, type, full) {
-        if (full.profilePicture) {
+        if (full.profilePicture && full.profilePicture.trim() !== '') {
           return `<img src="${full.profilePicture}" alt="avatar" class="rounded-circle" style="width:36px;height:36px;object-fit:cover;">`;
         } else {
           const letter = (full.username || '').charAt(0).toUpperCase();
@@ -330,17 +328,17 @@ function getUserTableColumnDefs(isDeactive) {
       }
     },
     {
-      targets: 6, // Last Login At (active) hoặc Deleted At (deactive)
+      targets: 6,
       render: function (data, type, full) {
         if (isDeactive) {
           if (full.deletedAt || full.DeletedAt) {
-            return new Date(full.deletedAt || full.DeletedAt).toLocaleString();
+            return new Date(full.deletedAt || full.DeletedAt).toLocaleString('en-GB', { year: 'numeric', month: '2-digit', day: '2-digit', hour: '2-digit', minute: '2-digit', second: '2-digit' });
           } else {
             return '<span class="text-muted">N/A</span>';
           }
         } else {
           if (full.lastLoginAt) {
-            return new Date(full.lastLoginAt).toLocaleString();
+            return new Date(full.lastLoginAt).toLocaleString('en-GB', { year: 'numeric', month: '2-digit', day: '2-digit', hour: '2-digit', minute: '2-digit', second: '2-digit' });
           } else {
             return '<span class="text-muted">N/A</span>';
           }
@@ -462,55 +460,195 @@ function handleAddUser() {
   .catch(() => toastr.error('Add user failed!'));
 }
 
+// --- CropperJS integration ---
+let cropper = null;
+let selectedImageFile = null;
+
+$(document).on('change', '#edit-profilePicture', function(e) {
+  const file = this.files && this.files[0];
+  if (file) {
+    if (!file.type.startsWith('image/')) {
+      toastr.error('Please select a valid image file!');
+      this.value = '';
+      return;
+    }
+    
+    if (file.size > 5 * 1024 * 1024) {
+      toastr.error('Image size must be less than 5MB!');
+      this.value = '';
+      return;
+    }
+    
+    selectedImageFile = file;
+    const reader = new FileReader();
+    reader.onload = function(ev) {
+      const $img = $('#cropper-image');
+      $img.attr('src', ev.target.result);
+      $img.off('load').on('load', function() {
+        if (cropper) { cropper.destroy(); cropper = null; }
+        $('#cropImageModal').modal('show');
+        setTimeout(() => {
+          cropper = new Cropper($img[0], {
+            aspectRatio: 1,
+            viewMode: 1,
+            autoCropArea: 1,
+            responsive: true,
+            background: false,
+            movable: true,
+            zoomable: true,
+            rotatable: false,
+            scalable: false,
+            minCropBoxWidth: 50,
+            minCropBoxHeight: 50,
+          });
+        }, 100);
+      });
+      if ($img[0].complete) {
+        $img.trigger('load');
+      }
+    };
+    reader.readAsDataURL(file);
+  } else {
+    $('#edit-profilePicture-container').hide();
+    window._editProfilePictureBase64 = null;
+  }
+});
+
+$('#cropImageModal').on('hidden.bs.modal', function () {
+  if (cropper) { 
+    cropper.destroy(); 
+    cropper = null; 
+  }
+  if (!window._editProfilePictureBase64) {
+    $('#edit-profilePicture').val('');
+    selectedImageFile = null;
+  }
+});
+
+$(document).on('click', '#cropImageBtn', function () {
+  if (!cropper) {
+    toastr.error('No image selected for cropping!');
+    return;
+  }
+  
+  try {
+    const canvas = cropper.getCroppedCanvas({ 
+      width: 200, 
+      height: 200,
+      imageSmoothingEnabled: true,
+      imageSmoothingQuality: 'high'
+    });
+    const base64 = canvas.toDataURL('image/jpeg', 0.8);
+    $('#edit-profilePicture-preview').attr('src', base64);
+    $('#edit-profilePicture-container').show();
+    window._editProfilePictureBase64 = base64;
+    setTimeout(() => {
+      $('#cropImageModal').modal('hide');
+      toastr.success('Profile picture cropped successfully!');
+    }, 100);
+  } catch (error) {
+    toastr.error('Failed to crop image. Please try again!');
+  }
+});
+
+$(document).on('click', '#remove-profile-picture', function() {
+  $('#edit-profilePicture-preview').attr('src', '');
+  $('#edit-profilePicture-container').hide();
+  $('#edit-profilePicture').val('');
+  window._editProfilePictureBase64 = null;
+  selectedImageFile = null;
+  window._profilePictureRemoved = true;
+  if (cropper) {
+    cropper.destroy();
+    cropper = null;
+  }
+  toastr.info('Profile picture removed!');
+});
+
 function handleUpdateUser(userId) {
   const form = document.getElementById('editUserForm');
   if (!form) return;
   const formData = new FormData(form);
-  const username = $('#edit-username').val();
-  const email = $('#edit-email').val();
+
   let dateOfBirth = formData.get('dateOfBirth');
-  if (dateOfBirth) {
-    const dob = new Date(dateOfBirth);
+  const data = {
+    fullName: formData.get('fullName')?.trim(),
+    phoneNumber: formData.get('phoneNumber')?.trim(),
+    address: formData.get('address')?.trim(),
+    bio: formData.get('bio')?.trim(),
+    status: parseInt(formData.get('status')) || 1,
+    isVerified: formData.get('isVerified') === 'on'
+  };
+
+  if (dateOfBirth && dateOfBirth.trim() !== '') {
     const today = new Date();
-    today.setHours(0,0,0,0);
-    if (dob > today) {
+    if (dateOfBirth > today.toISOString().split('T')[0]) {
       toastr.error('Date of birth cannot be in the future!');
       return;
     }
-    dateOfBirth = dob.toISOString().split('T')[0];
-  } else {
-    dateOfBirth = null;
+    data.dateOfBirth = new Date(dateOfBirth).toISOString();
   }
-  const data = {
-    username,
-    email,
-    fullName: formData.get('fullName')?.trim(),
-    phoneNumber: formData.get('phoneNumber')?.trim(),
-    dateOfBirth,
-    address: formData.get('address')?.trim(),
-    bio: formData.get('bio')?.trim(),
-    status: parseInt(formData.get('status')),
-    isVerified: formData.get('isVerified') === 'on'
-  };
+  if (window._editProfilePictureBase64) {
+    data.profilePicture = window._editProfilePictureBase64;
+  } else if (selectedImageFile) {
+    toastr.warning('Please crop your profile picture before saving!');
+    return;
+  } else if (window._profilePictureRemoved) {
+    data.profilePicture = null;
+  }
+
+  Object.keys(data).forEach(key => {
+    if (data[key] === null || data[key] === undefined || data[key] === '') {
+      delete data[key];
+    }
+  });
+
+  if (data.isVerified !== undefined) {
+    data.isVerified = Boolean(data.isVerified);
+  }
+
   const original = $('#editUserForm').data('original') || {};
   let changed = false;
+  
+  if (window._editProfilePictureBase64 || selectedImageFile || window._profilePictureRemoved) {
+    changed = true;
+  }
+  
   for (const key of Object.keys(data)) {
-    if ((data[key] || '') != (original[key] || '')) {
+    if (key === 'profilePicture') continue;
+    
+    let oldVal = original[key] || '';
+    let newVal = data[key] || '';
+    
+    if (key === 'dateOfBirth') {
+      if (oldVal) {
+        oldVal = oldVal.split('T')[0];
+      }
+      if (newVal) {
+        newVal = newVal.split('T')[0];
+      }
+    }
+    
+    if (String(oldVal) !== String(newVal)) {
       changed = true;
       break;
     }
   }
   if (!changed) {
     toastr.warning('You have not changed any information!');
+    $('#editUserModal').modal('hide');
     return;
   }
   if (data.phoneNumber !== original.phoneNumber) {
-    if (data.phoneNumber && !/^\d{10,11}$/.test(data.phoneNumber)) {
+    if (data.phoneNumber && !/^[0-9]{10,11}$/.test(data.phoneNumber)) {
       toastr.error('Phone number must be 10-11 digits and only numbers!');
       return;
     }
   }
-  if (!data.fullName) { toastr.error('Full name is required!'); return; }
+  if (!data.fullName) {
+    toastr.error('Full name is required!');
+    return;
+  }
   const token = localStorage.getItem('authToken');
   if (!token) {
     toastr.error('Authentication required!');
@@ -526,8 +664,26 @@ function handleUpdateUser(userId) {
   })
   .then(async res => {
     let responseData;
-    try { responseData = await res.json(); } catch { responseData = {}; }
+    try {
+      responseData = await res.json();
+    } catch (e) {
+      responseData = {};
+    }
     if (!res.ok) {
+      if (responseData.errors) {
+        Object.keys(responseData.errors).forEach(field => {
+          const messages = responseData.errors[field];
+          if (Array.isArray(messages)) {
+            messages.forEach(msg => toastr.error(`${field}: ${msg}`));
+          } else {
+            toastr.error(`${field}: ${messages}`);
+          }
+        });
+      } else if (responseData.message) {
+        toastr.error(responseData.message);
+      } else {
+        toastr.error('Failed to update user!');
+      }
       throw new Error(responseData.message || responseData.error || `HTTP ${res.status}`);
     }
     return responseData;
@@ -535,12 +691,25 @@ function handleUpdateUser(userId) {
   .then(res => {
     toastr.success('User updated successfully!');
     $('#editUserModal').modal('hide');
+    
     reloadCurrentPageData();
+    
+    setTimeout(() => {
+      const dt_user_table = $('.datatables-users');
+      if (dt_user_table.length && $.fn.DataTable.isDataTable(dt_user_table)) {
+        dt_user_table.DataTable().ajax.reload(null, false);
+      }
+    }, 500);
+    
+    window._editProfilePictureBase64 = null;
+    selectedImageFile = null;
+    window._profilePictureRemoved = false;
+    if (cropper) {
+      cropper.destroy();
+      cropper = null;
+    }
   })
-  .catch(error => {
-    console.error('Update user error:', error);
-    toastr.error(error.message || 'Failed to update user!');
-  });
+  .catch(() => toastr.error('Failed to update user!'));
 }
 
 function deleteUser(userId) {
@@ -550,12 +719,25 @@ function deleteUser(userId) {
     return;
   }
   
+  let currentUserInfo = null;
+  try {
+    const payload = JSON.parse(atob(token.split('.')[1].replace(/-/g, '+').replace(/_/g, '/')));
+    currentUserInfo = {
+      id: payload.nameid || payload.sub,
+      email: payload.email,
+      username: payload.username
+    };
+  } catch (e) {
+    console.error('Failed to parse JWT token:', e);
+  }
+  
   fetch(`http://localhost:5050/api/User/${userId}`, {
     method: 'DELETE',
     headers: { 'Authorization': `Bearer ${token}` }
   })
   .then(async res => {
-    const responseData = await res.json();
+    let responseData = {};
+    try { responseData = await res.json(); } catch {}
     if (!res.ok) {
       throw new Error(responseData.message || `HTTP ${res.status}`);
     }
@@ -563,9 +745,21 @@ function deleteUser(userId) {
   })
   .then(res => {
     toastr.success('User deleted successfully!');
-    
     $('#deleteUserModal').modal('hide');
+    const userInfo = res.data || res;
     
+    if (userInfo && currentUserInfo && 
+        (userInfo.id == currentUserInfo.id || 
+         userInfo.email === currentUserInfo.email || 
+         userInfo.username === currentUserInfo.username)) {
+      localStorage.removeItem('authToken');
+      sessionStorage.clear();
+      toastr.info('Your account has been deleted. Redirecting to login...');
+      setTimeout(() => {
+        window.location.href = '/auth/login.html';
+      }, 1000);
+      return;
+    }
     reloadCurrentPageData();
   })
   .catch(error => {
@@ -627,7 +821,11 @@ function reloadCurrentPageData() {
     } else {
       const dt_user_table = $('.datatables-users');
       if (dt_user_table.length && $.fn.DataTable.isDataTable(dt_user_table)) {
-        dt_user_table.DataTable().ajax.reload();
+        dt_user_table.DataTable().ajax.reload(null, false);
+      } else {
+        if (typeof loadAllUsersTable === 'function') {
+          loadAllUsersTable();
+        }
       }
     }
   }, 100);
@@ -669,30 +867,27 @@ function openEditUserModal(userId) {
         $('#edit-profilePicture-container').hide();
       }
       $('#edit-profilePicture').val('');
+      if (cropper) {
+        cropper.destroy();
+        cropper = null;
+      }
+      window._editProfilePictureBase64 = null;
+      selectedImageFile = null;
+      window._profilePictureRemoved = false;
       $('#editUserModal').modal('show');
     })
     .catch(() => toastr.error('Failed to load user information!'));
-}
-
-$(document).on('change', '#edit-profilePicture', function(e) {
-  const file = this.files && this.files[0];
-  if (file) {
-    const reader = new FileReader();
-    reader.onload = function(ev) {
-      $('#edit-profilePicture-preview').attr('src', ev.target.result);
-      $('#edit-profilePicture-container').show();
-    };
-    reader.readAsDataURL(file);
-  } else {
-    $('#edit-profilePicture-container').hide();
+    
+$('#editUserModal').on('hidden.bs.modal', function () {
+  if (cropper) {
+    cropper.destroy();
+    cropper = null;
   }
+  window._editProfilePictureBase64 = null;
+  selectedImageFile = null;
+  window._profilePictureRemoved = false;
 });
-
-$(document).on('click', '#remove-profile-picture', function() {
-  $('#edit-profilePicture-preview').attr('src', '');
-  $('#edit-profilePicture-container').hide();
-  $('#edit-profilePicture').val('');
-});
+}
 
 function openViewUserModal(userId) {
   const token = localStorage.getItem('authToken');
@@ -709,110 +904,41 @@ function openViewUserModal(userId) {
       $('.user-fullname').text(user.fullName || 'N/A');
       $('.user-email').text(user.email || 'N/A');
       $('.user-phone').text(user.phoneNumber || 'N/A');
-      $('.user-status').text(getStatusLabel(user.status));
-      $('.user-lastlogin').text(user.lastLoginAt ? new Date(user.lastLoginAt).toLocaleString() : 'Never');
-      $('.user-deletedat').text(user.deletedAt ? new Date(user.deletedAt).toLocaleString() : 'N/A');
+      $('.user-lastlogin').text(user.lastLoginAt ? new Date(user.lastLoginAt).toLocaleString('en-GB', { year: 'numeric', month: '2-digit', day: '2-digit', hour: '2-digit', minute: '2-digit', second: '2-digit' }) : 'Never');
+      $('.user-deletedat').text(user.deletedAt ? new Date(user.deletedAt).toLocaleString('en-GB', { year: 'numeric', month: '2-digit', day: '2-digit', hour: '2-digit', minute: '2-digit', second: '2-digit' }) : 'N/A');
       $('.user-address').text(user.address || 'N/A');
-      $('.user-dob').text(user.dateOfBirth ? new Date(user.dateOfBirth).toLocaleDateString() : 'N/A');
+      $('.user-dob').text(user.dateOfBirth ? new Date(user.dateOfBirth).toLocaleDateString('en-GB') : 'N/A');
       $('.user-verified').text(user.isVerified ? 'Yes' : 'No');
       $('.user-provider').text(user.loginProvider || 'Local');
       $('.user-bio').text(user.bio || 'No bio available');
-      if (user.profilePicture) {
-        $('#view-user-avatar').attr('src', user.profilePicture).show();
-      } else {
+      const $avatar = $('#view-user-avatar');
+      $avatar.off('error').on('error', function() {
+        console.warn('Avatar image failed to load, fallback to letter avatar.');
+        $avatar.hide();
+        $('#avatar-fallback').remove();
         const letter = (user.username || '').charAt(0).toUpperCase();
         const color = '#'+((1<<24)*Math.random()|0).toString(16);
-        $('#view-user-avatar').hide();
-        $('#view-user-avatar').after(`<div id="avatar-fallback" class="avatar-initial rounded-circle" style="width:100px;height:100px;background:${color};color:#fff;display:flex;align-items:center;justify-content:center;font-weight:bold;font-size:40px;">${letter}</div>`);
+        $avatar.after(`<div id="avatar-fallback" class="avatar-initial rounded-circle" style="width:100px;height:100px;background:${color};color:#fff;display:flex;align-items:center;justify-content:center;font-weight:bold;font-size:40px;">${letter}</div>`);
+      });
+      if (user.profilePicture) {
+        $avatar.attr('src', user.profilePicture).show();
+        $('#avatar-fallback').remove();
+      } else {
+        $avatar.hide();
+        $('#avatar-fallback').remove();
+        const letter = (user.username || '').charAt(0).toUpperCase();
+        const color = '#'+((1<<24)*Math.random()|0).toString(16);
+        $avatar.after(`<div id="avatar-fallback" class="avatar-initial rounded-circle" style="width:100px;height:100px;background:${color};color:#fff;display:flex;align-items:center;justify-content:center;font-weight:bold;font-size:40px;">${letter}</div>`);
       }
       const statusBadge = $('.user-status-badge');
       statusBadge.html(getStatusBadge(user.status));
       $('#viewUserModal').modal('show');
     })
-    .catch(() => toastr.error('Failed to load user information!'));
+    .catch((err) => {
+      toastr.error('Failed to load user information!');
+    });
 }
-
-function openDeleteUserModal(userId) {
-  const token = localStorage.getItem('authToken');
-  if (!userId || !token) return;
-  
-  fetch(`http://localhost:5050/api/User/${userId}`, {
-    headers: { 'Authorization': `Bearer ${token}` }
-  })
-    .then(res => res.json())
-    .then(res => {
-      const user = res.data || res;
-      if (!user || !user.id) { 
-        toastr.error('User not found!'); 
-        return; 
-      }
-      
-      $('#deleteUserModal').data('userid', user.id);
-      
-      $('.delete-user-username').text(user.username || 'N/A');
-      $('.delete-user-fullname').text(user.fullName || 'N/A');
-      $('.delete-user-email').text(user.email || 'N/A');
-      $('.delete-user-phone').text(user.phoneNumber || 'N/A');
-      $('.delete-user-status').text(getStatusLabel(user.status));
-      $('.delete-user-lastlogin').text(user.lastLoginAt ? new Date(user.lastLoginAt).toLocaleString() : 'Never');
-      $('.delete-user-address').text(user.address || 'N/A');
-      $('.delete-user-created').text(user.createdAt ? new Date(user.createdAt).toLocaleDateString() : 'N/A');
-      
-      $('#deleteUserModal').modal('show');
-    })
-    .catch(() => toastr.error('Failed to load user information!'));
-}
-
-function openRestoreUserModal(userId) {
-  const token = localStorage.getItem('authToken');
-  if (!userId || !token) return;
-  
-  fetch(`http://localhost:5050/api/User/${userId}`, {
-    headers: { 'Authorization': `Bearer ${token}` }
-  })
-    .then(res => res.json())
-    .then(res => {
-      const user = res.data || res;
-      if (!user || !user.id) { 
-        toastr.error('User not found!'); 
-        return; 
-      }
-      
-      $('#restoreUserModal').data('userid', user.id);
-      
-      $('.restore-user-username').text(user.username || 'N/A');
-      $('.restore-user-fullname').text(user.fullName || 'N/A');
-      $('.restore-user-email').text(user.email || 'N/A');
-      $('.restore-user-phone').text(user.phoneNumber || 'N/A');
-      $('.restore-user-status').text(getStatusLabel(user.status));
-      $('.restore-user-deletedat').text(user.deletedAt ? new Date(user.deletedAt).toLocaleString() : 'N/A');
-      $('.restore-user-address').text(user.address || 'N/A');
-      $('.restore-user-created').text(user.createdAt ? new Date(user.createdAt).toLocaleDateString() : 'N/A');
-      
-      $('#restoreUserModal').modal('show');
-    })
-    .catch(() => toastr.error('Failed to load user information!'));
-}
-
-function getStatusLabel(status) {
-  const statusMap = {
-    1: 'Active',
-    2: 'Inactive', 
-    3: 'Suspended',
-    4: 'Banned'
-  };
-  return statusMap[status] || status || 'Unknown';
-}
-
-function getStatusBadge(status) {
-  const badgeMap = {
-    1: '<span class="badge bg-label-success">Active</span>',
-    2: '<span class="badge bg-label-secondary">Inactive</span>',
-    3: '<span class="badge bg-label-warning">Suspended</span>',
-    4: '<span class="badge bg-label-danger">Banned</span>'
-  };
-  return badgeMap[status] || '<span class="badge bg-label-secondary">Unknown</span>';
-}
+window.openViewUserModal = openViewUserModal;
 
 $(document).on('click', '#viewUserModal .btn-edit-user', function() {
   const userId = $('#viewUserModal').data('userid');
@@ -943,3 +1069,76 @@ function updateUserStatsDashboard() {
       $('#banned-users').text(0);
     });
 }
+
+function getStatusBadge(status) {
+  switch (status) {
+    case 1:
+    case 'Active':
+      return '<span class="badge bg-label-success">Active</span>';
+    case 2:
+    case 'Inactive':
+      return '<span class="badge bg-label-secondary">Inactive</span>';
+    case 3:
+    case 'Suspended':
+      return '<span class="badge bg-label-warning">Suspended</span>';
+    case 4:
+    case 'Banned':
+      return '<span class="badge bg-label-danger">Banned</span>';
+    default:
+      return '<span class="badge bg-label-secondary">Unknown</span>';
+  }
+}
+
+window.openDeleteUserModal = function(userId) {
+  const token = localStorage.getItem('authToken');
+  if (!userId || !token) return;
+  fetch(`http://localhost:5050/api/User/${userId}`, {
+    headers: { 'Authorization': `Bearer ${token}` }
+  })
+    .then(res => res.json())
+    .then(res => {
+      const user = res.data || res;
+      if (!user || !user.id) {
+        toastr.error('User not found!');
+        return;
+      }
+      $('#deleteUserModal').data('userid', user.id);
+      $('.delete-user-username').text(user.username || 'N/A');
+      $('.delete-user-fullname').text(user.fullName || 'N/A');
+      $('.delete-user-email').text(user.email || 'N/A');
+      $('.delete-user-phone').text(user.phoneNumber || 'N/A');
+      $('.delete-user-status').html(getStatusBadge(user.status));
+      $('.delete-user-lastlogin').text(user.lastLoginAt ? new Date(user.lastLoginAt).toLocaleString('en-GB', { year: 'numeric', month: '2-digit', day: '2-digit', hour: '2-digit', minute: '2-digit', second: '2-digit' }) : 'Never');
+      $('.delete-user-address').text(user.address || 'N/A');
+      $('.delete-user-created').text(user.createdAt ? new Date(user.createdAt).toLocaleString('en-GB', { year: 'numeric', month: '2-digit', day: '2-digit', hour: '2-digit', minute: '2-digit', second: '2-digit' }) : 'N/A');
+      $('#deleteUserModal').modal('show');
+    })
+    .catch(() => toastr.error('Failed to load user information!'));
+};
+
+window.openRestoreUserModal = function(userId) {
+  const token = localStorage.getItem('authToken');
+  if (!userId || !token) return;
+  fetch(`http://localhost:5050/api/User/${userId}`, {
+    headers: { 'Authorization': `Bearer ${token}` }
+  })
+    .then(res => res.json())
+    .then(res => {
+      const user = res.data || res;
+      if (!user || !user.id) {
+        toastr.error('User not found!');
+        return;
+      }
+      $('#restoreUserModal').data('userid', user.id);
+      $('.restore-user-username').text(user.username || 'N/A');
+      $('.restore-user-fullname').text(user.fullName || 'N/A');
+      $('.restore-user-email').text(user.email || 'N/A');
+      $('.restore-user-phone').text(user.phoneNumber || 'N/A');
+      $('.restore-user-status').html(getStatusBadge(user.status));
+      $('.restore-user-deletedat').text(user.deletedAt ? new Date(user.deletedAt).toLocaleString('en-GB', { year: 'numeric', month: '2-digit', day: '2-digit', hour: '2-digit', minute: '2-digit', second: '2-digit' }) : 'N/A');
+      $('.restore-user-address').text(user.address || 'N/A');
+      $('.restore-user-created').text(user.createdAt ? new Date(user.createdAt).toLocaleString('en-GB', { year: 'numeric', month: '2-digit', day: '2-digit', hour: '2-digit', minute: '2-digit', second: '2-digit' }) : 'N/A');
+      $('#restoreUserModal').modal('show');
+    })
+    .catch(() => toastr.error('Failed to load user information!'));
+};
