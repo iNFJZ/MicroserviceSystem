@@ -24,7 +24,7 @@
       "DownstreamHostAndPorts": [
         { "Host": "user-service", "Port": 80 }
       ],
-      "UpstreamPathTemplate": "/api/user/{everything}",
+      "UpstreamPathTemplate": "/api/User/{everything}",
       "UpstreamHttpMethod": [ "GET", "POST", "PUT", "DELETE", "PATCH" ]
     }
   ],

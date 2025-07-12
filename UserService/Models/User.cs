@@ -48,6 +48,7 @@ public class User
     [Display(Name = "Google ID")]
     public string? GoogleId { get; set; }
 
+    [StringLength(200000)]
     [Display(Name = "Profile Picture")]
     public string? ProfilePicture { get; set; }
 

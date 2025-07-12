@@ -404,10 +404,10 @@
           <div class="modal-body">
             <div class="row">
               <div class="col-md-3 text-center mb-3">
-                <div class="avatar avatar-xl mb-2">
+                <div class="avatar avatar-xl mb-2 d-flex justify-content-center align-items-center" style="margin: 0 auto;">
                   <img id="view-user-avatar" src="" alt="User Avatar" class="rounded-circle" style="width: 100px; height: 100px; object-fit: cover;" />
                 </div>
-                <div class="user-status-badge"></div>
+                <div class="user-status-badge mt-4 d-flex justify-content-center"></div>
               </div>
               <div class="col-md-9">
                 <div class="row">
@@ -429,8 +429,8 @@
                       <p class="mb-0 user-phone"></p>
                     </div>
                     <div class="mb-3">
-                      <label class="form-label fw-semibold text-muted">Status</label>
-                      <p class="mb-0 user-status"></p>
+                      <label class="form-label fw-semibold text-muted">Deleted At</label>
+                      <p class="mb-0 user-deletedat"></p>
                     </div>
                   </div>
                   <div class="col-md-6">
@@ -449,10 +449,6 @@
                     <div class="mb-3">
                       <label class="form-label fw-semibold text-muted">Login Provider</label>
                       <p class="mb-0 user-provider"></p>
-                    </div>
-                    <div class="mb-3">
-                      <label class="form-label fw-semibold text-muted">Deleted At</label>
-                      <p class="mb-0 user-deletedat"></p>
                     </div>
                   </div>
                 </div>
@@ -480,7 +476,7 @@
       <div class="modal-dialog modal-dialog-centered">
         <div class="modal-content" style="background: #fff; border-radius: 12px; border: 2px solid #28c76f;">
           <div class="modal-header" style="background: #e8f8f2; border-bottom: 1px solid #28c76f;">
-            <h5 class="modal-title fw-bold text-success" id="restoreUserModalLabel">
+            <h5 class="modal-title fw-bold text-success" id="restoreUserModalLabel" style="padding-left: 130px;">
               <i class="ti ti-refresh me-2"></i>Restore User Confirmation
             </h5>
             <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
@@ -504,7 +500,7 @@
                   <i class="ti ti-user me-2"></i>User Information
                 </h6>
               </div>
-              <div class="card-body">
+              <div class="card-body" style="padding-top: 25px;">
                 <div class="row">
                   <div class="col-md-6">
                     <div class="mb-2"><strong>Username:</strong> <span class="restore-user-username"></span></div>

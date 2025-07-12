@@ -20,4 +20,7 @@ public class CreateUserDto
     [Phone]
     [StringLength(20)]
     public string? PhoneNumber { get; set; }
+
+    [StringLength(200000)]
+    public string? ProfilePicture { get; set; }
 } 

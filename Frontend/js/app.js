@@ -69,8 +69,37 @@ window.toggleUserStatus = async function(id, isActive) {
 window.deleteUser = async function(id) {
     if (confirm('Are you sure you want to delete this user?')) {
         try {
+            let currentUserInfo = null;
+            const token = localStorage.getItem('authToken');
+            if (token) {
+                try {
+                    const payload = JSON.parse(atob(token.split('.')[1].replace(/-/g, '+').replace(/_/g, '/')));
+                    currentUserInfo = {
+                        id: payload.nameid || payload.sub,
+                        email: payload.email,
+                        username: payload.username
+                    };
+                } catch (e) {
+                    console.error('Failed to parse JWT token:', e);
+                }
+            }
+            
             const res = await deleteUser(id);
             toastr.success('User deleted successfully!');
+            
+            if (res && res.data && currentUserInfo && 
+                (res.data.id == currentUserInfo.id || 
+                 res.data.email === currentUserInfo.email || 
+                 res.data.username === currentUserInfo.username)) {
+                localStorage.removeItem('authToken');
+                sessionStorage.clear();
+                toastr.info('Your account has been deleted. Redirecting to login...');
+                setTimeout(() => {
+                    window.location.href = '/auth/login.html';
+                }, 1000);
+                return;
+            }
+            
             if (res && res.message && res.message.includes('deactivated successfully')) {
                 toastr.info('A deactivation email has been sent to the user.');
             }
@@ -397,9 +426,39 @@ function renderUserTableWithPagination(users, page) {
             if (!confirm('Are you sure you want to delete this user?')) return;
             btn.disabled = true;
             btn.textContent = 'Deleting...';
+            
+            let currentUserInfo = null;
+            const token = localStorage.getItem('authToken');
+            if (token) {
+                try {
+                    const payload = JSON.parse(atob(token.split('.')[1].replace(/-/g, '+').replace(/_/g, '/')));
+                    currentUserInfo = {
+                        id: payload.nameid || payload.sub,
+                        email: payload.email,
+                        username: payload.username
+                    };
+                } catch (e) {
+                    console.error('Failed to parse JWT token:', e);
+                }
+            }
+            
             try {
                 const res = await deleteUser(user.id);
                 toastr.success('User deleted successfully!');
+                
+                if (res && res.data && currentUserInfo && 
+                    (res.data.id == currentUserInfo.id || 
+                     res.data.email === currentUserInfo.email || 
+                     res.data.username === currentUserInfo.username)) {
+                    localStorage.removeItem('authToken');
+                    sessionStorage.clear();
+                    toastr.info('Your account has been deleted. Redirecting to login...');
+                    setTimeout(() => {
+                        window.location.href = '/auth/login.html';
+                    }, 1000);
+                    return;
+                }
+                
                 if (res && res.message && res.message.includes('deactivated successfully')) {
                     toastr.info('A deactivation email has been sent to the user.');
                 }
