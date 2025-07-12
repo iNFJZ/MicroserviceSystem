@@ -1,0 +1,752 @@
+<!DOCTYPE html>
+
+<html
+  lang="en"
+  class="light-style layout-navbar-fixed layout-menu-fixed"
+  dir="ltr"
+  data-theme="theme-default"
+  data-assets-path="../../assets/"
+  data-template="vertical-menu-template">
+  <head>
+    <meta charset="utf-8" />
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1.0, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0" />
+
+    <title>My Profile - Admin Panel</title>
+
+    <meta name="description" content="" />
+
+    <!-- Favicon -->
+    <link rel="icon" type="image/x-icon" href="../../assets/img/favicon/favicon.ico" />
+
+    <!-- Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Public+Sans:ital,wght@0,300;0,400;0,500;0,600;0,700;1,300;1,400;1,500;1,600;1,700&ampdisplay=swap"
+      rel="stylesheet" />
+
+    <!-- Icons -->
+    <link rel="stylesheet" href="../../assets/vendor/fonts/fontawesome.css" />
+    <link rel="stylesheet" href="../../assets/vendor/fonts/tabler-icons.css" />
+    <link rel="stylesheet" href="../../assets/vendor/fonts/flag-icons.css" />
+
+    <!-- Core CSS -->
+    <link rel="stylesheet" href="../../assets/vendor/css/rtl/core.css" class="template-customizer-core-css" />
+    <link rel="stylesheet" href="../../assets/vendor/css/rtl/theme-default.css" class="template-customizer-theme-css" />
+    <link rel="stylesheet" href="../../assets/css/demo.css" />
+
+    <!-- Vendors CSS -->
+    <link rel="stylesheet" href="../../assets/vendor/libs/node-waves/node-waves.css" />
+    <link rel="stylesheet" href="../../assets/vendor/libs/perfect-scrollbar/perfect-scrollbar.css" />
+    <link rel="stylesheet" href="../../assets/vendor/libs/typeahead-js/typeahead.css" />
+    <link rel="stylesheet" href="../../assets/vendor/libs/select2/select2.css" />
+    <link rel="stylesheet" href="../../assets/vendor/libs/@form-validation/umd/styles/index.min.css" />
+    <link rel="stylesheet" href="../../assets/vendor/libs/animate-css/animate.css" />
+    <link rel="stylesheet" href="../../assets/vendor/libs/sweetalert2/sweetalert2.css" />
+    <link rel="stylesheet" href="../../assets/vendor/libs/toastr/toastr.css" />
+
+    <!-- Page CSS -->
+    <!-- CropperJS CSS CDN -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.6.1/cropper.min.css" rel="stylesheet" />
+
+    <!-- Helpers -->
+    <script src="../../assets/vendor/js/helpers.js"></script>
+    <!--! Template customizer & Theme config files MUST be included after core stylesheets and helpers.js in the <head> section -->
+    <!--? Template customizer: To hide customizer set displayCustomizer value false in config.js.  -->
+    <script src="../../assets/vendor/js/template-customizer.js"></script>
+    <!--? Config:  Mandatory theme config file contain global vars & default theme options, Set your preferred theme option in this file.  -->
+    <script src="../../assets/js/config.js"></script>
+  </head>
+
+  <body>
+    <!-- Layout wrapper -->
+    <div class="layout-wrapper layout-content-navbar">
+      <div class="layout-container">
+        <!-- Menu -->
+
+        <aside id="layout-menu" class="layout-menu menu-vertical menu bg-menu-theme">
+          <div class="app-brand demo">
+            <a href="index.html" class="app-brand-link">
+              <span class="app-brand-logo demo">
+                <svg width="32" height="22" viewBox="0 0 32 22" fill="none" xmlns="http://www.w3.org/2000/svg">
+                  <path
+                    fill-rule="evenodd"
+                    clip-rule="evenodd"
+                    d="M0.00172773 0V6.85398C0.00172773 6.85398 -0.133178 9.01207 1.98092 10.8388L13.6912 21.9964L19.7809 21.9181L18.8042 9.88248L16.4951 7.17289L9.23799 0H0.00172773Z"
+                    fill="#7367F0" />
+                  <path
+                    opacity="0.06"
+                    fill-rule="evenodd"
+                    clip-rule="evenodd"
+                    d="M7.69824 16.4364L12.5199 3.23696L16.5541 7.25596L7.69824 16.4364Z"
+                    fill="#161616" />
+                  <path
+                    opacity="0.06"
+                    fill-rule="evenodd"
+                    clip-rule="evenodd"
+                    d="M8.07751 15.9175L13.9419 4.63989L16.5849 7.28475L8.07751 15.9175Z"
+                    fill="#161616" />
+                  <path
+                    fill-rule="evenodd"
+                    clip-rule="evenodd"
+                    d="M7.77295 16.3566L23.6563 0H32V6.88383C32 6.88383 31.8262 9.17836 30.6591 10.4057L19.7824 22H13.6938L7.77295 16.3566Z"
+                    fill="#7367F0" />
+                </svg>
+              </span>
+              <span class="app-brand-text demo menu-text fw-bold">Vuexy</span>
+            </a>
+
+            <a href="javascript:void(0);" class="layout-menu-toggle menu-link text-large ms-auto">
+              <i class="ti menu-toggle-icon d-none d-xl-block ti-sm align-middle"></i>
+              <i class="ti ti-x d-block d-xl-none ti-sm align-middle"></i>
+            </a>
+          </div>
+
+          <div class="menu-inner-shadow"></div>
+
+          <ul class="menu-inner py-1">
+            <!-- Dashboards -->
+            <!-- <li class="menu-item">
+              <a href="javascript:void(0);" class="menu-link menu-toggle">
+                <i class="menu-icon tf-icons ti ti-smart-home"></i>
+                <div data-i18n="Dashboards">Dashboards</div>
+              </a>
+              <ul class="menu-sub">
+                <li class="menu-item">
+                  <a href="index.html" class="menu-link">
+                    <div data-i18n="Analytics">Analytics</div>
+                  </a>
+                </li>
+              </ul>
+            </li> -->
+
+            <!-- Apps & Pages -->
+            <li class="menu-header small text-uppercase">
+              <span class="menu-header-text">Apps &amp; Pages</span>
+            </li>
+            
+            <!-- User Management -->
+            <li class="menu-item">
+              <a href="javascript:void(0);" class="menu-link menu-toggle">
+                <i class="menu-icon tf-icons ti ti-users"></i>
+                <div data-i18n="User Management">User Management</div>
+              </a>
+              <ul class="menu-sub">
+                <li class="menu-item">
+                  <a href="all-users.html" class="menu-link">
+                    <div data-i18n="All Users">All Users</div>
+                  </a>
+                </li>
+                <li class="menu-item">
+                  <a href="active-users.html" class="menu-link">
+                    <div data-i18n="Active Users">Active Users</div>
+                  </a>
+                </li>
+                <li class="menu-item">
+                  <a href="deactive-users.html" class="menu-link">
+                    <div data-i18n="Deactive Users">Deactive Users</div>
+                  </a>
+                </li>
+              </ul>
+            </li>
+
+            <!-- Logout -->
+            <li class="menu-item">
+              <a href="javascript:void(0);" class="menu-link" id="logout-btn">
+                <i class="menu-icon tf-icons ti ti-logout"></i>
+                <div data-i18n="Logout">Logout</div>
+              </a>
+            </li>
+          </ul>
+        </aside>
+        <!-- / Menu -->
+
+        <!-- Layout container -->
+        <div class="layout-page">
+          <!-- Navbar -->
+
+          <nav
+            class="layout-navbar container-xxl navbar navbar-expand-xl navbar-detached align-items-center bg-navbar-theme"
+            id="layout-navbar">
+            <div class="layout-menu-toggle navbar-nav align-items-xl-center me-3 me-xl-0 d-xl-none">
+              <a class="nav-item nav-link px-0 me-xl-4" href="javascript:void(0)">
+                <i class="ti ti-menu-2 ti-sm"></i>
+              </a>
+            </div>
+
+            <div class="navbar-nav-right d-flex align-items-center" id="navbar-collapse">
+              <!-- Search -->
+              <div class="navbar-nav align-items-center">
+                <div class="nav-item d-flex align-items-center">
+                  <i class="ti ti-search ti-lg me-2"></i>
+                  <input type="text" class="form-control border-0 shadow-none" placeholder="Search..." aria-label="Search..." />
+                </div>
+              </div>
+              <!-- /Search -->
+
+              <ul class="navbar-nav flex-row align-items-center ms-auto">
+                <!-- User -->
+                <li class="nav-item navbar-dropdown dropdown-user dropdown">
+                  <a class="nav-link dropdown-toggle hide-arrow" href="javascript:void(0);" data-bs-toggle="dropdown">
+                    <div class="d-flex">
+                      <div class="flex-shrink-0 me-3">
+                        <div class="avatar avatar-online">
+                          <img alt="User Avatar" class="w-px-40 h-auto rounded-circle user-avatar" />
+                        </div>
+                      </div>
+                      <div class="flex-grow-1">
+                        <span class="fw-semibold d-block user-name">Loading...</span>
+                        <small class="text-muted user-role">Loading...</small>
+                      </div>
+                    </div>
+                  </a>
+                  <ul class="dropdown-menu dropdown-menu-end">
+                    <li>
+                      <a class="dropdown-item" href="#">
+                        <div class="d-flex">
+                          <div class="flex-shrink-0 me-3">
+                            <div class="avatar avatar-online">
+                              <img alt="User Avatar" class="w-px-40 h-auto rounded-circle user-avatar" />
+                            </div>
+                          </div>
+                          <div class="flex-grow-1">
+                            <span class="fw-semibold d-block user-name">Loading...</span>
+                            <small class="text-muted user-role">Loading...</small>
+                          </div>
+                        </div>
+                      </a>
+                    </li>
+                    <li>
+                      <div class="dropdown-divider"></div>
+                    </li>
+                    <li>
+                      <a class="dropdown-item" href="my-profile.html">
+                        <i class="ti ti-user-check me-2 ti-sm"></i>
+                        <span class="align-middle">My Profile</span>
+                      </a>
+                    </li>
+                    <li>
+                      <a class="dropdown-item" href="security.html">
+                        <i class="ti ti-lock me-2 ti-sm"></i>
+                        <span class="align-middle">Security</span>
+                      </a>
+                    </li>
+                    <li>
+                      <a class="dropdown-item" href="notifications.html">
+                        <i class="ti ti-settings me-2 ti-sm"></i>
+                        <span class="align-middle">Settings</span>
+                      </a>
+                    </li>
+                    <li>
+                      <a class="dropdown-item" href="faq.html">
+                        <i class="ti ti-help me-2 ti-sm"></i>
+                        <span class="align-middle">FAQ</span>
+                      </a>
+                    </li>
+                    <li>
+                      <div class="dropdown-divider"></div>
+                    </li>
+                    <li>
+                      <a class="dropdown-item" href="javascript:void(0);" id="logout-btn">
+                        <i class="ti ti-logout me-2 ti-sm"></i>
+                        <span class="align-middle">Log Out</span>
+                      </a>
+                    </li>
+                  </ul>
+                </li>
+                <!--/ User -->
+              </ul>
+            </div>
+
+            <!-- Search Small Screens -->
+            <div class="navbar-search-wrapper search-input-wrapper d-none">
+              <input
+                type="text"
+                class="form-control search-input container-xxl border-0"
+                placeholder="Search..."
+                aria-label="Search..." />
+              <i class="ti ti-x ti-sm search-toggler cursor-pointer"></i>
+            </div>
+          </nav>
+
+          <!-- / Navbar -->
+
+          <!-- Content wrapper -->
+          <div class="content-wrapper">
+            <!-- Content -->
+
+            <div class="container-xxl flex-grow-1 container-p-y">
+              <h4 class="fw-bold py-3 mb-4">My Profile</h4>
+              <ul class="nav nav-pills flex-column flex-md-row mb-4">
+                <li class="nav-item">
+                  <a class="nav-link active d-flex align-items-center" href="my-profile.html">
+                    <i class="ti-xs ti ti-users me-1"></i> <span>My Profile</span>
+                  </a>
+                </li>
+                <li class="nav-item">
+                  <a class="nav-link d-flex align-items-center" href="security.html">
+                    <i class="ti-xs ti ti-lock me-1"></i> <span>Security</span>
+                  </a>
+                </li>
+                <li class="nav-item">
+                  <a class="nav-link d-flex align-items-center" href="notifications.html">
+                    <i class="ti-xs ti ti-bell me-1"></i> <span>Settings</span>
+                  </a>
+                </li>
+                <li class="nav-item">
+                  <a class="nav-link d-flex align-items-center" href="faq.html">
+                    <i class="ti-xs ti ti-help me-1"></i> <span>FAQ</span>
+                  </a>
+                </li>
+              </ul>
+              <div class="row">
+                <div class="col-md-12">
+                  <div class="card mb-4">
+                    <h5 class="card-header">Profile Details</h5>
+                    <div class="card-body">
+                      <form id="editUserForm" class="needs-validation" novalidate>
+                        <div class="row">
+                          <div class="col-md-6">
+                            <div class="mb-3">
+                              <label for="edit-username" class="form-label">Username</label>
+                              <input type="text" class="form-control" id="edit-username" name="username" disabled>
+                              <div class="form-text">Username cannot be changed</div>
+                            </div>
+                          </div>
+                          <div class="col-md-6">
+                            <div class="mb-3">
+                              <label for="edit-email" class="form-label">Email</label>
+                              <input type="email" class="form-control" id="edit-email" name="email" disabled>
+                              <div class="form-text">Email cannot be changed</div>
+                            </div>
+                          </div>
+                        </div>
+                        <div class="row">
+                          <div class="col-md-6">
+                            <div class="mb-3">
+                              <label for="edit-fullName" class="form-label">Full Name <span class="text-danger">*</span></label>
+                              <input type="text" class="form-control" id="edit-fullName" name="fullName" required>
+                              <div class="invalid-feedback">Please provide a valid full name.</div>
+                            </div>
+                          </div>
+                          <div class="col-md-6">
+                            <div class="mb-3">
+                              <label for="edit-phoneNumber" class="form-label">Phone Number</label>
+                              <input type="tel" class="form-control" id="edit-phoneNumber" name="phoneNumber" placeholder="+1234567890">
+                              <div class="form-text">Optional phone number</div>
+                            </div>
+                          </div>
+                        </div>
+                        <div class="row">
+                          <div class="col-md-6">
+                            <div class="mb-3">
+                              <label for="edit-dateOfBirth" class="form-label">Date of Birth</label>
+                              <input type="date" class="form-control" id="edit-dateOfBirth" name="dateOfBirth">
+                              <div class="form-text">Optional date of birth</div>
+                            </div>
+                          </div>
+                          <div class="col-md-6">
+                            <div class="mb-3">
+                              <label for="edit-profilePicture" class="form-label">Profile Picture</label>
+                              <input type="file" class="form-control" id="edit-profilePicture" name="profilePicture" accept="image/*">
+                              <div class="form-text">Upload new profile picture (optional)</div>
+                            </div>
+                          </div>
+                        </div>
+                        <div class="mb-3" id="edit-profilePicture-container" style="display: none;">
+                          <label class="form-label">Current Profile Picture</label>
+                          <div class="d-flex align-items-center">
+                            <img id="edit-profilePicture-preview" src="" alt="Profile Picture Preview" style="width: 80px; height: 80px; border-radius: 50%; object-fit: cover; border: 2px solid #e7e7ff;" />
+                            <div class="ms-3">
+                              <button type="button" class="btn btn-sm btn-outline-danger" id="remove-profile-picture">
+                                <i class="ti ti-trash me-1"></i>Remove Picture
+                              </button>
+                            </div>
+                          </div>
+                        </div>
+                        <div class="mb-3">
+                          <label for="edit-address" class="form-label">Address</label>
+                          <textarea class="form-control" id="edit-address" name="address" rows="2" placeholder="Enter full address"></textarea>
+                          <div class="form-text">Optional address information</div>
+                        </div>
+                        <div class="mb-3">
+                          <label for="edit-bio" class="form-label">Bio</label>
+                          <textarea class="form-control" id="edit-bio" name="bio" rows="3" placeholder="Tell us about yourself"></textarea>
+                          <div class="form-text">Optional biography or description</div>
+                        </div>
+                        <!-- Nếu muốn user tự sửa Email Verified thì bỏ comment bên dưới -->
+                        <!--
+                        <div class="row">
+                          <div class="col-md-6">
+                            <div class="mb-3 form-check">
+                              <input type="checkbox" class="form-check-input" id="edit-isVerified" name="isVerified">
+                              <label class="form-check-label" for="edit-isVerified">
+                                <i class="ti ti-check-circle me-1"></i>Email Verified
+                              </label>
+                              <div class="form-text">Mark if your email is verified</div>
+                            </div>
+                          </div>
+                        </div>
+                        -->
+                        <div class="mt-2">
+                          <button type="submit" class="btn btn-primary me-2">Save changes</button>
+                          <button type="reset" class="btn btn-label-secondary">Cancel</button>
+                        </div>
+                      </form>
+                    </div>
+                  </div>
+                  <div class="card">
+                    <h5 class="card-header">Delete Account</h5>
+                    <div class="card-body">
+                      <div class="mb-3 col-12 mb-0">
+                        <div class="alert alert-warning">
+                          <h5 class="alert-heading mb-1">Are you sure you want to delete your account?</h5>
+                          <p class="mb-0">Once you delete your account, there is no going back. Please be certain.</p>
+                        </div>
+                      </div>
+                      <form id="formAccountDeactivation" onsubmit="return false">
+                        <div class="form-check mb-4">
+                          <input
+                            class="form-check-input"
+                            type="checkbox"
+                            name="accountActivation"
+                            id="accountActivation" />
+                          <label class="form-check-label" for="accountActivation"
+                            >I confirm my account deactivation</label
+                          >
+                        </div>
+                        <button type="submit" class="btn btn-danger deactivate-account">Deactivate Account</button>
+                      </form>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <!-- / Content -->
+
+            <!-- Footer -->
+            <footer class="content-footer footer bg-footer-theme">
+              <div class="container-xxl">
+                <div
+                  class="footer-container d-flex align-items-center justify-content-between py-2 flex-md-row flex-column">
+                  <div>
+                    ©
+                    <script>
+                      document.write(new Date().getFullYear());
+                    </script>
+                    , made with ❤️ by <a href="https://pixinvent.com" target="_blank" class="fw-medium">Pixinvent</a>
+                  </div>
+                  <div class="d-none d-lg-inline-block">
+                    <a href="https://themeforest.net/licenses/standard" class="footer-link me-4" target="_blank"
+                      >License</a
+                    >
+                    <a href="https://1.envato.market/pixinvent_portfolio" target="_blank" class="footer-link me-4"
+                      >More Themes</a
+                    >
+
+                    <a
+                      href="https://demos.pixinvent.com/vuexy-html-admin-template/documentation/"
+                      target="_blank"
+                      class="footer-link me-4"
+                      >Documentation</a
+                    >
+
+                    <a href="https://pixinvent.ticksy.com/" target="_blank" class="footer-link d-none d-sm-inline-block"
+                      >Support</a
+                    >
+                  </div>
+                </div>
+              </div>
+            </footer>
+            <!-- / Footer -->
+
+            <div class="content-backdrop fade"></div>
+          </div>
+          <!-- Content wrapper -->
+        </div>
+        <!-- / Layout page -->
+      </div>
+
+      <!-- Overlay -->
+      <div class="layout-overlay layout-menu-toggle"></div>
+
+      <!-- Drag Target Area To SlideIn Menu On Small Screens -->
+      <div class="drag-target"></div>
+    </div>
+    <!-- / Layout wrapper -->
+
+    <!-- Modal Crop Image -->
+    <div class="modal fade" id="cropImageModal" tabindex="-1" aria-labelledby="cropImageModalLabel" aria-hidden="true">
+      <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h5 class="modal-title" id="cropImageModalLabel">Crop Profile Picture</h5>
+            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+          </div>
+          <div class="modal-body text-center">
+            <div style="max-width: 100%; max-height: 350px;">
+              <img id="cropper-image" src="" style="max-width: 100%; max-height: 350px; display: block; margin: 0 auto;" />
+            </div>
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+            <button type="button" class="btn btn-primary" id="cropImageBtn">Crop & Save</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Core JS -->
+    <!-- build:js assets/vendor/js/core.js -->
+
+    <script src="../../assets/vendor/libs/jquery/jquery.js"></script>
+    <script src="../../assets/vendor/libs/popper/popper.js"></script>
+    <script src="../../assets/vendor/js/bootstrap.js"></script>
+    <script src="../../assets/vendor/libs/node-waves/node-waves.js"></script>
+    <script src="../../assets/vendor/libs/perfect-scrollbar/perfect-scrollbar.js"></script>
+    <script src="../../assets/vendor/libs/hammer/hammer.js"></script>
+    <script src="../../assets/vendor/libs/i18n/i18n.js"></script>
+    <script src="../../assets/vendor/libs/typeahead-js/typeahead.js"></script>
+    <script src="../../assets/vendor/js/menu.js"></script>
+
+    <!-- endbuild -->
+
+    <!-- Vendors JS -->
+    <script src="../../assets/vendor/libs/select2/select2.js"></script>
+    <script src="../../assets/vendor/libs/@form-validation/umd/bundle/popular.min.js"></script>
+    <script src="../../assets/vendor/libs/@form-validation/umd/plugin-bootstrap5/index.min.js"></script>
+    <script src="../../assets/vendor/libs/@form-validation/umd/plugin-auto-focus/index.min.js"></script>
+    <script src="../../assets/vendor/libs/cleavejs/cleave.js"></script>
+    <script src="../../assets/vendor/libs/cleavejs/cleave-phone.js"></script>
+    <script src="../../assets/vendor/libs/sweetalert2/sweetalert2.js"></script>
+    <script src="../../assets/vendor/libs/toastr/toastr.js"></script>
+
+    <!-- Main JS -->
+    <script src="../../assets/js/main.js"></script>
+
+    <!-- Page JS -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.6.1/cropper.min.js"></script>
+    <script src="../../js/admin-auth.js"></script>
+
+    <!-- Page JS: Custom logic for Account Settings -->
+    <script>
+      $(document).ready(async function() {
+        if (window.adminAuth) {
+          await window.adminAuth.updateUserProfileDisplay();
+        }
+      });
+      
+      document.addEventListener('DOMContentLoaded', async function() {
+        // Helper: get token and user info from localStorage
+        function getToken() {
+          return localStorage.getItem('authToken');
+        }
+        function parseJwt(token) {
+          if (!token) return null;
+          try {
+            return JSON.parse(atob(token.split('.')[1].replace(/-/g, '+').replace(/_/g, '/')));
+          } catch { return null; }
+        }
+        function getCurrentUserInfo() {
+          const token = getToken();
+          return parseJwt(token);
+        }
+        function getAuthHeaders() {
+          const token = getToken();
+          return token ? { 'Authorization': 'Bearer ' + token, 'Content-Type': 'application/json' } : { 'Content-Type': 'application/json' };
+        }
+        // API base
+        const API_BASE = 'http://localhost:5050/api/User';
+        // Elements - reuse existing elements from admin-auth.js
+        const form = document.getElementById('editUserForm');
+
+        async function loadUserInfo() {
+          const user = getCurrentUserInfo();
+          if (!user) { toastr.error('User not found'); return; }
+          try {
+            const res = await fetch(`${API_BASE}/${user.id}`, { headers: getAuthHeaders() });
+            if (!res.ok) throw new Error('Failed to fetch user');
+            const data = await res.json();
+            if (!data.success || !data.data) throw new Error(data.message || 'User not found');
+            const u = data.data;
+            // Fill form
+            $('#edit-username').val(u.username || '').prop('disabled', true);
+            $('#edit-email').val(u.email || '').prop('disabled', true);
+            $('#edit-fullName').val(u.fullName || '');
+            $('#edit-phoneNumber').val(u.phoneNumber || '');
+            $('#edit-dateOfBirth').val(u.dateOfBirth ? u.dateOfBirth.split('T')[0] : '');
+            $('#edit-address').val(u.address || '');
+            $('#edit-bio').val(u.bio || '');
+            // Avatar
+            if (u.profilePicture) {
+              $('#edit-profilePicture-preview').attr('src', u.profilePicture);
+              $('#edit-profilePicture-container').show();
+            } else {
+              $('#edit-profilePicture-container').hide();
+            }
+            $('#edit-profilePicture').val('');
+            if (window.cropper) { window.cropper.destroy(); window.cropper = null; }
+            window._editProfilePictureBase64 = null;
+            window.selectedImageFile = null;
+            window._profilePictureRemoved = false;
+            // Lưu lại dữ liệu gốc để so sánh khi update
+            $('#editUserForm').data('original', {
+              fullName: u.fullName || '',
+              phoneNumber: u.phoneNumber || '',
+              dateOfBirth: u.dateOfBirth || '',
+              address: u.address || '',
+              bio: u.bio || '',
+              // Không lưu status, isVerified vì user không được sửa
+            });
+          } catch (e) { toastr.error(e.message || 'Failed to load user info'); }
+        }
+
+        // Submit update (bê logic từ handleUpdateUser, bỏ status/isVerified)
+        form.addEventListener('submit', async function(e) {
+          e.preventDefault();
+          const user = getCurrentUserInfo();
+          if (!user) { toastr.error('User not found'); return; }
+
+          const formData = new FormData(form);
+          let dateOfBirth = formData.get('dateOfBirth');
+          const data = {
+            fullName: formData.get('fullName')?.trim(),
+            phoneNumber: formData.get('phoneNumber')?.trim(),
+            address: formData.get('address')?.trim(),
+            bio: formData.get('bio')?.trim()
+          };
+          if (dateOfBirth && dateOfBirth.trim() !== '') {
+            const today = new Date();
+            if (dateOfBirth > today.toISOString().split('T')[0]) {
+              toastr.error('Date of birth cannot be in the future!');
+              return;
+            }
+            data.dateOfBirth = new Date(dateOfBirth).toISOString();
+          }
+          if (window._editProfilePictureBase64) {
+            data.profilePicture = window._editProfilePictureBase64;
+          } else if (window.selectedImageFile) {
+            toastr.warning('Please crop your profile picture before saving!');
+            return;
+          } else if (window._profilePictureRemoved) {
+            data.profilePicture = null;
+          }
+          // Xóa field rỗng/null
+          Object.keys(data).forEach(key => {
+            if (data[key] === null || data[key] === undefined || data[key] === '') {
+              delete data[key];
+            }
+          });
+          // So sánh thay đổi
+          const original = $('#editUserForm').data('original') || {};
+          let changed = false;
+          if (window._editProfilePictureBase64 || window.selectedImageFile || window._profilePictureRemoved) {
+            changed = true;
+          }
+          for (const key of Object.keys(data)) {
+            let oldVal = original[key] || '';
+            let newVal = data[key] || '';
+            if (key === 'dateOfBirth') {
+              if (oldVal) oldVal = oldVal.split('T')[0];
+              if (newVal) newVal = newVal.split('T')[0];
+            }
+            if (String(oldVal) !== String(newVal)) {
+              changed = true;
+              break;
+            }
+          }
+          if (!changed) {
+            toastr.warning('You have not changed any information!');
+            return;
+          }
+          if (data.phoneNumber && !/^[0-9]{10,11}$/.test(data.phoneNumber)) {
+            toastr.error('Phone number must be 10-11 digits and only numbers!');
+            return;
+          }
+          if (!data.fullName) {
+            toastr.error('Full name is required!');
+            return;
+          }
+          const token = getToken();
+          if (!token) {
+            toastr.error('Authentication required!');
+            return;
+          }
+          try {
+            const res = await fetch(`${API_BASE}/${user.id}`, {
+              method: 'PUT',
+              headers: getAuthHeaders(),
+              body: JSON.stringify(data)
+            });
+            const responseData = await res.json();
+            if (!res.ok) {
+              if (responseData.errors) {
+                Object.keys(responseData.errors).forEach(field => {
+                  const messages = responseData.errors[field];
+                  if (Array.isArray(messages)) {
+                    messages.forEach(msg => toastr.error(`${field}: ${msg}`));
+                  } else {
+                    toastr.error(`${field}: ${messages}`);
+                  }
+                });
+              } else if (responseData.message) {
+                toastr.error(responseData.message);
+              } else {
+                toastr.error('Failed to update profile!');
+              }
+              return;
+            }
+            toastr.success('Profile updated successfully!');
+            window._editProfilePictureBase64 = null;
+            window.selectedImageFile = null;
+            window._profilePictureRemoved = false;
+            if (window.cropper) { window.cropper.destroy(); window.cropper = null; }
+            loadUserInfo();
+          } catch (err) {
+            toastr.error(err.message || 'Update failed');
+          }
+        });
+
+        removeProfilePictureBtn.addEventListener('click', function() {
+          $('#edit-profilePicture-preview').attr('src', '');
+          $('#edit-profilePicture-container').hide();
+          $('#edit-profilePicture').val('');
+          window._editProfilePictureBase64 = null;
+          selectedImageFile = null;
+          window._profilePictureRemoved = true;
+          if (cropper) {
+            cropper.destroy();
+            cropper = null;
+          }
+          toastr.info('Profile picture removed!');
+        });
+
+        document.querySelector('.deactivate-account').addEventListener('click', async function(e) {
+          e.preventDefault();
+          if (!confirm('Are you sure you want to deactivate your account? This cannot be undone.')) return;
+          const user = getCurrentUserInfo();
+          if (!user) { toastr.error('User not found'); return; }
+          try {
+            const res = await fetch(`${API_BASE}/${user.id}`, {
+              method: 'DELETE',
+              headers: getAuthHeaders()
+            });
+            const data = await res.json();
+            if (res.ok && data.success) {
+              toastr.success('Account deactivated. Logging out...');
+              localStorage.removeItem('authToken');
+              setTimeout(() => { window.location.href = '/auth/login.html'; }, 1500);
+            } else {
+              toastr.error(data.message || 'Deactivation failed');
+            }
+          } catch (err) { toastr.error(err.message || 'Deactivation failed'); }
+        });
+
+        loadUserInfo();
+
+      });
+    </script>
+  </body>
+</html>
