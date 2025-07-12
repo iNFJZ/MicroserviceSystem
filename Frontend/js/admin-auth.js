@@ -114,10 +114,68 @@ class AdminAuth {
         const token = this.getAuthToken();
         return token ? { 'Authorization': `Bearer ${token}` } : {};
     }
+
+    getCurrentUserInfo() {
+        const token = this.getAuthToken();
+        if (!token) return null;
+        
+        try {
+            const payload = JSON.parse(atob(token.split('.')[1].replace(/-/g, '+').replace(/_/g, '/')));
+            return {
+                id: payload.nameid || payload.sub,
+                email: payload.email,
+                username: payload.username,
+                fullName: payload.fullName || payload.name,
+                role: payload.role || 'Admin'
+            };
+        } catch (e) {
+            console.error('Failed to parse JWT token:', e);
+            return null;
+        }
+    }
+
+    async updateUserProfileDisplay() {
+        const userInfo = this.getCurrentUserInfo();
+        if (!userInfo) {
+            $('.user-name').text('Guest');
+            $('.user-role').text('User');
+            $('.user-avatar').attr('src', generateLetterAvatarFromUser({email: 'guest@system.com'})).show();
+            return;
+        }
+
+        $('.user-name').text(userInfo.fullName || userInfo.username || 'Admin');
+        $('.user-role').text(userInfo.role || 'Admin');
+        $('.user-avatar').attr('src', generateLetterAvatarFromUser(userInfo)).show();
+
+        try {
+            const response = await fetch(`http://localhost:5050/api/User/${userInfo.id}`, {
+                headers: this.getAuthHeaders()
+            });
+            if (response.ok) {
+                const data = await response.json();
+                if (data.success && data.data) {
+                    const user = data.data;
+                    if (user.profilePicture && user.profilePicture.trim() !== '') {
+                        $('.user-avatar').attr('src', user.profilePicture).show();
+                    } else {
+                        $('.user-avatar').attr('src', generateLetterAvatarFromUser(user)).show();
+                    }
+                    if (user.fullName && user.fullName.trim() !== '') {
+                        $('.user-name').text(user.fullName);
+                    }
+                }
+            }
+        } catch (error) {
+            console.error('Failed to fetch user details:', error);
+        }
+    }
 }
 
-$(document).ready(() => {
+$(document).ready(async () => {
     window.adminAuth = new AdminAuth();
+    if (window.adminAuth) {
+        await window.adminAuth.updateUserProfileDisplay();
+    }
 });
 
 if (typeof module !== 'undefined' && module.exports) {
@@ -1135,3 +1193,253 @@ window.openRestoreUserModal = function(userId) {
     })
     .catch(() => toastr.error('Failed to load user information!'));
 };
+
+// Helper to generate SVG avatar as data URL
+function generateLetterAvatarFromUser(user) {
+    let letter = 'U';
+    if (user && user.email && user.email.trim() !== '') {
+        letter = user.email.trim().charAt(0).toUpperCase();
+    } else if (user && user.username && user.username.trim() !== '') {
+        letter = user.username.trim().charAt(0).toUpperCase();
+    } else if (user && user.fullName && user.fullName.trim() !== '') {
+        letter = user.fullName.trim().charAt(0).toUpperCase();
+    }
+    const color = '#'+((1<<24)*Math.random()|0).toString(16);
+    const svg = `<svg width='40' height='40' xmlns='http://www.w3.org/2000/svg'><circle cx='20' cy='20' r='20' fill='${color}'/><text x='50%' y='50%' text-anchor='middle' dy='.35em' font-family='Arial' font-size='20' fill='#fff'>${letter}</text></svg>`;
+    return 'data:image/svg+xml;base64,' + btoa(unescape(encodeURIComponent(svg)));
+}
+
+// Patch DataTables avatar rendering to use the same logic
+if (typeof window.getUserTableColumnDefs === 'function') {
+    const oldDefs = window.getUserTableColumnDefs;
+    window.getUserTableColumnDefs = function(isDeactive) {
+        const defs = oldDefs(isDeactive);
+        defs.forEach(def => {
+            if (def.targets === 0) {
+                def.render = function (data, type, full) {
+                    if (full.profilePicture && full.profilePicture.trim() !== '') {
+                        return `<img src="${full.profilePicture}" alt="avatar" class="rounded-circle" style="width:36px;height:36px;object-fit:cover;">`;
+                    } else {
+                        const svg = generateLetterAvatarFromUser(full);
+                        return `<img src="${svg}" alt="avatar" class="rounded-circle" style="width:36px;height:36px;object-fit:cover;">`;
+                    }
+                };
+            }
+        });
+        return defs;
+    };
+}
+
+// Profile page functionality
+async function loadUserProfile() {
+    try {
+        const userInfo = window.adminAuth.getCurrentUserInfo();
+        if (!userInfo) {
+            toastr.error('User information not found');
+            return;
+        }
+
+        const response = await fetch(`http://localhost:5050/api/User/${userInfo.id}`, {
+            headers: window.adminAuth.getAuthHeaders()
+        });
+
+        if (response.ok) {
+            const data = await response.json();
+            const user = data.data;
+
+            // Populate profile form
+            $('#profile-fullname').val(user.fullName || '');
+            $('#profile-email').val(user.email || '');
+            $('#profile-phone').val(user.phone || '');
+
+            // Set profile picture
+            if (user.profilePicture && user.profilePicture.trim() !== '') {
+                $('#profile-picture-preview').attr('src', user.profilePicture).show();
+            } else {
+                // Generate letter avatar
+                const letter = (user.fullName || user.username || 'U').charAt(0).toUpperCase();
+                const color = '#'+((1<<24)*Math.random()|0).toString(16);
+                const svg = `<svg width='100' height='100' xmlns='http://www.w3.org/2000/svg'><circle cx='50' cy='50' r='50' fill='${color}'/><text x='50%' y='50%' text-anchor='middle' dy='.35em' font-family='Arial' font-size='40' fill='#fff'>${letter}</text></svg>`;
+                const dataUrl = 'data:image/svg+xml;base64,' + btoa(unescape(encodeURIComponent(svg)));
+                $('#profile-picture-preview').attr('src', dataUrl).show();
+            }
+        } else {
+            toastr.error('Failed to load user profile');
+        }
+    } catch (error) {
+        console.error('Error loading user profile:', error);
+        toastr.error('Error loading user profile');
+    }
+}
+
+async function saveUserProfile(formData) {
+    try {
+        const userInfo = window.adminAuth.getCurrentUserInfo();
+        if (!userInfo) {
+            toastr.error('User information not found');
+            return false;
+        }
+
+        const response = await fetch(`http://localhost:5050/api/User/${userInfo.id}`, {
+            method: 'PUT',
+            headers: {
+                ...window.adminAuth.getAuthHeaders(),
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(formData)
+        });
+
+        if (response.ok) {
+            toastr.success('Profile updated successfully');
+            return true;
+        } else {
+            const errorData = await response.json();
+            toastr.error(errorData.message || 'Failed to update profile');
+            return false;
+        }
+    } catch (error) {
+        console.error('Error saving user profile:', error);
+        toastr.error('Error saving profile');
+        return false;
+    }
+}
+
+// Settings page functionality
+function loadUserSettings() {
+    try {
+        // Load settings from localStorage
+        const settings = JSON.parse(localStorage.getItem('userSettings') || '{}');
+        
+        $('#settings-notifications').prop('checked', settings.notifications !== false);
+        $('#settings-language').val(settings.language || 'en');
+        $('#settings-darkmode').prop('checked', settings.darkMode === true);
+        
+        toastr.success('Settings loaded');
+    } catch (error) {
+        console.error('Error loading settings:', error);
+        toastr.error('Error loading settings');
+    }
+}
+
+function saveUserSettings() {
+    try {
+        const settings = {
+            notifications: $('#settings-notifications').is(':checked'),
+            language: $('#settings-language').val(),
+            darkMode: $('#settings-darkmode').is(':checked')
+        };
+
+        localStorage.setItem('userSettings', JSON.stringify(settings));
+        toastr.success('Settings saved successfully');
+        
+        // Apply settings
+        if (settings.darkMode) {
+            $('html').addClass('dark-style');
+        } else {
+            $('html').removeClass('dark-style');
+        }
+        
+        return true;
+    } catch (error) {
+        console.error('Error saving settings:', error);
+        toastr.error('Error saving settings');
+        return false;
+    }
+}
+
+// Initialize page-specific functionality
+function initializePageFunctionality() {
+    const currentPage = window.location.pathname.split('/').pop();
+    
+    switch (currentPage) {
+        case 'pages-profile-user.html':
+            // Profile page
+            loadUserProfile();
+            
+            // Handle profile form submission
+            $('#profile-form').on('submit', async function(e) {
+                e.preventDefault();
+                
+                const formData = {
+                    fullName: $('#profile-fullname').val(),
+                    phone: $('#profile-phone').val()
+                };
+                
+                // Handle profile picture upload
+                const fileInput = $('#profile-picture-input')[0];
+                if (fileInput.files.length > 0) {
+                    const file = fileInput.files[0];
+                    const reader = new FileReader();
+                    reader.onload = async function(e) {
+                        formData.profilePicture = e.target.result;
+                        await saveUserProfile(formData);
+                    };
+                    reader.readAsDataURL(file);
+                } else {
+                    await saveUserProfile(formData);
+                }
+            });
+            
+            // Handle profile picture preview
+            $('#profile-picture-input').on('change', function() {
+                const file = this.files[0];
+                if (file) {
+                    const reader = new FileReader();
+                    reader.onload = function(e) {
+                        $('#profile-picture-preview').attr('src', e.target.result);
+                    };
+                    reader.readAsDataURL(file);
+                }
+            });
+            break;
+            
+        case 'my-profile.html':
+            loadUserProfile();
+            
+            $('#profile-form').on('submit', async function(e) {
+                e.preventDefault();
+                
+                const formData = {
+                    fullName: $('#profile-fullname').val(),
+                    phone: $('#profile-phone').val()
+                };
+                
+                const fileInput = $('#profile-picture-input')[0];
+                if (fileInput.files.length > 0) {
+                    const file = fileInput.files[0];
+                    const reader = new FileReader();
+                    reader.onload = async function(e) {
+                        formData.profilePicture = e.target.result;
+                        await saveUserProfile(formData);
+                    };
+                    reader.readAsDataURL(file);
+                } else {
+                    await saveUserProfile(formData);
+                }
+            });
+            
+            $('#profile-picture-input').on('change', function() {
+                const file = this.files[0];
+                if (file) {
+                    const reader = new FileReader();
+                    reader.onload = function(e) {
+                        $('#profile-picture-preview').attr('src', e.target.result);
+                    };
+                    reader.readAsDataURL(file);
+                }
+            });
+            break;
+            
+        case 'notifications.html':
+            loadUserSettings();
+            
+            $('#settings-form').on('submit', function(e) {
+                e.preventDefault();
+                saveUserSettings();
+            });
+            break;
+            
+        case 'faq.html':
+            break;
+    }
+}

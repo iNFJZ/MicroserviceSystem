@@ -1,0 +1,690 @@
+<!DOCTYPE html>
+
+<html
+  lang="en"
+  class="light-style layout-navbar-fixed layout-menu-fixed"
+  dir="ltr"
+  data-theme="theme-default"
+  data-assets-path="../../assets/"
+  data-template="vertical-menu-template">
+  <head>
+    <meta charset="utf-8" />
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1.0, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0" />
+
+    <title>Security - Admin Panel</title>
+
+    <meta name="description" content="" />
+
+    <!-- Favicon -->
+    <link rel="icon" type="image/x-icon" href="../../assets/img/favicon/favicon.ico" />
+
+    <!-- Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Public+Sans:ital,wght@0,300;0,400;0,500;0,600;0,700;1,300;1,400;1,500;1,600;1,700&ampdisplay=swap"
+      rel="stylesheet" />
+
+    <!-- Icons -->
+    <link rel="stylesheet" href="../../assets/vendor/fonts/fontawesome.css" />
+    <link rel="stylesheet" href="../../assets/vendor/fonts/tabler-icons.css" />
+    <link rel="stylesheet" href="../../assets/vendor/fonts/flag-icons.css" />
+
+    <!-- Core CSS -->
+    <link rel="stylesheet" href="../../assets/vendor/css/rtl/core.css" class="template-customizer-core-css" />
+    <link rel="stylesheet" href="../../assets/vendor/css/rtl/theme-default.css" class="template-customizer-theme-css" />
+    <link rel="stylesheet" href="../../assets/css/demo.css" />
+
+    <!-- Vendors CSS -->
+    <link rel="stylesheet" href="../../assets/vendor/libs/node-waves/node-waves.css" />
+    <link rel="stylesheet" href="../../assets/vendor/libs/perfect-scrollbar/perfect-scrollbar.css" />
+    <link rel="stylesheet" href="../../assets/vendor/libs/typeahead-js/typeahead.css" />
+    <link rel="stylesheet" href="../../assets/vendor/libs/select2/select2.css" />
+    <link rel="stylesheet" href="../../assets/vendor/libs/@form-validation/umd/styles/index.min.css" />
+
+    <!-- Page CSS -->
+    <link rel="stylesheet" href="../../assets/vendor/css/pages/page-account-settings.css" />
+
+    <!-- Helpers -->
+    <script src="../../assets/vendor/js/helpers.js"></script>
+    <!--! Template customizer & Theme config files MUST be included after core stylesheets and helpers.js in the <head> section -->
+    <!--? Template customizer: To hide customizer set displayCustomizer value false in config.js.  -->
+    <script src="../../assets/vendor/js/template-customizer.js"></script>
+    <!--? Config:  Mandatory theme config file contain global vars & default theme options, Set your preferred theme option in this file.  -->
+    <script src="../../assets/js/config.js"></script>
+  </head>
+
+  <body>
+    <!-- Layout wrapper -->
+    <div class="layout-wrapper layout-content-navbar">
+      <div class="layout-container">
+        <!-- Menu -->
+
+        <aside id="layout-menu" class="layout-menu menu-vertical menu bg-menu-theme">
+          <div class="app-brand demo">
+            <a href="index.html" class="app-brand-link">
+              <span class="app-brand-logo demo">
+                <svg width="32" height="22" viewBox="0 0 32 22" fill="none" xmlns="http://www.w3.org/2000/svg">
+                  <path fill-rule="evenodd" clip-rule="evenodd" d="M0.00172773 0V6.85398C0.00172773 6.85398 -0.133178 9.01207 1.98092 10.8388L13.6912 21.9964L19.7809 21.9181L18.8042 9.88248L16.4951 7.17289L9.23799 0H0.00172773Z" fill="#7367F0" />
+                  <path opacity="0.06" fill-rule="evenodd" clip-rule="evenodd" d="M7.69824 16.4364L12.5199 3.23696L16.5541 7.25596L7.69824 16.4364Z" fill="#161616" />
+                  <path opacity="0.06" fill-rule="evenodd" clip-rule="evenodd" d="M8.07751 15.9175L13.9419 4.63989L16.5849 7.28475L8.07751 15.9175Z" fill="#161616" />
+                  <path fill-rule="evenodd" clip-rule="evenodd" d="M7.77295 16.3566L23.6563 0H32V6.88383C32 6.88383 31.8262 9.17836 30.6591 10.4057L19.7824 22H13.6938L7.77295 16.3566Z" fill="#7367F0" />
+                </svg>
+              </span>
+              <span class="app-brand-text demo menu-text fw-bold">Vuexy</span>
+            </a>
+
+            <a href="javascript:void(0);" class="layout-menu-toggle menu-link text-large ms-auto">
+              <i class="ti menu-toggle-icon d-none d-xl-block ti-sm align-middle"></i>
+              <i class="ti ti-x d-block d-xl-none ti-sm align-middle"></i>
+            </a>
+          </div>
+
+          <div class="menu-inner-shadow"></div>
+
+          <ul class="menu-inner py-1">
+            <!-- Apps & Pages -->
+            <li class="menu-header small text-uppercase">
+              <span class="menu-header-text">Apps &amp; Pages</span>
+            </li>
+            
+            <!-- User Management -->
+            <li class="menu-item">
+              <a href="javascript:void(0);" class="menu-link menu-toggle">
+                <i class="menu-icon tf-icons ti ti-users"></i>
+                <div data-i18n="User Management">User Management</div>
+              </a>
+              <ul class="menu-sub">
+                <li class="menu-item">
+                  <a href="all-users.html" class="menu-link">
+                    <div data-i18n="All Users">All Users</div>
+                  </a>
+                </li>
+                <li class="menu-item">
+                  <a href="active-users.html" class="menu-link">
+                    <div data-i18n="Active Users">Active Users</div>
+                  </a>
+                </li>
+                <li class="menu-item">
+                  <a href="deactive-users.html" class="menu-link">
+                    <div data-i18n="Deactive Users">Deactive Users</div>
+                  </a>
+                </li>
+              </ul>
+            </li>
+
+            <!-- Logout -->
+            <li class="menu-item">
+              <a href="javascript:void(0);" class="menu-link" id="logout-btn">
+                <i class="menu-icon tf-icons ti ti-logout"></i>
+                <div data-i18n="Logout">Logout</div>
+              </a>
+            </li>
+          </ul>
+        </aside>
+        <!-- / Menu -->
+
+        <!-- Layout container -->
+        <div class="layout-page">
+          <!-- Navbar -->
+
+          <nav
+            class="layout-navbar container-xxl navbar navbar-expand-xl navbar-detached align-items-center bg-navbar-theme"
+            id="layout-navbar">
+            <div class="layout-menu-toggle navbar-nav align-items-xl-center me-3 me-xl-0 d-xl-none">
+              <a class="nav-item nav-link px-0 me-xl-4" href="javascript:void(0)">
+                <i class="ti ti-menu-2 ti-sm"></i>
+              </a>
+            </div>
+
+            <div class="navbar-nav-right d-flex align-items-center" id="navbar-collapse">
+              <!-- Search -->
+              <div class="navbar-nav align-items-center">
+                <div class="nav-item d-flex align-items-center">
+                  <i class="ti ti-search ti-lg me-2"></i>
+                  <input type="text" class="form-control border-0 shadow-none" placeholder="Search..." aria-label="Search..." />
+                </div>
+              </div>
+              <!-- /Search -->
+
+              <ul class="navbar-nav flex-row align-items-center ms-auto">
+                <!-- User -->
+                <li class="nav-item navbar-dropdown dropdown-user dropdown">
+                  <a class="nav-link dropdown-toggle hide-arrow" href="javascript:void(0);" data-bs-toggle="dropdown">
+                    <div class="d-flex">
+                      <div class="flex-shrink-0 me-3">
+                        <div class="avatar avatar-online">
+                          <img alt="User Avatar" class="w-px-40 h-auto rounded-circle user-avatar" />
+                        </div>
+                      </div>
+                      <div class="flex-grow-1">
+                        <span class="fw-semibold d-block user-name">Loading...</span>
+                        <small class="text-muted user-role">Loading...</small>
+                      </div>
+                    </div>
+                  </a>
+                  <ul class="dropdown-menu dropdown-menu-end">
+                    <li>
+                      <a class="dropdown-item" href="#">
+                        <div class="d-flex">
+                          <div class="flex-shrink-0 me-3">
+                            <div class="avatar avatar-online">
+                              <img alt="User Avatar" class="w-px-40 h-auto rounded-circle user-avatar" />
+                            </div>
+                          </div>
+                          <div class="flex-grow-1">
+                            <span class="fw-semibold d-block user-name">Loading...</span>
+                            <small class="text-muted user-role">Loading...</small>
+                          </div>
+                        </div>
+                      </a>
+                    </li>
+                    <li>
+                      <div class="dropdown-divider"></div>
+                    </li>
+                    <li>
+                      <a class="dropdown-item" href="my-profile.html">
+                        <i class="ti ti-user-check me-2 ti-sm"></i>
+                        <span class="align-middle">My Profile</span>
+                      </a>
+                    </li>
+                    <li>
+                      <a class="dropdown-item" href="notifications.html">
+                        <i class="ti ti-settings me-2 ti-sm"></i>
+                        <span class="align-middle">Settings</span>
+                      </a>
+                    </li>
+                    <li>
+                      <a class="dropdown-item" href="faq.html">
+                        <i class="ti ti-help me-2 ti-sm"></i>
+                        <span class="align-middle">FAQ</span>
+                      </a>
+                    </li>
+                    <li>
+                      <div class="dropdown-divider"></div>
+                    </li>
+                    <li>
+                      <a class="dropdown-item" href="javascript:void(0);" id="logout-btn">
+                        <i class="ti ti-logout me-2 ti-sm"></i>
+                        <span class="align-middle">Log Out</span>
+                      </a>
+                    </li>
+                  </ul>
+                </li>
+                <!--/ User -->
+              </ul>
+            </div>
+
+            <!-- Search Small Screens -->
+            <div class="navbar-search-wrapper search-input-wrapper d-none">
+              <input
+                type="text"
+                class="form-control search-input container-xxl border-0"
+                placeholder="Search..."
+                aria-label="Search..." />
+              <i class="ti ti-x ti-sm search-toggler cursor-pointer"></i>
+            </div>
+          </nav>
+
+          <!-- / Navbar -->
+
+          <!-- Content wrapper -->
+          <div class="content-wrapper">
+            <!-- Content -->
+
+            <div class="container-xxl flex-grow-1 container-p-y">
+              <div class="row">
+                <div class="col-md-12">
+                  <h4 class="fw-bold py-3 mb-4">Security</h4>
+                  <ul class="nav nav-pills flex-column flex-md-row mb-4">
+                    <li class="nav-item">
+                      <a class="nav-link d-flex align-items-center" href="my-profile.html">
+                        <i class="ti-xs ti ti-users me-1"></i> <span>My Profile</span>
+                      </a>
+                    </li>
+                    <li class="nav-item">
+                      <a class="nav-link active d-flex align-items-center" href="security.html">
+                        <i class="ti-xs ti ti-lock me-1"></i> <span>Security</span>
+                      </a>
+                    </li>
+                    <li class="nav-item">
+                      <a class="nav-link d-flex align-items-center" href="notifications.html">
+                        <i class="ti-xs ti ti-bell me-1"></i> <span>Settings</span>
+                      </a>
+                    </li>
+                    <li class="nav-item">
+                      <a class="nav-link d-flex align-items-center" href="faq.html">
+                        <i class="ti-xs ti ti-help me-1"></i> <span>FAQ</span>
+                      </a>
+                    </li>
+                  </ul>
+                  <!-- Change Password -->
+                  <div class="card mb-4">
+                    <h5 class="card-header">Change Password</h5>
+                    <div class="card-body">
+                      <form id="security-form">
+                        <div class="mb-3">
+                          <label for="old-password" class="form-label">Old Password</label>
+                          <input type="password" class="form-control" id="old-password" required />
+                            </div>
+                        <div class="mb-3">
+                          <label for="new-password" class="form-label">New Password</label>
+                          <input type="password" class="form-control" id="new-password" required />
+                          </div>
+                        <div class="mb-3">
+                          <label for="confirm-password" class="form-label">Confirm New Password</label>
+                          <input type="password" class="form-control" id="confirm-password" required />
+                        </div>
+                        <button type="submit" class="btn btn-primary">Change Password</button>
+                      </form>
+                    </div>
+                  </div>
+                  <!--/ Change Password -->
+
+                  <!-- Two-steps verification -->
+                  <div class="card mb-4">
+                    <h5 class="card-header">Two-steps verification</h5>
+                    <div class="card-body">
+                      <h5 class="mb-3">Two factor authentication is not enabled yet.</h5>
+                      <p class="w-75">
+                        Two-factor authentication adds an additional layer of security to your account by requiring more
+                        than just a password to log in.
+                        <a href="javascript:void(0);">Learn more.</a>
+                      </p>
+                      <button class="btn btn-primary mt-2" data-bs-toggle="modal" data-bs-target="#enableOTP">
+                        Enable two-factor authentication
+                      </button>
+                    </div>
+                  </div>
+                  <!-- Modal -->
+                  <!-- Enable OTP Modal -->
+                  <div class="modal fade" id="enableOTP" tabindex="-1" aria-hidden="true">
+                    <div class="modal-dialog modal-simple modal-enable-otp modal-dialog-centered">
+                      <div class="modal-content p-3 p-md-5">
+                        <div class="modal-body">
+                          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                          <div class="text-center mb-4">
+                            <h3 class="mb-2">Enable One Time Password</h3>
+                            <p>Verify Your Mobile Number for SMS</p>
+                          </div>
+                          <p>
+                            Enter your mobile phone number with country code and we will send you a verification code.
+                          </p>
+                          <form id="enableOTPForm" class="row g-3" onsubmit="return false">
+                            <div class="col-12">
+                              <label class="form-label" for="modalEnableOTPPhone">Phone Number</label>
+                              <div class="input-group">
+                                <span class="input-group-text">US (+1)</span>
+                                <input
+                                  type="text"
+                                  id="modalEnableOTPPhone"
+                                  name="modalEnableOTPPhone"
+                                  class="form-control phone-number-otp-mask"
+                                  placeholder="202 555 0111" />
+                              </div>
+                            </div>
+                            <div class="col-12">
+                              <button type="submit" class="btn btn-primary me-sm-3 me-1">Submit</button>
+                              <button
+                                type="reset"
+                                class="btn btn-label-secondary"
+                                data-bs-dismiss="modal"
+                                aria-label="Close">
+                                Cancel
+                              </button>
+                            </div>
+                          </form>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                  <!--/ Enable OTP Modal -->
+
+                  <!-- /Modal -->
+
+                  <!--/ Two-steps verification -->
+
+                  <!-- Create an API key -->
+                  <div class="card mb-4">
+                    <h5 class="card-header">Create an API key</h5>
+                    <div class="row">
+                      <div class="col-md-5 order-md-0 order-1">
+                        <div class="card-body">
+                          <form id="formAccountSettingsApiKey" method="POST" onsubmit="return false">
+                            <div class="row">
+                              <div class="mb-3 col-12">
+                                <label for="apiAccess" class="form-label"
+                                  >Choose the Api key type you want to create</label
+                                >
+                                <select id="apiAccess" class="select2 form-select">
+                                  <option value="">Choose Key Type</option>
+                                  <option value="full">Full Control</option>
+                                  <option value="modify">Modify</option>
+                                  <option value="read-execute">Read & Execute</option>
+                                  <option value="folders">List Folder Contents</option>
+                                  <option value="read">Read Only</option>
+                                  <option value="read-write">Read & Write</option>
+                                </select>
+                              </div>
+                              <div class="mb-3 col-12">
+                                <label for="apiKey" class="form-label">Name the API key</label>
+                                <input
+                                  type="text"
+                                  class="form-control"
+                                  id="apiKey"
+                                  name="apiKey"
+                                  placeholder="Server Key 1" />
+                              </div>
+                              <div class="col-12">
+                                <button type="submit" class="btn btn-primary me-2 d-grid w-100">Create Key</button>
+                              </div>
+                            </div>
+                          </form>
+                        </div>
+                      </div>
+                      <div class="col-md-7 order-md-1 order-0">
+                        <div class="text-center mt-4 mx-3 mx-md-0">
+                          <img
+                            src="../../assets/img/illustrations/girl-with-laptop.png"
+                            class="img-fluid"
+                            alt="Api Key Image"
+                            width="202" />
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                  <!--/ Create an API key -->
+
+                  <!-- API Key List & Access -->
+                  <div class="card mb-4">
+                    <h5 class="card-header">API Key List & Access</h5>
+                    <div class="card-body">
+                      <p>
+                        An API key is a simple encrypted string that identifies an application without any principal.
+                        They are useful for accessing public data anonymously, and are used to associate API requests
+                        with your project for quota and billing.
+                      </p>
+                      <div class="row">
+                        <div class="col-md-12">
+                          <div class="bg-lighter rounded p-3 mb-3 position-relative">
+                            <div class="dropdown api-key-actions">
+                              <a class="btn dropdown-toggle text-muted hide-arrow p-0" data-bs-toggle="dropdown"
+                                ><i class="ti ti-dots-vertical ti-sm"></i
+                              ></a>
+                              <div class="dropdown-menu dropdown-menu-end">
+                                <a href="javascript:;" class="dropdown-item"><i class="ti ti-pencil me-2"></i>Edit</a>
+                                <a href="javascript:;" class="dropdown-item"><i class="ti ti-trash me-2"></i>Delete</a>
+                              </div>
+                            </div>
+                            <div class="d-flex align-items-center mb-3">
+                              <h4 class="mb-0 me-3">Server Key 1</h4>
+                              <span class="badge bg-label-primary">Full Access</span>
+                            </div>
+                            <div class="d-flex align-items-center mb-3">
+                              <p class="me-2 mb-0 fw-medium">23eaf7f0-f4f7-495e-8b86-fad3261282ac</p>
+                              <span class="text-muted cursor-pointer"><i class="ti ti-copy ti-sm"></i></span>
+                            </div>
+                            <span class="text-muted">Created on 28 Apr 2021, 18:20 GTM+4:10</span>
+                          </div>
+                          <div class="bg-lighter rounded p-3 position-relative mb-3">
+                            <div class="dropdown api-key-actions">
+                              <a class="btn dropdown-toggle text-muted hide-arrow p-0" data-bs-toggle="dropdown"
+                                ><i class="ti ti-dots-vertical ti-sm"></i
+                              ></a>
+                              <div class="dropdown-menu dropdown-menu-end">
+                                <a href="javascript:;" class="dropdown-item"><i class="ti ti-pencil me-2"></i>Edit</a>
+                                <a href="javascript:;" class="dropdown-item"><i class="ti ti-trash me-2"></i>Delete</a>
+                              </div>
+                            </div>
+                            <div class="d-flex align-items-center mb-3">
+                              <h4 class="mb-0 me-3">Server Key 2</h4>
+                              <span class="badge bg-label-primary">Read Only</span>
+                            </div>
+                            <div class="d-flex align-items-center mb-3">
+                              <p class="me-2 mb-0 fw-medium">bb98e571-a2e2-4de8-90a9-2e231b5e99</p>
+                              <span class="text-muted cursor-pointer"><i class="ti ti-copy ti-sm"></i></span>
+                            </div>
+                            <span class="text-muted">Created on 12 Feb 2021, 10:30 GTM+2:30</span>
+                          </div>
+                          <div class="bg-lighter rounded p-3 position-relative">
+                            <div class="dropdown api-key-actions">
+                              <a class="btn dropdown-toggle text-muted hide-arrow p-0" data-bs-toggle="dropdown"
+                                ><i class="ti ti-dots-vertical ti-sm"></i
+                              ></a>
+                              <div class="dropdown-menu dropdown-menu-end">
+                                <a href="javascript:;" class="dropdown-item"><i class="ti ti-pencil me-2"></i>Edit</a>
+                                <a href="javascript:;" class="dropdown-item"><i class="ti ti-trash me-2"></i>Delete</a>
+                              </div>
+                            </div>
+                            <div class="d-flex align-items-center mb-3">
+                              <h4 class="mb-0 me-3">Server Key 3</h4>
+                              <span class="badge bg-label-primary">Full Access</span>
+                            </div>
+                            <div class="d-flex align-items-center mb-3">
+                              <p class="me-2 mb-0 fw-medium">2e915e59-3105-47f2-8838-6e46bf83b711</p>
+                              <span class="text-muted cursor-pointer"><i class="ti ti-copy ti-sm"></i></span>
+                            </div>
+                            <span class="text-muted">Created on 28 Dec 2020, 12:21 GTM+4:10</span>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                  <!--/ API Key List & Access -->
+
+                  <!-- Recent Devices -->
+                  <div class="card mb-4">
+                    <h5 class="card-header">Recent Devices</h5>
+                    <div class="table-responsive">
+                      <table class="table border-top">
+                        <thead class="table-light">
+                          <tr>
+                            <th class="text-truncate">Browser</th>
+                            <th class="text-truncate">Device</th>
+                            <th class="text-truncate">Location</th>
+                            <th class="text-truncate">Recent Activities</th>
+                          </tr>
+                        </thead>
+                        <tbody class="table-border-bottom-0">
+                          <tr>
+                            <td class="text-truncate">
+                              <i class="ti ti-brand-windows text-info me-2 ti-sm"></i>
+                              <span class="fw-medium">Chrome on Windows</span>
+                            </td>
+                            <td class="text-truncate">HP Spectre 360</td>
+                            <td class="text-truncate">Switzerland</td>
+                            <td class="text-truncate">10, July 2021 20:07</td>
+                          </tr>
+                          <tr>
+                            <td class="text-truncate">
+                              <i class="ti ti-device-mobile text-danger me-2 ti-sm"></i>
+                              <span class="fw-medium">Chrome on iPhone</span>
+                            </td>
+                            <td class="text-truncate">iPhone 12x</td>
+                            <td class="text-truncate">Australia</td>
+                            <td class="text-truncate">13, July 2021 10:10</td>
+                          </tr>
+                          <tr>
+                            <td class="text-truncate">
+                              <i class="ti ti-brand-android text-success me-2 ti-sm"></i>
+                              <span class="fw-medium">Chrome on Android</span>
+                            </td>
+                            <td class="text-truncate">Oneplus 9 Pro</td>
+                            <td class="text-truncate">Dubai</td>
+                            <td class="text-truncate">14, July 2021 15:15</td>
+                          </tr>
+                          <tr>
+                            <td class="text-truncate">
+                              <i class="ti ti-brand-apple me-2 ti-sm"></i>
+                              <span class="fw-medium">Chrome on MacOS</span>
+                            </td>
+                            <td class="text-truncate">Apple iMac</td>
+                            <td class="text-truncate">India</td>
+                            <td class="text-truncate">16, July 2021 16:17</td>
+                          </tr>
+                          <tr>
+                            <td class="text-truncate">
+                              <i class="ti ti-brand-windows text-info me-2 ti-sm"></i>
+                              <span class="fw-medium">Chrome on Windows</span>
+                            </td>
+                            <td class="text-truncate">HP Spectre 360</td>
+                            <td class="text-truncate">Switzerland</td>
+                            <td class="text-truncate">20, July 2021 21:01</td>
+                          </tr>
+                          <tr>
+                            <td class="text-truncate">
+                              <i class="ti ti-brand-android text-success me-2 ti-sm"></i>
+                              <span class="fw-medium">Chrome on Android</span>
+                            </td>
+                            <td class="text-truncate">Oneplus 9 Pro</td>
+                            <td class="text-truncate">Dubai</td>
+                            <td class="text-truncate">21, July 2021 12:22</td>
+                          </tr>
+                        </tbody>
+                      </table>
+                    </div>
+                  </div>
+                  <!--/ Recent Devices -->
+                </div>
+              </div>
+            </div>
+            <!-- / Content -->
+
+            <!-- Footer -->
+            <footer class="content-footer footer bg-footer-theme">
+              <div class="container-xxl">
+                <div
+                  class="footer-container d-flex align-items-center justify-content-between py-2 flex-md-row flex-column">
+                  <div>
+                    ©
+                    <script>
+                      document.write(new Date().getFullYear());
+                    </script>
+                    , made with ❤️ by <a href="https://pixinvent.com" target="_blank" class="fw-medium">Pixinvent</a>
+                  </div>
+                  <div class="d-none d-lg-inline-block">
+                    <a href="https://themeforest.net/licenses/standard" class="footer-link me-4" target="_blank"
+                      >License</a
+                    >
+                    <a href="https://1.envato.market/pixinvent_portfolio" target="_blank" class="footer-link me-4"
+                      >More Themes</a
+                    >
+
+                    <a
+                      href="https://demos.pixinvent.com/vuexy-html-admin-template/documentation/"
+                      target="_blank"
+                      class="footer-link me-4"
+                      >Documentation</a
+                    >
+
+                    <a href="https://pixinvent.ticksy.com/" target="_blank" class="footer-link d-none d-sm-inline-block"
+                      >Support</a
+                    >
+                  </div>
+                </div>
+              </div>
+            </footer>
+            <!-- / Footer -->
+
+            <div class="content-backdrop fade"></div>
+          </div>
+          <!-- Content wrapper -->
+        </div>
+        <!-- / Layout page -->
+      </div>
+
+      <!-- Overlay -->
+      <div class="layout-overlay layout-menu-toggle"></div>
+
+      <!-- Drag Target Area To SlideIn Menu On Small Screens -->
+      <div class="drag-target"></div>
+    </div>
+    <!-- / Layout wrapper -->
+
+    <!-- Core JS -->
+    <!-- build:js assets/vendor/js/core.js -->
+
+    <script src="../../assets/vendor/libs/jquery/jquery.js"></script>
+    <script src="../../assets/vendor/libs/popper/popper.js"></script>
+    <script src="../../assets/vendor/js/bootstrap.js"></script>
+    <script src="../../assets/vendor/libs/node-waves/node-waves.js"></script>
+    <script src="../../assets/vendor/libs/perfect-scrollbar/perfect-scrollbar.js"></script>
+    <script src="../../assets/vendor/libs/hammer/hammer.js"></script>
+    <script src="../../assets/vendor/libs/i18n/i18n.js"></script>
+    <script src="../../assets/vendor/libs/typeahead-js/typeahead.js"></script>
+    <script src="../../assets/vendor/js/menu.js"></script>
+
+    <!-- endbuild -->
+
+    <!-- Vendors JS -->
+    <script src="../../assets/vendor/libs/select2/select2.js"></script>
+    <script src="../../assets/vendor/libs/@form-validation/umd/bundle/popular.min.js"></script>
+    <script src="../../assets/vendor/libs/@form-validation/umd/plugin-bootstrap5/index.min.js"></script>
+    <script src="../../assets/vendor/libs/@form-validation/umd/plugin-auto-focus/index.min.js"></script>
+    <script src="../../assets/vendor/libs/cleavejs/cleave.js"></script>
+    <script src="../../assets/vendor/libs/cleavejs/cleave-phone.js"></script>
+
+    <!-- Main JS -->
+    <script src="../../assets/js/main.js"></script>
+
+    <!-- Page JS -->
+    <script src="../../js/admin-auth.js"></script>
+    <script src="../../assets/js/pages-account-settings-security.js"></script>
+    <script src="../../assets/js/modal-enable-otp.js"></script>
+        <script>
+      $(document).ready(async function() {
+        if (window.adminAuth) {
+          await window.adminAuth.updateUserProfileDisplay();
+        }
+      });
+    </script>
+    <script>
+      document.addEventListener('DOMContentLoaded', function() {
+      document.getElementById('security-form').addEventListener('submit', async function(e) {
+        e.preventDefault();
+        const oldPwd = document.getElementById('old-password').value.trim();
+        const newPwd = document.getElementById('new-password').value.trim();
+        const confirmPwd = document.getElementById('confirm-password').value.trim();
+        if (!oldPwd || !newPwd || !confirmPwd) {
+          toastr.error('All fields are required');
+          return;
+        }
+        if (newPwd.length < 6) {
+          toastr.error('New password must be at least 6 characters');
+          return;
+        }
+        if (newPwd !== confirmPwd) {
+          toastr.error('Passwords do not match');
+          return;
+        }
+        try {
+          const token = localStorage.getItem('authToken');
+          const res = await fetch('http://localhost:5001/api/Auth/change-password', {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+              'Authorization': 'Bearer ' + token
+            },
+            body: JSON.stringify({
+              oldPassword: oldPwd,
+              newPassword: newPwd,
+              confirmPassword: confirmPwd
+            })
+          });
+          const data = await res.json();
+          if (res.ok) {
+            toastr.success('Password changed successfully');
+            document.getElementById('security-form').reset();
+          } else {
+            toastr.error(data.message || 'Change password failed');
+          }
+        } catch (err) {
+          toastr.error('Change password failed');
+        }
+      });
+    });
+    </script>
+  </body>
+</html>

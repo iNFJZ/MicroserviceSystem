@@ -13,7 +13,7 @@
       name="viewport"
       content="width=device-width, initial-scale=1.0, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0" />
 
-    <title>Dashboard - Admin Panel</title>
+    <title>Settings - Admin Panel</title>
 
     <meta name="description" content="" />
 
@@ -41,11 +41,7 @@
     <link rel="stylesheet" href="../../assets/vendor/libs/node-waves/node-waves.css" />
     <link rel="stylesheet" href="../../assets/vendor/libs/perfect-scrollbar/perfect-scrollbar.css" />
     <link rel="stylesheet" href="../../assets/vendor/libs/typeahead-js/typeahead.css" />
-    <link rel="stylesheet" href="../../assets/vendor/libs/datatables-bs5/datatables.bootstrap5.css" />
-    <link rel="stylesheet" href="../../assets/vendor/libs/datatables-responsive-bs5/responsive.bootstrap5.css" />
-    <link rel="stylesheet" href="../../assets/vendor/libs/datatables-buttons-bs5/buttons.bootstrap5.css" />
     <link rel="stylesheet" href="../../assets/vendor/libs/select2/select2.css" />
-    <link rel="stylesheet" href="../../assets/vendor/libs/toastr/toastr.css" />
 
     <!-- Page CSS -->
 
@@ -87,45 +83,19 @@
           <div class="menu-inner-shadow"></div>
 
           <ul class="menu-inner py-1">
-            <!-- Dashboards -->
-            <!-- <li class="menu-item">
-              <a href="javascript:void(0);" class="menu-link menu-toggle">
-                <i class="menu-icon tf-icons ti ti-smart-home"></i>
-                <div data-i18n="Dashboards">Dashboards</div>
-                <div class="badge bg-primary rounded-pill ms-auto">3</div>
-              </a>
-              <ul class="menu-sub">
-                <li class="menu-item">
-                  <a href="index.html" class="menu-link">
-                    <div data-i18n="Analytics">Analytics</div>
-                  </a>
-                </li>
-                <li class="menu-item">
-                  <a href="dashboards-crm.html" class="menu-link">
-                    <div data-i18n="CRM">CRM</div>
-                  </a>
-                </li>
-                <li class="menu-item">
-                  <a href="dashboards-ecommerce.html" class="menu-link">
-                    <div data-i18n="eCommerce">eCommerce</div>
-                  </a>
-                </li>
-              </ul>
-            </li> -->
-
             <!-- Apps & Pages -->
             <li class="menu-header small text-uppercase">
               <span class="menu-header-text">Apps &amp; Pages</span>
             </li>
             
             <!-- User Management -->
-            <li class="menu-item active">
+            <li class="menu-item">
               <a href="javascript:void(0);" class="menu-link menu-toggle">
                 <i class="menu-icon tf-icons ti ti-users"></i>
                 <div data-i18n="User Management">User Management</div>
               </a>
               <ul class="menu-sub">
-                <li class="menu-item active">
+                <li class="menu-item">
                   <a href="all-users.html" class="menu-link">
                     <div data-i18n="All Users">All Users</div>
                   </a>
@@ -158,7 +128,9 @@
         <div class="layout-page">
           <!-- Navbar -->
 
-          <nav class="layout-navbar container-xxl navbar navbar-expand-xl navbar-detached align-items-center bg-navbar-theme" id="layout-navbar">
+          <nav
+            class="layout-navbar container-xxl navbar navbar-expand-xl navbar-detached align-items-center bg-navbar-theme"
+            id="layout-navbar">
             <div class="layout-menu-toggle navbar-nav align-items-xl-center me-3 me-xl-0 d-xl-none">
               <a class="nav-item nav-link px-0 me-xl-4" href="javascript:void(0)">
                 <i class="ti ti-menu-2 ti-sm"></i>
@@ -242,17 +214,17 @@
                 <!--/ User -->
               </ul>
             </div>
-          </nav>
 
-          <!-- Search Small Screens -->
-          <div class="navbar-search-wrapper search-input-wrapper d-none">
-            <input
-              type="text"
-              class="form-control search-input container-xxl border-0"
-              placeholder="Search..."
-              aria-label="Search..." />
-            <i class="ti ti-x ti-sm search-toggler cursor-pointer"></i>
-          </div>
+            <!-- Search Small Screens -->
+            <div class="navbar-search-wrapper search-input-wrapper d-none">
+              <input
+                type="text"
+                class="form-control search-input container-xxl border-0"
+                placeholder="Search..."
+                aria-label="Search..." />
+              <i class="ti ti-x ti-sm search-toggler cursor-pointer"></i>
+            </div>
+          </nav>
 
           <!-- / Navbar -->
 
@@ -261,122 +233,58 @@
             <!-- Content -->
 
             <div class="container-xxl flex-grow-1 container-p-y">
-              <h4 class="py-3 mb-4">
-                <nav aria-label="breadcrumb">
-                  <ol class="breadcrumb">
-                    <li class="breadcrumb-item active" aria-current="page">Dashboard</li>
-                  </ol>
-                </nav>
-              </h4>
-              <!-- User Management Cards -->
-              <div class="row g-4 mb-4">
-                <div class="col-sm-6 col-xl-3">
-                  <div class="card">
-                    <div class="card-body">
-                      <div class="d-flex align-items-start justify-content-between">
-                        <div class="content-left">
-                          <span>Total Users</span>
-                          <div class="d-flex align-items-center my-2">
-                            <h3 class="mb-0 me-2" id="total-users">0</h3>
-                          </div>
-                          <p class="mb-0">All users in system</p>
-                        </div>
-                        <span class="badge bg-label-primary rounded p-2">
-                          <i class="ti ti-users ti-sm"></i>
-                        </span>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-                <div class="col-sm-6 col-xl-3">
-                  <div class="card">
-                    <div class="card-body">
-                      <div class="d-flex align-items-start justify-content-between">
-                        <div class="content-left">
-                          <span>Active Users</span>
-                          <div class="d-flex align-items-center my-2">
-                            <h3 class="mb-0 me-2" id="active-users">0</h3>
-                          </div>
-                          <p class="mb-0">Currently active</p>
-                        </div>
-                        <span class="badge bg-label-success rounded p-2">
-                          <i class="ti ti-user-check ti-sm"></i>
-                        </span>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-                <div class="col-sm-6 col-xl-3">
-                  <div class="card">
-                    <div class="card-body">
-                      <div class="d-flex align-items-start justify-content-between">
-                        <div class="content-left">
-                          <span>Inactive Users</span>
-                          <div class="d-flex align-items-center my-2">
-                            <h3 class="mb-0 me-2" id="inactive-users">0</h3>
-                          </div>
-                          <p class="mb-0">Currently inactive</p>
-                        </div>
-                        <span class="badge bg-label-secondary rounded p-2">
-                          <i class="ti ti-user-exclamation ti-sm"></i>
-                        </span>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-                <div class="col-sm-6 col-xl-3">
-                  <div class="card">
-                    <div class="card-body">
-                      <div class="d-flex align-items-start justify-content-between">
-                        <div class="content-left">
-                          <span>Banned Users</span>
-                          <div class="d-flex align-items-center my-2">
-                            <h3 class="mb-0 me-2" id="banned-users">0</h3>
-                          </div>
-                          <p class="mb-0">Currently banned</p>
-                        </div>
-                        <span class="badge bg-label-danger rounded p-2">
-                          <i class="ti ti-user-x ti-sm"></i>
-                        </span>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              </div>
-              <!-- Quick Actions -->
               <div class="row">
-                <div class="col-12">
-                  <div class="card">
-                    <div class="card-header">
-                      <h5 class="card-title">Quick Actions</h5>
-                    </div>
+                <div class="col-md-12">
+                  <h4 class="fw-bold py-3 mb-4">Settings</h4>
+                  <ul class="nav nav-pills flex-column flex-md-row mb-4">
+                    <li class="nav-item">
+                      <a class="nav-link d-flex align-items-center" href="my-profile.html">
+                        <i class="ti-xs ti ti-users me-1"></i> <span>My Profile</span>
+                      </a>
+                    </li>
+                    <li class="nav-item">
+                      <a class="nav-link d-flex align-items-center" href="security.html">
+                        <i class="ti-xs ti ti-lock me-1"></i> <span>Security</span>
+                      </a>
+                    </li>
+                    <li class="nav-item">
+                      <a class="nav-link active d-flex align-items-center" href="notifications.html">
+                        <i class="ti-xs ti ti-bell me-1"></i> <span>Settings</span>
+                      </a>
+                    </li>
+                    <li class="nav-item">
+                      <a class="nav-link d-flex align-items-center" href="faq.html">
+                        <i class="ti-xs ti ti-help me-1"></i> <span>FAQ</span>
+                      </a>
+                    </li>
+                  </ul>
+                  <div class="card mb-4">
+                    <h5 class="card-header">Notification & Preferences</h5>
                     <div class="card-body">
-                      <div class="row">
-                        <div class="col-md-3 mb-3">
-                          <a href="active-users.html" class="btn btn-primary w-100">
-                            <i class="ti ti-users me-2"></i>
-                            Manage Active Users
-                          </a>
+                      <form id="settings-form">
+                        <div class="form-check mb-3">
+                          <input class="form-check-input" type="checkbox" id="settings-notifications" />
+                          <label class="form-check-label" for="settings-notifications">Enable Email Notifications</label>
                         </div>
-                        <div class="col-md-3 mb-3">
-                          <a href="deactive-users.html" class="btn btn-warning w-100">
-                            <i class="ti ti-user-x me-2"></i>
-                            View Deactive Users
-                          </a>
+                        <div class="form-check mb-3">
+                          <input class="form-check-input" type="checkbox" id="settings-push" />
+                          <label class="form-check-label" for="settings-push">Enable Push Notifications</label>
                         </div>
-                        <div class="col-md-3 mb-3">
-                          <a href="index.html" class="btn btn-info w-100">
-                            <i class="ti ti-download me-2"></i>
-                            Export All Users
-                          </a>
+                        <div class="mb-3">
+                          <label for="settings-language" class="form-label">Language</label>
+                          <select id="settings-language" class="form-select">
+                            <option value="en">English</option>
+                            <option value="fr">French</option>
+                            <option value="de">German</option>
+                            <option value="pt">Portuguese</option>
+                          </select>
                         </div>
-                        <div class="col-md-3 mb-3">
-                          <a href="active-users.html#add" class="btn btn-success w-100">
-                            <i class="ti ti-plus me-2"></i>
-                            Add New User
-                          </a>
+                        <div class="form-check mb-3">
+                          <input class="form-check-input" type="checkbox" id="settings-darkmode" />
+                          <label class="form-check-label" for="settings-darkmode">Enable Dark Mode</label>
                         </div>
-                      </div>
+                        <button type="submit" class="btn btn-primary">Save Settings</button>
+                      </form>
                     </div>
                   </div>
                 </div>
@@ -386,25 +294,35 @@
 
             <!-- Footer -->
             <footer class="content-footer footer bg-footer-theme">
-              <div class="container-xxl d-flex flex-wrap justify-content-between py-2 flex-md-row flex-column">
-                <div class="mb-2 mb-md-0">
-                  ©
-                  <script>
-                    document.write(new Date().getFullYear());
-                  </script>
-                  , made with ❤️ by
-                  <a href="https://themeselection.com" target="_blank" class="footer-link fw-bolder">ThemeSelection</a>
-                </div>
-                <div>
-                  <a href="https://themeselection.com/license/" class="footer-link me-4" target="_blank">License</a>
-                  <a href="javascript:void(0)" class="footer-link me-4">More Themes</a>
+              <div class="container-xxl">
+                <div
+                  class="footer-container d-flex align-items-center justify-content-between py-2 flex-md-row flex-column">
+                  <div>
+                    ©
+                    <script>
+                      document.write(new Date().getFullYear());
+                    </script>
+                    , made with ❤️ by <a href="https://pixinvent.com" target="_blank" class="fw-medium">Pixinvent</a>
+                  </div>
+                  <div class="d-none d-lg-inline-block">
+                    <a href="https://themeforest.net/licenses/standard" class="footer-link me-4" target="_blank"
+                      >License</a
+                    >
+                    <a href="https://1.envato.market/pixinvent_portfolio" target="_blank" class="footer-link me-4"
+                      >More Themes</a
+                    >
 
-                  <a
-                    href="https://themeselection.com/demo/bootstrap-admin-template-vuexy/documentation/"
-                    target="_blank"
-                    class="footer-link me-4">Documentation</a>
+                    <a
+                      href="https://demos.pixinvent.com/vuexy-html-admin-template/documentation/"
+                      target="_blank"
+                      class="footer-link me-4"
+                      >Documentation</a
+                    >
 
-                  <a href="javascript:void(0)" class="footer-link">Support</a>
+                    <a href="https://pixinvent.ticksy.com/" target="_blank" class="footer-link d-none d-sm-inline-block"
+                      >Support</a
+                    >
+                  </div>
                 </div>
               </div>
             </footer>
@@ -427,29 +345,29 @@
 
     <!-- Core JS -->
     <!-- build:js assets/vendor/js/core.js -->
+
     <script src="../../assets/vendor/libs/jquery/jquery.js"></script>
     <script src="../../assets/vendor/libs/popper/popper.js"></script>
     <script src="../../assets/vendor/js/bootstrap.js"></script>
-    <script src="../../assets/vendor/libs/perfect-scrollbar/perfect-scrollbar.js"></script>
     <script src="../../assets/vendor/libs/node-waves/node-waves.js"></script>
+    <script src="../../assets/vendor/libs/perfect-scrollbar/perfect-scrollbar.js"></script>
     <script src="../../assets/vendor/libs/hammer/hammer.js"></script>
     <script src="../../assets/vendor/libs/i18n/i18n.js"></script>
     <script src="../../assets/vendor/libs/typeahead-js/typeahead.js"></script>
     <script src="../../assets/vendor/js/menu.js"></script>
+
     <!-- endbuild -->
 
     <!-- Vendors JS -->
-    <script src="../../assets/vendor/libs/datatables-bs5/datatables-bootstrap5.js"></script>
     <script src="../../assets/vendor/libs/select2/select2.js"></script>
-    <script src="../../assets/vendor/libs/toastr/toastr.js"></script>
-    <script src="../../assets/vendor/libs/@form-validation/umd/bundle/popular.min.js"></script>
 
     <!-- Main JS -->
     <script src="../../assets/js/main.js"></script>
 
     <!-- Page JS -->
     <script src="../../js/admin-auth.js"></script>
-    <script>updateUserStatsDashboard();</script>
+
+    <!-- Page JS -->
     <script>
       $(document).ready(async function() {
         if (window.adminAuth) {
@@ -457,5 +375,36 @@
         }
       });
     </script>
+    <script>
+    document.addEventListener('DOMContentLoaded', function() {
+      function loadUserSettings() {
+        const settings = JSON.parse(localStorage.getItem('userSettings') || '{}');
+        document.getElementById('settings-notifications').checked = settings.notifications !== false;
+        document.getElementById('settings-push').checked = settings.push === true;
+        document.getElementById('settings-language').value = settings.language || 'en';
+        document.getElementById('settings-darkmode').checked = settings.darkMode === true;
+      }
+      function saveUserSettings() {
+        const settings = {
+          notifications: document.getElementById('settings-notifications').checked,
+          push: document.getElementById('settings-push').checked,
+          language: document.getElementById('settings-language').value,
+          darkMode: document.getElementById('settings-darkmode').checked
+        };
+        localStorage.setItem('userSettings', JSON.stringify(settings));
+        toastr.success('Settings saved successfully');
+        if (settings.darkMode) {
+          document.documentElement.classList.add('dark-style');
+        } else {
+          document.documentElement.classList.remove('dark-style');
+        }
+      }
+      document.getElementById('settings-form').addEventListener('submit', function(e) {
+        e.preventDefault();
+        saveUserSettings();
+      });
+      loadUserSettings();
+    });
+    </script>
   </body>
-</html> 
+</html>
