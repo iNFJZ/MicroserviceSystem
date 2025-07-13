@@ -49,7 +49,9 @@
 
     <!-- Page CSS -->
     <!-- CropperJS CSS CDN -->
-    <link href="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.6.1/cropper.min.css" rel="stylesheet" />
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.13/cropper.min.css" rel="stylesheet" />
+    <!-- Custom Cropper CSS -->
+    <link rel="stylesheet" href="../../css/cropper.css" />
 
     <!-- Helpers -->
     <script src="../../assets/vendor/js/helpers.js"></script>
@@ -107,21 +109,6 @@
           <div class="menu-inner-shadow"></div>
 
           <ul class="menu-inner py-1">
-            <!-- Dashboards -->
-            <!-- <li class="menu-item">
-              <a href="javascript:void(0);" class="menu-link menu-toggle">
-                <i class="menu-icon tf-icons ti ti-smart-home"></i>
-                <div data-i18n="Dashboards">Dashboards</div>
-              </a>
-              <ul class="menu-sub">
-                <li class="menu-item">
-                  <a href="index.html" class="menu-link">
-                    <div data-i18n="Analytics">Analytics</div>
-                  </a>
-                </li>
-              </ul>
-            </li> -->
-
             <!-- Apps & Pages -->
             <li class="menu-header small text-uppercase">
               <span class="menu-header-text">Apps &amp; Pages</span>
@@ -358,7 +345,7 @@
                         <div class="mb-3" id="edit-profilePicture-container" style="display: none;">
                           <label class="form-label">Current Profile Picture</label>
                           <div class="d-flex align-items-center">
-                            <img id="edit-profilePicture-preview" src="" alt="Profile Picture Preview" style="width: 80px; height: 80px; border-radius: 50%; object-fit: cover; border: 2px solid #e7e7ff;" />
+                            <img id="edit-profilePicture-preview" src="" alt="Profile Picture Preview" style="width: 80px; height: 80px; border-radius: 50%; object-fit: cover; border: 3px solid #e7e7ff; box-shadow: 0 2px 8px rgba(0,0,0,0.1);" />
                             <div class="ms-3">
                               <button type="button" class="btn btn-sm btn-outline-danger" id="remove-profile-picture">
                                 <i class="ti ti-trash me-1"></i>Remove Picture
@@ -376,20 +363,6 @@
                           <textarea class="form-control" id="edit-bio" name="bio" rows="3" placeholder="Tell us about yourself"></textarea>
                           <div class="form-text">Optional biography or description</div>
                         </div>
-                        <!-- Nếu muốn user tự sửa Email Verified thì bỏ comment bên dưới -->
-                        <!--
-                        <div class="row">
-                          <div class="col-md-6">
-                            <div class="mb-3 form-check">
-                              <input type="checkbox" class="form-check-input" id="edit-isVerified" name="isVerified">
-                              <label class="form-check-label" for="edit-isVerified">
-                                <i class="ti ti-check-circle me-1"></i>Email Verified
-                              </label>
-                              <div class="form-text">Mark if your email is verified</div>
-                            </div>
-                          </div>
-                        </div>
-                        -->
                         <div class="mt-2">
                           <button type="submit" class="btn btn-primary me-2">Save changes</button>
                           <button type="reset" class="btn btn-label-secondary">Cancel</button>
@@ -479,20 +452,122 @@
 
     <!-- Modal Crop Image -->
     <div class="modal fade" id="cropImageModal" tabindex="-1" aria-labelledby="cropImageModalLabel" aria-hidden="true">
-      <div class="modal-dialog modal-dialog-centered">
-        <div class="modal-content">
-          <div class="modal-header">
-            <h5 class="modal-title" id="cropImageModalLabel">Crop Profile Picture</h5>
+      <div class="modal-dialog modal-xl modal-dialog-centered cropper-modal-xl">
+        <div class="modal-content cropper-modal-content">
+          <div class="modal-header border-0 pb-0">
+            <h5 class="modal-title fw-bold" id="cropImageModalLabel">
+              <i class="ti ti-crop me-2"></i>Edit Profile Picture
+            </h5>
             <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
           </div>
-          <div class="modal-body text-center">
-            <div style="max-width: 100%; max-height: 350px;">
-              <img id="cropper-image" src="" style="max-width: 100%; max-height: 350px; display: block; margin: 0 auto;" />
+          <div class="modal-body p-0 cropper-modal-body">
+            <div class="row g-0 h-100">
+              <!-- Left side - Cropper -->
+              <div class="col-lg-8 h-100 cropper-left-panel">
+                <div class="cropper-container-wrapper h-100 d-flex align-items-center justify-content-center p-4">
+                  <div class="cropper-container">
+                    <img id="cropper-image" />
+                    <div class="cropper-overlay">
+                      <div class="crop-circle-overlay"></div>
+                    </div>
+                    <!-- Drag & Drop Zone -->
+                    <div class="drag-drop-zone drag-drop-content">
+                      <div class="text-center">
+                        <i class="ti ti-photo-plus drag-drop-icon"></i>
+                        <p class="mb-2 fw-semibold">Drag & drop your image here</p>
+                        <p class="text-muted small mb-0">or click to browse</p>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              
+              <!-- Right side - Controls & Preview -->
+              <div class="col-lg-4 h-100 cropper-right-panel">
+                <div class="cropper-controls-container">
+                  <!-- Instructions -->
+                  <div class="mb-4">
+                    <h6 class="fw-bold mb-3">
+                      <i class="ti ti-info-circle me-2 text-primary"></i>How to crop
+                    </h6>
+                    <div class="d-flex flex-column gap-2">
+                      <div class="d-flex align-items-center">
+                        <i class="ti ti-mouse me-2 text-muted"></i>
+                        <span class="small">Drag to move the image</span>
+                      </div>
+                      <div class="d-flex align-items-center">
+                        <i class="ti ti-zoom-in me-2 text-muted"></i>
+                        <span class="small">Scroll to zoom in/out</span>
+                      </div>
+                      <div class="d-flex align-items-center">
+                        <i class="ti ti-arrows-move me-2 text-muted"></i>
+                        <span class="small">The circle shows your avatar area</span>
+                      </div>
+                    </div>
+                  </div>
+                  
+                  <!-- Zoom Controls -->
+                  <div class="mb-4">
+                    <h6 class="fw-bold mb-3">Zoom</h6>
+                    <div class="d-flex align-items-center gap-2">
+                      <button type="button" class="btn btn-outline-secondary btn-sm" id="zoom-out-btn">
+                        <i class="ti ti-zoom-out"></i>
+                      </button>
+                      <div class="flex-grow-1">
+                        <input type="range" class="form-range" id="zoom-slider" min="0.5" max="3" step="0.1" value="1">
+                      </div>
+                      <button type="button" class="btn btn-outline-secondary btn-sm" id="zoom-in-btn">
+                        <i class="ti ti-zoom-in"></i>
+                      </button>
+                    </div>
+                                      <div class="d-flex justify-content-between mt-1">
+                    <small class="text-muted">50%</small>
+                    <small class="text-muted zoom-percentage">100%</small>
+                    <small class="text-muted">300%</small>
+                  </div>
+                  </div>
+                  
+                  <!-- Rotation Controls -->
+                  <div class="mb-4">
+                    <h6 class="fw-bold mb-3">Rotate</h6>
+                    <div class="d-flex gap-2">
+                      <button type="button" class="btn btn-outline-secondary btn-sm" id="rotate-left-btn">
+                        <i class="ti ti-rotate-ccw me-1"></i>Left
+                      </button>
+                      <button type="button" class="btn btn-outline-secondary btn-sm" id="rotate-right-btn">
+                        <i class="ti ti-rotate-cw me-1"></i>Right
+                      </button>
+                      <button type="button" class="btn btn-outline-secondary btn-sm" id="reset-btn">
+                        <i class="ti ti-refresh me-1"></i>Reset
+                      </button>
+                    </div>
+                  </div>
+                  
+                  <!-- Preview -->
+                  <div class="mb-4">
+                    <h6 class="fw-bold mb-3">Preview</h6>
+                    <div class="text-center">
+                      <div class="avatar-preview-wrapper avatar-preview-container">
+                        <img id="crop-avatar-preview" class="crop-avatar-preview" />
+                        <div class="preview-overlay"></div>
+                      </div>
+                    </div>
+                  </div>
+                  
+                  <!-- Action Buttons -->
+                  <div class="mt-auto">
+                    <div class="d-grid gap-2">
+                      <button type="button" class="btn btn-primary fw-bold" id="cropImageBtn">
+                        <i class="ti ti-check me-2"></i>Save Profile Picture
+                      </button>
+                      <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">
+                        <i class="ti ti-x me-2"></i>Cancel
+                      </button>
+                    </div>
+                  </div>
             </div>
-          </div>
-          <div class="modal-footer">
-            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
-            <button type="button" class="btn btn-primary" id="cropImageBtn">Crop & Save</button>
+              </div>
+            </div>
           </div>
         </div>
       </div>
@@ -527,226 +602,12 @@
     <script src="../../assets/js/main.js"></script>
 
     <!-- Page JS -->
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.6.1/cropper.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.13/cropper.min.js"></script>
     <script src="../../js/admin-auth.js"></script>
 
-    <!-- Page JS: Custom logic for Account Settings -->
-    <script>
-      $(document).ready(async function() {
-        if (window.adminAuth) {
-          await window.adminAuth.updateUserProfileDisplay();
-        }
-      });
-      
-      document.addEventListener('DOMContentLoaded', async function() {
-        // Helper: get token and user info from localStorage
-        function getToken() {
-          return localStorage.getItem('authToken');
-        }
-        function parseJwt(token) {
-          if (!token) return null;
-          try {
-            return JSON.parse(atob(token.split('.')[1].replace(/-/g, '+').replace(/_/g, '/')));
-          } catch { return null; }
-        }
-        function getCurrentUserInfo() {
-          const token = getToken();
-          return parseJwt(token);
-        }
-        function getAuthHeaders() {
-          const token = getToken();
-          return token ? { 'Authorization': 'Bearer ' + token, 'Content-Type': 'application/json' } : { 'Content-Type': 'application/json' };
-        }
-        // API base
-        const API_BASE = 'http://localhost:5050/api/User';
-        // Elements - reuse existing elements from admin-auth.js
-        const form = document.getElementById('editUserForm');
-
-        async function loadUserInfo() {
-          const user = getCurrentUserInfo();
-          if (!user) { toastr.error('User not found'); return; }
-          try {
-            const res = await fetch(`${API_BASE}/${user.id}`, { headers: getAuthHeaders() });
-            if (!res.ok) throw new Error('Failed to fetch user');
-            const data = await res.json();
-            if (!data.success || !data.data) throw new Error(data.message || 'User not found');
-            const u = data.data;
-            // Fill form
-            $('#edit-username').val(u.username || '').prop('disabled', true);
-            $('#edit-email').val(u.email || '').prop('disabled', true);
-            $('#edit-fullName').val(u.fullName || '');
-            $('#edit-phoneNumber').val(u.phoneNumber || '');
-            $('#edit-dateOfBirth').val(u.dateOfBirth ? u.dateOfBirth.split('T')[0] : '');
-            $('#edit-address').val(u.address || '');
-            $('#edit-bio').val(u.bio || '');
-            // Avatar
-            if (u.profilePicture) {
-              $('#edit-profilePicture-preview').attr('src', u.profilePicture);
-              $('#edit-profilePicture-container').show();
-            } else {
-              $('#edit-profilePicture-container').hide();
-            }
-            $('#edit-profilePicture').val('');
-            if (window.cropper) { window.cropper.destroy(); window.cropper = null; }
-            window._editProfilePictureBase64 = null;
-            window.selectedImageFile = null;
-            window._profilePictureRemoved = false;
-            // Lưu lại dữ liệu gốc để so sánh khi update
-            $('#editUserForm').data('original', {
-              fullName: u.fullName || '',
-              phoneNumber: u.phoneNumber || '',
-              dateOfBirth: u.dateOfBirth || '',
-              address: u.address || '',
-              bio: u.bio || '',
-              // Không lưu status, isVerified vì user không được sửa
-            });
-          } catch (e) { toastr.error(e.message || 'Failed to load user info'); }
-        }
-
-        // Submit update (bê logic từ handleUpdateUser, bỏ status/isVerified)
-        form.addEventListener('submit', async function(e) {
-          e.preventDefault();
-          const user = getCurrentUserInfo();
-          if (!user) { toastr.error('User not found'); return; }
-
-          const formData = new FormData(form);
-          let dateOfBirth = formData.get('dateOfBirth');
-          const data = {
-            fullName: formData.get('fullName')?.trim(),
-            phoneNumber: formData.get('phoneNumber')?.trim(),
-            address: formData.get('address')?.trim(),
-            bio: formData.get('bio')?.trim()
-          };
-          if (dateOfBirth && dateOfBirth.trim() !== '') {
-            const today = new Date();
-            if (dateOfBirth > today.toISOString().split('T')[0]) {
-              toastr.error('Date of birth cannot be in the future!');
-              return;
-            }
-            data.dateOfBirth = new Date(dateOfBirth).toISOString();
-          }
-          if (window._editProfilePictureBase64) {
-            data.profilePicture = window._editProfilePictureBase64;
-          } else if (window.selectedImageFile) {
-            toastr.warning('Please crop your profile picture before saving!');
-            return;
-          } else if (window._profilePictureRemoved) {
-            data.profilePicture = null;
-          }
-          // Xóa field rỗng/null
-          Object.keys(data).forEach(key => {
-            if (data[key] === null || data[key] === undefined || data[key] === '') {
-              delete data[key];
-            }
-          });
-          // So sánh thay đổi
-          const original = $('#editUserForm').data('original') || {};
-          let changed = false;
-          if (window._editProfilePictureBase64 || window.selectedImageFile || window._profilePictureRemoved) {
-            changed = true;
-          }
-          for (const key of Object.keys(data)) {
-            let oldVal = original[key] || '';
-            let newVal = data[key] || '';
-            if (key === 'dateOfBirth') {
-              if (oldVal) oldVal = oldVal.split('T')[0];
-              if (newVal) newVal = newVal.split('T')[0];
-            }
-            if (String(oldVal) !== String(newVal)) {
-              changed = true;
-              break;
-            }
-          }
-          if (!changed) {
-            toastr.warning('You have not changed any information!');
-            return;
-          }
-          if (data.phoneNumber && !/^[0-9]{10,11}$/.test(data.phoneNumber)) {
-            toastr.error('Phone number must be 10-11 digits and only numbers!');
-            return;
-          }
-          if (!data.fullName) {
-            toastr.error('Full name is required!');
-            return;
-          }
-          const token = getToken();
-          if (!token) {
-            toastr.error('Authentication required!');
-            return;
-          }
-          try {
-            const res = await fetch(`${API_BASE}/${user.id}`, {
-              method: 'PUT',
-              headers: getAuthHeaders(),
-              body: JSON.stringify(data)
-            });
-            const responseData = await res.json();
-            if (!res.ok) {
-              if (responseData.errors) {
-                Object.keys(responseData.errors).forEach(field => {
-                  const messages = responseData.errors[field];
-                  if (Array.isArray(messages)) {
-                    messages.forEach(msg => toastr.error(`${field}: ${msg}`));
-                  } else {
-                    toastr.error(`${field}: ${messages}`);
-                  }
-                });
-              } else if (responseData.message) {
-                toastr.error(responseData.message);
-              } else {
-                toastr.error('Failed to update profile!');
-              }
-              return;
-            }
-            toastr.success('Profile updated successfully!');
-            window._editProfilePictureBase64 = null;
-            window.selectedImageFile = null;
-            window._profilePictureRemoved = false;
-            if (window.cropper) { window.cropper.destroy(); window.cropper = null; }
-            loadUserInfo();
-          } catch (err) {
-            toastr.error(err.message || 'Update failed');
-          }
-        });
-
-        removeProfilePictureBtn.addEventListener('click', function() {
-          $('#edit-profilePicture-preview').attr('src', '');
-          $('#edit-profilePicture-container').hide();
-          $('#edit-profilePicture').val('');
-          window._editProfilePictureBase64 = null;
-          selectedImageFile = null;
-          window._profilePictureRemoved = true;
-          if (cropper) {
-            cropper.destroy();
-            cropper = null;
-          }
-          toastr.info('Profile picture removed!');
-        });
-
-        document.querySelector('.deactivate-account').addEventListener('click', async function(e) {
-          e.preventDefault();
-          if (!confirm('Are you sure you want to deactivate your account? This cannot be undone.')) return;
-          const user = getCurrentUserInfo();
-          if (!user) { toastr.error('User not found'); return; }
-          try {
-            const res = await fetch(`${API_BASE}/${user.id}`, {
-              method: 'DELETE',
-              headers: getAuthHeaders()
-            });
-            const data = await res.json();
-            if (res.ok && data.success) {
-              toastr.success('Account deactivated. Logging out...');
-              localStorage.removeItem('authToken');
-              setTimeout(() => { window.location.href = '/auth/login.html'; }, 1500);
-            } else {
-              toastr.error(data.message || 'Deactivation failed');
-            }
-          } catch (err) { toastr.error(err.message || 'Deactivation failed'); }
-        });
-
-        loadUserInfo();
-
-      });
-    </script>
+    <!-- Page JS: Custom logic for My Profile -->
+    <script src="../../js/my-profile.js"></script>
   </body>
 </html>
+
+
