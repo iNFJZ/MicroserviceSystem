@@ -1,0 +1,199 @@
+/* Cropper Modal Styles */
+.cropper-container {
+  position: relative;
+  background: #fff;
+  border-radius: 12px;
+  overflow: hidden;
+}
+
+.cropper-overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  pointer-events: none;
+  z-index: 10;
+}
+
+.crop-circle-overlay {
+  position: absolute;
+  border: 3px solid #7367f0;
+  border-radius: 50%;
+  box-shadow: 0 0 0 9999px rgba(0,0,0,0.4) inset;
+  pointer-events: none;
+  z-index: 15;
+  transition: all 0.3s ease;
+}
+
+.cropper-view-box {
+  border-radius: 50% !important;
+  outline: none !important;
+}
+
+.cropper-face {
+  border-radius: 50% !important;
+}
+
+.cropper-line,
+.cropper-point {
+  display: none !important;
+}
+
+.cropper-crop {
+  border-radius: 50% !important;
+}
+
+.drag-drop-zone {
+  transition: all 0.3s ease;
+}
+
+.drag-drop-zone.dragover {
+  background: rgba(115, 103, 240, 0.1) !important;
+  border: 2px dashed #7367f0;
+}
+
+.drag-drop-zone.hidden {
+  display: none !important;
+}
+
+#cropper-image {
+  max-width: 100%;
+  max-height: 100%;
+  display: block;
+}
+
+.avatar-preview-wrapper:hover .preview-overlay {
+  display: block;
+}
+
+.form-range::-webkit-slider-thumb {
+  background: #7367f0;
+}
+
+.form-range::-moz-range-thumb {
+  background: #7367f0;
+}
+
+.form-range::-ms-thumb {
+  background: #7367f0;
+}
+
+/* Cropper Modal Layout */
+.cropper-modal-xl {
+  width: 95vw;
+  max-width: 1200px;
+  height: 95vh;
+  max-height: 900px;
+}
+
+.cropper-modal-content {
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+}
+
+.cropper-modal-body {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+}
+
+.cropper-left-panel {
+  background: #f8f9fa;
+}
+
+.cropper-container-wrapper {
+  width: 100%;
+  max-width: 600px;
+  height: 500px;
+  background: #fff;
+  border-radius: 12px;
+  box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+  overflow: hidden;
+  position: relative;
+}
+
+.cropper-right-panel {
+  background: #fff;
+  border-left: 1px solid #e9ecef;
+}
+
+.cropper-controls-container {
+  padding: 1.5rem;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+}
+
+.drag-drop-content {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(255,255,255,0.9);
+  z-index: 5;
+}
+
+.drag-drop-icon {
+  font-size: 48px;
+  color: #7367f0;
+  margin-bottom: 16px;
+}
+
+.avatar-preview-container {
+  display: inline-block;
+  position: relative;
+}
+
+.crop-avatar-preview {
+  width: 120px;
+  height: 120px;
+  border-radius: 50%;
+  border: 3px solid #7367f0;
+  object-fit: cover;
+  background: #fff;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+}
+
+.preview-overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  border-radius: 50%;
+  background: rgba(115, 103, 240, 0.1);
+  display: none;
+} 
+
+/* Fix cropper modal layout for my-profile.html */
+#cropImageModal .cropper-container-wrapper {
+  width: 100% !important;
+  max-width: 600px !important;
+  height: 500px !important;
+  margin: 0 auto !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  background: #fff;
+  border-radius: 12px;
+  box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+  overflow: hidden;
+  position: relative;
+}
+#cropImageModal .cropper-container {
+  position: relative;
+  width: 100% !important;
+  height: 100% !important;
+}
+#cropper-image {
+  display: block;
+  max-width: 100%;
+  max-height: 100%;
+  margin: 0 auto;
+} 

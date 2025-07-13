@@ -43,6 +43,7 @@
     <link rel="stylesheet" href="../../assets/vendor/libs/typeahead-js/typeahead.css" />
     <link rel="stylesheet" href="../../assets/vendor/libs/select2/select2.css" />
     <link rel="stylesheet" href="../../assets/vendor/libs/@form-validation/umd/styles/index.min.css" />
+    <link rel="stylesheet" href="../../assets/vendor/libs/toastr/toastr.css" />
 
     <!-- Page CSS -->
     <link rel="stylesheet" href="../../assets/vendor/css/pages/page-account-settings.css" />
@@ -615,6 +616,7 @@
     <script src="../../assets/vendor/libs/i18n/i18n.js"></script>
     <script src="../../assets/vendor/libs/typeahead-js/typeahead.js"></script>
     <script src="../../assets/vendor/js/menu.js"></script>
+    <script src="../../assets/vendor/libs/toastr/toastr.js"></script>
 
     <!-- endbuild -->
 
@@ -631,60 +633,5 @@
 
     <!-- Page JS -->
     <script src="../../js/admin-auth.js"></script>
-    <script src="../../assets/js/pages-account-settings-security.js"></script>
-    <script src="../../assets/js/modal-enable-otp.js"></script>
-        <script>
-      $(document).ready(async function() {
-        if (window.adminAuth) {
-          await window.adminAuth.updateUserProfileDisplay();
-        }
-      });
-    </script>
-    <script>
-      document.addEventListener('DOMContentLoaded', function() {
-      document.getElementById('security-form').addEventListener('submit', async function(e) {
-        e.preventDefault();
-        const oldPwd = document.getElementById('old-password').value.trim();
-        const newPwd = document.getElementById('new-password').value.trim();
-        const confirmPwd = document.getElementById('confirm-password').value.trim();
-        if (!oldPwd || !newPwd || !confirmPwd) {
-          toastr.error('All fields are required');
-          return;
-        }
-        if (newPwd.length < 6) {
-          toastr.error('New password must be at least 6 characters');
-          return;
-        }
-        if (newPwd !== confirmPwd) {
-          toastr.error('Passwords do not match');
-          return;
-        }
-        try {
-          const token = localStorage.getItem('authToken');
-          const res = await fetch('http://localhost:5001/api/Auth/change-password', {
-            method: 'POST',
-            headers: {
-              'Content-Type': 'application/json',
-              'Authorization': 'Bearer ' + token
-            },
-            body: JSON.stringify({
-              oldPassword: oldPwd,
-              newPassword: newPwd,
-              confirmPassword: confirmPwd
-            })
-          });
-          const data = await res.json();
-          if (res.ok) {
-            toastr.success('Password changed successfully');
-            document.getElementById('security-form').reset();
-          } else {
-            toastr.error(data.message || 'Change password failed');
-          }
-        } catch (err) {
-          toastr.error('Change password failed');
-        }
-      });
-    });
-    </script>
   </body>
 </html>
