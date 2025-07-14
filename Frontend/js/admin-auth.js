@@ -612,6 +612,8 @@ let cropper = null;
 let selectedImageFile = null;
 let windowCropper = null;
 let currentZoom = 1;
+let cropperReady = false;
+let initialCropBoxWidth = null;
 
 $(document).on(
   "change",
@@ -666,6 +668,8 @@ $(document).on(
 function initializeCropper(imageElement, imageUrl) {
   $(".drag-drop-zone").addClass("hidden");
   currentZoom = 1;
+  cropperReady = false;
+  initialCropBoxWidth = null;
   cropper = new Cropper(imageElement, {
     aspectRatio: 1,
     viewMode: 1,
@@ -683,18 +687,107 @@ function initializeCropper(imageElement, imageUrl) {
     cropBoxResizable: true,
     toggleDragModeOnDblclick: false,
     ready: function () {
+      let triedResize = false;
+      let tryCount = 0;
+      function waitForCropBox() {
+        tryCount++;
+        const cropBox = cropper.getCropBoxData();
+        const imageData = cropper.getImageData();
+        if (!imageData || !cropBox) return setTimeout(waitForCropBox, 30);
+        if (tryCount === 1) {
+          const boxSize = Math.floor(Math.min(imageData.naturalWidth, imageData.naturalHeight) * 0.8);
+          cropper.setCropBoxData({
+            width: boxSize,
+            height: boxSize,
+            left: imageData.left + (imageData.naturalWidth - boxSize) / 2,
+            top: imageData.top + (imageData.naturalHeight - boxSize) / 2
+          });
+          setTimeout(waitForCropBox, 30);
+          return;
+        }
+        let adjusted = false;
+        let newLeft = cropBox.left;
+        let newTop = cropBox.top;
+        if (cropBox.left < imageData.left) {
+          newLeft = imageData.left;
+          adjusted = true;
+        }
+        if (cropBox.top < imageData.top) {
+          newTop = imageData.top;
+          adjusted = true;
+        }
+        if (cropBox.left + cropBox.width > imageData.left + imageData.naturalWidth) {
+          newLeft = imageData.left + imageData.naturalWidth - cropBox.width;
+          adjusted = true;
+        }
+        if (cropBox.top + cropBox.height > imageData.top + imageData.naturalHeight) {
+          newTop = imageData.top + imageData.naturalHeight - cropBox.height;
+          adjusted = true;
+        }
+        if (adjusted) {
+          cropper.setCropBoxData({
+            width: cropBox.width,
+            height: cropBox.height,
+            left: newLeft,
+            top: newTop
+          });
+          setTimeout(waitForCropBox, 30);
+          return;
+        }
+        if (imageData.naturalWidth < 100 || imageData.naturalHeight < 100) {
+          toastr.error("Image is too small. Please use an image at least 100x100px.");
+          $("#cropImageModal").modal("hide");
+          return;
+        }
+        if (tryCount > 10 && (!cropBox || cropBox.width <= 0 || cropBox.height <= 0)) {
+          toastr.error("Failed to initialize cropper. Please try another image.");
+          $("#cropImageModal").modal("hide");
+          return;
+        }
+        if (!initialCropBoxWidth) initialCropBoxWidth = cropBox.width;
+        let maxZoom = Math.min(
+          Math.floor((initialCropBoxWidth / 10) * 100) / 100,
+          imageData.naturalWidth / initialCropBoxWidth,
+          3
+        );
+        maxZoom = Math.max(1, maxZoom);
+        cropperReady = true;
+        updateZoomSlider(maxZoom);
+        updateCircleOverlay();
+        updateAvatarPreview();
+        const zoomSlider = document.getElementById("zoom-slider");
+        if (zoomSlider) {
+          zoomSlider.disabled = maxZoom === 1;
+          zoomSlider.max = maxZoom.toFixed(2);
+        }
+        $("#zoom-in-btn, #zoom-out-btn").prop("disabled", maxZoom === 1);
+      }
+      waitForCropBox();
       const zoomSlider = document.getElementById("zoom-slider");
       if (zoomSlider) {
-        zoomSlider.min = 0.5;
+        zoomSlider.min = 1;
         zoomSlider.max = 3;
-        zoomSlider.step = 0.1;
+        zoomSlider.step = 0.01;
         zoomSlider.value = 1;
         zoomSlider.oninput = function () {
           let val = parseFloat(this.value);
-          if (val < 0.5) val = 0.5;
-          if (val > 3) val = 3;
+          if (val < 1) val = 1;
+          if (val > parseFloat(this.max)) val = parseFloat(this.max);
+          if (val === currentZoom) return;
+          this.value = val;
           currentZoom = val;
-          cropper.zoomTo(currentZoom);
+          if (initialCropBoxWidth) {
+            const newWidth = initialCropBoxWidth / currentZoom;
+            const cropBox = cropper.getCropBoxData();
+            cropper.setCropBoxData({
+              width: newWidth,
+              height: newWidth,
+              left: cropBox.left,
+              top: cropBox.top
+            });
+          } else {
+            cropper.zoomTo(currentZoom);
+          }
           updateZoomDisplay(currentZoom);
         };
       }
@@ -704,16 +797,46 @@ function initializeCropper(imageElement, imageUrl) {
       $("#zoom-in-btn")
         .off("click")
         .on("click", function () {
-          currentZoom = Math.min(currentZoom + 0.1, 3);
-          cropper.zoomTo(currentZoom);
-          updateZoomSlider();
+          const zoomSlider = document.getElementById("zoom-slider");
+          let maxZoom = zoomSlider ? parseFloat(zoomSlider.max) : 3;
+          if (currentZoom >= maxZoom) return;
+          let newZoom = Math.min(currentZoom + 0.1, maxZoom);
+          if (newZoom === currentZoom) return;
+          currentZoom = newZoom;
+          if (initialCropBoxWidth) {
+            const newWidth = initialCropBoxWidth / currentZoom;
+            const cropBox = cropper.getCropBoxData();
+            cropper.setCropBoxData({
+              width: newWidth,
+              height: newWidth,
+              left: cropBox.left,
+              top: cropBox.top
+            });
+          } else {
+            cropper.zoomTo(currentZoom);
+          }
+          updateZoomSlider(maxZoom);
           updateZoomDisplay(currentZoom);
         });
       $("#zoom-out-btn")
         .off("click")
         .on("click", function () {
-          currentZoom = Math.max(currentZoom - 0.1, 0.5);
-          cropper.zoomTo(currentZoom);
+          if (currentZoom <= 1) return;
+          let newZoom = Math.max(currentZoom - 0.1, 1);
+          if (newZoom === currentZoom) return;
+          currentZoom = newZoom;
+          if (initialCropBoxWidth) {
+            const newWidth = initialCropBoxWidth / currentZoom;
+            const cropBox = cropper.getCropBoxData();
+            cropper.setCropBoxData({
+              width: newWidth,
+              height: newWidth,
+              left: cropBox.left,
+              top: cropBox.top
+            });
+          } else {
+            cropper.zoomTo(currentZoom);
+          }
           updateZoomSlider();
           updateZoomDisplay(currentZoom);
         });
@@ -738,16 +861,17 @@ function initializeCropper(imageElement, imageUrl) {
     },
     zoom: function (event) {
       let ratio = event.detail.ratio;
-      if (ratio < 0.5) {
+      const zoomSlider = document.getElementById("zoom-slider");
+      let maxZoom = zoomSlider ? parseFloat(zoomSlider.max) : 3;
+      if (ratio < 1) {
         event.preventDefault();
-        currentZoom = 0.5;
-      } else if (ratio > 3) {
+        currentZoom = 1;
+      } else if (ratio > maxZoom) {
         event.preventDefault();
-        currentZoom = 3;
+        currentZoom = maxZoom;
       } else {
         currentZoom = ratio;
       }
-      const zoomSlider = document.getElementById("zoom-slider");
       if (zoomSlider) {
         zoomSlider.value = currentZoom;
         updateZoomDisplay(currentZoom);
@@ -756,21 +880,30 @@ function initializeCropper(imageElement, imageUrl) {
     },
     crop: function (event) {
       updateCircleOverlay();
-      updateAvatarPreview();
+      if (cropperReady) updateAvatarPreview();
       updateZoomSlider();
     },
     cropmove: function () {
       updateCircleOverlay();
+      if (cropperReady) updateAvatarPreview();
     },
+    error: function () {
+      toastr.error("Failed to load image. Please try another image.");
+      $("#cropImageModal").modal("hide");
+    }
   });
   window._cropper = cropper;
 }
-
-function updateZoomSlider() {
+function updateZoomSlider(maxZoom) {
   const zoomSlider = document.getElementById("zoom-slider");
   if (zoomSlider) {
+    if (maxZoom) zoomSlider.max = maxZoom;
     zoomSlider.value = currentZoom;
     updateZoomDisplay(currentZoom);
+    const minLabel = zoomSlider.parentElement?.previousElementSibling;
+    const maxLabel = document.getElementById("zoom-max-label");
+    if (minLabel) minLabel.textContent = "100%";
+    if (maxLabel && maxZoom) maxLabel.textContent = `${Math.round(maxZoom * 100)}%`;
   }
 }
 
@@ -872,14 +1005,36 @@ function updateCircleOverlay() {
 }
 
 function updateAvatarPreview() {
-  if (!cropper) return;
+  if (!cropper || !cropperReady) return;
+  let cropBox;
   try {
+    cropBox = cropper.getCropBoxData();
+    const imageData = cropper.getImageData();
+    if (
+      cropBox.left < imageData.left ||
+      cropBox.top < imageData.top ||
+      cropBox.left + cropBox.width > imageData.left + imageData.naturalWidth ||
+      cropBox.top + cropBox.height > imageData.top + imageData.naturalHeight
+    ) {
+      ensureCropBoxInBounds();
+      cropBox = cropper.getCropBoxData();
+    }
+    if (!cropBox || cropBox.width <= 0 || cropBox.height <= 0) return;
+    if (imageData && (cropBox.width > imageData.naturalWidth || cropBox.height > imageData.naturalHeight)) {
+      const preview = document.getElementById("crop-avatar-preview");
+      if (preview) {
+        preview.src = "";
+        preview.style.display = "none";
+      }
+      return;
+    }
     const canvas = cropper.getCroppedCanvas({
       width: 200,
       height: 200,
       imageSmoothingQuality: "high",
       fillColor: "#fff",
     });
+    if (!canvas) return;
     const preview = document.getElementById("crop-avatar-preview");
     if (canvas && preview) {
       const circleCanvas = document.createElement("canvas");
@@ -898,9 +1053,6 @@ function updateAvatarPreview() {
     } else if (preview) {
       preview.src = "";
       preview.style.display = "none";
-      toastr.error(
-        "Preview failed: Crop area is out of bounds or image not loaded.",
-      );
     }
   } catch (error) {
     const preview = document.getElementById("crop-avatar-preview");
@@ -908,7 +1060,6 @@ function updateAvatarPreview() {
       preview.src = "";
       preview.style.display = "none";
     }
-    toastr.error("Error updating avatar preview.");
   }
 }
 
@@ -926,8 +1077,18 @@ $("#cropImageModal").on("hidden.bs.modal", function () {
 });
 
 $(document).on("click", "#cropImageBtn", function () {
-  if (!cropper) {
-    toastr.error("No image selected for cropping!");
+  if (!cropper || !cropperReady) {
+    toastr.error("Cropper is not ready. Please wait for the image to load.");
+    return;
+  }
+  let cropBox = cropper.getCropBoxData();
+  const imageData = cropper.getImageData();
+  if (!cropBox || cropBox.width <= 0 || cropBox.height <= 0) {
+    toastr.error("Crop area is invalid. Please adjust the crop box.");
+    return;
+  }
+  if (imageData && (cropBox.width > imageData.naturalWidth || cropBox.height > imageData.naturalHeight)) {
+    toastr.error("Crop area is larger than the image. Please zoom in or use a larger image.");
     return;
   }
   try {
@@ -938,6 +1099,7 @@ $(document).on("click", "#cropImageBtn", function () {
       imageSmoothingQuality: "high",
       fillColor: "#fff",
     });
+    if (!canvas) throw new Error("Canvas is null. Image may be too small or crop area invalid.");
     const size = 200;
     const circleCanvas = document.createElement("canvas");
     circleCanvas.width = size;
@@ -963,7 +1125,10 @@ $(document).on("click", "#cropImageBtn", function () {
       );
     }, 200);
   } catch (error) {
-    toastr.error("Failed to crop image. Please try again!");
+    window._editProfilePictureBase64 = null;
+    $("#crop-avatar-preview, #edit-profilePicture-preview").attr("src", "");
+    $("#edit-profilePicture-container, #profile-picture-preview").hide();
+    toastr.error(error.message || "Failed to crop image. Please try again!");
   }
 });
 
@@ -1949,9 +2114,7 @@ document.addEventListener("DOMContentLoaded", function () {
       e.preventDefault();
       const oldPwd = document.getElementById("old-password").value.trim();
       const newPwd = document.getElementById("new-password").value.trim();
-      const confirmPwd = document
-        .getElementById("confirm-password")
-        .value.trim();
+      const confirmPwd = document.getElementById("confirm-password").value.trim();
       if (!oldPwd || !newPwd || !confirmPwd) {
         toastr.error("All fields are required");
         return;
