@@ -155,7 +155,7 @@ window.addEventListener("DOMContentLoaded", async () => {
                 if (errorMsg.toLowerCase().includes("banned")) {
                     errorMsg = window.i18next.t("accountBanned");
                 } else if (errorMsg.toLowerCase().includes("deleted")) {
-                    errorMsg = window.i18next.t("accountDeleted");
+                    errorMsg = window.i18next.t("accountHasBeenDeletedContactSupport");
                 }
                 if (msg) msg.textContent = errorMsg;
                 toastr.error(window.i18next.t("googleLoginFailed"));

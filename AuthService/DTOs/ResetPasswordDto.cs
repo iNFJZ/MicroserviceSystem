@@ -16,5 +16,8 @@ namespace AuthService.DTOs
         [Required]
         [Compare("NewPassword", ErrorMessage = "Passwords do not match")]
         public string ConfirmPassword { get; set; } = string.Empty;
+
+        [StringLength(5)]
+        public string? Language { get; set; } = "en";
     }
 } 

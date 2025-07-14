@@ -15,7 +15,7 @@ namespace AuthService.Services
         Task<bool> ResetPasswordAsync(ResetPasswordDto dto);
         Task<bool> ChangePasswordAsync(Guid userId, ChangePasswordDto dto);
         Task<bool> VerifyEmailAsync(string token);
-        Task<bool> ResendVerificationEmailAsync(string email);
+        Task<bool> ResendVerificationEmailAsync(string email, string language);
         Task<string> GetEmailFromResetTokenAsync(string token);
     }
 }

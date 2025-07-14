@@ -22,5 +22,8 @@ namespace AuthService.DTOs
         [RegularExpression(@"^(?=.*[a-z])(?=.*[A-Z])(?=.*\d).{6,}$", 
             ErrorMessage = "Password must contain at least one uppercase letter, one lowercase letter, and one number")]
         public string Password { get; set; } = string.Empty;
+
+        [StringLength(5)]
+        public string? Language { get; set; } = "en";
     }
 }

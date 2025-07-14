@@ -40,21 +40,20 @@ namespace EmailService.Services
             return result;
         }
 
-        public string GenerateVerifyEmailContent(string username, string verifyLink)
+        public string GenerateVerifyEmailContent(string username, string verifyLink, string lang = null)
         {
-            var template = LoadTemplate("verify-email");
+            var template = LoadTemplate("verify-email", lang);
             var placeholders = new Dictionary<string, string>
             {
                 { "Username", username },
                 { "VerifyLink", verifyLink }
             };
-
             return ReplacePlaceholders(template, placeholders);
         }
 
-        public string GenerateResetPasswordContent(string username, string email, string userId, string ipAddress, string resetLink, int expiryMinutes)
+        public string GenerateResetPasswordContent(string username, string email, string userId, string ipAddress, string resetLink, int expiryMinutes, string lang = null)
         {
-            var template = LoadTemplate("reset-password");
+            var template = LoadTemplate("reset-password", lang);
             var placeholders = new Dictionary<string, string>
             {
                 { "Username", username },
@@ -64,18 +63,16 @@ namespace EmailService.Services
                 { "ResetLink", resetLink },
                 { "ExpiryMinutes", expiryMinutes.ToString() }
             };
-
             return ReplacePlaceholders(template, placeholders);
         }
 
-        public string GenerateDeactivateAccountContent(string username)
+        public string GenerateDeactivateAccountContent(string username, string lang = null)
         {
-            var template = LoadTemplate("deactivate-account");
+            var template = LoadTemplate("deactivate-account", lang);
             var placeholders = new Dictionary<string, string>
             {
                 { "Username", username }
             };
-
             return ReplacePlaceholders(template, placeholders);
         }
 
@@ -90,9 +87,9 @@ namespace EmailService.Services
             return ReplacePlaceholders(template, placeholders);
         }
 
-        public string GenerateRestoreAccountContent(string username, DateTime restoredAt, string reason)
+        public string GenerateRestoreAccountContent(string username, DateTime restoredAt, string reason, string lang = null)
         {
-            var template = LoadTemplate("restore-account");
+            var template = LoadTemplate("restore-account", lang);
             var placeholders = new Dictionary<string, string>
             {
                 { "Username", username },

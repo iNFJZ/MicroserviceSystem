@@ -283,5 +283,6 @@
   "changePasswordTitle": "Change Password - EDISA",
   "verifyEmailTitle": "Account Created Successfully - EDISA",
   "accountActivatedTitle": "Account Activated - EDISA",
-  "deactiveUsersTitle": "Deactive Users - Admin Panel"
+  "deactiveUsersTitle": "Deactive Users - Admin Panel",
+  "accountHasBeenDeletedContactSupport": "Account has been deleted. Please contact support for assistance."
 } 

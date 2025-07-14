@@ -9,5 +9,6 @@ namespace Shared.EmailModels
         public DateTime RequestedAt { get; set; } = DateTime.UtcNow;
         public int? UserId { get; set; }
         public string? IpAddress { get; set; }
+        public string? Language { get; set; } = "en";
     }
 } 

@@ -269,7 +269,7 @@ namespace AuthService.Controllers
 
             try
             {
-                var result = await _auth.ResendVerificationEmailAsync(dto.Email);
+                var result = await _auth.ResendVerificationEmailAsync(dto.Email, dto.Language ?? "en");
                 return Ok(new { 
                     success = true, 
                     message = "Verification email has been resent successfully."

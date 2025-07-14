@@ -6,5 +6,6 @@ namespace Shared.EmailModels
         public string Username { get; set; } = string.Empty;
         public DateTime DeactivatedAt { get; set; } = DateTime.UtcNow;
         public string? Reason { get; set; }
+        public string? Language { get; set; } = "en";
     }
 } 

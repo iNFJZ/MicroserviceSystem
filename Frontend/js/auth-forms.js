@@ -27,12 +27,14 @@ window.addEventListener("DOMContentLoaded", async function() {
   const code = urlParams.get("code");
   if (code) {
     try {
+      const language = getCurrentLanguage();
       const res = await fetch(`${API_BASE_URL}/api/Auth/login/google`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           code: code,
-          redirectUri: GOOGLE_REDIRECT_URI
+          redirectUri: GOOGLE_REDIRECT_URI,
+          language
         })
       });
       const data = await res.json();
@@ -44,7 +46,9 @@ window.addEventListener("DOMContentLoaded", async function() {
         }, 1000);
       } else {
         const errorMessage = data.message || window.i18next.t("googleLoginFailed");
-        if (errorMessage.includes("deleted") || errorMessage.includes("banned")) {
+        if (errorMessage.includes("deleted")) {
+          showToast(window.i18next.t("accountHasBeenDeletedContactSupport"), true);
+        } else if (errorMessage.includes("banned")) {
           showToast(window.i18next.t("yourAccountHasBeenDeactivated"), true);
         } else {
           showToast(window.i18next.t(errorMessage), true);
@@ -102,7 +106,7 @@ if (document.getElementById("login-form")) {
         }
         
         if (errors.length > 0) {
-            const errorMsgs = errors.map(e => typeof e === 'string' && e.startsWith('emailRequired') || e.startsWith('passwordRequired') ? window.i18next.t(e) : e);
+            const errorMsgs = errors.map(e => typeof e === "string" && e.startsWith("emailRequired") || e.startsWith("passwordRequired") ? window.i18next.t(e) : e);
             showToast(errorMsgs.join("\n"), true);
             return;
         }
@@ -126,7 +130,9 @@ if (document.getElementById("login-form")) {
                     showToast(data.errors.map(e => window.i18next.t(e)).join(", "), true);
                 } else {
                     const errorMessage = data.message || window.i18next.t("loginFailed");
-                    if (errorMessage.includes("deleted") || errorMessage.includes("banned")) {
+                    if (errorMessage.includes("deleted")) {
+                        showToast(window.i18next.t("accountHasBeenDeletedContactSupport"), true);
+                    } else if (errorMessage.includes("banned")) {
                         showToast(window.i18next.t("yourAccountHasBeenDeactivated"), true);
                     } else {
                         showToast(window.i18next.t(errorMessage), true);
@@ -150,6 +156,7 @@ if (document.getElementById("register-form")) {
         const email = sanitizeInput(document.getElementById("register-email").value);
         const password = document.getElementById("register-password").value;
         const termsChecked = document.getElementById("terms-conditions")?.checked;
+        const language = getCurrentLanguage();
         
         const errors = [];
         
@@ -192,7 +199,8 @@ if (document.getElementById("register-form")) {
                     username, 
                     fullName: fullName || null, 
                     email, 
-                    password 
+                    password,
+                    language
                 })
             });
             const data = await res.json();
@@ -223,6 +231,7 @@ if (document.getElementById("forgot-password-form")) {
         e.preventDefault();
         
         const email = sanitizeInput(document.getElementById("forgot-password-email").value);
+        const language = getCurrentLanguage();
         
         if (!email) {
             showToast(window.i18next.t("emailRequired"), true);
@@ -238,7 +247,7 @@ if (document.getElementById("forgot-password-form")) {
             const res = await fetch(`${API_BASE_URL}/api/Auth/forgot-password`, {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({ email })
+                body: JSON.stringify({ email, language })
             });
             const data = await res.json();
             
@@ -266,6 +275,7 @@ if (document.getElementById("reset-password-form")) {
         
         const password = document.getElementById("reset-password-password").value;
         const confirmPassword = document.getElementById("reset-password-confirm-password").value;
+        const language = getCurrentLanguage();
         
         if (!password) {
             showToast(window.i18next.t("passwordRequired"), true);
@@ -297,7 +307,8 @@ if (document.getElementById("reset-password-form")) {
                 body: JSON.stringify({ 
                     token: token,
                     newPassword: password,
-                    confirmPassword: confirmPassword
+                    confirmPassword: confirmPassword,
+                    language
                 })
             });
             const data = await res.json();
@@ -325,6 +336,7 @@ if (document.getElementById("change-password-form")) {
         const currentPassword = document.getElementById("change-password-current").value;
         const newPassword = document.getElementById("change-password-new").value;
         const confirmPassword = document.getElementById("change-password-confirm").value;
+        const language = getCurrentLanguage();
         
         if (!currentPassword) {
             showToast(window.i18next.t("currentPasswordRequired"), true);
@@ -361,7 +373,9 @@ if (document.getElementById("change-password-form")) {
                 },
                 body: JSON.stringify({ 
                     currentPassword,
-                    newPassword 
+                    newPassword,
+                    confirmPassword,
+                    language
                 })
             });
             const data = await res.json();
@@ -376,4 +390,8 @@ if (document.getElementById("change-password-form")) {
             showToast(window.i18next.t("passwordChangeFailedTryAgain"), true);
         }
     });
+}
+
+function getCurrentLanguage() {
+  return localStorage.getItem("selectedLanguage") || localStorage.getItem("language") || "en";
 }

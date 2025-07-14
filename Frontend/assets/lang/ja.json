@@ -358,5 +358,8 @@
   "changePasswordTitle": "パスワード変更 - EDISA",
   "verifyEmailTitle": "アカウント作成成功 - EDISA",
   "accountActivatedTitle": "アカウント有効化 - EDISA",
-  "deactiveUsersTitle": "無効ユーザー - 管理パネル"
+  "deactiveUsersTitle": "無効ユーザー - 管理パネル",
+  "emailRequired": "メールアドレスは必須です",
+  "passwordRequired": "パスワードは必須です",
+  "accountHasBeenDeletedContactSupport": "アカウントは削除されました。サポートまでご連絡ください。"
 } 
