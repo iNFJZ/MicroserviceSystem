@@ -127,7 +127,8 @@ namespace AuthService.Services
                 To = user.Email,
                 Username = user.Username,
                 RegisterAt = DateTime.UtcNow,
-                VerifyLink = verifyLink
+                VerifyLink = verifyLink,
+                Language = dto.Language ?? "en"
             });
             
             return token;
@@ -176,7 +177,7 @@ namespace AuthService.Services
             catch { return false; }
         }
 
-        public async Task<bool> ResendVerificationEmailAsync(string email)
+        public async Task<bool> ResendVerificationEmailAsync(string email, string language)
         {
             if (string.IsNullOrWhiteSpace(email))
                 throw new AuthException("Email is required");
@@ -199,7 +200,8 @@ namespace AuthService.Services
                 To = user.Email,
                 Username = user.FullName ?? user.Username,
                 VerifyLink = $"{_config["Frontend:BaseUrl"]}/verify-email?token={token}",
-                RegisterAt = user.CreatedAt
+                RegisterAt = user.CreatedAt,
+                Language = language ?? "en"
             });
 
             return true;
@@ -398,8 +400,7 @@ namespace AuthService.Services
                 ResetToken = resetToken,
                 ResetLink = resetLink,
                 RequestedAt = DateTime.UtcNow,
-                UserId = user.Id.GetHashCode(),
-                IpAddress = clientIp
+                Language = dto.Language ?? "en"
             });
 
             return true;
@@ -448,7 +449,8 @@ namespace AuthService.Services
             {
                 To = user.Email,
                 Username = user.FullName ?? user.Username,
-                ChangeAt = DateTime.UtcNow
+                ChangeAt = DateTime.UtcNow,
+                Language = dto.Language ?? "en"
             });
 
             return true;
@@ -497,7 +499,8 @@ namespace AuthService.Services
             {
                 To = user.Email,
                 Username = user.FullName ?? user.Username,
-                ChangeAt = DateTime.UtcNow
+                ChangeAt = DateTime.UtcNow,
+                Language = dto.Language ?? "en"
             });
 
             return true;

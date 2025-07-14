@@ -187,7 +187,8 @@ namespace AuthService.Services
                     To = existingUser.Email,
                     Username = existingUser.FullName ?? existingUser.Username,
                     Token = resetToken,
-                    RegisterAt = DateTime.UtcNow
+                    RegisterAt = DateTime.UtcNow,
+                    Language = dto?.Language ?? "en"
                 });
             }
 

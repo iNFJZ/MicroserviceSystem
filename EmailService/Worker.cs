@@ -198,7 +198,7 @@ namespace EmailService
             
             if (!string.IsNullOrEmpty(emailEvent.VerifyLink))
             {
-                mail.Body = _emailTemplateService.GenerateVerifyEmailContent(emailEvent.Username, emailEvent.VerifyLink);
+                mail.Body = _emailTemplateService.GenerateVerifyEmailContent(emailEvent.Username, emailEvent.VerifyLink, emailEvent.Language);
             }
             else
             {
@@ -308,7 +308,8 @@ namespace EmailService
                     emailEvent.UserId?.ToString() ?? "N/A", 
                     emailEvent.IpAddress ?? "Unknown", 
                     emailEvent.ResetLink, 
-                    _resetTokenExpiryMinutes
+                    _resetTokenExpiryMinutes,
+                    emailEvent.Language
                 );
             }
             else
@@ -353,7 +354,7 @@ Body: {{ ""token"": ""your-token"", ""newPassword"": ""your-new-password"", ""co
             mail.From = new MailAddress(_smtpUser, "iNFJZ System");
             mail.IsBodyHtml = true;
             mail.Body = _emailTemplateService.ReplacePlaceholders(
-                _emailTemplateService.LoadTemplate("change-password"),
+                _emailTemplateService.LoadTemplate("change-password", emailEvent.Language),
                 new Dictionary<string, string>
                 {
                     {"Username", emailEvent.Username ?? "User"},
@@ -385,7 +386,7 @@ Body: {{ ""token"": ""your-token"", ""newPassword"": ""your-new-password"", ""co
             mail.From = new MailAddress(_smtpUser, "iNFJZ System");
             mail.IsBodyHtml = true;
             
-            mail.Body = _emailTemplateService.GenerateDeactivateAccountContent(emailEvent.Username);
+            mail.Body = _emailTemplateService.GenerateDeactivateAccountContent(emailEvent.Username, emailEvent.Language);
             
             try
             {
