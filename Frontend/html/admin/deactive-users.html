@@ -13,7 +13,7 @@
       name="viewport"
       content="width=device-width, initial-scale=1.0, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0" />
 
-    <title>Deactive Users - Admin Panel</title>
+    <title data-i18n="deactiveUsersTitle">Deactive Users - Admin Panel</title>
 
     <meta name="description" content="" />
 
@@ -69,9 +69,9 @@
           <div class="app-brand demo">
             <a href="index.html" class="app-brand-link">
               <span class="app-brand-logo demo">
-                <img src="../assets/img/branding/logo-i-vuexy.svg" alt="iNFJZ System Logo" style="height:32px;width:auto;">
+                <img src="../assets/img/branding/logo-i-vuexy.svg" alt="EDISA Logo" style="height:32px;width:auto;">
               </span>
-              <span class="app-brand-text demo menu-text fw-bold">iNFJZ System</span>
+              <span class="app-brand-text demo menu-text fw-bold">EDISA</span>
             </a>
 
             <a href="javascript:void(0);" class="layout-menu-toggle menu-link text-large ms-auto">
@@ -137,12 +137,36 @@
               <div class="navbar-nav align-items-center">
                 <div class="nav-item d-flex align-items-center">
                   <i class="ti ti-search ti-lg me-2"></i>
-                  <input type="text" class="form-control border-0 shadow-none" placeholder="Search..." aria-label="Search..." />
+                  <input type="text" class="form-control border-0 shadow-none" data-i18n-placeholder="searchPlaceholder" placeholder="Search..." aria-label="Search..." />
                 </div>
               </div>
               <!-- /Search -->
 
               <ul class="navbar-nav flex-row align-items-center ms-auto">
+                <!-- Language -->
+                <li class="nav-item dropdown-language dropdown me-2 me-xl-0">
+                  <a class="nav-link dropdown-toggle hide-arrow" href="javascript:void(0);" data-bs-toggle="dropdown">
+                    <i class="ti ti-language rounded-circle ti-md"></i>
+                  </a>
+                  <ul class="dropdown-menu dropdown-menu-end">
+                    <li>
+                      <a class="dropdown-item" href="javascript:void(0);" data-language="vi">
+                        <span class="align-middle" data-i18n="vietnamese">Vietnamese</span>
+                      </a>
+                    </li>
+                    <li>
+                      <a class="dropdown-item" href="javascript:void(0);" data-language="en">
+                        <span class="align-middle" data-i18n="english">English</span>
+                      </a>
+                    </li>
+                    <li>
+                      <a class="dropdown-item" href="javascript:void(0);" data-language="ja">
+                        <span class="align-middle" data-i18n="japanese">Japanese</span>
+                      </a>
+                    </li>
+                  </ul>
+                </li>
+                <!--/ Language -->
                 <!-- User -->
                 <li class="nav-item navbar-dropdown dropdown-user dropdown">
                   <a class="nav-link dropdown-toggle hide-arrow" href="javascript:void(0);" data-bs-toggle="dropdown">
@@ -153,8 +177,8 @@
                         </div>
                       </div>
                       <div class="flex-grow-1">
-                        <span class="fw-semibold d-block user-name">Loading...</span>
-                        <small class="text-muted user-role">Loading...</small>
+                        <span class="fw-semibold d-block user-name" data-i18n="loading">Loading...</span>
+                        <small class="text-muted user-role" data-i18n="loading">Loading...</small>
                       </div>
                     </div>
                   </a>
@@ -168,8 +192,8 @@
                             </div>
                           </div>
                           <div class="flex-grow-1">
-                            <span class="fw-semibold d-block user-name">Loading...</span>
-                            <small class="text-muted user-role">Loading...</small>
+                            <span class="fw-semibold d-block user-name" data-i18n="loading">Loading...</span>
+                            <small class="text-muted user-role" data-i18n="loading">Loading...</small>
                           </div>
                         </div>
                       </a>
@@ -240,31 +264,31 @@
               <!-- Users List Table -->
               <div class="card">
                 <div class="card-header border-bottom">
-                  <h5 class="card-title mb-3">Deactive Users List</h5>
+                  <h5 class="card-title mb-3" data-i18n="deactiveUsersList">Deactive Users List</h5>
                   <div class="d-flex justify-content-between align-items-center row py-3 gap-3 gap-md-0">
                     <div class="col-md-4 user_role">
                       <select id="UserRole" class="form-select text-capitalize">
-                        <option value=""> Select Role </option>
-                        <option value="Admin">Admin</option>
-                        <option value="Author">Author</option>
-                        <option value="Editor">Editor</option>
-                        <option value="Maintainer">Maintainer</option>
-                        <option value="Subscriber">Subscriber</option>
+                        <option value="" data-i18n="selectRole">Select Role</option>
+                        <option value="Admin" data-i18n="admin">Admin</option>
+                        <option value="Author" data-i18n="author">Author</option>
+                        <option value="Editor" data-i18n="editor">Editor</option>
+                        <option value="Maintainer" data-i18n="maintainer">Maintainer</option>
+                        <option value="Subscriber" data-i18n="subscriber">Subscriber</option>
                       </select>
                     </div>
                     <div class="col-md-4 user_plan">
                       <select id="UserPlan" class="form-select text-capitalize">
-                        <option value=""> Select Plan </option>
-                        <option value="Basic">Basic</option>
-                        <option value="Company">Company</option>
-                        <option value="Enterprise">Enterprise</option>
-                        <option value="Team">Team</option>
+                        <option value="" data-i18n="selectPlan">Select Plan</option>
+                        <option value="Basic" data-i18n="basic">Basic</option>
+                        <option value="Company" data-i18n="company">Company</option>
+                        <option value="Enterprise" data-i18n="enterprise">Enterprise</option>
+                        <option value="Team" data-i18n="team">Team</option>
                       </select>
                     </div>
                     <div class="col-md-4 user_status">
                       <select id="FilterTransaction" class="form-select text-capitalize">
-                        <option value=""> Select Status </option>
-                        <option value="Banned">Banned</option>
+                        <option value="" data-i18n="selectStatus">Select Status</option>
+                        <option value="Banned" data-i18n="banned">Banned</option>
                       </select>
                     </div>
                   </div>
@@ -274,13 +298,13 @@
                     <thead>
                       <tr>
                         <th></th>
-                        <th>Username</th>
-                        <th>Full Name</th>
-                        <th>Email</th>
-                        <th>Phone</th>
-                        <th>Status</th>
-                        <th>Deleted At</th>
-                        <th>Actions</th>
+                        <th data-i18n="username">Username</th>
+                        <th data-i18n="fullname">Full Name</th>
+                        <th data-i18n="email">Email</th>
+                        <th data-i18n="phone">Phone</th>
+                        <th data-i18n="status">Status</th>
+                        <th data-i18n="lastLoginAt">Last Login At</th>
+                        <th data-i18n="actions">Actions</th>
                       </tr>
                     </thead>
                   </table>
@@ -369,6 +393,8 @@
     <script src="../../assets/vendor/libs/toastr/toastr.js"></script>
 
     <!-- Main JS -->
+    <script src="../../assets/vendor/libs/i18n/i18next.min.js"></script>
+    <script src="../../assets/vendor/libs/i18n/i18nextHttpBackend.min.js"></script>
     <script src="../../assets/js/main.js"></script>
 
     <!-- Page JS -->
@@ -412,59 +438,55 @@
             <div class="row">
               <div class="col-md-6">
                 <div class="mb-3">
-                  <label class="form-label fw-semibold text-muted">Username</label>
+                  <label class="form-label fw-semibold text-muted" data-i18n="username">Username</label>
                   <p class="mb-0 user-username"></p>
                 </div>
                 <div class="mb-3">
-                  <label class="form-label fw-semibold text-muted">Full Name</label>
+                  <label class="form-label fw-semibold text-muted" data-i18n="fullname">Full Name</label>
                   <p class="mb-0 user-fullname"></p>
                 </div>
                 <div class="mb-3">
-                  <label class="form-label fw-semibold text-muted">Email</label>
+                  <label class="form-label fw-semibold text-muted" data-i18n="email">Email</label>
                   <p class="mb-0 user-email"></p>
                 </div>
                 <div class="mb-2">
-                  <label class="form-label fw-semibold text-muted">Phone Number</label>
+                  <label class="form-label fw-semibold text-muted" data-i18n="phoneNumber">Phone Number</label>
                   <p class="mb-0 user-phone"></p>
                 </div>
                 <div class="mb-3">
-                  <label class="form-label fw-semibold text-muted">Deleted At</label>
+                  <label class="form-label fw-semibold text-muted" data-i18n="deletedAt">Deleted At</label>
                   <p class="mb-0 user-deletedat"></p>
                 </div>
               </div>
               <div class="col-md-6">
                 <div class="mb-3">
-                  <label class="form-label fw-semibold text-muted">Date of Birth</label>
+                  <label class="form-label fw-semibold text-muted" data-i18n="dateOfBirth">Date of Birth</label>
                   <p class="mb-0 user-dob"></p>
                 </div>
                 <div class="mb-3">
-                  <label class="form-label fw-semibold text-muted">Address</label>
+                  <label class="form-label fw-semibold text-muted" data-i18n="address">Address</label>
                   <p class="mb-0 user-address"></p>
                 </div>
                 <div class="mb-3">
-                  <label class="form-label fw-semibold text-muted">Email Verified</label>
+                  <label class="form-label fw-semibold text-muted" data-i18n="emailVerified">Email Verified</label>
                   <p class="mb-0 user-verified"></p>
                 </div>
                 <div class="mb-3">
-                  <label class="form-label fw-semibold text-muted">Login Provider</label>
+                  <label class="form-label fw-semibold text-muted" data-i18n="loginProvider">Login Provider</label>
                   <p class="mb-0 user-provider"></p>
                 </div>
               </div>
             </div>
             <div class="mb-3">
-              <label class="form-label fw-semibold text-muted">Bio</label>
+              <label class="form-label fw-semibold text-muted" data-i18n="bio">Bio</label>
               <p class="mb-0 user-bio"></p>
             </div>
           </div>
         </div>
       </div>
       <div class="modal-footer">
-        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
-          <i class="ti ti-x me-1"></i>Close
-        </button>
-        <button type="button" class="btn btn-success btn-restore-user" data-bs-toggle="modal" data-bs-target="#restoreUserModal">
-          <i class="ti ti-refresh me-1"></i>Restore User
-        </button>
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal" data-i18n="close"><i class="ti ti-x me-1"></i>Close</button>
+        <button type="button" class="btn btn-success btn-restore-user" data-bs-toggle="modal" data-bs-target="#restoreUserModal" data-i18n="restoreUser"><i class="ti ti-refresh me-1"></i>Restore User</button>
       </div>
     </div>
   </div>
@@ -476,54 +498,50 @@
     <div class="modal-content" style="background: #fff; border-radius: 12px; border: 2px solid #28c76f;">
       <div class="modal-header" style="background: #e8f8f2; border-bottom: 1px solid #28c76f;">
         <h5 class="modal-title fw-bold text-success" id="restoreUserModalLabel" style="padding-left: 130px;">
-          <i class="ti ti-refresh me-2"></i>Restore User Confirmation
+          <i class="ti ti-refresh me-2"></i><span data-i18n="restoreUserConfirmTitle">Restore User Confirmation</span>
         </h5>
         <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
       </div>
       <div class="modal-body">
         <div class="alert alert-info border border-info" role="alert" style="background: #f4faff; color: #1e2e50;">
           <h6 class="alert-heading mb-2 fw-bold">
-            <i class="ti ti-info-circle me-2"></i>Restore User Account
+            <i class="ti ti-info-circle me-2"></i><span data-i18n="restoreUserAccount">Restore User Account</span>
           </h6>
-          <p class="mb-0">You are about to restore this user account. This action will:</p>
+          <p class="mb-0" data-i18n="restoreUserConfirmDesc">You are about to restore this user account. This action will:</p>
           <ul class="mb-0 mt-2">
-            <li>Reactivate the user account</li>
-            <li>Send a reactivation email to the user</li>
-            <li>Allow the user to log in again</li>
-            <li>Move the user back to active users list</li>
+            <li data-i18n="restoreUserReactivate">Reactivate the user account</li>
+            <li data-i18n="restoreUserSendEmail">Send a reactivation email to the user</li>
+            <li data-i18n="restoreUserAllowLogin">Allow the user to log in again</li>
+            <li data-i18n="restoreUserMoveToActive">Move the user back to active users list</li>
           </ul>
         </div>
         <div class="card border-success shadow-sm mt-3">
           <div class="card-header bg-white border-bottom border-success">
-            <h6 class="mb-0 text-success fw-bold">
+            <h6 class="mb-0 text-success fw-bold" data-i18n="userInformation">
               <i class="ti ti-user me-2"></i>User Information
             </h6>
           </div>
           <div class="card-body" style="padding-top: 25px;">
             <div class="row">
               <div class="col-md-6">
-                <div class="mb-2"><strong>Username:</strong> <span class="restore-user-username"></span></div>
-                <div class="mb-2"><strong>Full Name:</strong> <span class="restore-user-fullname"></span></div>
-                <div class="mb-2"><strong>Email:</strong> <span class="restore-user-email"></span></div>
-                <div class="mb-2"><strong>Phone:</strong> <span class="restore-user-phone"></span></div>
+                <div class="mb-2"><strong data-i18n="username">Username:</strong> <span class="restore-user-username"></span></div>
+                <div class="mb-2"><strong data-i18n="fullname">Full Name:</strong> <span class="restore-user-fullname"></span></div>
+                <div class="mb-2"><strong data-i18n="email">Email:</strong> <span class="restore-user-email"></span></div>
+                <div class="mb-2"><strong data-i18n="phoneNumber">Phone:</strong> <span class="restore-user-phone"></span></div>
               </div>
               <div class="col-md-6">
-                <div class="mb-2"><strong>Status:</strong> <span class="restore-user-status"></span></div>
-                <div class="mb-2"><strong>Deleted At:</strong> <span class="restore-user-deletedat"></span></div>
-                <div class="mb-2"><strong>Address:</strong> <span class="restore-user-address"></span></div>
-                <div class="mb-2"><strong>Created:</strong> <span class="restore-user-created"></span></div>
+                <div class="mb-2"><strong data-i18n="status">Status:</strong> <span class="restore-user-status"></span></div>
+                <div class="mb-2"><strong data-i18n="deletedAt">Deleted At:</strong> <span class="restore-user-deletedat"></span></div>
+                <div class="mb-2"><strong data-i18n="address">Address:</strong> <span class="restore-user-address"></span></div>
+                <div class="mb-2"><strong data-i18n="created">Created:</strong> <span class="restore-user-created"></span></div>
               </div>
             </div>
           </div>
         </div>
       </div>
       <div class="modal-footer bg-white border-top border-success">
-        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
-          <i class="ti ti-x me-1"></i>Cancel
-        </button>
-        <button type="button" class="btn btn-success fw-bold" id="confirmRestoreUser">
-          <i class="ti ti-refresh me-1"></i>Restore User
-        </button>
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal" data-i18n="cancel"><i class="ti ti-x me-1"></i>Cancel</button>
+        <button type="button" class="btn btn-success fw-bold" id="confirmRestoreUser" data-i18n="restoreUser"><i class="ti ti-refresh me-1"></i>Restore User</button>
       </div>
     </div>
   </div>

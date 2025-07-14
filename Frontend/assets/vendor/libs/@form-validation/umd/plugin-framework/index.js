@@ -1,8 +1,8 @@
 (function (global, factory) {
-    typeof exports === 'object' && typeof module !== 'undefined' ? module.exports = factory(require('@form-validation/core'), require('@form-validation/plugin-message')) :
-    typeof define === 'function' && define.amd ? define(['@form-validation/core', '@form-validation/plugin-message'], factory) :
-    (global = typeof globalThis !== 'undefined' ? globalThis : global || self, (global.FormValidation = global.FormValidation || {}, global.FormValidation.plugins = global.FormValidation.plugins || {}, global.FormValidation.plugins.Framework = factory(global.FormValidation, global.FormValidation.plugins)));
-})(this, (function (core, pluginMessage) { 'use strict';
+    typeof exports === "object" && typeof module !== "undefined" ? module.exports = factory(require("@form-validation/core"), require("@form-validation/plugin-message")) :
+    typeof define === "function" && define.amd ? define(["@form-validation/core", "@form-validation/plugin-message"], factory) :
+    (global = typeof globalThis !== "undefined" ? globalThis : global || self, (global.FormValidation = global.FormValidation || {}, global.FormValidation.plugins = global.FormValidation.plugins || {}, global.FormValidation.plugins.Framework = factory(global.FormValidation, global.FormValidation.plugins)));
+})(this, (function (core, pluginMessage) { "use strict";
 
     /******************************************************************************
     Copyright (c) Microsoft Corporation.
@@ -49,10 +49,10 @@
             _this.containers = new Map();
             _this.opts = Object.assign({}, {
                 defaultMessageContainer: true,
-                eleInvalidClass: '',
-                eleValidClass: '',
-                rowClasses: '',
-                rowValidatingClass: '',
+                eleInvalidClass: "",
+                eleValidClass: "",
+                rowClasses: "",
+                rowValidatingClass: "",
             }, opts);
             _this.elementIgnoredHandler = _this.onElementIgnored.bind(_this);
             _this.elementValidatingHandler = _this.onElementValidating.bind(_this);
@@ -69,28 +69,28 @@
             var _this = this;
             classSet(this.core.getFormElement(), (_a = {},
                 _a[this.opts.formClass] = true,
-                _a['fv-plugins-framework'] = true,
+                _a["fv-plugins-framework"] = true,
                 _a));
             this.core
-                .on('core.element.ignored', this.elementIgnoredHandler)
-                .on('core.element.validating', this.elementValidatingHandler)
-                .on('core.element.validated', this.elementValidatedHandler)
-                .on('core.element.notvalidated', this.elementNotValidatedHandler)
-                .on('plugins.icon.placed', this.iconPlacedHandler)
-                .on('core.field.added', this.fieldAddedHandler)
-                .on('core.field.removed', this.fieldRemovedHandler);
+                .on("core.element.ignored", this.elementIgnoredHandler)
+                .on("core.element.validating", this.elementValidatingHandler)
+                .on("core.element.validated", this.elementValidatedHandler)
+                .on("core.element.notvalidated", this.elementNotValidatedHandler)
+                .on("plugins.icon.placed", this.iconPlacedHandler)
+                .on("core.field.added", this.fieldAddedHandler)
+                .on("core.field.removed", this.fieldRemovedHandler);
             if (this.opts.defaultMessageContainer) {
                 this.core.registerPlugin(Framework.MESSAGE_PLUGIN, new pluginMessage.Message({
                     clazz: this.opts.messageClass,
                     container: function (field, element) {
-                        var selector = 'string' === typeof _this.opts.rowSelector
+                        var selector = "string" === typeof _this.opts.rowSelector
                             ? _this.opts.rowSelector
                             : _this.opts.rowSelector(field, element);
                         var groupEle = closest(element, selector);
                         return pluginMessage.Message.getClosestContainer(element, groupEle, _this.opts.rowPattern);
                     },
                 }));
-                this.core.on('plugins.message.placed', this.messagePlacedHandler);
+                this.core.on("plugins.message.placed", this.messagePlacedHandler);
             }
         };
         Framework.prototype.uninstall = function () {
@@ -99,19 +99,19 @@
             this.containers.clear();
             classSet(this.core.getFormElement(), (_a = {},
                 _a[this.opts.formClass] = false,
-                _a['fv-plugins-framework'] = false,
+                _a["fv-plugins-framework"] = false,
                 _a));
             this.core
-                .off('core.element.ignored', this.elementIgnoredHandler)
-                .off('core.element.validating', this.elementValidatingHandler)
-                .off('core.element.validated', this.elementValidatedHandler)
-                .off('core.element.notvalidated', this.elementNotValidatedHandler)
-                .off('plugins.icon.placed', this.iconPlacedHandler)
-                .off('core.field.added', this.fieldAddedHandler)
-                .off('core.field.removed', this.fieldRemovedHandler);
+                .off("core.element.ignored", this.elementIgnoredHandler)
+                .off("core.element.validating", this.elementValidatingHandler)
+                .off("core.element.validated", this.elementValidatedHandler)
+                .off("core.element.notvalidated", this.elementNotValidatedHandler)
+                .off("plugins.icon.placed", this.iconPlacedHandler)
+                .off("core.field.added", this.fieldAddedHandler)
+                .off("core.field.removed", this.fieldRemovedHandler);
             if (this.opts.defaultMessageContainer) {
                 this.core.deregisterPlugin(Framework.MESSAGE_PLUGIN);
-                this.core.off('plugins.message.placed', this.messagePlacedHandler);
+                this.core.off("plugins.message.placed", this.messagePlacedHandler);
             }
         };
         Framework.prototype.onEnabled = function () {
@@ -146,7 +146,7 @@
                             _a[_this.opts.rowInvalidClass] = false,
                             _a[_this.opts.rowValidatingClass] = false,
                             _a[_this.opts.rowValidClass] = false,
-                            _a['fv-plugins-icon-container'] = false,
+                            _a["fv-plugins-icon-container"] = false,
                             _a));
                         _this.containers.delete(ele);
                     }
@@ -171,8 +171,8 @@
         Framework.prototype.prepareFieldContainer = function (field, elements) {
             var _this = this;
             if (elements.length) {
-                var type = elements[0].getAttribute('type');
-                if ('radio' === type || 'checkbox' === type) {
+                var type = elements[0].getAttribute("type");
+                if ("radio" === type || "checkbox" === type) {
                     this.prepareElementContainer(field, elements[0]);
                 }
                 else {
@@ -182,12 +182,12 @@
         };
         Framework.prototype.prepareElementContainer = function (field, element) {
             var _a;
-            var selector = 'string' === typeof this.opts.rowSelector ? this.opts.rowSelector : this.opts.rowSelector(field, element);
+            var selector = "string" === typeof this.opts.rowSelector ? this.opts.rowSelector : this.opts.rowSelector(field, element);
             var groupEle = closest(element, selector);
             if (groupEle !== element) {
                 classSet(groupEle, (_a = {},
                     _a[this.opts.rowClasses] = true,
-                    _a['fv-plugins-icon-container'] = true,
+                    _a["fv-plugins-icon-container"] = true,
                     _a));
                 this.containers.set(element, groupEle);
             }
@@ -204,8 +204,8 @@
         Framework.prototype.removeClasses = function (element, elements) {
             var _a;
             var _this = this;
-            var type = element.getAttribute('type');
-            var ele = 'radio' === type || 'checkbox' === type ? elements[0] : element;
+            var type = element.getAttribute("type");
+            var ele = "radio" === type || "checkbox" === type ? elements[0] : element;
             elements.forEach(function (ele) {
                 var _a;
                 classSet(ele, (_a = {},
@@ -226,8 +226,8 @@
             var _a, _b;
             var _this = this;
             var elements = e.elements;
-            var type = e.element.getAttribute('type');
-            var element = 'radio' === type || 'checkbox' === type ? elements[0] : e.element;
+            var type = e.element.getAttribute("type");
+            var element = "radio" === type || "checkbox" === type ? elements[0] : e.element;
             // Set the valid or invalid class for all elements
             elements.forEach(function (ele) {
                 var _a;
@@ -266,7 +266,7 @@
                 }
             }
         };
-        Framework.MESSAGE_PLUGIN = '___frameworkMessage';
+        Framework.MESSAGE_PLUGIN = "___frameworkMessage";
         return Framework;
     }(core.Plugin));
 

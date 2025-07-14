@@ -1,8 +1,8 @@
 (function (global, factory) {
-    typeof exports === 'object' && typeof module !== 'undefined' ? module.exports = factory(require('@form-validation/core')) :
-    typeof define === 'function' && define.amd ? define(['@form-validation/core'], factory) :
-    (global = typeof globalThis !== 'undefined' ? globalThis : global || self, (global.FormValidation = global.FormValidation || {}, global.FormValidation.plugins = global.FormValidation.plugins || {}, global.FormValidation.plugins.Dependency = factory(global.FormValidation)));
-})(this, (function (core) { 'use strict';
+    typeof exports === "object" && typeof module !== "undefined" ? module.exports = factory(require("@form-validation/core")) :
+    typeof define === "function" && define.amd ? define(["@form-validation/core"], factory) :
+    (global = typeof globalThis !== "undefined" ? globalThis : global || self, (global.FormValidation = global.FormValidation || {}, global.FormValidation.plugins = global.FormValidation.plugins || {}, global.FormValidation.plugins.Dependency = factory(global.FormValidation)));
+})(this, (function (core) { "use strict";
 
     /******************************************************************************
     Copyright (c) Microsoft Corporation.
@@ -49,14 +49,14 @@
             return _this;
         }
         Dependency.prototype.install = function () {
-            this.core.on('plugins.trigger.executed', this.triggerExecutedHandler);
+            this.core.on("plugins.trigger.executed", this.triggerExecutedHandler);
         };
         Dependency.prototype.uninstall = function () {
-            this.core.off('plugins.trigger.executed', this.triggerExecutedHandler);
+            this.core.off("plugins.trigger.executed", this.triggerExecutedHandler);
         };
         Dependency.prototype.onTriggerExecuted = function (e) {
             if (this.isEnabled && this.opts[e.field]) {
-                var dependencies = this.opts[e.field].split(' ');
+                var dependencies = this.opts[e.field].split(" ");
                 for (var _i = 0, dependencies_1 = dependencies; _i < dependencies_1.length; _i++) {
                     var d = dependencies_1[_i];
                     var dependentField = d.trim();

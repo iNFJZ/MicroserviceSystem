@@ -63,11 +63,11 @@ document.addEventListener("DOMContentLoaded", async function () {
         if (data.success && data.data && data.data.length > 0) {
           user = data.data[0];
         } else {
-          toastr.error("User not found or invalid token");
+          toastr.error(window.i18next.t("userNotFoundOrInvalidToken"));
           return;
         }
       } catch (e) {
-        toastr.error("User not found or invalid token");
+        toastr.error(window.i18next.t("userNotFoundOrInvalidToken"));
         return;
       }
     }
@@ -109,10 +109,10 @@ document.addEventListener("DOMContentLoaded", async function () {
         });
         $("#editUserForm").data("userid", u.id);
       } else {
-        toastr.error(data.message || "Failed to load user info");
+        toastr.error(data.message || window.i18next.t("failedToLoadUserInfo"));
       }
     } catch (e) {
-      toastr.error("Failed to load user info");
+      toastr.error(window.i18next.t("failedToLoadUserInfo"));
     }
   }
 
@@ -131,19 +131,17 @@ document.addEventListener("DOMContentLoaded", async function () {
       const file = this.files && this.files[0];
       if (file) {
         if (!file.type.startsWith("image/")) {
-          toastr.error("Please select a valid image file!");
+          toastr.error(window.i18next.t("pleaseSelectValidImageFile"));
           this.value = "";
           return;
         }
         if (file.size > 5 * 1024 * 1024) {
-          toastr.error("Image size must be less than 5MB!");
+          toastr.error(window.i18next.t("imageSizeMustBeLessThan5MB"));
           this.value = "";
           return;
         }
         if (file.size < 10 * 1024) {
-          toastr.warning(
-            "Image size is very small. For better quality, use an image larger than 10KB.",
-          );
+          toastr.warning(window.i18next.t("imageSizeIsVerySmall"));
         }
         selectedImageFile = file;
         const reader = new FileReader();
@@ -178,17 +176,17 @@ document.addEventListener("DOMContentLoaded", async function () {
     .off("click", "#cropImageBtn")
     .on("click", "#cropImageBtn", function () {
       if (!cropper || !cropperReady) {
-        toastr.error("Cropper is not ready. Please wait for the image to load.");
+        toastr.error(window.i18next.t("cropperNotReady"));
         return;
       }
       let cropBox = cropper.getCropBoxData();
       const imageData = cropper.getImageData();
       if (!cropBox || cropBox.width <= 0 || cropBox.height <= 0) {
-        toastr.error("Crop area is invalid. Please adjust the crop box.");
+        toastr.error(window.i18next.t("cropAreaInvalid"));
         return;
       }
       if (imageData && (cropBox.width > imageData.naturalWidth || cropBox.height > imageData.naturalHeight)) {
-        toastr.error("Crop area is larger than the image. Please zoom in or use a larger image.");
+        toastr.error(window.i18next.t("cropAreaLargerThanImage"));
         return;
       }
       try {
@@ -199,7 +197,7 @@ document.addEventListener("DOMContentLoaded", async function () {
           imageSmoothingQuality: "high",
           fillColor: "#fff",
         });
-        if (!canvas) throw new Error("Canvas is null. Image may be too small or crop area invalid.");
+        if (!canvas) throw new Error(window.i18next.t("canvasIsNull"));
         const size = 200;
         const circleCanvas = document.createElement("canvas");
         circleCanvas.width = size;
@@ -220,15 +218,13 @@ document.addEventListener("DOMContentLoaded", async function () {
         $("#edit-profilePicture-container, #profile-picture-preview").show();
         setTimeout(() => {
           $("#cropImageModal").modal("hide");
-          toastr.success(
-            "Profile picture cropped successfully! The image will be displayed as a circular avatar.",
-          );
+          toastr.success(window.i18next.t("profilePictureCroppedSuccessfully"));
         }, 200);
       } catch (error) {
         window._editProfilePictureBase64 = null;
         $("#crop-avatar-preview, #edit-profilePicture-preview").attr("src", "");
         $("#edit-profilePicture-container, #profile-picture-preview").hide();
-        toastr.error(error.message || "Failed to crop image. Please try again!");
+        toastr.error(error.message || window.i18next.t("failedToCropImage"));
       }
     });
 
@@ -247,7 +243,7 @@ document.addEventListener("DOMContentLoaded", async function () {
         cropper = null;
       }
 
-      toastr.info("Profile picture removed!");
+      toastr.info(window.i18next.t("profilePictureRemoved"));
     });
 
   $(form)
@@ -257,13 +253,13 @@ document.addEventListener("DOMContentLoaded", async function () {
 
       const userId = $(form).data("userid");
       if (!userId) {
-        toastr.error("User ID not found!");
+        toastr.error(window.i18next.t("userIdNotFound"));
         return;
       }
 
       const user = getCurrentUserInfo();
       if (!user) {
-        toastr.error("User not found");
+        toastr.error(window.i18next.t("userNotFound"));
         return;
       }
 
@@ -280,7 +276,7 @@ document.addEventListener("DOMContentLoaded", async function () {
       if (dateOfBirth && dateOfBirth.trim() !== "") {
         const today = new Date();
         if (dateOfBirth > today.toISOString().split("T")[0]) {
-          toastr.error("Date of birth cannot be in the future!");
+          toastr.error(window.i18next.t("dateOfBirthCannotBeInFuture"));
           return;
         }
         data.dateOfBirth = new Date(dateOfBirth).toISOString();
@@ -289,7 +285,7 @@ document.addEventListener("DOMContentLoaded", async function () {
       if (window._editProfilePictureBase64) {
         data.profilePicture = window._editProfilePictureBase64;
       } else if (selectedImageFile) {
-        toastr.warning("Please crop your profile picture before saving!");
+        toastr.warning(window.i18next.t("pleaseCropYourProfilePictureBeforeSaving"));
         return;
       } else if (window._profilePictureRemoved) {
         data.profilePicture = null;
@@ -328,23 +324,23 @@ document.addEventListener("DOMContentLoaded", async function () {
       }
 
       if (!changed) {
-        toastr.warning("You have not changed any information!");
+        toastr.warning(window.i18next.t("noInformationChanged"));
         return;
       }
 
       if (data.phoneNumber && !/^[0-9]{10,11}$/.test(data.phoneNumber)) {
-        toastr.error("Phone number must be 10-11 digits and only numbers!");
+        toastr.error(window.i18next.t("phoneNumberMustBe10To11DigitsAndOnlyNumbers"));
         return;
       }
 
       if (!data.fullName) {
-        toastr.error("Full name is required!");
+        toastr.error(window.i18next.t("fullNameIsRequired"));
         return;
       }
 
       const token = getToken();
       if (!token) {
-        toastr.error("Authentication required!");
+        toastr.error(window.i18next.t("authenticationRequired"));
         return;
       }
 
@@ -370,12 +366,12 @@ document.addEventListener("DOMContentLoaded", async function () {
           } else if (responseData.message) {
             toastr.error(responseData.message);
           } else {
-            toastr.error("Failed to update profile!");
+            toastr.error(window.i18next.t("failedToUpdateProfile"));
           }
           return;
         }
 
-        toastr.success("Profile updated successfully!");
+        toastr.success(window.i18next.t("profileUpdatedSuccessfully"));
 
         window._editProfilePictureBase64 = null;
         selectedImageFile = null;
@@ -392,7 +388,7 @@ document.addEventListener("DOMContentLoaded", async function () {
           await window.adminAuth.updateUserProfileDisplay();
         }
       } catch (err) {
-        toastr.error(err.message || "Update failed");
+        toastr.error(err.message || window.i18next.t("updateFailed"));
       }
     });
 
@@ -403,7 +399,7 @@ document.addEventListener("DOMContentLoaded", async function () {
 
       if (
         !confirm(
-          "Are you sure you want to deactivate your account? This cannot be undone.",
+          window.i18next.t("areYouSureYouWantToDeactivateYourAccount"),
         )
       ) {
         return;
@@ -411,7 +407,7 @@ document.addEventListener("DOMContentLoaded", async function () {
 
       const user = getCurrentUserInfo();
       if (!user) {
-        toastr.error("User not found");
+        toastr.error(window.i18next.t("userNotFound"));
         return;
       }
 
@@ -424,16 +420,16 @@ document.addEventListener("DOMContentLoaded", async function () {
         const data = await res.json();
 
         if (res.ok && data.success) {
-          toastr.success("Account deactivated. Logging out...");
+          toastr.success(window.i18next.t("accountDeactivated"));
           localStorage.removeItem("authToken");
           setTimeout(() => {
             window.location.href = "/auth/login.html";
           }, 1500);
         } else {
-          toastr.error(data.message || "Deactivation failed");
+          toastr.error(data.message || window.i18next.t("deactivationFailed"));
         }
       } catch (err) {
-        toastr.error(err.message || "Deactivation failed");
+        toastr.error(err.message || window.i18next.t("deactivationFailed"));
       }
     });
 
@@ -469,7 +465,7 @@ document.addEventListener("DOMContentLoaded", async function () {
             cropBox = cropper.getCropBoxData();
             imageData = cropper.getImageData();
           } catch (e) {
-            toastr.error("Failed to initialize cropper. Please try another image.");
+            toastr.error(window.i18next.t("failedToInitializeCropper"));
             $("#cropImageModal").modal("hide");
             return;
           }
@@ -518,13 +514,13 @@ document.addEventListener("DOMContentLoaded", async function () {
           }
           // Nếu ảnh quá nhỏ (bé hơn 100x100), báo lỗi và không cho crop
           if (imageData.naturalWidth < 100 || imageData.naturalHeight < 100) {
-            toastr.error("Image is too small. Please use an image at least 100x100px.");
+            toastr.error(window.i18next.t("imageTooSmall"));
             $("#cropImageModal").modal("hide");
             return;
           }
           // Nếu thử quá 10 lần mà cropBox vẫn không hợp lệ, báo lỗi
           if (tryCount > 10 && (!cropBox || cropBox.width <= 0 || cropBox.height <= 0)) {
-            toastr.error("Failed to initialize cropper. Please try another image.");
+            toastr.error(window.i18next.t("failedToInitializeCropper"));
             $("#cropImageModal").modal("hide");
             return;
           }
@@ -676,7 +672,7 @@ document.addEventListener("DOMContentLoaded", async function () {
         if (cropperReady) updateAvatarPreview();
       },
       error: function () {
-        toastr.error("Failed to load image. Please try another image.");
+        toastr.error(window.i18next.t("failedToLoadImage"));
         $("#cropImageModal").modal("hide");
       }
     });
@@ -691,7 +687,7 @@ document.addEventListener("DOMContentLoaded", async function () {
       updateZoomDisplay(currentZoom);
       const minLabel = zoomSlider.parentElement?.previousElementSibling;
       const maxLabel = document.getElementById("zoom-max-label");
-      if (minLabel) minLabel.textContent = "100%";
+      if (minLabel) minLabel.textContent = window.i18next.t("zoom100");
       if (maxLabel && maxZoom) maxLabel.textContent = `${Math.round(maxZoom * 100)}%`;
     }
   }
@@ -830,7 +826,7 @@ document.addEventListener("DOMContentLoaded", async function () {
       if (file.type.startsWith("image/")) {
         handleImageFile(file);
       } else {
-        toastr.error("Please select a valid image file!");
+        toastr.error(window.i18next.t("pleaseSelectValidImageFile"));
       }
     }
   });
@@ -841,13 +837,11 @@ document.addEventListener("DOMContentLoaded", async function () {
 
   function handleImageFile(file) {
     if (file.size > 5 * 1024 * 1024) {
-      toastr.error("Image size must be less than 5MB!");
+      toastr.error(window.i18next.t("imageSizeMustBeLessThan5MB"));
       return;
     }
     if (file.size < 10 * 1024) {
-      toastr.warning(
-        "Image size is very small. For better quality, use an image larger than 10KB.",
-      );
+      toastr.warning(window.i18next.t("imageSizeIsVerySmall"));
     }
 
     selectedImageFile = file;

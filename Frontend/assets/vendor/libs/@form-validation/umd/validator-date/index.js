@@ -1,8 +1,8 @@
 (function (global, factory) {
-    typeof exports === 'object' && typeof module !== 'undefined' ? module.exports = factory(require('@form-validation/core')) :
-    typeof define === 'function' && define.amd ? define(['@form-validation/core'], factory) :
-    (global = typeof globalThis !== 'undefined' ? globalThis : global || self, (global.FormValidation = global.FormValidation || {}, global.FormValidation.validators = global.FormValidation.validators || {}, global.FormValidation.validators.date = factory(global.FormValidation)));
-})(this, (function (core) { 'use strict';
+    typeof exports === "object" && typeof module !== "undefined" ? module.exports = factory(require("@form-validation/core")) :
+    typeof define === "function" && define.amd ? define(["@form-validation/core"], factory) :
+    (global = typeof globalThis !== "undefined" ? globalThis : global || self, (global.FormValidation = global.FormValidation || {}, global.FormValidation.validators = global.FormValidation.validators || {}, global.FormValidation.validators.date = factory(global.FormValidation)));
+})(this, (function (core) { "use strict";
 
     /**
      * FormValidation (https://formvalidation.io)
@@ -24,13 +24,13 @@
      */
     var parseDate = function (input, inputFormat, separator) {
         // Ensure that the format must consist of year, month and day patterns
-        var yearIndex = inputFormat.indexOf('YYYY');
-        var monthIndex = inputFormat.indexOf('MM');
-        var dayIndex = inputFormat.indexOf('DD');
+        var yearIndex = inputFormat.indexOf("YYYY");
+        var monthIndex = inputFormat.indexOf("MM");
+        var dayIndex = inputFormat.indexOf("DD");
         if (yearIndex === -1 || monthIndex === -1 || dayIndex === -1) {
             return null;
         }
-        var sections = input.split(' ');
+        var sections = input.split(" ");
         var dateSection = sections[0].split(separator);
         if (dateSection.length < 3) {
             return null;
@@ -38,9 +38,9 @@
         var d = new Date(parseInt(dateSection[yearIndex], 10), parseInt(dateSection[monthIndex], 10) - 1, parseInt(dateSection[dayIndex], 10));
         var amPmSection = sections.length > 2 ? sections[2] : null;
         if (sections.length > 1) {
-            var timeSection = sections[1].split(':');
+            var timeSection = sections[1].split(":");
             var h = timeSection.length > 0 ? parseInt(timeSection[0], 10) : 0;
-            d.setHours(amPmSection && amPmSection.toUpperCase() === 'PM' && h < 12 ? h + 12 : h);
+            d.setHours(amPmSection && amPmSection.toUpperCase() === "PM" && h < 12 ? h + 12 : h);
             d.setMinutes(timeSection.length > 1 ? parseInt(timeSection[1], 10) : 0);
             d.setSeconds(timeSection.length > 2 ? parseInt(timeSection[2], 10) : 0);
         }
@@ -71,13 +71,13 @@
      */
     var formatDate = function (input, inputFormat) {
         var dateFormat = inputFormat
-            .replace(/Y/g, 'y')
-            .replace(/M/g, 'm')
-            .replace(/D/g, 'd')
-            .replace(/:m/g, ':M')
-            .replace(/:mm/g, ':MM')
-            .replace(/:S/, ':s')
-            .replace(/:SS/, ':ss');
+            .replace(/Y/g, "y")
+            .replace(/M/g, "m")
+            .replace(/D/g, "d")
+            .replace(/:m/g, ":M")
+            .replace(/:mm/g, ":MM")
+            .replace(/:S/, ":s")
+            .replace(/:SS/, ":ss");
         var d = input.getDate();
         var dd = d < 10 ? "0".concat(d) : d;
         var m = input.getMonth() + 1;
@@ -115,7 +115,7 @@
     var date = function () {
         return {
             validate: function (input) {
-                if (input.value === '') {
+                if (input.value === "") {
                     return {
                         meta: {
                             date: null,
@@ -125,8 +125,8 @@
                 }
                 var opts = Object.assign({}, {
                     // Force the format to `YYYY-MM-DD` as the default browser behaviour when using type="date" attribute
-                    format: input.element && input.element.getAttribute('type') === 'date' ? 'YYYY-MM-DD' : 'MM/DD/YYYY',
-                    message: '',
+                    format: input.element && input.element.getAttribute("type") === "date" ? "YYYY-MM-DD" : "MM/DD/YYYY",
+                    message: "",
                 }, removeUndefined(input.options));
                 var message = input.l10n ? input.l10n.date.default : opts.message;
                 var invalidResult = {
@@ -136,10 +136,10 @@
                     },
                     valid: false,
                 };
-                var formats = opts.format.split(' ');
+                var formats = opts.format.split(" ");
                 var timeFormat = formats.length > 1 ? formats[1] : null;
                 var amOrPm = formats.length > 2 ? formats[2] : null;
-                var sections = input.value.split(' ');
+                var sections = input.value.split(" ");
                 var dateSection = sections[0];
                 var timeSection = sections.length > 1 ? sections[1] : null;
                 var amPmSection = sections.length > 2 ? sections[2] : null;
@@ -148,13 +148,13 @@
                 }
                 // Determine the separator
                 var separator = opts.separator ||
-                    (dateSection.indexOf('/') !== -1
-                        ? '/'
-                        : dateSection.indexOf('-') !== -1
-                            ? '-'
-                            : dateSection.indexOf('.') !== -1
-                                ? '.'
-                                : '/');
+                    (dateSection.indexOf("/") !== -1
+                        ? "/"
+                        : dateSection.indexOf("-") !== -1
+                            ? "-"
+                            : dateSection.indexOf(".") !== -1
+                                ? "."
+                                : "/");
                 if (separator === null || dateSection.indexOf(separator) === -1) {
                     return invalidResult;
                 }
@@ -164,9 +164,9 @@
                 if (dateStr.length !== dateFormat.length) {
                     return invalidResult;
                 }
-                var yearStr = dateStr[dateFormat.indexOf('YYYY')];
-                var monthStr = dateStr[dateFormat.indexOf('MM')];
-                var dayStr = dateStr[dateFormat.indexOf('DD')];
+                var yearStr = dateStr[dateFormat.indexOf("YYYY")];
+                var monthStr = dateStr[dateFormat.indexOf("MM")];
+                var dayStr = dateStr[dateFormat.indexOf("DD")];
                 if (!/^\d+$/.test(yearStr) ||
                     !/^\d+$/.test(monthStr) ||
                     !/^\d+$/.test(dayStr) ||
@@ -184,8 +184,8 @@
                 // Determine the time
                 var d = new Date(year, month - 1, day);
                 if (timeFormat) {
-                    var hms = timeSection.split(':');
-                    if (timeFormat.split(':').length !== hms.length) {
+                    var hms = timeSection.split(":");
+                    if (timeFormat.split(":").length !== hms.length) {
                         return invalidResult;
                     }
                     var h = hms.length > 0 ? (hms[0].length <= 2 && /^\d+$/.test(hms[0]) ? parseInt(hms[0], 10) : -1) : 0;
@@ -206,18 +206,18 @@
                     if (m < 0 || m > 59) {
                         return invalidResult;
                     }
-                    d.setHours(amPmSection && amPmSection.toUpperCase() === 'PM' && h < 12 ? h + 12 : h);
+                    d.setHours(amPmSection && amPmSection.toUpperCase() === "PM" && h < 12 ? h + 12 : h);
                     d.setMinutes(m);
                     d.setSeconds(s);
                 }
                 // Validate day, month, and year
-                var minOption = typeof opts.min === 'function' ? opts.min() : opts.min;
+                var minOption = typeof opts.min === "function" ? opts.min() : opts.min;
                 var min = minOption instanceof Date
                     ? minOption
                     : minOption
                         ? parseDate(minOption, dateFormat, separator)
                         : d;
-                var maxOption = typeof opts.max === 'function' ? opts.max() : opts.max;
+                var maxOption = typeof opts.max === "function" ? opts.max() : opts.max;
                 var max = maxOption instanceof Date
                     ? maxOption
                     : maxOption

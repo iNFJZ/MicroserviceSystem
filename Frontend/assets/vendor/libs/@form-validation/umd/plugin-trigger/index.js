@@ -1,8 +1,8 @@
 (function (global, factory) {
-    typeof exports === 'object' && typeof module !== 'undefined' ? module.exports = factory(require('@form-validation/core')) :
-    typeof define === 'function' && define.amd ? define(['@form-validation/core'], factory) :
-    (global = typeof globalThis !== 'undefined' ? globalThis : global || self, (global.FormValidation = global.FormValidation || {}, global.FormValidation.plugins = global.FormValidation.plugins || {}, global.FormValidation.plugins.Trigger = factory(global.FormValidation)));
-})(this, (function (core) { 'use strict';
+    typeof exports === "object" && typeof module !== "undefined" ? module.exports = factory(require("@form-validation/core")) :
+    typeof define === "function" && define.amd ? define(["@form-validation/core"], factory) :
+    (global = typeof globalThis !== "undefined" ? globalThis : global || self, (global.FormValidation = global.FormValidation || {}, global.FormValidation.plugins = global.FormValidation.plugins || {}, global.FormValidation.plugins.Trigger = factory(global.FormValidation)));
+})(this, (function (core) { "use strict";
 
     /******************************************************************************
     Copyright (c) Microsoft Corporation.
@@ -78,8 +78,8 @@
             var _this = _super.call(this, opts) || this;
             _this.handlers = [];
             _this.timers = new Map();
-            var ele = document.createElement('div');
-            _this.defaultEvent = !('oninput' in ele) ? 'keyup' : 'input';
+            var ele = document.createElement("div");
+            _this.defaultEvent = !("oninput" in ele) ? "keyup" : "input";
             _this.opts = Object.assign({}, {
                 delay: 0,
                 event: _this.defaultEvent,
@@ -90,14 +90,14 @@
             return _this;
         }
         Trigger.prototype.install = function () {
-            this.core.on('core.field.added', this.fieldAddedHandler).on('core.field.removed', this.fieldRemovedHandler);
+            this.core.on("core.field.added", this.fieldAddedHandler).on("core.field.removed", this.fieldRemovedHandler);
         };
         Trigger.prototype.uninstall = function () {
             this.handlers.forEach(function (item) { return item.element.removeEventListener(item.event, item.handler); });
             this.handlers = [];
             this.timers.forEach(function (t) { return window.clearTimeout(t); });
             this.timers.clear();
-            this.core.off('core.field.added', this.fieldAddedHandler).off('core.field.removed', this.fieldRemovedHandler);
+            this.core.off("core.field.added", this.fieldAddedHandler).off("core.field.removed", this.fieldRemovedHandler);
         };
         Trigger.prototype.prepareHandler = function (field, elements) {
             var _this = this;
@@ -106,23 +106,23 @@
                 if (!!_this.opts.event && _this.opts.event[field] === false) {
                     events = [];
                 }
-                else if (!!_this.opts.event && !!_this.opts.event[field] && typeof _this.opts.event[field] !== 'function') {
+                else if (!!_this.opts.event && !!_this.opts.event[field] && typeof _this.opts.event[field] !== "function") {
                     // To fix the case where `field` is a special property of String
                     // For example, `link` is the special function of `String.prototype`
                     // In this case, `this.opts.event[field]` is a function, not a string
-                    events = _this.opts.event[field].split(' ');
+                    events = _this.opts.event[field].split(" ");
                 }
-                else if ('string' === typeof _this.opts.event && _this.opts.event !== _this.defaultEvent) {
-                    events = _this.opts.event.split(' ');
+                else if ("string" === typeof _this.opts.event && _this.opts.event !== _this.defaultEvent) {
+                    events = _this.opts.event.split(" ");
                 }
                 else {
-                    var type = ele.getAttribute('type');
+                    var type = ele.getAttribute("type");
                     var tagName = ele.tagName.toLowerCase();
                     // IE10/11 fires the `input` event when focus on the field having a placeholder
-                    var event_1 = 'radio' === type || 'checkbox' === type || 'file' === type || 'select' === tagName
-                        ? 'change'
-                        : _this.ieVersion >= 10 && ele.getAttribute('placeholder')
-                            ? 'keyup'
+                    var event_1 = "radio" === type || "checkbox" === type || "file" === type || "select" === tagName
+                        ? "change"
+                        : _this.ieVersion >= 10 && ele.getAttribute("placeholder")
+                            ? "keyup"
                             : _this.defaultEvent;
                     events = [event_1];
                 }
@@ -142,10 +142,10 @@
             var _this = this;
             if (this.isEnabled &&
                 this.exceedThreshold(field, ele) &&
-                this.core.executeFilter('plugins-trigger-should-validate', true, [field, ele])) {
+                this.core.executeFilter("plugins-trigger-should-validate", true, [field, ele])) {
                 var handler = function () {
                     return _this.core.validateElement(field, ele).then(function (_) {
-                        _this.core.emit('plugins.trigger.executed', {
+                        _this.core.emit("plugins.trigger.executed", {
                             element: ele,
                             event: e,
                             field: field,
@@ -184,8 +184,8 @@
                 return true;
             }
             // List of input type which user can't type in
-            var type = element.getAttribute('type');
-            if (['button', 'checkbox', 'file', 'hidden', 'image', 'radio', 'reset', 'submit'].indexOf(type) !== -1) {
+            var type = element.getAttribute("type");
+            if (["button", "checkbox", "file", "hidden", "image", "radio", "reset", "submit"].indexOf(type) !== -1) {
                 return true;
             }
             var value = this.core.getElementValue(field, element);

@@ -13,7 +13,7 @@
       name="viewport"
       content="width=device-width, initial-scale=1.0, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0" />
 
-    <title>Account Created Successfully - iNFJZ System</title>
+    <title data-i18n="verifyEmailTitle">Account Created Successfully - EDISA</title>
 
     <meta name="description" content="" />
 
@@ -57,6 +57,32 @@
 
     <div class="authentication-wrapper authentication-basic px-4">
       <div class="authentication-inner py-4">
+        <!-- Language Dropdown -->
+        <div class="d-flex justify-content-end mb-3">
+          <div class="dropdown-language dropdown me-2 me-xl-0">
+            <a class="btn btn-outline-secondary dropdown-toggle" href="javascript:void(0);" data-bs-toggle="dropdown">
+              <i class="ti ti-language rounded-circle ti-md"></i>
+            </a>
+            <ul class="dropdown-menu dropdown-menu-end">
+              <li>
+                <a class="dropdown-item" href="javascript:void(0);" data-language="vi">
+                  <span class="align-middle" data-i18n="vietnamese">Vietnamese</span>
+                </a>
+              </li>
+              <li>
+                <a class="dropdown-item" href="javascript:void(0);" data-language="en">
+                  <span class="align-middle" data-i18n="english">English</span>
+                </a>
+              </li>
+              <li>
+                <a class="dropdown-item" href="javascript:void(0);" data-language="ja">
+                  <span class="align-middle" data-i18n="japanese">Japanese</span>
+                </a>
+              </li>
+            </ul>
+          </div>
+        </div>
+        <!-- /Language Dropdown -->
         <!-- Verify Email -->
         <div class="card">
           <div class="card-body">
@@ -89,19 +115,17 @@
                         fill="#7367F0" />
                     </svg>
                   </span> -->
-                  <img src="../../assets/img/branding/logo-i-vuexy.svg" alt="iNFJZ System Logo" style="height:40px;width:auto;">
-                <span class="app-brand-text demo text-body fw-bold ms-1">iNFJZ System</span>
+                  <img src="../../assets/img/branding/logo-i-vuexy.svg" alt="EDISA Logo" style="height:40px;width:auto;">
+                <span class="app-brand-text demo text-body fw-bold ms-1">EDISA</span>
               </a>
             </div>
             <!-- /Logo -->
-            <h4 class="mb-1 pt-2">Account Created Successfully! 🎉</h4>
-            <p class="text-start mb-4">
-              Your account has been created successfully! A verification email has been sent to your email address: <span id="userEmail" class="fw-medium">Loading...</span>. Please check your email and click the verification link to activate your account.
-            </p>
-            <a class="btn btn-primary w-100 mb-3" href="/">Go to Login</a>
+            <h4 class="mb-1 pt-2" data-i18n="verifyEmailTitle">Account Created Successfully! 🎉</h4>
+            <p class="text-start mb-4" data-i18n="verifyEmailDesc">Your account has been created successfully! A verification email has been sent to your email address: <span id="userEmail" class="fw-medium" data-i18n="loading">Loading...</span>. Please check your email and click the verification link to activate your account.</p>
+            <a class="btn btn-primary w-100 mb-3" href="/" data-i18n="goToLogin">Go to Login</a>
             <p class="text-center mb-0">
-              Didn't receive the email?
-              <a href="javascript:void(0);" id="resendLink">Resend Verification Email</a>
+              <span data-i18n="notReceivedEmail">Didn't receive the email?</span>
+              <a href="javascript:void(0);" id="resendLink" data-i18n="resendVerification">Resend Verification Email</a>
             </p>
           </div>
         </div>
@@ -121,6 +145,8 @@
     <script src="../../assets/vendor/libs/select2/select2.js"></script>
 
     <!-- Main JS -->
+    <script src="../../assets/vendor/libs/i18n/i18next.min.js"></script>
+    <script src="../../assets/vendor/libs/i18n/i18nextHttpBackend.min.js"></script>
     <script src="../../assets/js/main.js"></script>
 
     <!-- Toastr JS -->

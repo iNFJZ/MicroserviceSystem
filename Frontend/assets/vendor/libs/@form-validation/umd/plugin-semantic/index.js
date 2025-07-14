@@ -1,8 +1,8 @@
 (function (global, factory) {
-    typeof exports === 'object' && typeof module !== 'undefined' ? module.exports = factory(require('@form-validation/core'), require('@form-validation/plugin-framework')) :
-    typeof define === 'function' && define.amd ? define(['@form-validation/core', '@form-validation/plugin-framework'], factory) :
-    (global = typeof globalThis !== 'undefined' ? globalThis : global || self, (global.FormValidation = global.FormValidation || {}, global.FormValidation.plugins = global.FormValidation.plugins || {}, global.FormValidation.plugins.Semantic = factory(global.FormValidation, global.FormValidation.plugins)));
-})(this, (function (core, pluginFramework) { 'use strict';
+    typeof exports === "object" && typeof module !== "undefined" ? module.exports = factory(require("@form-validation/core"), require("@form-validation/plugin-framework")) :
+    typeof define === "function" && define.amd ? define(["@form-validation/core", "@form-validation/plugin-framework"], factory) :
+    (global = typeof globalThis !== "undefined" ? globalThis : global || self, (global.FormValidation = global.FormValidation || {}, global.FormValidation.plugins = global.FormValidation.plugins || {}, global.FormValidation.plugins.Semantic = factory(global.FormValidation, global.FormValidation.plugins)));
+})(this, (function (core, pluginFramework) { "use strict";
 
     /******************************************************************************
     Copyright (c) Microsoft Corporation.
@@ -45,29 +45,29 @@
         __extends(Semantic, _super);
         function Semantic(opts) {
             return _super.call(this, Object.assign({}, {
-                formClass: 'fv-plugins-semantic',
+                formClass: "fv-plugins-semantic",
                 // See https://semantic-ui.com/elements/label.html#pointing
-                messageClass: 'ui pointing red label',
-                rowInvalidClass: 'error',
+                messageClass: "ui pointing red label",
+                rowInvalidClass: "error",
                 rowPattern: /^.*(field|column).*$/,
-                rowSelector: '.fields',
-                rowValidClass: 'fv-has-success',
+                rowSelector: ".fields",
+                rowValidClass: "fv-has-success",
             }, opts)) || this;
         }
         Semantic.prototype.onIconPlaced = function (e) {
-            var type = e.element.getAttribute('type');
-            if ('checkbox' === type || 'radio' === type) {
+            var type = e.element.getAttribute("type");
+            if ("checkbox" === type || "radio" === type) {
                 var parent_1 = e.element.parentElement;
                 classSet(e.iconElement, {
-                    'fv-plugins-icon-check': true,
+                    "fv-plugins-icon-check": true,
                 });
                 parent_1.parentElement.insertBefore(e.iconElement, parent_1.nextSibling);
             }
         };
         Semantic.prototype.onMessagePlaced = function (e) {
-            var type = e.element.getAttribute('type');
+            var type = e.element.getAttribute("type");
             var numElements = e.elements.length;
-            if (('checkbox' === type || 'radio' === type) && numElements > 1) {
+            if (("checkbox" === type || "radio" === type) && numElements > 1) {
                 // Put the message at the end when there are multiple checkboxes/radios
                 //  <div class="field">
                 //      <div class="ui checkbox">
@@ -84,7 +84,7 @@
                 // Get the last checkbox
                 var last = e.elements[numElements - 1];
                 var parent_2 = last.parentElement;
-                if (hasClass(parent_2, type) && hasClass(parent_2, 'ui')) {
+                if (hasClass(parent_2, type) && hasClass(parent_2, "ui")) {
                     parent_2.parentElement.insertBefore(e.messageElement, parent_2.nextSibling);
                 }
             }

@@ -1,8 +1,8 @@
 (function (global, factory) {
-    typeof exports === 'object' && typeof module !== 'undefined' ? module.exports = factory() :
-    typeof define === 'function' && define.amd ? define(factory) :
-    (global = typeof globalThis !== 'undefined' ? globalThis : global || self, (global.FormValidation = global.FormValidation || {}, global.FormValidation.validators = global.FormValidation.validators || {}, global.FormValidation.validators.ean = factory()));
-})(this, (function () { 'use strict';
+    typeof exports === "object" && typeof module !== "undefined" ? module.exports = factory() :
+    typeof define === "function" && define.amd ? define(factory) :
+    (global = typeof globalThis !== "undefined" ? globalThis : global || self, (global.FormValidation = global.FormValidation || {}, global.FormValidation.validators = global.FormValidation.validators || {}, global.FormValidation.validators.ean = factory()));
+})(this, (function () { "use strict";
 
     /**
      * FormValidation (https://formvalidation.io)
@@ -16,7 +16,7 @@
              * @see http://en.wikipedia.org/wiki/European_Article_Number
              */
             validate: function (input) {
-                if (input.value === '') {
+                if (input.value === "") {
                     return { valid: true };
                 }
                 if (!/^(\d{8}|\d{12}|\d{13}|\d{14})$/.test(input.value)) {

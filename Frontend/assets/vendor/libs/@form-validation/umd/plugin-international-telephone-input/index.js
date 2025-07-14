@@ -1,8 +1,8 @@
 (function (global, factory) {
-    typeof exports === 'object' && typeof module !== 'undefined' ? module.exports = factory(require('@form-validation/core')) :
-    typeof define === 'function' && define.amd ? define(['@form-validation/core'], factory) :
-    (global = typeof globalThis !== 'undefined' ? globalThis : global || self, (global.FormValidation = global.FormValidation || {}, global.FormValidation.plugins = global.FormValidation.plugins || {}, global.FormValidation.plugins.InternationalTelephoneInput = factory(global.FormValidation)));
-})(this, (function (core) { 'use strict';
+    typeof exports === "object" && typeof module !== "undefined" ? module.exports = factory(require("@form-validation/core")) :
+    typeof define === "function" && define.amd ? define(["@form-validation/core"], factory) :
+    (global = typeof globalThis !== "undefined" ? globalThis : global || self, (global.FormValidation = global.FormValidation || {}, global.FormValidation.plugins = global.FormValidation.plugins || {}, global.FormValidation.plugins.InternationalTelephoneInput = factory(global.FormValidation)));
+})(this, (function (core) { "use strict";
 
     /******************************************************************************
     Copyright (c) Microsoft Corporation.
@@ -49,14 +49,14 @@
             _this.fieldElements = new Map();
             _this.hiddenFieldElements = new Map();
             _this.opts = Object.assign({}, {
-                autoPlaceholder: 'polite',
-                utilsScript: '',
+                autoPlaceholder: "polite",
+                utilsScript: "",
             }, opts);
             _this.validatePhoneNumber = _this.checkPhoneNumber.bind(_this);
-            _this.fields = typeof _this.opts.field === 'string' ? _this.opts.field.split(',') : _this.opts.field;
+            _this.fields = typeof _this.opts.field === "string" ? _this.opts.field.split(",") : _this.opts.field;
             _this.hiddenFieldInputs = _this.opts.hiddenPhoneInput
-                ? typeof _this.opts.hiddenPhoneInput === 'string'
-                    ? _this.opts.hiddenPhoneInput.split(',')
+                ? typeof _this.opts.hiddenPhoneInput === "string"
+                    ? _this.opts.hiddenPhoneInput.split(",")
                     : _this.opts.hiddenPhoneInput
                 : [];
             _this.onValidatorValidatedHandler = _this.onValidatorValidated.bind(_this);
@@ -77,20 +77,20 @@
                 });
                 var ele = _this.core.getElements(field)[0];
                 var handler = function () { return _this.core.revalidateField(field); };
-                ele.addEventListener('countrychange', handler);
+                ele.addEventListener("countrychange", handler);
                 _this.countryChangeHandler.set(field, handler);
                 _this.fieldElements.set(field, ele);
                 _this.intlTelInstances.set(field, intlTelInput(ele, _this.opts));
                 if (index < numHiddenFieldInputs && _this.hiddenFieldInputs[index]) {
-                    var hiddenInputEle = document.createElement('input');
-                    hiddenInputEle.setAttribute('type', 'hidden');
-                    hiddenInputEle.setAttribute('name', _this.hiddenFieldInputs[index]);
+                    var hiddenInputEle = document.createElement("input");
+                    hiddenInputEle.setAttribute("type", "hidden");
+                    hiddenInputEle.setAttribute("name", _this.hiddenFieldInputs[index]);
                     _this.core.getFormElement().appendChild(hiddenInputEle);
                     _this.hiddenFieldElements.set(field, hiddenInputEle);
                 }
             });
             if (numHiddenFieldInputs > 0) {
-                this.core.on('core.validator.validated', this.onValidatorValidatedHandler);
+                this.core.on("core.validator.validated", this.onValidatorValidatedHandler);
             }
         };
         InternationalTelephoneInput.prototype.uninstall = function () {
@@ -102,7 +102,7 @@
                 var ele = _this.fieldElements.get(field);
                 var intlTel = _this.getIntTelInstance(field);
                 if (handler && ele && intlTel) {
-                    ele.removeEventListener('countrychange', handler);
+                    ele.removeEventListener("countrychange", handler);
                     _this.core.disableValidator(field, InternationalTelephoneInput.INT_TEL_VALIDATOR);
                     intlTel.destroy();
                 }
@@ -114,7 +114,7 @@
                 }
             });
             if (numHiddenFieldInputs > 0) {
-                this.core.off('core.validator.validated', this.onValidatorValidatedHandler);
+                this.core.off("core.validator.validated", this.onValidatorValidatedHandler);
             }
             this.fieldElements.clear();
             this.hiddenFieldElements.clear();
@@ -135,7 +135,7 @@
                 // Reset the full phone number input
                 var hiddenInputEle = _this.hiddenFieldElements.get(field);
                 if (hiddenInputEle) {
-                    hiddenInputEle.value = '';
+                    hiddenInputEle.value = "";
                 }
             });
         };
@@ -145,7 +145,7 @@
                 validate: function (input) {
                     var value = input.value;
                     var intlTel = _this.getIntTelInstance(input.field);
-                    if (value === '' || !intlTel) {
+                    if (value === "" || !intlTel) {
                         return {
                             valid: true,
                         };
@@ -175,10 +175,10 @@
                 hiddenInputEle.value = phoneNumber;
             }
             else {
-                hiddenInputEle.value = '';
+                hiddenInputEle.value = "";
             }
         };
-        InternationalTelephoneInput.INT_TEL_VALIDATOR = '___InternationalTelephoneInputValidator';
+        InternationalTelephoneInput.INT_TEL_VALIDATOR = "___InternationalTelephoneInputValidator";
         return InternationalTelephoneInput;
     }(core.Plugin));
 

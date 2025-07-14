@@ -1,8 +1,8 @@
 (function (global, factory) {
-    typeof exports === 'object' && typeof module !== 'undefined' ? module.exports = factory(require('@form-validation/core')) :
-    typeof define === 'function' && define.amd ? define(['@form-validation/core'], factory) :
-    (global = typeof globalThis !== 'undefined' ? globalThis : global || self, (global.FormValidation = global.FormValidation || {}, global.FormValidation.plugins = global.FormValidation.plugins || {}, global.FormValidation.plugins.Excluded = factory(global.FormValidation)));
-})(this, (function (core) { 'use strict';
+    typeof exports === "object" && typeof module !== "undefined" ? module.exports = factory(require("@form-validation/core")) :
+    typeof define === "function" && define.amd ? define(["@form-validation/core"], factory) :
+    (global = typeof globalThis !== "undefined" ? globalThis : global || self, (global.FormValidation = global.FormValidation || {}, global.FormValidation.plugins = global.FormValidation.plugins || {}, global.FormValidation.plugins.Excluded = factory(global.FormValidation)));
+})(this, (function (core) { "use strict";
 
     /******************************************************************************
     Copyright (c) Microsoft Corporation.
@@ -51,14 +51,14 @@
         }
         Excluded.defaultIgnore = function (_field, element, _elements) {
             var isVisible = !!(element.offsetWidth || element.offsetHeight || element.getClientRects().length);
-            var disabled = element.getAttribute('disabled');
-            return disabled === '' || disabled === 'disabled' || element.getAttribute('type') === 'hidden' || !isVisible;
+            var disabled = element.getAttribute("disabled");
+            return disabled === "" || disabled === "disabled" || element.getAttribute("type") === "hidden" || !isVisible;
         };
         Excluded.prototype.install = function () {
-            this.core.registerFilter('element-ignored', this.ignoreValidationFilter);
+            this.core.registerFilter("element-ignored", this.ignoreValidationFilter);
         };
         Excluded.prototype.uninstall = function () {
-            this.core.deregisterFilter('element-ignored', this.ignoreValidationFilter);
+            this.core.deregisterFilter("element-ignored", this.ignoreValidationFilter);
         };
         Excluded.prototype.ignoreValidation = function (field, element, elements) {
             if (!this.isEnabled) {

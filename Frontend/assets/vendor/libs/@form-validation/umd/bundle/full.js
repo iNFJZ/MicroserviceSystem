@@ -1,8 +1,8 @@
 (function (global, factory) {
-    typeof exports === 'object' && typeof module !== 'undefined' ? factory(exports) :
-    typeof define === 'function' && define.amd ? define(['exports'], factory) :
-    (global = typeof globalThis !== 'undefined' ? globalThis : global || self, factory(global.FormValidation = {}));
-})(this, (function (exports) { 'use strict';
+    typeof exports === "object" && typeof module !== "undefined" ? factory(exports) :
+    typeof define === "function" && define.amd ? define(["exports"], factory) :
+    (global = typeof globalThis !== "undefined" ? globalThis : global || self, factory(global.FormValidation = {}));
+})(this, (function (exports) { "use strict";
 
     var lib$11 = {exports: {}};
 
@@ -75,7 +75,7 @@
     	 * @returns {boolean}
     	 */
     	function mod37And36(value, alphabet) {
-    	    if (alphabet === void 0) { alphabet = '0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ'; }
+    	    if (alphabet === void 0) { alphabet = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ"; }
     	    var length = value.length;
     	    var modulus = alphabet.length;
     	    var check = Math.floor(modulus / 2);
@@ -92,7 +92,7 @@
     	 */
     	function transform(input) {
     	    return input
-    	        .split('')
+    	        .split("")
     	        .map(function (c) {
     	        var code = c.charCodeAt(0);
     	        // 65, 66, ..., 90 are the char code of A, B, ..., Z
@@ -101,8 +101,8 @@
     	                code - 55
     	            : c;
     	    })
-    	        .join('')
-    	        .split('')
+    	        .join("")
+    	        .split("")
     	        .map(function (c) { return parseInt(c, 10); });
     	}
     	function mod97And10(input) {
@@ -216,26 +216,26 @@
     	 * @return {string}
     	 */
     	function getFieldValue(form, field, element, elements) {
-    	    var type = (element.getAttribute('type') || '').toLowerCase();
+    	    var type = (element.getAttribute("type") || "").toLowerCase();
     	    var tagName = element.tagName.toLowerCase();
-    	    if (tagName === 'textarea') {
+    	    if (tagName === "textarea") {
     	        return element.value;
     	    }
-    	    if (tagName === 'select') {
+    	    if (tagName === "select") {
     	        var select = element;
     	        var index = select.selectedIndex;
-    	        return index >= 0 ? select.options.item(index).value : '';
+    	        return index >= 0 ? select.options.item(index).value : "";
     	    }
-    	    if (tagName === 'input') {
-    	        if ('radio' === type || 'checkbox' === type) {
+    	    if (tagName === "input") {
+    	        if ("radio" === type || "checkbox" === type) {
     	            var checked = elements.filter(function (ele) { return ele.checked; }).length;
-    	            return checked === 0 ? '' : checked + '';
+    	            return checked === 0 ? "" : checked + "";
     	        }
     	        else {
     	            return element.value;
     	        }
     	    }
-    	    return '';
+    	    return "";
     	}
 
     	/**
@@ -426,7 +426,7 @@
     	     */
     	    Core.prototype.addField = function (field, options) {
     	        var opts = Object.assign({}, {
-    	            selector: '',
+    	            selector: "",
     	            validators: {},
     	        }, options);
     	        // Merge the options
@@ -437,7 +437,7 @@
     	            }
     	            : opts;
     	        this.elements[field] = this.queryElements(field);
-    	        this.emit('core.field.added', {
+    	        this.emit("core.field.added", {
     	            elements: this.elements[field],
     	            field: field,
     	            options: this.fields[field],
@@ -458,7 +458,7 @@
     	        var options = this.fields[field];
     	        delete this.elements[field];
     	        delete this.fields[field];
-    	        this.emit('core.field.removed', {
+    	        this.emit("core.field.removed", {
     	            elements: elements,
     	            field: field,
     	            options: options,
@@ -472,28 +472,28 @@
     	     */
     	    Core.prototype.validate = function () {
     	        var _this = this;
-    	        this.emit('core.form.validating', {
+    	        this.emit("core.form.validating", {
     	            formValidation: this,
     	        });
-    	        return this.filter.execute('validate-pre', Promise.resolve(), []).then(function () {
+    	        return this.filter.execute("validate-pre", Promise.resolve(), []).then(function () {
     	            return Promise.all(Object.keys(_this.fields).map(function (field) { return _this.validateField(field); })).then(function (results) {
     	                // `results` is an array of `Valid`, `Invalid` and `NotValidated`
     	                switch (true) {
-    	                    case results.indexOf('Invalid') !== -1:
-    	                        _this.emit('core.form.invalid', {
+    	                    case results.indexOf("Invalid") !== -1:
+    	                        _this.emit("core.form.invalid", {
     	                            formValidation: _this,
     	                        });
-    	                        return Promise.resolve('Invalid');
-    	                    case results.indexOf('NotValidated') !== -1:
-    	                        _this.emit('core.form.notvalidated', {
+    	                        return Promise.resolve("Invalid");
+    	                    case results.indexOf("NotValidated") !== -1:
+    	                        _this.emit("core.form.notvalidated", {
     	                            formValidation: _this,
     	                        });
-    	                        return Promise.resolve('NotValidated');
+    	                        return Promise.resolve("NotValidated");
     	                    default:
-    	                        _this.emit('core.form.valid', {
+    	                        _this.emit("core.form.valid", {
     	                            formValidation: _this,
     	                        });
-    	                        return Promise.resolve('Valid');
+    	                        return Promise.resolve("Valid");
     	                }
     	            });
     	        });
@@ -508,35 +508,35 @@
     	        var _this = this;
     	        // Stop validation process if the field is already validated
     	        var result = this.results.get(field);
-    	        if (result === 'Valid' || result === 'Invalid') {
+    	        if (result === "Valid" || result === "Invalid") {
     	            return Promise.resolve(result);
     	        }
-    	        this.emit('core.field.validating', field);
+    	        this.emit("core.field.validating", field);
     	        var elements = this.elements[field];
     	        if (elements.length === 0) {
-    	            this.emit('core.field.valid', field);
-    	            return Promise.resolve('Valid');
+    	            this.emit("core.field.valid", field);
+    	            return Promise.resolve("Valid");
     	        }
-    	        var type = elements[0].getAttribute('type');
-    	        if ('radio' === type || 'checkbox' === type || elements.length === 1) {
+    	        var type = elements[0].getAttribute("type");
+    	        if ("radio" === type || "checkbox" === type || elements.length === 1) {
     	            return this.validateElement(field, elements[0]);
     	        }
     	        else {
     	            return Promise.all(elements.map(function (ele) { return _this.validateElement(field, ele); })).then(function (results) {
     	                // `results` is an array of `Valid`, `Invalid` and `NotValidated`
     	                switch (true) {
-    	                    case results.indexOf('Invalid') !== -1:
-    	                        _this.emit('core.field.invalid', field);
-    	                        _this.results.set(field, 'Invalid');
-    	                        return Promise.resolve('Invalid');
-    	                    case results.indexOf('NotValidated') !== -1:
-    	                        _this.emit('core.field.notvalidated', field);
+    	                    case results.indexOf("Invalid") !== -1:
+    	                        _this.emit("core.field.invalid", field);
+    	                        _this.results.set(field, "Invalid");
+    	                        return Promise.resolve("Invalid");
+    	                    case results.indexOf("NotValidated") !== -1:
+    	                        _this.emit("core.field.notvalidated", field);
     	                        _this.results.delete(field);
-    	                        return Promise.resolve('NotValidated');
+    	                        return Promise.resolve("NotValidated");
     	                    default:
-    	                        _this.emit('core.field.valid', field);
-    	                        _this.results.set(field, 'Valid');
-    	                        return Promise.resolve('Valid');
+    	                        _this.emit("core.field.valid", field);
+    	                        _this.results.set(field, "Valid");
+    	                        return Promise.resolve("Valid");
     	                }
     	            });
     	        }
@@ -553,17 +553,17 @@
     	        // Reset validation result
     	        this.results.delete(field);
     	        var elements = this.elements[field];
-    	        var ignored = this.filter.execute('element-ignored', false, [field, ele, elements]);
+    	        var ignored = this.filter.execute("element-ignored", false, [field, ele, elements]);
     	        if (ignored) {
-    	            this.emit('core.element.ignored', {
+    	            this.emit("core.element.ignored", {
     	                element: ele,
     	                elements: elements,
     	                field: field,
     	            });
-    	            return Promise.resolve('Ignored');
+    	            return Promise.resolve("Ignored");
     	        }
     	        var validatorList = this.fields[field].validators;
-    	        this.emit('core.element.validating', {
+    	        this.emit("core.element.validating", {
     	            element: ele,
     	            elements: elements,
     	            field: field,
@@ -574,22 +574,22 @@
     	        return this.waterfall(promises)
     	            .then(function (results) {
     	            // `results` is an array of `Valid` or `Invalid`
-    	            var isValid = results.indexOf('Invalid') === -1;
-    	            _this.emit('core.element.validated', {
+    	            var isValid = results.indexOf("Invalid") === -1;
+    	            _this.emit("core.element.validated", {
     	                element: ele,
     	                elements: elements,
     	                field: field,
     	                valid: isValid,
     	            });
-    	            var type = ele.getAttribute('type');
-    	            if ('radio' === type || 'checkbox' === type || elements.length === 1) {
-    	                _this.emit(isValid ? 'core.field.valid' : 'core.field.invalid', field);
+    	            var type = ele.getAttribute("type");
+    	            if ("radio" === type || "checkbox" === type || elements.length === 1) {
+    	                _this.emit(isValid ? "core.field.valid" : "core.field.invalid", field);
     	            }
-    	            return Promise.resolve(isValid ? 'Valid' : 'Invalid');
+    	            return Promise.resolve(isValid ? "Valid" : "Invalid");
     	        })
     	            .catch(function (reason) {
     	            // reason is `NotValidated`
-    	            _this.emit('core.element.notvalidated', {
+    	            _this.emit("core.element.notvalidated", {
     	                element: ele,
     	                elements: elements,
     	                field: field,
@@ -609,35 +609,35 @@
     	    Core.prototype.executeValidator = function (field, ele, v, opts) {
     	        var _this = this;
     	        var elements = this.elements[field];
-    	        var name = this.filter.execute('validator-name', v, [v, field]);
-    	        opts.message = this.filter.execute('validator-message', opts.message, [this.locale, field, name]);
+    	        var name = this.filter.execute("validator-name", v, [v, field]);
+    	        opts.message = this.filter.execute("validator-message", opts.message, [this.locale, field, name]);
     	        // Simply pass the validator if
     	        // - it isn't defined yet
     	        // - or the associated validator isn't enabled
     	        if (!this.validators[name] || opts.enabled === false) {
-    	            this.emit('core.validator.validated', {
+    	            this.emit("core.validator.validated", {
     	                element: ele,
     	                elements: elements,
     	                field: field,
     	                result: this.normalizeResult(field, name, { valid: true }),
     	                validator: name,
     	            });
-    	            return Promise.resolve('Valid');
+    	            return Promise.resolve("Valid");
     	        }
     	        var validator = this.validators[name];
     	        // Get the field value
     	        var value = this.getElementValue(field, ele, name);
-    	        var willValidate = this.filter.execute('field-should-validate', true, [field, ele, value, v]);
+    	        var willValidate = this.filter.execute("field-should-validate", true, [field, ele, value, v]);
     	        if (!willValidate) {
-    	            this.emit('core.validator.notvalidated', {
+    	            this.emit("core.validator.notvalidated", {
     	                element: ele,
     	                elements: elements,
     	                field: field,
     	                validator: v,
     	            });
-    	            return Promise.resolve('NotValidated');
+    	            return Promise.resolve("NotValidated");
     	        }
-    	        this.emit('core.validator.validating', {
+    	        this.emit("core.validator.validating", {
     	            element: ele,
     	            elements: elements,
     	            field: field,
@@ -653,35 +653,35 @@
     	            value: value,
     	        });
     	        // Check whether the result is a `Promise`
-    	        var isPromise = 'function' === typeof result['then'];
+    	        var isPromise = "function" === typeof result["then"];
     	        if (isPromise) {
     	            return result.then(function (r) {
     	                var data = _this.normalizeResult(field, v, r);
-    	                _this.emit('core.validator.validated', {
+    	                _this.emit("core.validator.validated", {
     	                    element: ele,
     	                    elements: elements,
     	                    field: field,
     	                    result: data,
     	                    validator: v,
     	                });
-    	                return data.valid ? 'Valid' : 'Invalid';
+    	                return data.valid ? "Valid" : "Invalid";
     	            });
     	        }
     	        else {
     	            var data = this.normalizeResult(field, v, result);
-    	            this.emit('core.validator.validated', {
+    	            this.emit("core.validator.validated", {
     	                element: ele,
     	                elements: elements,
     	                field: field,
     	                result: data,
     	                validator: v,
     	            });
-    	            return Promise.resolve(data.valid ? 'Valid' : 'Invalid');
+    	            return Promise.resolve(data.valid ? "Valid" : "Invalid");
     	        }
     	    };
     	    Core.prototype.getElementValue = function (field, ele, validator) {
     	        var defaultValue = getFieldValue(this.form, field, ele, this.elements[field]);
-    	        return this.filter.execute('field-value', defaultValue, [defaultValue, field, ele, validator]);
+    	        return this.filter.execute("field-value", defaultValue, [defaultValue, field, ele, validator]);
     	    };
     	    // Some getter methods
     	    Core.prototype.getElements = function (field) {
@@ -710,33 +710,33 @@
     	    Core.prototype.updateFieldStatus = function (field, status, validator) {
     	        var _this = this;
     	        var elements = this.elements[field];
-    	        var type = elements[0].getAttribute('type');
-    	        var list = 'radio' === type || 'checkbox' === type ? [elements[0]] : elements;
+    	        var type = elements[0].getAttribute("type");
+    	        var list = "radio" === type || "checkbox" === type ? [elements[0]] : elements;
     	        list.forEach(function (ele) { return _this.updateElementStatus(field, ele, status, validator); });
     	        if (!validator) {
     	            switch (status) {
-    	                case 'NotValidated':
-    	                    this.emit('core.field.notvalidated', field);
+    	                case "NotValidated":
+    	                    this.emit("core.field.notvalidated", field);
     	                    this.results.delete(field);
     	                    break;
-    	                case 'Validating':
-    	                    this.emit('core.field.validating', field);
+    	                case "Validating":
+    	                    this.emit("core.field.validating", field);
     	                    this.results.delete(field);
     	                    break;
-    	                case 'Valid':
-    	                    this.emit('core.field.valid', field);
-    	                    this.results.set(field, 'Valid');
+    	                case "Valid":
+    	                    this.emit("core.field.valid", field);
+    	                    this.results.set(field, "Valid");
     	                    break;
-    	                case 'Invalid':
-    	                    this.emit('core.field.invalid', field);
-    	                    this.results.set(field, 'Invalid');
+    	                case "Invalid":
+    	                    this.emit("core.field.invalid", field);
+    	                    this.results.set(field, "Invalid");
     	                    break;
     	            }
     	        }
-    	        else if (status === 'Invalid') {
+    	        else if (status === "Invalid") {
     	            // We need to mark the field as invalid because it doesn't pass the `validator`
-    	            this.emit('core.field.invalid', field);
-    	            this.results.set(field, 'Invalid');
+    	            this.emit("core.field.invalid", field);
+    	            this.results.set(field, "Invalid");
     	        }
     	        return this;
     	    };
@@ -755,39 +755,39 @@
     	        var fieldValidators = this.fields[field].validators;
     	        var validatorArr = validator ? [validator] : Object.keys(fieldValidators);
     	        switch (status) {
-    	            case 'NotValidated':
+    	            case "NotValidated":
     	                validatorArr.forEach(function (v) {
-    	                    return _this.emit('core.validator.notvalidated', {
+    	                    return _this.emit("core.validator.notvalidated", {
     	                        element: ele,
     	                        elements: elements,
     	                        field: field,
     	                        validator: v,
     	                    });
     	                });
-    	                this.emit('core.element.notvalidated', {
+    	                this.emit("core.element.notvalidated", {
     	                    element: ele,
     	                    elements: elements,
     	                    field: field,
     	                });
     	                break;
-    	            case 'Validating':
+    	            case "Validating":
     	                validatorArr.forEach(function (v) {
-    	                    return _this.emit('core.validator.validating', {
+    	                    return _this.emit("core.validator.validating", {
     	                        element: ele,
     	                        elements: elements,
     	                        field: field,
     	                        validator: v,
     	                    });
     	                });
-    	                this.emit('core.element.validating', {
+    	                this.emit("core.element.validating", {
     	                    element: ele,
     	                    elements: elements,
     	                    field: field,
     	                });
     	                break;
-    	            case 'Valid':
+    	            case "Valid":
     	                validatorArr.forEach(function (v) {
-    	                    return _this.emit('core.validator.validated', {
+    	                    return _this.emit("core.validator.validated", {
     	                        element: ele,
     	                        elements: elements,
     	                        field: field,
@@ -798,16 +798,16 @@
     	                        validator: v,
     	                    });
     	                });
-    	                this.emit('core.element.validated', {
+    	                this.emit("core.element.validated", {
     	                    element: ele,
     	                    elements: elements,
     	                    field: field,
     	                    valid: true,
     	                });
     	                break;
-    	            case 'Invalid':
+    	            case "Invalid":
     	                validatorArr.forEach(function (v) {
-    	                    return _this.emit('core.validator.validated', {
+    	                    return _this.emit("core.validator.validated", {
     	                        element: ele,
     	                        elements: elements,
     	                        field: field,
@@ -818,7 +818,7 @@
     	                        validator: v,
     	                    });
     	                });
-    	                this.emit('core.element.validated', {
+    	                this.emit("core.element.validated", {
     	                    element: ele,
     	                    elements: elements,
     	                    field: field,
@@ -838,7 +838,7 @@
     	    Core.prototype.resetForm = function (reset) {
     	        var _this = this;
     	        Object.keys(this.fields).forEach(function (field) { return _this.resetField(field, reset); });
-    	        this.emit('core.form.reset', {
+    	        this.emit("core.form.reset", {
     	            formValidation: this,
     	            reset: reset,
     	        });
@@ -856,24 +856,24 @@
     	        // Reset the field element value if needed
     	        if (reset) {
     	            var elements = this.elements[field];
-    	            var type_1 = elements[0].getAttribute('type');
+    	            var type_1 = elements[0].getAttribute("type");
     	            elements.forEach(function (ele) {
-    	                if ('radio' === type_1 || 'checkbox' === type_1) {
-    	                    ele.removeAttribute('selected');
-    	                    ele.removeAttribute('checked');
+    	                if ("radio" === type_1 || "checkbox" === type_1) {
+    	                    ele.removeAttribute("selected");
+    	                    ele.removeAttribute("checked");
     	                    ele.checked = false;
     	                }
     	                else {
-    	                    ele.setAttribute('value', '');
+    	                    ele.setAttribute("value", "");
     	                    if (ele instanceof HTMLInputElement || ele instanceof HTMLTextAreaElement) {
-    	                        ele.value = '';
+    	                        ele.value = "";
     	                    }
     	                }
     	            });
     	        }
     	        // Mark the field as not validated yet
-    	        this.updateFieldStatus(field, 'NotValidated');
-    	        this.emit('core.field.reset', {
+    	        this.updateFieldStatus(field, "NotValidated");
+    	        this.emit("core.field.reset", {
     	            field: field,
     	            reset: reset,
     	        });
@@ -890,9 +890,9 @@
     	     */
     	    Core.prototype.revalidateField = function (field) {
     	        if (!this.fields[field]) {
-    	            return Promise.resolve('Ignored');
+    	            return Promise.resolve("Ignored");
     	        }
-    	        this.updateFieldStatus(field, 'NotValidated');
+    	        this.updateFieldStatus(field, "NotValidated");
     	        return this.validateField(field);
     	    };
     	    /**
@@ -908,7 +908,7 @@
     	        }
     	        var elements = this.elements[field];
     	        this.toggleValidator(false, field, validator);
-    	        this.emit('core.validator.disabled', {
+    	        this.emit("core.validator.disabled", {
     	            elements: elements,
     	            field: field,
     	            formValidation: this,
@@ -929,7 +929,7 @@
     	        }
     	        var elements = this.elements[field];
     	        this.toggleValidator(true, field, validator);
-    	        this.emit('core.validator.enabled', {
+    	        this.emit("core.validator.enabled", {
     	            elements: elements,
     	            field: field,
     	            formValidation: this,
@@ -984,20 +984,20 @@
     	    Core.prototype.queryElements = function (field) {
     	        var selector = this.fields[field].selector
     	            ? // Check if the selector is an ID selector which starts with `#`
-    	                '#' === this.fields[field].selector.charAt(0)
+    	                "#" === this.fields[field].selector.charAt(0)
     	                    ? "[id=\"".concat(this.fields[field].selector.substring(1), "\"]")
     	                    : this.fields[field].selector
-    	            : "[name=\"".concat(field.replace(/"/g, '\\"'), "\"]");
+    	            : "[name=\"".concat(field.replace(/"/g, "\\\""), "\"]");
     	        return [].slice.call(this.form.querySelectorAll(selector));
     	    };
     	    Core.prototype.normalizeResult = function (field, validator, result) {
     	        var opts = this.fields[field].validators[validator];
     	        return Object.assign({}, result, {
     	            message: result.message ||
-    	                (opts ? opts.message : '') ||
-    	                (this.localization && this.localization[validator] && this.localization[validator]['default']
-    	                    ? this.localization[validator]['default']
-    	                    : '') ||
+    	                (opts ? opts.message : "") ||
+    	                (this.localization && this.localization[validator] && this.localization[validator]["default"]
+    	                    ? this.localization[validator]["default"]
+    	                    : "") ||
     	                "The field ".concat(field, " is not valid"),
     	        });
     	    };
@@ -1010,14 +1010,14 @@
     	        else if (!validator) {
     	            Object.keys(validatorArr).forEach(function (v) { return (_this.fields[field].validators[v].enabled = enabled); });
     	        }
-    	        return this.updateFieldStatus(field, 'NotValidated', validator);
+    	        return this.updateFieldStatus(field, "NotValidated", validator);
     	    };
     	    return Core;
     	}());
     	function formValidation(form, options) {
     	    var opts = Object.assign({}, {
     	        fields: {},
-    	        locale: 'en_US',
+    	        locale: "en_US",
     	        plugins: {},
     	        init: function (_) { },
     	    }, options);
@@ -1083,23 +1083,23 @@
     	 * @return {any}
     	 */
     	function call(functionName, args) {
-    	    if ('function' === typeof functionName) {
+    	    if ("function" === typeof functionName) {
     	        return functionName.apply(this, args);
     	    }
-    	    else if ('string' === typeof functionName) {
+    	    else if ("string" === typeof functionName) {
     	        // Node that it doesn't support node.js based environment because we are trying to access `window`
     	        var name_1 = functionName;
-    	        if ('()' === name_1.substring(name_1.length - 2)) {
+    	        if ("()" === name_1.substring(name_1.length - 2)) {
     	            name_1 = name_1.substring(0, name_1.length - 2);
     	        }
-    	        var ns = name_1.split('.');
+    	        var ns = name_1.split(".");
     	        var func = ns.pop();
     	        var context_1 = window;
     	        for (var _i = 0, ns_1 = ns; _i < ns_1.length; _i++) {
     	            var t = ns_1[_i];
     	            context_1 = context_1[t];
     	        }
-    	        return typeof context_1[func] === 'undefined' ? null : context_1[func].apply(this, args);
+    	        return typeof context_1[func] === "undefined" ? null : context_1[func].apply(this, args);
     	    }
     	}
 
@@ -1109,7 +1109,7 @@
     	 * (c) 2013 - 2023 Nguyen Huu Phuoc <me@phuoc.ng>
     	 */
     	var addClass = function (element, classes) {
-    	    classes.split(' ').forEach(function (clazz) {
+    	    classes.split(" ").forEach(function (clazz) {
     	        if (element.classList) {
     	            element.classList.add(clazz);
     	        }
@@ -1119,10 +1119,10 @@
     	    });
     	};
     	var removeClass = function (element, classes) {
-    	    classes.split(' ').forEach(function (clazz) {
+    	    classes.split(" ").forEach(function (clazz) {
     	        element.classList
     	            ? element.classList.remove(clazz)
-    	            : (element.className = element.className.replace(clazz, ''));
+    	            : (element.className = element.className.replace(clazz, ""));
     	    });
     	};
     	var classSet = function (element, classes) {
@@ -1153,8 +1153,8 @@
     	var matches = function (element, selector) {
     	    var nativeMatches = element.matches ||
     	        element.webkitMatchesSelector ||
-    	        element['mozMatchesSelector'] ||
-    	        element['msMatchesSelector'];
+    	        element["mozMatchesSelector"] ||
+    	        element["msMatchesSelector"];
     	    if (nativeMatches) {
     	        return nativeMatches.call(element, selector);
     	    }
@@ -1181,32 +1181,32 @@
     	 */
     	var generateString = function (length) {
     	    return Array(length)
-    	        .fill('')
+    	        .fill("")
     	        .map(function (v) { return Math.random().toString(36).charAt(2); })
-    	        .join('');
+    	        .join("");
     	};
     	var fetch = function (url, options) {
     	    var toQuery = function (obj) {
     	        return Object.keys(obj)
     	            .map(function (k) { return "".concat(encodeURIComponent(k), "=").concat(encodeURIComponent(obj[k])); })
-    	            .join('&');
+    	            .join("&");
     	    };
     	    return new Promise(function (resolve, reject) {
     	        var opts = Object.assign({}, {
     	            crossDomain: false,
     	            headers: {},
-    	            method: 'GET',
+    	            method: "GET",
     	            params: {},
     	        }, options);
     	        // Build the params for GET request
     	        var params = Object.keys(opts.params)
     	            .map(function (k) { return "".concat(encodeURIComponent(k), "=").concat(encodeURIComponent(opts.params[k])); })
-    	            .join('&');
-    	        var hasQuery = url.indexOf('?') > -1;
-    	        var requestUrl = 'GET' === opts.method ? "".concat(url).concat(hasQuery ? '&' : '?').concat(params) : url;
+    	            .join("&");
+    	        var hasQuery = url.indexOf("?") > -1;
+    	        var requestUrl = "GET" === opts.method ? "".concat(url).concat(hasQuery ? "&" : "?").concat(params) : url;
     	        if (opts.crossDomain) {
     	            // User is making cross domain request
-    	            var script_1 = document.createElement('script');
+    	            var script_1 = document.createElement("script");
     	            // In some very fast systems, the different `Date.now()` invocations can return the same value
     	            // which leads to the issue where there are multiple remove validators are used, for example.
     	            // Appending it with a generated random string can fix the value
@@ -1215,28 +1215,28 @@
     	                delete window[callback_1];
     	                resolve(data);
     	            };
-    	            script_1.src = "".concat(requestUrl).concat(hasQuery ? '&' : '?', "callback=").concat(callback_1);
+    	            script_1.src = "".concat(requestUrl).concat(hasQuery ? "&" : "?", "callback=").concat(callback_1);
     	            script_1.async = true;
-    	            script_1.addEventListener('load', function () {
+    	            script_1.addEventListener("load", function () {
     	                script_1.parentNode.removeChild(script_1);
     	            });
-    	            script_1.addEventListener('error', function () { return reject; });
+    	            script_1.addEventListener("error", function () { return reject; });
     	            document.head.appendChild(script_1);
     	        }
     	        else {
     	            var request_1 = new XMLHttpRequest();
     	            request_1.open(opts.method, requestUrl);
     	            // Set the headers
-    	            request_1.setRequestHeader('X-Requested-With', 'XMLHttpRequest');
-    	            if ('POST' === opts.method) {
-    	                request_1.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
+    	            request_1.setRequestHeader("X-Requested-With", "XMLHttpRequest");
+    	            if ("POST" === opts.method) {
+    	                request_1.setRequestHeader("Content-Type", "application/x-www-form-urlencoded");
     	            }
     	            Object.keys(opts.headers).forEach(function (k) { return request_1.setRequestHeader(k, opts.headers[k]); });
-    	            request_1.addEventListener('load', function () {
+    	            request_1.addEventListener("load", function () {
     	                // Cannot use arrow function here due to the `this` scope
     	                resolve(JSON.parse(this.responseText));
     	            });
-    	            request_1.addEventListener('error', function () { return reject; });
+    	            request_1.addEventListener("error", function () { return reject; });
     	            // GET request will ignore the passed data here
     	            request_1.send(toQuery(opts.params));
     	        }
@@ -1261,7 +1261,7 @@
     	    var params = Array.isArray(parameters) ? parameters : [parameters];
     	    var output = message;
     	    params.forEach(function (p) {
-    	        output = output.replace('%s', p);
+    	        output = output.replace("%s", p);
     	    });
     	    return output;
     	};
@@ -1274,7 +1274,7 @@
     	var hasClass = function (element, clazz) {
     	    return element.classList
     	        ? element.classList.contains(clazz)
-    	        : new RegExp("(^| )".concat(clazz, "( |$)"), 'gi').test(element.className);
+    	        : new RegExp("(^| )".concat(clazz, "( |$)"), "gi").test(element.className);
     	};
 
     	/**
@@ -1458,10 +1458,10 @@
     	        return _this;
     	    }
     	    Alias.prototype.install = function () {
-    	        this.core.registerFilter('validator-name', this.validatorNameFilter);
+    	        this.core.registerFilter("validator-name", this.validatorNameFilter);
     	    };
     	    Alias.prototype.uninstall = function () {
-    	        this.core.deregisterFilter('validator-name', this.validatorNameFilter);
+    	        this.core.deregisterFilter("validator-name", this.validatorNameFilter);
     	    };
     	    Alias.prototype.getValidatorName = function (validatorName, _field) {
     	        return this.isEnabled ? this.opts[validatorName] || validatorName : validatorName;
@@ -1552,50 +1552,50 @@
     	    }
     	    Aria.prototype.install = function () {
     	        this.core
-    	            .on('core.field.valid', this.fieldValidHandler)
-    	            .on('core.field.invalid', this.fieldInvalidHandler)
-    	            .on('core.element.validated', this.elementValidatedHandler)
-    	            .on('plugins.message.displayed', this.messageDisplayedHandler);
+    	            .on("core.field.valid", this.fieldValidHandler)
+    	            .on("core.field.invalid", this.fieldInvalidHandler)
+    	            .on("core.element.validated", this.elementValidatedHandler)
+    	            .on("plugins.message.displayed", this.messageDisplayedHandler);
     	    };
     	    Aria.prototype.uninstall = function () {
     	        this.core
-    	            .off('core.field.valid', this.fieldValidHandler)
-    	            .off('core.field.invalid', this.fieldInvalidHandler)
-    	            .off('core.element.validated', this.elementValidatedHandler)
-    	            .off('plugins.message.displayed', this.messageDisplayedHandler);
+    	            .off("core.field.valid", this.fieldValidHandler)
+    	            .off("core.field.invalid", this.fieldInvalidHandler)
+    	            .off("core.element.validated", this.elementValidatedHandler)
+    	            .off("plugins.message.displayed", this.messageDisplayedHandler);
     	    };
     	    Aria.prototype.onElementValidated = function (e) {
     	        if (e.valid) {
-    	            e.element.setAttribute('aria-invalid', 'false');
-    	            e.element.removeAttribute('aria-describedby');
+    	            e.element.setAttribute("aria-invalid", "false");
+    	            e.element.removeAttribute("aria-describedby");
     	        }
     	    };
     	    Aria.prototype.onFieldValid = function (field) {
     	        var elements = this.core.getElements(field);
     	        if (elements) {
     	            elements.forEach(function (ele) {
-    	                ele.setAttribute('aria-invalid', 'false');
-    	                ele.removeAttribute('aria-describedby');
+    	                ele.setAttribute("aria-invalid", "false");
+    	                ele.removeAttribute("aria-describedby");
     	            });
     	        }
     	    };
     	    Aria.prototype.onFieldInvalid = function (field) {
     	        var elements = this.core.getElements(field);
     	        if (elements) {
-    	            elements.forEach(function (ele) { return ele.setAttribute('aria-invalid', 'true'); });
+    	            elements.forEach(function (ele) { return ele.setAttribute("aria-invalid", "true"); });
     	        }
     	    };
     	    Aria.prototype.onMessageDisplayed = function (e) {
-    	        e.messageElement.setAttribute('role', 'alert');
-    	        e.messageElement.setAttribute('aria-hidden', 'false');
+    	        e.messageElement.setAttribute("role", "alert");
+    	        e.messageElement.setAttribute("aria-hidden", "false");
     	        var elements = this.core.getElements(e.field);
     	        var index = elements.indexOf(e.element);
     	        var id = "js-fv-".concat(e.field, "-").concat(index, "-").concat(Date.now(), "-message");
-    	        e.messageElement.setAttribute('id', id);
-    	        e.element.setAttribute('aria-describedby', id);
-    	        var type = e.element.getAttribute('type');
-    	        if ('radio' === type || 'checkbox' === type) {
-    	            elements.forEach(function (ele) { return ele.setAttribute('aria-describedby', id); });
+    	        e.messageElement.setAttribute("id", id);
+    	        e.element.setAttribute("aria-describedby", id);
+    	        var type = e.element.getAttribute("type");
+    	        if ("radio" === type || "checkbox" === type) {
+    	            elements.forEach(function (ele) { return ele.setAttribute("aria-describedby", id); });
     	        }
     	    };
     	    return Aria;
@@ -1682,8 +1682,8 @@
     	        _this.addedFields = new Map();
     	        _this.opts = Object.assign({}, {
     	            html5Input: false,
-    	            pluginPrefix: 'data-fvp-',
-    	            prefix: 'data-fv-',
+    	            pluginPrefix: "data-fvp-",
+    	            prefix: "data-fv-",
     	        }, opts);
     	        _this.fieldAddedHandler = _this.onFieldAdded.bind(_this);
     	        _this.fieldRemovedHandler = _this.onFieldRemoved.bind(_this);
@@ -1700,11 +1700,11 @@
     	            }
     	            _this.core.addField(field, opts[field]);
     	        });
-    	        this.core.on('core.field.added', this.fieldAddedHandler).on('core.field.removed', this.fieldRemovedHandler);
+    	        this.core.on("core.field.added", this.fieldAddedHandler).on("core.field.removed", this.fieldRemovedHandler);
     	    };
     	    Declarative.prototype.uninstall = function () {
     	        this.addedFields.clear();
-    	        this.core.off('core.field.added', this.fieldAddedHandler).off('core.field.removed', this.fieldRemovedHandler);
+    	        this.core.off("core.field.added", this.fieldAddedHandler).off("core.field.removed", this.fieldRemovedHandler);
     	    };
     	    Declarative.prototype.onFieldAdded = function (e) {
     	        var _this = this;
@@ -1746,7 +1746,7 @@
     	            // For instance, there are multiple elements having the same name,
     	            // we only set the HTML attribute to one of them
     	            if (!_this.isEmptyOption(validators)) {
-    	                var field = ele.getAttribute('name') || ele.getAttribute("".concat(prefix, "field"));
+    	                var field = ele.getAttribute("name") || ele.getAttribute("".concat(prefix, "field"));
     	                opts[field] = Object.assign({}, opts[field], validators);
     	            }
     	        });
@@ -1764,14 +1764,14 @@
     	        return Object.assign({}, fields, opts);
     	    };
     	    Declarative.prototype.createPluginInstance = function (clazz, opts) {
-    	        var arr = clazz.split('.');
+    	        var arr = clazz.split(".");
     	        // TODO: Find a safer way to create a plugin instance from the class
     	        // Currently, I have to use `any` here instead of a construtable interface
     	        var fn = window || this; // eslint-disable-line @typescript-eslint/no-explicit-any
     	        for (var i = 0, len = arr.length; i < len; i++) {
     	            fn = fn[arr[i]];
     	        }
-    	        if (typeof fn !== 'function') {
+    	        if (typeof fn !== "function") {
     	            throw new Error("the plugin ".concat(clazz, " doesn't exist"));
     	        }
     	        return new fn(opts);
@@ -1789,16 +1789,16 @@
     	            var items = reg.exec(name_1);
     	            if (items && items.length === 4) {
     	                var pluginName = this.toCamelCase(items[1]);
-    	                plugins[pluginName] = Object.assign({}, items[3] ? (_a = {}, _a[this.toCamelCase(items[3])] = value, _a) : { enabled: '' === value || 'true' === value }, plugins[pluginName]);
+    	                plugins[pluginName] = Object.assign({}, items[3] ? (_a = {}, _a[this.toCamelCase(items[3])] = value, _a) : { enabled: "" === value || "true" === value }, plugins[pluginName]);
     	            }
     	        }
     	        Object.keys(plugins).forEach(function (pluginName) {
     	            var opts = plugins[pluginName];
-    	            var enabled = opts['enabled'];
-    	            var clazz = opts['class'];
+    	            var enabled = opts["enabled"];
+    	            var clazz = opts["class"];
     	            if (enabled && clazz) {
-    	                delete opts['enabled'];
-    	                delete opts['clazz'];
+    	                delete opts["enabled"];
+    	                delete opts["clazz"];
     	                var p = _this.createPluginInstance(clazz, opts);
     	                _this.core.registerPlugin(pluginName, p);
     	            }
@@ -1812,71 +1812,71 @@
     	        var reg = new RegExp("^".concat(this.opts.prefix, "([a-z0-9-]+)(___)*([a-z0-9-]+)*$"));
     	        var numAttributes = ele.attributes.length;
     	        var opts = {};
-    	        var type = ele.getAttribute('type');
+    	        var type = ele.getAttribute("type");
     	        for (var i = 0; i < numAttributes; i++) {
     	            var name_2 = ele.attributes[i].name;
     	            var value = ele.attributes[i].value;
     	            if (this.opts.html5Input) {
     	                switch (true) {
-    	                    case 'minlength' === name_2:
-    	                        opts['stringLength'] = Object.assign({}, {
+    	                    case "minlength" === name_2:
+    	                        opts["stringLength"] = Object.assign({}, {
     	                            enabled: true,
     	                            min: parseInt(value, 10),
-    	                        }, opts['stringLength']);
+    	                        }, opts["stringLength"]);
     	                        break;
-    	                    case 'maxlength' === name_2:
-    	                        opts['stringLength'] = Object.assign({}, {
+    	                    case "maxlength" === name_2:
+    	                        opts["stringLength"] = Object.assign({}, {
     	                            enabled: true,
     	                            max: parseInt(value, 10),
-    	                        }, opts['stringLength']);
+    	                        }, opts["stringLength"]);
     	                        break;
-    	                    case 'pattern' === name_2:
-    	                        opts['regexp'] = Object.assign({}, {
+    	                    case "pattern" === name_2:
+    	                        opts["regexp"] = Object.assign({}, {
     	                            enabled: true,
     	                            regexp: value,
-    	                        }, opts['regexp']);
+    	                        }, opts["regexp"]);
     	                        break;
-    	                    case 'required' === name_2:
-    	                        opts['notEmpty'] = Object.assign({}, {
+    	                    case "required" === name_2:
+    	                        opts["notEmpty"] = Object.assign({}, {
     	                            enabled: true,
-    	                        }, opts['notEmpty']);
+    	                        }, opts["notEmpty"]);
     	                        break;
-    	                    case 'type' === name_2 && 'color' === value:
+    	                    case "type" === name_2 && "color" === value:
     	                        // Only accept 6 hex character values due to the HTML 5 spec
     	                        // See http://www.w3.org/TR/html-markup/input.color.html#input.color.attrs.value
-    	                        opts['color'] = Object.assign({}, {
+    	                        opts["color"] = Object.assign({}, {
     	                            enabled: true,
-    	                            type: 'hex',
-    	                        }, opts['color']);
+    	                            type: "hex",
+    	                        }, opts["color"]);
     	                        break;
-    	                    case 'type' === name_2 && 'email' === value:
-    	                        opts['emailAddress'] = Object.assign({}, {
+    	                    case "type" === name_2 && "email" === value:
+    	                        opts["emailAddress"] = Object.assign({}, {
     	                            enabled: true,
-    	                        }, opts['emailAddress']);
+    	                        }, opts["emailAddress"]);
     	                        break;
-    	                    case 'type' === name_2 && 'url' === value:
-    	                        opts['uri'] = Object.assign({}, {
+    	                    case "type" === name_2 && "url" === value:
+    	                        opts["uri"] = Object.assign({}, {
     	                            enabled: true,
-    	                        }, opts['uri']);
+    	                        }, opts["uri"]);
     	                        break;
-    	                    case 'type' === name_2 && 'range' === value:
-    	                        opts['between'] = Object.assign({}, {
+    	                    case "type" === name_2 && "range" === value:
+    	                        opts["between"] = Object.assign({}, {
     	                            enabled: true,
-    	                            max: parseFloat(ele.getAttribute('max')),
-    	                            min: parseFloat(ele.getAttribute('min')),
-    	                        }, opts['between']);
+    	                            max: parseFloat(ele.getAttribute("max")),
+    	                            min: parseFloat(ele.getAttribute("min")),
+    	                        }, opts["between"]);
     	                        break;
-    	                    case 'min' === name_2 && type !== 'date' && type !== 'range':
-    	                        opts['greaterThan'] = Object.assign({}, {
+    	                    case "min" === name_2 && type !== "date" && type !== "range":
+    	                        opts["greaterThan"] = Object.assign({}, {
     	                            enabled: true,
     	                            min: parseFloat(value),
-    	                        }, opts['greaterThan']);
+    	                        }, opts["greaterThan"]);
     	                        break;
-    	                    case 'max' === name_2 && type !== 'date' && type !== 'range':
-    	                        opts['lessThan'] = Object.assign({}, {
+    	                    case "max" === name_2 && type !== "date" && type !== "range":
+    	                        opts["lessThan"] = Object.assign({}, {
     	                            enabled: true,
     	                            max: parseFloat(value),
-    	                        }, opts['lessThan']);
+    	                        }, opts["lessThan"]);
     	                        break;
     	                }
     	            }
@@ -1889,8 +1889,8 @@
     	                if (items[3]) {
     	                    opts[v][this.toCamelCase(items[3])] = this.normalizeValue(value);
     	                }
-    	                else if (opts[v]['enabled'] !== true || opts[v]['enabled'] !== false) {
-    	                    opts[v]['enabled'] = '' === value || 'true' === value;
+    	                else if (opts[v]["enabled"] !== true || opts[v]["enabled"] !== false) {
+    	                    opts[v]["enabled"] = "" === value || "true" === value;
     	                }
     	            }
     	        }
@@ -1899,7 +1899,7 @@
     	    // Many validators accept `boolean` options, for example
     	    // `data-fv-between___inclusive="false"` should be identical to `inclusive: false`, not `inclusive: 'false'`
     	    Declarative.prototype.normalizeValue = function (value) {
-    	        return value === 'true' || value === '' ? true : value === 'false' ? false : value;
+    	        return value === "true" || value === "" ? true : value === "false" ? false : value;
     	    };
     	    Declarative.prototype.toUpperCase = function (input) {
     	        return input.charAt(1).toUpperCase();
@@ -1986,13 +1986,13 @@
     	    }
     	    DefaultSubmit.prototype.install = function () {
     	        var form = this.core.getFormElement();
-    	        if (form.querySelectorAll('[type="submit"][name="submit"]').length) {
-    	            throw new Error('Do not use `submit` for the name attribute of submit button');
+    	        if (form.querySelectorAll("[type=\"submit\"][name=\"submit\"]").length) {
+    	            throw new Error("Do not use `submit` for the name attribute of submit button");
     	        }
-    	        this.core.on('core.form.valid', this.onValidHandler);
+    	        this.core.on("core.form.valid", this.onValidHandler);
     	    };
     	    DefaultSubmit.prototype.uninstall = function () {
-    	        this.core.off('core.form.valid', this.onValidHandler);
+    	        this.core.off("core.form.valid", this.onValidHandler);
     	    };
     	    DefaultSubmit.prototype.onFormValid = function () {
     	        var form = this.core.getFormElement();
@@ -2076,14 +2076,14 @@
     	        return _this;
     	    }
     	    Dependency.prototype.install = function () {
-    	        this.core.on('plugins.trigger.executed', this.triggerExecutedHandler);
+    	        this.core.on("plugins.trigger.executed", this.triggerExecutedHandler);
     	    };
     	    Dependency.prototype.uninstall = function () {
-    	        this.core.off('plugins.trigger.executed', this.triggerExecutedHandler);
+    	        this.core.off("plugins.trigger.executed", this.triggerExecutedHandler);
     	    };
     	    Dependency.prototype.onTriggerExecuted = function (e) {
     	        if (this.isEnabled && this.opts[e.field]) {
-    	            var dependencies = this.opts[e.field].split(' ');
+    	            var dependencies = this.opts[e.field].split(" ");
     	            for (var _i = 0, dependencies_1 = dependencies; _i < dependencies_1.length; _i++) {
     	                var d = dependencies_1[_i];
     	                var dependentField = d.trim();
@@ -2172,14 +2172,14 @@
     	    }
     	    Excluded.defaultIgnore = function (_field, element, _elements) {
     	        var isVisible = !!(element.offsetWidth || element.offsetHeight || element.getClientRects().length);
-    	        var disabled = element.getAttribute('disabled');
-    	        return disabled === '' || disabled === 'disabled' || element.getAttribute('type') === 'hidden' || !isVisible;
+    	        var disabled = element.getAttribute("disabled");
+    	        return disabled === "" || disabled === "disabled" || element.getAttribute("type") === "hidden" || !isVisible;
     	    };
     	    Excluded.prototype.install = function () {
-    	        this.core.registerFilter('element-ignored', this.ignoreValidationFilter);
+    	        this.core.registerFilter("element-ignored", this.ignoreValidationFilter);
     	    };
     	    Excluded.prototype.uninstall = function () {
-    	        this.core.deregisterFilter('element-ignored', this.ignoreValidationFilter);
+    	        this.core.deregisterFilter("element-ignored", this.ignoreValidationFilter);
     	    };
     	    Excluded.prototype.ignoreValidation = function (field, element, elements) {
     	        if (!this.isEnabled) {
@@ -2272,33 +2272,33 @@
     	    }
     	    FieldStatus.prototype.install = function () {
     	        this.core
-    	            .on('core.element.validating', this.elementValidatingHandler)
-    	            .on('core.element.validated', this.elementValidatedHandler)
-    	            .on('core.element.notvalidated', this.elementNotValidatedHandler)
-    	            .on('core.element.ignored', this.elementIgnoredHandler)
-    	            .on('core.field.added', this.fieldAddedHandler)
-    	            .on('core.field.removed', this.fieldRemovedHandler);
+    	            .on("core.element.validating", this.elementValidatingHandler)
+    	            .on("core.element.validated", this.elementValidatedHandler)
+    	            .on("core.element.notvalidated", this.elementNotValidatedHandler)
+    	            .on("core.element.ignored", this.elementIgnoredHandler)
+    	            .on("core.field.added", this.fieldAddedHandler)
+    	            .on("core.field.removed", this.fieldRemovedHandler);
     	    };
     	    FieldStatus.prototype.uninstall = function () {
     	        this.statuses.clear();
     	        this.core
-    	            .off('core.element.validating', this.elementValidatingHandler)
-    	            .off('core.element.validated', this.elementValidatedHandler)
-    	            .off('core.element.notvalidated', this.elementNotValidatedHandler)
-    	            .off('core.element.ignored', this.elementIgnoredHandler)
-    	            .off('core.field.added', this.fieldAddedHandler)
-    	            .off('core.field.removed', this.fieldRemovedHandler);
+    	            .off("core.element.validating", this.elementValidatingHandler)
+    	            .off("core.element.validated", this.elementValidatedHandler)
+    	            .off("core.element.notvalidated", this.elementNotValidatedHandler)
+    	            .off("core.element.ignored", this.elementIgnoredHandler)
+    	            .off("core.field.added", this.fieldAddedHandler)
+    	            .off("core.field.removed", this.fieldRemovedHandler);
     	    };
     	    FieldStatus.prototype.areFieldsValid = function () {
     	        return Array.from(this.statuses.values()).every(function (value) {
-    	            return value === 'Valid' || value === 'NotValidated' || value === 'Ignored';
+    	            return value === "Valid" || value === "NotValidated" || value === "Ignored";
     	        });
     	    };
     	    FieldStatus.prototype.getStatuses = function () {
     	        return this.isEnabled ? this.statuses : new Map();
     	    };
     	    FieldStatus.prototype.onFieldAdded = function (e) {
-    	        this.statuses.set(e.field, 'NotValidated');
+    	        this.statuses.set(e.field, "NotValidated");
     	    };
     	    FieldStatus.prototype.onFieldRemoved = function (e) {
     	        if (this.statuses.has(e.field)) {
@@ -2307,11 +2307,11 @@
     	        this.handleStatusChanged(this.areFieldsValid());
     	    };
     	    FieldStatus.prototype.onElementValidating = function (e) {
-    	        this.statuses.set(e.field, 'Validating');
+    	        this.statuses.set(e.field, "Validating");
     	        this.handleStatusChanged(false);
     	    };
     	    FieldStatus.prototype.onElementValidated = function (e) {
-    	        this.statuses.set(e.field, e.valid ? 'Valid' : 'Invalid');
+    	        this.statuses.set(e.field, e.valid ? "Valid" : "Invalid");
     	        if (e.valid) {
     	            this.handleStatusChanged(this.areFieldsValid());
     	        }
@@ -2320,11 +2320,11 @@
     	        }
     	    };
     	    FieldStatus.prototype.onElementNotValidated = function (e) {
-    	        this.statuses.set(e.field, 'NotValidated');
+    	        this.statuses.set(e.field, "NotValidated");
     	        this.handleStatusChanged(false);
     	    };
     	    FieldStatus.prototype.onElementIgnored = function (e) {
-    	        this.statuses.set(e.field, 'Ignored');
+    	        this.statuses.set(e.field, "Ignored");
     	        this.handleStatusChanged(this.areFieldsValid());
     	    };
     	    FieldStatus.prototype.handleStatusChanged = function (areFieldsValid) {
@@ -2410,7 +2410,7 @@
     	        // Map the field element to message container
     	        _this.messages = new Map();
     	        // By default, we will display error messages at the bottom of form
-    	        _this.defaultContainer = document.createElement('div');
+    	        _this.defaultContainer = document.createElement("div");
     	        _this.useDefaultContainer = !opts || !opts.container;
     	        _this.opts = Object.assign({}, {
     	            container: function (_field, _element) { return _this.defaultContainer; },
@@ -2464,11 +2464,11 @@
     	            this.core.getFormElement().appendChild(this.defaultContainer);
     	        }
     	        this.core
-    	            .on('core.element.ignored', this.elementIgnoredHandler)
-    	            .on('core.field.added', this.fieldAddedHandler)
-    	            .on('core.field.removed', this.fieldRemovedHandler)
-    	            .on('core.validator.validated', this.validatorValidatedHandler)
-    	            .on('core.validator.notvalidated', this.validatorNotValidatedHandler);
+    	            .on("core.element.ignored", this.elementIgnoredHandler)
+    	            .on("core.field.added", this.fieldAddedHandler)
+    	            .on("core.field.removed", this.fieldRemovedHandler)
+    	            .on("core.validator.validated", this.validatorValidatedHandler)
+    	            .on("core.validator.notvalidated", this.validatorNotValidatedHandler);
     	    };
     	    Message.prototype.uninstall = function () {
     	        if (this.useDefaultContainer) {
@@ -2477,25 +2477,25 @@
     	        this.messages.forEach(function (message) { return message.parentNode.removeChild(message); });
     	        this.messages.clear();
     	        this.core
-    	            .off('core.element.ignored', this.elementIgnoredHandler)
-    	            .off('core.field.added', this.fieldAddedHandler)
-    	            .off('core.field.removed', this.fieldRemovedHandler)
-    	            .off('core.validator.validated', this.validatorValidatedHandler)
-    	            .off('core.validator.notvalidated', this.validatorNotValidatedHandler);
+    	            .off("core.element.ignored", this.elementIgnoredHandler)
+    	            .off("core.field.added", this.fieldAddedHandler)
+    	            .off("core.field.removed", this.fieldRemovedHandler)
+    	            .off("core.validator.validated", this.validatorValidatedHandler)
+    	            .off("core.validator.notvalidated", this.validatorNotValidatedHandler);
     	    };
     	    Message.prototype.onEnabled = function () {
     	        this.messages.forEach(function (_element, message, _map) {
     	            classSet(message, {
-    	                'fv-plugins-message-container--enabled': true,
-    	                'fv-plugins-message-container--disabled': false,
+    	                "fv-plugins-message-container--enabled": true,
+    	                "fv-plugins-message-container--disabled": false,
     	            });
     	        });
     	    };
     	    Message.prototype.onDisabled = function () {
     	        this.messages.forEach(function (_element, message, _map) {
     	            classSet(message, {
-    	                'fv-plugins-message-container--enabled': false,
-    	                'fv-plugins-message-container--disabled': true,
+    	                "fv-plugins-message-container--enabled": false,
+    	                "fv-plugins-message-container--disabled": true,
     	            });
     	        });
     	    };
@@ -2520,8 +2520,8 @@
     	        if (!e.elements.length || !e.field) {
     	            return;
     	        }
-    	        var type = e.elements[0].getAttribute('type');
-    	        var elements = 'radio' === type || 'checkbox' === type ? [e.elements[0]] : e.elements;
+    	        var type = e.elements[0].getAttribute("type");
+    	        var elements = "radio" === type || "checkbox" === type ? [e.elements[0]] : e.elements;
     	        elements.forEach(function (ele) {
     	            if (_this.messages.has(ele)) {
     	                var container = _this.messages.get(ele);
@@ -2533,8 +2533,8 @@
     	    Message.prototype.prepareFieldContainer = function (field, elements) {
     	        var _this = this;
     	        if (elements.length) {
-    	            var type = elements[0].getAttribute('type');
-    	            if ('radio' === type || 'checkbox' === type) {
+    	            var type = elements[0].getAttribute("type");
+    	            if ("radio" === type || "checkbox" === type) {
     	                this.prepareElementContainer(field, elements[0], elements);
     	            }
     	            else {
@@ -2544,8 +2544,8 @@
     	    };
     	    Message.prototype.prepareElementContainer = function (field, element, elements) {
     	        var container;
-    	        if ('string' === typeof this.opts.container) {
-    	            var selector = '#' === this.opts.container.charAt(0)
+    	        if ("string" === typeof this.opts.container) {
+    	            var selector = "#" === this.opts.container.charAt(0)
     	                ? "[id=\"".concat(this.opts.container.substring(1), "\"]")
     	                : this.opts.container;
     	            container = this.core.getFormElement().querySelector(selector);
@@ -2553,14 +2553,14 @@
     	        else {
     	            container = this.opts.container(field, element);
     	        }
-    	        var message = document.createElement('div');
+    	        var message = document.createElement("div");
     	        container.appendChild(message);
     	        classSet(message, {
-    	            'fv-plugins-message-container': true,
-    	            'fv-plugins-message-container--enabled': this.isEnabled,
-    	            'fv-plugins-message-container--disabled': !this.isEnabled,
+    	            "fv-plugins-message-container": true,
+    	            "fv-plugins-message-container--enabled": this.isEnabled,
+    	            "fv-plugins-message-container--disabled": !this.isEnabled,
     	        });
-    	        this.core.emit('plugins.message.placed', {
+    	        this.core.emit("plugins.message.placed", {
     	            element: element,
     	            elements: elements,
     	            field: field,
@@ -2569,28 +2569,28 @@
     	        this.messages.set(element, message);
     	    };
     	    Message.prototype.getMessage = function (result) {
-    	        return typeof result.message === 'string' ? result.message : result.message[this.core.getLocale()];
+    	        return typeof result.message === "string" ? result.message : result.message[this.core.getLocale()];
     	    };
     	    Message.prototype.onValidatorValidated = function (e) {
     	        var _a;
     	        var elements = e.elements;
-    	        var type = e.element.getAttribute('type');
-    	        var element = ('radio' === type || 'checkbox' === type) && elements.length > 0 ? elements[0] : e.element;
+    	        var type = e.element.getAttribute("type");
+    	        var element = ("radio" === type || "checkbox" === type) && elements.length > 0 ? elements[0] : e.element;
     	        if (this.messages.has(element)) {
     	            var container = this.messages.get(element);
-    	            var messageEle = container.querySelector("[data-field=\"".concat(e.field.replace(/"/g, '\\"'), "\"][data-validator=\"").concat(e.validator.replace(/"/g, '\\"'), "\"]"));
+    	            var messageEle = container.querySelector("[data-field=\"".concat(e.field.replace(/"/g, "\\\""), "\"][data-validator=\"").concat(e.validator.replace(/"/g, "\\\""), "\"]"));
     	            if (!messageEle && !e.result.valid) {
-    	                var ele = document.createElement('div');
+    	                var ele = document.createElement("div");
     	                ele.innerHTML = this.getMessage(e.result);
-    	                ele.setAttribute('data-field', e.field);
-    	                ele.setAttribute('data-validator', e.validator);
+    	                ele.setAttribute("data-field", e.field);
+    	                ele.setAttribute("data-validator", e.validator);
     	                if (this.opts.clazz) {
     	                    classSet(ele, (_a = {},
     	                        _a[this.opts.clazz] = true,
     	                        _a));
     	                }
     	                container.appendChild(ele);
-    	                this.core.emit('plugins.message.displayed', {
+    	                this.core.emit("plugins.message.displayed", {
     	                    element: e.element,
     	                    field: e.field,
     	                    message: e.result.message,
@@ -2602,7 +2602,7 @@
     	            else if (messageEle && !e.result.valid) {
     	                // The validator returns new message
     	                messageEle.innerHTML = this.getMessage(e.result);
-    	                this.core.emit('plugins.message.displayed', {
+    	                this.core.emit("plugins.message.displayed", {
     	                    element: e.element,
     	                    field: e.field,
     	                    message: e.result.message,
@@ -2619,11 +2619,11 @@
     	    };
     	    Message.prototype.onValidatorNotValidated = function (e) {
     	        var elements = e.elements;
-    	        var type = e.element.getAttribute('type');
-    	        var element = 'radio' === type || 'checkbox' === type ? elements[0] : e.element;
+    	        var type = e.element.getAttribute("type");
+    	        var element = "radio" === type || "checkbox" === type ? elements[0] : e.element;
     	        if (this.messages.has(element)) {
     	            var container = this.messages.get(element);
-    	            var messageEle = container.querySelector("[data-field=\"".concat(e.field.replace(/"/g, '\\"'), "\"][data-validator=\"").concat(e.validator.replace(/"/g, '\\"'), "\"]"));
+    	            var messageEle = container.querySelector("[data-field=\"".concat(e.field.replace(/"/g, "\\\""), "\"][data-validator=\"").concat(e.validator.replace(/"/g, "\\\""), "\"]"));
     	            if (messageEle) {
     	                container.removeChild(messageEle);
     	            }
@@ -2631,11 +2631,11 @@
     	    };
     	    Message.prototype.onElementIgnored = function (e) {
     	        var elements = e.elements;
-    	        var type = e.element.getAttribute('type');
-    	        var element = 'radio' === type || 'checkbox' === type ? elements[0] : e.element;
+    	        var type = e.element.getAttribute("type");
+    	        var element = "radio" === type || "checkbox" === type ? elements[0] : e.element;
     	        if (this.messages.has(element)) {
     	            var container_1 = this.messages.get(element);
-    	            var messageElements = [].slice.call(container_1.querySelectorAll("[data-field=\"".concat(e.field.replace(/"/g, '\\"'), "\"]")));
+    	            var messageElements = [].slice.call(container_1.querySelectorAll("[data-field=\"".concat(e.field.replace(/"/g, "\\\""), "\"]")));
     	            messageElements.forEach(function (messageEle) {
     	                container_1.removeChild(messageEle);
     	            });
@@ -2716,10 +2716,10 @@
     	        _this.containers = new Map();
     	        _this.opts = Object.assign({}, {
     	            defaultMessageContainer: true,
-    	            eleInvalidClass: '',
-    	            eleValidClass: '',
-    	            rowClasses: '',
-    	            rowValidatingClass: '',
+    	            eleInvalidClass: "",
+    	            eleValidClass: "",
+    	            rowClasses: "",
+    	            rowValidatingClass: "",
     	        }, opts);
     	        _this.elementIgnoredHandler = _this.onElementIgnored.bind(_this);
     	        _this.elementValidatingHandler = _this.onElementValidating.bind(_this);
@@ -2736,28 +2736,28 @@
     	        var _this = this;
     	        classSet(this.core.getFormElement(), (_a = {},
     	            _a[this.opts.formClass] = true,
-    	            _a['fv-plugins-framework'] = true,
+    	            _a["fv-plugins-framework"] = true,
     	            _a));
     	        this.core
-    	            .on('core.element.ignored', this.elementIgnoredHandler)
-    	            .on('core.element.validating', this.elementValidatingHandler)
-    	            .on('core.element.validated', this.elementValidatedHandler)
-    	            .on('core.element.notvalidated', this.elementNotValidatedHandler)
-    	            .on('plugins.icon.placed', this.iconPlacedHandler)
-    	            .on('core.field.added', this.fieldAddedHandler)
-    	            .on('core.field.removed', this.fieldRemovedHandler);
+    	            .on("core.element.ignored", this.elementIgnoredHandler)
+    	            .on("core.element.validating", this.elementValidatingHandler)
+    	            .on("core.element.validated", this.elementValidatedHandler)
+    	            .on("core.element.notvalidated", this.elementNotValidatedHandler)
+    	            .on("plugins.icon.placed", this.iconPlacedHandler)
+    	            .on("core.field.added", this.fieldAddedHandler)
+    	            .on("core.field.removed", this.fieldRemovedHandler);
     	        if (this.opts.defaultMessageContainer) {
     	            this.core.registerPlugin(Framework.MESSAGE_PLUGIN, new pluginMessage.Message({
     	                clazz: this.opts.messageClass,
     	                container: function (field, element) {
-    	                    var selector = 'string' === typeof _this.opts.rowSelector
+    	                    var selector = "string" === typeof _this.opts.rowSelector
     	                        ? _this.opts.rowSelector
     	                        : _this.opts.rowSelector(field, element);
     	                    var groupEle = closest(element, selector);
     	                    return pluginMessage.Message.getClosestContainer(element, groupEle, _this.opts.rowPattern);
     	                },
     	            }));
-    	            this.core.on('plugins.message.placed', this.messagePlacedHandler);
+    	            this.core.on("plugins.message.placed", this.messagePlacedHandler);
     	        }
     	    };
     	    Framework.prototype.uninstall = function () {
@@ -2766,19 +2766,19 @@
     	        this.containers.clear();
     	        classSet(this.core.getFormElement(), (_a = {},
     	            _a[this.opts.formClass] = false,
-    	            _a['fv-plugins-framework'] = false,
+    	            _a["fv-plugins-framework"] = false,
     	            _a));
     	        this.core
-    	            .off('core.element.ignored', this.elementIgnoredHandler)
-    	            .off('core.element.validating', this.elementValidatingHandler)
-    	            .off('core.element.validated', this.elementValidatedHandler)
-    	            .off('core.element.notvalidated', this.elementNotValidatedHandler)
-    	            .off('plugins.icon.placed', this.iconPlacedHandler)
-    	            .off('core.field.added', this.fieldAddedHandler)
-    	            .off('core.field.removed', this.fieldRemovedHandler);
+    	            .off("core.element.ignored", this.elementIgnoredHandler)
+    	            .off("core.element.validating", this.elementValidatingHandler)
+    	            .off("core.element.validated", this.elementValidatedHandler)
+    	            .off("core.element.notvalidated", this.elementNotValidatedHandler)
+    	            .off("plugins.icon.placed", this.iconPlacedHandler)
+    	            .off("core.field.added", this.fieldAddedHandler)
+    	            .off("core.field.removed", this.fieldRemovedHandler);
     	        if (this.opts.defaultMessageContainer) {
     	            this.core.deregisterPlugin(Framework.MESSAGE_PLUGIN);
-    	            this.core.off('plugins.message.placed', this.messagePlacedHandler);
+    	            this.core.off("plugins.message.placed", this.messagePlacedHandler);
     	        }
     	    };
     	    Framework.prototype.onEnabled = function () {
@@ -2813,7 +2813,7 @@
     	                        _a[_this.opts.rowInvalidClass] = false,
     	                        _a[_this.opts.rowValidatingClass] = false,
     	                        _a[_this.opts.rowValidClass] = false,
-    	                        _a['fv-plugins-icon-container'] = false,
+    	                        _a["fv-plugins-icon-container"] = false,
     	                        _a));
     	                    _this.containers.delete(ele);
     	                }
@@ -2838,8 +2838,8 @@
     	    Framework.prototype.prepareFieldContainer = function (field, elements) {
     	        var _this = this;
     	        if (elements.length) {
-    	            var type = elements[0].getAttribute('type');
-    	            if ('radio' === type || 'checkbox' === type) {
+    	            var type = elements[0].getAttribute("type");
+    	            if ("radio" === type || "checkbox" === type) {
     	                this.prepareElementContainer(field, elements[0]);
     	            }
     	            else {
@@ -2849,12 +2849,12 @@
     	    };
     	    Framework.prototype.prepareElementContainer = function (field, element) {
     	        var _a;
-    	        var selector = 'string' === typeof this.opts.rowSelector ? this.opts.rowSelector : this.opts.rowSelector(field, element);
+    	        var selector = "string" === typeof this.opts.rowSelector ? this.opts.rowSelector : this.opts.rowSelector(field, element);
     	        var groupEle = closest(element, selector);
     	        if (groupEle !== element) {
     	            classSet(groupEle, (_a = {},
     	                _a[this.opts.rowClasses] = true,
-    	                _a['fv-plugins-icon-container'] = true,
+    	                _a["fv-plugins-icon-container"] = true,
     	                _a));
     	            this.containers.set(element, groupEle);
     	        }
@@ -2871,8 +2871,8 @@
     	    Framework.prototype.removeClasses = function (element, elements) {
     	        var _a;
     	        var _this = this;
-    	        var type = element.getAttribute('type');
-    	        var ele = 'radio' === type || 'checkbox' === type ? elements[0] : element;
+    	        var type = element.getAttribute("type");
+    	        var ele = "radio" === type || "checkbox" === type ? elements[0] : element;
     	        elements.forEach(function (ele) {
     	            var _a;
     	            classSet(ele, (_a = {},
@@ -2893,8 +2893,8 @@
     	        var _a, _b;
     	        var _this = this;
     	        var elements = e.elements;
-    	        var type = e.element.getAttribute('type');
-    	        var element = 'radio' === type || 'checkbox' === type ? elements[0] : e.element;
+    	        var type = e.element.getAttribute("type");
+    	        var element = "radio" === type || "checkbox" === type ? elements[0] : e.element;
     	        // Set the valid or invalid class for all elements
     	        elements.forEach(function (ele) {
     	            var _a;
@@ -2933,7 +2933,7 @@
     	            }
     	        }
     	    };
-    	    Framework.MESSAGE_PLUGIN = '___frameworkMessage';
+    	    Framework.MESSAGE_PLUGIN = "___frameworkMessage";
     	    return Framework;
     	}(core.Plugin));
 
@@ -3009,11 +3009,11 @@
     	        // Map the field element with icon
     	        _this.icons = new Map();
     	        _this.opts = Object.assign({}, {
-    	            invalid: 'fv-plugins-icon--invalid',
+    	            invalid: "fv-plugins-icon--invalid",
     	            onPlaced: function () { },
     	            onSet: function () { },
-    	            valid: 'fv-plugins-icon--valid',
-    	            validating: 'fv-plugins-icon--validating',
+    	            valid: "fv-plugins-icon--valid",
+    	            validating: "fv-plugins-icon--validating",
     	        }, opts);
     	        _this.elementValidatingHandler = _this.onElementValidating.bind(_this);
     	        _this.elementValidatedHandler = _this.onElementValidated.bind(_this);
@@ -3024,35 +3024,35 @@
     	    }
     	    Icon.prototype.install = function () {
     	        this.core
-    	            .on('core.element.validating', this.elementValidatingHandler)
-    	            .on('core.element.validated', this.elementValidatedHandler)
-    	            .on('core.element.notvalidated', this.elementNotValidatedHandler)
-    	            .on('core.element.ignored', this.elementIgnoredHandler)
-    	            .on('core.field.added', this.fieldAddedHandler);
+    	            .on("core.element.validating", this.elementValidatingHandler)
+    	            .on("core.element.validated", this.elementValidatedHandler)
+    	            .on("core.element.notvalidated", this.elementNotValidatedHandler)
+    	            .on("core.element.ignored", this.elementIgnoredHandler)
+    	            .on("core.field.added", this.fieldAddedHandler);
     	    };
     	    Icon.prototype.uninstall = function () {
     	        this.icons.forEach(function (icon) { return icon.parentNode.removeChild(icon); });
     	        this.icons.clear();
     	        this.core
-    	            .off('core.element.validating', this.elementValidatingHandler)
-    	            .off('core.element.validated', this.elementValidatedHandler)
-    	            .off('core.element.notvalidated', this.elementNotValidatedHandler)
-    	            .off('core.element.ignored', this.elementIgnoredHandler)
-    	            .off('core.field.added', this.fieldAddedHandler);
+    	            .off("core.element.validating", this.elementValidatingHandler)
+    	            .off("core.element.validated", this.elementValidatedHandler)
+    	            .off("core.element.notvalidated", this.elementNotValidatedHandler)
+    	            .off("core.element.ignored", this.elementIgnoredHandler)
+    	            .off("core.field.added", this.fieldAddedHandler);
     	    };
     	    Icon.prototype.onEnabled = function () {
     	        this.icons.forEach(function (_element, i, _map) {
     	            classSet(i, {
-    	                'fv-plugins-icon--enabled': true,
-    	                'fv-plugins-icon--disabled': false,
+    	                "fv-plugins-icon--enabled": true,
+    	                "fv-plugins-icon--disabled": false,
     	            });
     	        });
     	    };
     	    Icon.prototype.onDisabled = function () {
     	        this.icons.forEach(function (_element, i, _map) {
     	            classSet(i, {
-    	                'fv-plugins-icon--enabled': false,
-    	                'fv-plugins-icon--disabled': true,
+    	                "fv-plugins-icon--enabled": false,
+    	                "fv-plugins-icon--disabled": true,
     	            });
     	        });
     	    };
@@ -3073,8 +3073,8 @@
     	    Icon.prototype.prepareFieldIcon = function (field, elements) {
     	        var _this = this;
     	        if (elements.length) {
-    	            var type = elements[0].getAttribute('type');
-    	            if ('radio' === type || 'checkbox' === type) {
+    	            var type = elements[0].getAttribute("type");
+    	            if ("radio" === type || "checkbox" === type) {
     	                this.prepareElementIcon(field, elements[0]);
     	            }
     	            else {
@@ -3083,14 +3083,14 @@
     	        }
     	    };
     	    Icon.prototype.prepareElementIcon = function (field, ele) {
-    	        var i = document.createElement('i');
-    	        i.setAttribute('data-field', field);
+    	        var i = document.createElement("i");
+    	        i.setAttribute("data-field", field);
     	        // Append the icon right after the field element
     	        ele.parentNode.insertBefore(i, ele.nextSibling);
     	        classSet(i, {
-    	            'fv-plugins-icon': true,
-    	            'fv-plugins-icon--enabled': this.isEnabled,
-    	            'fv-plugins-icon--disabled': !this.isEnabled,
+    	            "fv-plugins-icon": true,
+    	            "fv-plugins-icon--enabled": this.isEnabled,
+    	            "fv-plugins-icon--disabled": !this.isEnabled,
     	        });
     	        var e = {
     	            classes: {
@@ -3102,7 +3102,7 @@
     	            field: field,
     	            iconElement: i,
     	        };
-    	        this.core.emit('plugins.icon.placed', e);
+    	        this.core.emit("plugins.icon.placed", e);
     	        this.opts.onPlaced(e);
     	        this.icons.set(ele, i);
     	    };
@@ -3117,9 +3117,9 @@
     	            element: e.element,
     	            field: e.field,
     	            iconElement: icon,
-    	            status: 'Validating',
+    	            status: "Validating",
     	        };
-    	        this.core.emit('plugins.icon.set', evt);
+    	        this.core.emit("plugins.icon.set", evt);
     	        this.opts.onSet(evt);
     	    };
     	    Icon.prototype.onElementValidated = function (e) {
@@ -3133,9 +3133,9 @@
     	            element: e.element,
     	            field: e.field,
     	            iconElement: icon,
-    	            status: e.valid ? 'Valid' : 'Invalid',
+    	            status: e.valid ? "Valid" : "Invalid",
     	        };
-    	        this.core.emit('plugins.icon.set', evt);
+    	        this.core.emit("plugins.icon.set", evt);
     	        this.opts.onSet(evt);
     	    };
     	    Icon.prototype.onElementNotValidated = function (e) {
@@ -3149,9 +3149,9 @@
     	            element: e.element,
     	            field: e.field,
     	            iconElement: icon,
-    	            status: 'NotValidated',
+    	            status: "NotValidated",
     	        };
-    	        this.core.emit('plugins.icon.set', evt);
+    	        this.core.emit("plugins.icon.set", evt);
     	        this.opts.onSet(evt);
     	    };
     	    Icon.prototype.onElementIgnored = function (e) {
@@ -3165,14 +3165,14 @@
     	            element: e.element,
     	            field: e.field,
     	            iconElement: icon,
-    	            status: 'Ignored',
+    	            status: "Ignored",
     	        };
-    	        this.core.emit('plugins.icon.set', evt);
+    	        this.core.emit("plugins.icon.set", evt);
     	        this.opts.onSet(evt);
     	    };
     	    Icon.prototype.setClasses = function (_field, element, elements, classes) {
-    	        var type = element.getAttribute('type');
-    	        var ele = 'radio' === type || 'checkbox' === type ? elements[0] : element;
+    	        var type = element.getAttribute("type");
+    	        var ele = "radio" === type || "checkbox" === type ? elements[0] : element;
     	        if (this.icons.has(ele)) {
     	            var icon = this.icons.get(ele);
     	            classSet(icon, classes);
@@ -3292,20 +3292,20 @@
     	    }
     	    Sequence.prototype.install = function () {
     	        this.core
-    	            .on('core.validator.validated', this.validatorHandler)
-    	            .on('core.field.added', this.fieldAddedHandler)
-    	            .on('core.element.notvalidated', this.elementNotValidatedHandler)
-    	            .on('core.element.validating', this.elementValidatingHandler)
-    	            .registerFilter('field-should-validate', this.shouldValidateFilter);
+    	            .on("core.validator.validated", this.validatorHandler)
+    	            .on("core.field.added", this.fieldAddedHandler)
+    	            .on("core.element.notvalidated", this.elementNotValidatedHandler)
+    	            .on("core.element.validating", this.elementValidatingHandler)
+    	            .registerFilter("field-should-validate", this.shouldValidateFilter);
     	    };
     	    Sequence.prototype.uninstall = function () {
     	        this.invalidFields.clear();
     	        this.core
-    	            .off('core.validator.validated', this.validatorHandler)
-    	            .off('core.field.added', this.fieldAddedHandler)
-    	            .off('core.element.notvalidated', this.elementNotValidatedHandler)
-    	            .off('core.element.validating', this.elementValidatingHandler)
-    	            .deregisterFilter('field-should-validate', this.shouldValidateFilter);
+    	            .off("core.validator.validated", this.validatorHandler)
+    	            .off("core.field.added", this.fieldAddedHandler)
+    	            .off("core.element.notvalidated", this.elementNotValidatedHandler)
+    	            .off("core.element.validating", this.elementValidatingHandler)
+    	            .deregisterFilter("field-should-validate", this.shouldValidateFilter);
     	    };
     	    Sequence.prototype.shouldValidate = function (field, element, _value, validator) {
     	        if (!this.isEnabled) {
@@ -3426,7 +3426,7 @@
     	            // By default, don't perform validation when clicking on
     	            // the submit button/input which have `formnovalidate` attribute
     	            buttons: function (form) {
-    	                return [].slice.call(form.querySelectorAll('[type="submit"]:not([formnovalidate])'));
+    	                return [].slice.call(form.querySelectorAll("[type=\"submit\"]:not([formnovalidate])"));
     	            },
     	            liveMode: true,
     	        }, opts);
@@ -3443,28 +3443,28 @@
     	        var form = this.core.getFormElement();
     	        this.submitButtons = this.opts.buttons(form);
     	        // Disable client side validation in HTML 5
-    	        form.setAttribute('novalidate', 'novalidate');
+    	        form.setAttribute("novalidate", "novalidate");
     	        // Disable the default submission first
-    	        form.addEventListener('submit', this.submitHandler);
-    	        this.hiddenClickedEle = document.createElement('input');
-    	        this.hiddenClickedEle.setAttribute('type', 'hidden');
+    	        form.addEventListener("submit", this.submitHandler);
+    	        this.hiddenClickedEle = document.createElement("input");
+    	        this.hiddenClickedEle.setAttribute("type", "hidden");
     	        form.appendChild(this.hiddenClickedEle);
     	        this.submitButtons.forEach(function (button) {
-    	            button.addEventListener('click', _this.buttonClickHandler);
+    	            button.addEventListener("click", _this.buttonClickHandler);
     	        });
-    	        this.core.registerFilter('element-ignored', this.ignoreValidationFilter);
+    	        this.core.registerFilter("element-ignored", this.ignoreValidationFilter);
     	    };
     	    SubmitButton.prototype.uninstall = function () {
     	        var _this = this;
     	        var form = this.core.getFormElement();
     	        if (form instanceof HTMLFormElement) {
-    	            form.removeEventListener('submit', this.submitHandler);
+    	            form.removeEventListener("submit", this.submitHandler);
     	        }
     	        this.submitButtons.forEach(function (button) {
-    	            button.removeEventListener('click', _this.buttonClickHandler);
+    	            button.removeEventListener("click", _this.buttonClickHandler);
     	        });
     	        this.hiddenClickedEle.parentElement.removeChild(this.hiddenClickedEle);
-    	        this.core.deregisterFilter('element-ignored', this.ignoreValidationFilter);
+    	        this.core.deregisterFilter("element-ignored", this.ignoreValidationFilter);
     	    };
     	    SubmitButton.prototype.handleSubmitEvent = function (e) {
     	        this.validateForm(e);
@@ -3476,13 +3476,13 @@
     	            if (this.opts.aspNetButton && this.isFormValid === true) ;
     	            else {
     	                var form = this.core.getFormElement();
-    	                form.removeEventListener('submit', this.submitHandler);
+    	                form.removeEventListener("submit", this.submitHandler);
     	                this.clickedButton = e.target;
-    	                var name_1 = this.clickedButton.getAttribute('name');
-    	                var value = this.clickedButton.getAttribute('value');
+    	                var name_1 = this.clickedButton.getAttribute("name");
+    	                var value = this.clickedButton.getAttribute("value");
     	                if (name_1 && value) {
-    	                    this.hiddenClickedEle.setAttribute('name', name_1);
-    	                    this.hiddenClickedEle.setAttribute('value', value);
+    	                    this.hiddenClickedEle.setAttribute("name", name_1);
+    	                    this.hiddenClickedEle.setAttribute("value", value);
     	                }
     	                this.validateForm(e);
     	            }
@@ -3495,9 +3495,9 @@
     	        }
     	        e.preventDefault();
     	        this.core.validate().then(function (result) {
-    	            if (result === 'Valid' && _this.opts.aspNetButton && !_this.isFormValid && _this.clickedButton) {
+    	            if (result === "Valid" && _this.opts.aspNetButton && !_this.isFormValid && _this.clickedButton) {
     	                _this.isFormValid = true;
-    	                _this.clickedButton.removeEventListener('click', _this.buttonClickHandler);
+    	                _this.clickedButton.removeEventListener("click", _this.buttonClickHandler);
     	                // It's the time for ASP.Net submit button to do its own submission
     	                _this.clickedButton.click();
     	            }
@@ -3584,8 +3584,8 @@
     	        // Map the element with message
     	        _this.messages = new Map();
     	        _this.opts = Object.assign({}, {
-    	            placement: 'top',
-    	            trigger: 'click',
+    	            placement: "top",
+    	            trigger: "click",
     	        }, opts);
     	        _this.iconPlacedHandler = _this.onIconPlaced.bind(_this);
     	        _this.validatorValidatedHandler = _this.onValidatorValidated.bind(_this);
@@ -3595,55 +3595,55 @@
     	    }
     	    Tooltip.prototype.install = function () {
     	        var _a;
-    	        this.tip = document.createElement('div');
+    	        this.tip = document.createElement("div");
     	        classSet(this.tip, (_a = {
-    	                'fv-plugins-tooltip': true
+    	                "fv-plugins-tooltip": true
     	            },
     	            _a["fv-plugins-tooltip--".concat(this.opts.placement)] = true,
     	            _a));
     	        document.body.appendChild(this.tip);
     	        this.core
-    	            .on('plugins.icon.placed', this.iconPlacedHandler)
-    	            .on('core.validator.validated', this.validatorValidatedHandler)
-    	            .on('core.element.validated', this.elementValidatedHandler);
-    	        if ('click' === this.opts.trigger) {
-    	            document.addEventListener('click', this.documentClickHandler);
+    	            .on("plugins.icon.placed", this.iconPlacedHandler)
+    	            .on("core.validator.validated", this.validatorValidatedHandler)
+    	            .on("core.element.validated", this.elementValidatedHandler);
+    	        if ("click" === this.opts.trigger) {
+    	            document.addEventListener("click", this.documentClickHandler);
     	        }
     	    };
     	    Tooltip.prototype.uninstall = function () {
     	        this.messages.clear();
     	        document.body.removeChild(this.tip);
     	        this.core
-    	            .off('plugins.icon.placed', this.iconPlacedHandler)
-    	            .off('core.validator.validated', this.validatorValidatedHandler)
-    	            .off('core.element.validated', this.elementValidatedHandler);
-    	        if ('click' === this.opts.trigger) {
-    	            document.removeEventListener('click', this.documentClickHandler);
+    	            .off("plugins.icon.placed", this.iconPlacedHandler)
+    	            .off("core.validator.validated", this.validatorValidatedHandler)
+    	            .off("core.element.validated", this.elementValidatedHandler);
+    	        if ("click" === this.opts.trigger) {
+    	            document.removeEventListener("click", this.documentClickHandler);
     	        }
     	    };
     	    Tooltip.prototype.onIconPlaced = function (e) {
     	        var _this = this;
     	        classSet(e.iconElement, {
-    	            'fv-plugins-tooltip-icon': true,
+    	            "fv-plugins-tooltip-icon": true,
     	        });
     	        switch (this.opts.trigger) {
-    	            case 'hover':
-    	                e.iconElement.addEventListener('mouseenter', function (evt) { return _this.show(e.element, evt); });
-    	                e.iconElement.addEventListener('mouseleave', function (_evt) { return _this.hide(); });
+    	            case "hover":
+    	                e.iconElement.addEventListener("mouseenter", function (evt) { return _this.show(e.element, evt); });
+    	                e.iconElement.addEventListener("mouseleave", function (_evt) { return _this.hide(); });
     	                break;
-    	            case 'click':
+    	            case "click":
     	            default:
-    	                e.iconElement.addEventListener('click', function (evt) { return _this.show(e.element, evt); });
+    	                e.iconElement.addEventListener("click", function (evt) { return _this.show(e.element, evt); });
     	                break;
     	        }
     	    };
     	    Tooltip.prototype.onValidatorValidated = function (e) {
     	        if (!e.result.valid) {
     	            var elements = e.elements;
-    	            var type = e.element.getAttribute('type');
-    	            var ele = 'radio' === type || 'checkbox' === type ? elements[0] : e.element;
+    	            var type = e.element.getAttribute("type");
+    	            var ele = "radio" === type || "checkbox" === type ? elements[0] : e.element;
     	            // Get the message
-    	            var message = typeof e.result.message === 'string' ? e.result.message : e.result.message[this.core.getLocale()];
+    	            var message = typeof e.result.message === "string" ? e.result.message : e.result.message[this.core.getLocale()];
     	            this.messages.set(ele, message);
     	        }
     	    };
@@ -3651,8 +3651,8 @@
     	        if (e.valid) {
     	            // Clear the message
     	            var elements = e.elements;
-    	            var type = e.element.getAttribute('type');
-    	            var ele = 'radio' === type || 'checkbox' === type ? elements[0] : e.element;
+    	            var type = e.element.getAttribute("type");
+    	            var ele = "radio" === type || "checkbox" === type ? elements[0] : e.element;
     	            this.messages.delete(ele);
     	        }
     	    };
@@ -3669,7 +3669,7 @@
     	            return;
     	        }
     	        classSet(this.tip, {
-    	            'fv-plugins-tooltip--hide': false,
+    	            "fv-plugins-tooltip--hide": false,
     	        });
     	        this.tip.innerHTML = "<div class=\"fv-plugins-tooltip__content\">".concat(this.messages.get(ele), "</div>");
     	        // Calculate position of the icon element
@@ -3679,35 +3679,35 @@
     	        var top = 0;
     	        var left = 0;
     	        switch (this.opts.placement) {
-    	            case 'bottom':
+    	            case "bottom":
     	                top = targetRect.top + targetRect.height;
     	                left = targetRect.left + targetRect.width / 2 - width / 2;
     	                break;
-    	            case 'bottom-left':
+    	            case "bottom-left":
     	                top = targetRect.top + targetRect.height;
     	                left = targetRect.left;
     	                break;
-    	            case 'bottom-right':
+    	            case "bottom-right":
     	                top = targetRect.top + targetRect.height;
     	                left = targetRect.left + targetRect.width - width;
     	                break;
-    	            case 'left':
+    	            case "left":
     	                top = targetRect.top + targetRect.height / 2 - height / 2;
     	                left = targetRect.left - width;
     	                break;
-    	            case 'right':
+    	            case "right":
     	                top = targetRect.top + targetRect.height / 2 - height / 2;
     	                left = targetRect.left + targetRect.width;
     	                break;
-    	            case 'top-left':
+    	            case "top-left":
     	                top = targetRect.top - height;
     	                left = targetRect.left;
     	                break;
-    	            case 'top-right':
+    	            case "top-right":
     	                top = targetRect.top - height;
     	                left = targetRect.left + targetRect.width - width;
     	                break;
-    	            case 'top':
+    	            case "top":
     	            default:
     	                top = targetRect.top - height;
     	                left = targetRect.left + targetRect.width / 2 - width / 2;
@@ -3717,12 +3717,12 @@
     	        var scrollLeft = window.scrollX || document.documentElement.scrollLeft || document.body.scrollLeft || 0;
     	        top = top + scrollTop;
     	        left = left + scrollLeft;
-    	        this.tip.setAttribute('style', "top: ".concat(top, "px; left: ").concat(left, "px"));
+    	        this.tip.setAttribute("style", "top: ".concat(top, "px; left: ").concat(left, "px"));
     	    };
     	    Tooltip.prototype.hide = function () {
     	        if (this.isEnabled) {
     	            classSet(this.tip, {
-    	                'fv-plugins-tooltip--hide': true,
+    	                "fv-plugins-tooltip--hide": true,
     	            });
     	        }
     	    };
@@ -3831,8 +3831,8 @@
     	        var _this = _super.call(this, opts) || this;
     	        _this.handlers = [];
     	        _this.timers = new Map();
-    	        var ele = document.createElement('div');
-    	        _this.defaultEvent = !('oninput' in ele) ? 'keyup' : 'input';
+    	        var ele = document.createElement("div");
+    	        _this.defaultEvent = !("oninput" in ele) ? "keyup" : "input";
     	        _this.opts = Object.assign({}, {
     	            delay: 0,
     	            event: _this.defaultEvent,
@@ -3843,14 +3843,14 @@
     	        return _this;
     	    }
     	    Trigger.prototype.install = function () {
-    	        this.core.on('core.field.added', this.fieldAddedHandler).on('core.field.removed', this.fieldRemovedHandler);
+    	        this.core.on("core.field.added", this.fieldAddedHandler).on("core.field.removed", this.fieldRemovedHandler);
     	    };
     	    Trigger.prototype.uninstall = function () {
     	        this.handlers.forEach(function (item) { return item.element.removeEventListener(item.event, item.handler); });
     	        this.handlers = [];
     	        this.timers.forEach(function (t) { return window.clearTimeout(t); });
     	        this.timers.clear();
-    	        this.core.off('core.field.added', this.fieldAddedHandler).off('core.field.removed', this.fieldRemovedHandler);
+    	        this.core.off("core.field.added", this.fieldAddedHandler).off("core.field.removed", this.fieldRemovedHandler);
     	    };
     	    Trigger.prototype.prepareHandler = function (field, elements) {
     	        var _this = this;
@@ -3859,23 +3859,23 @@
     	            if (!!_this.opts.event && _this.opts.event[field] === false) {
     	                events = [];
     	            }
-    	            else if (!!_this.opts.event && !!_this.opts.event[field] && typeof _this.opts.event[field] !== 'function') {
+    	            else if (!!_this.opts.event && !!_this.opts.event[field] && typeof _this.opts.event[field] !== "function") {
     	                // To fix the case where `field` is a special property of String
     	                // For example, `link` is the special function of `String.prototype`
     	                // In this case, `this.opts.event[field]` is a function, not a string
-    	                events = _this.opts.event[field].split(' ');
+    	                events = _this.opts.event[field].split(" ");
     	            }
-    	            else if ('string' === typeof _this.opts.event && _this.opts.event !== _this.defaultEvent) {
-    	                events = _this.opts.event.split(' ');
+    	            else if ("string" === typeof _this.opts.event && _this.opts.event !== _this.defaultEvent) {
+    	                events = _this.opts.event.split(" ");
     	            }
     	            else {
-    	                var type = ele.getAttribute('type');
+    	                var type = ele.getAttribute("type");
     	                var tagName = ele.tagName.toLowerCase();
     	                // IE10/11 fires the `input` event when focus on the field having a placeholder
-    	                var event_1 = 'radio' === type || 'checkbox' === type || 'file' === type || 'select' === tagName
-    	                    ? 'change'
-    	                    : _this.ieVersion >= 10 && ele.getAttribute('placeholder')
-    	                        ? 'keyup'
+    	                var event_1 = "radio" === type || "checkbox" === type || "file" === type || "select" === tagName
+    	                    ? "change"
+    	                    : _this.ieVersion >= 10 && ele.getAttribute("placeholder")
+    	                        ? "keyup"
     	                        : _this.defaultEvent;
     	                events = [event_1];
     	            }
@@ -3895,10 +3895,10 @@
     	        var _this = this;
     	        if (this.isEnabled &&
     	            this.exceedThreshold(field, ele) &&
-    	            this.core.executeFilter('plugins-trigger-should-validate', true, [field, ele])) {
+    	            this.core.executeFilter("plugins-trigger-should-validate", true, [field, ele])) {
     	            var handler = function () {
     	                return _this.core.validateElement(field, ele).then(function (_) {
-    	                    _this.core.emit('plugins.trigger.executed', {
+    	                    _this.core.emit("plugins.trigger.executed", {
     	                        element: ele,
     	                        event: e,
     	                        field: field,
@@ -3937,8 +3937,8 @@
     	            return true;
     	        }
     	        // List of input type which user can't type in
-    	        var type = element.getAttribute('type');
-    	        if (['button', 'checkbox', 'file', 'hidden', 'image', 'radio', 'reset', 'submit'].indexOf(type) !== -1) {
+    	        var type = element.getAttribute("type");
+    	        if (["button", "checkbox", "file", "hidden", "image", "radio", "reset", "submit"].indexOf(type) !== -1) {
     	            return true;
     	        }
     	        var value = this.core.getElementValue(field, element);
@@ -3983,15 +3983,15 @@
     	var format = core.utils.format, removeUndefined = core.utils.removeUndefined;
     	function between() {
     	    var formatValue = function (value) {
-    	        return parseFloat("".concat(value).replace(',', '.'));
+    	        return parseFloat("".concat(value).replace(",", "."));
     	    };
     	    return {
     	        validate: function (input) {
     	            var value = input.value;
-    	            if (value === '') {
+    	            if (value === "") {
     	                return { valid: true };
     	            }
-    	            var opts = Object.assign({}, { inclusive: true, message: '' }, removeUndefined(input.options));
+    	            var opts = Object.assign({}, { inclusive: true, message: "" }, removeUndefined(input.options));
     	            var minValue = formatValue(opts.min);
     	            var maxValue = formatValue(opts.max);
     	            return opts.inclusive
@@ -4094,7 +4094,7 @@
     	    return {
     	        validate: function (input) {
     	            var response = call(input.options.callback, [input]);
-    	            return 'boolean' === typeof response
+    	            return "boolean" === typeof response
     	                ? { valid: response } // Deprecated
     	                : response;
     	        },
@@ -4138,11 +4138,11 @@
     	function choice() {
     	    return {
     	        validate: function (input) {
-    	            var numChoices = 'select' === input.element.tagName.toLowerCase()
-    	                ? input.element.querySelectorAll('option:checked').length
+    	            var numChoices = "select" === input.element.tagName.toLowerCase()
+    	                ? input.element.querySelectorAll("option:checked").length
     	                : input.elements.filter(function (ele) { return ele.checked; }).length;
-    	            var min = input.options.min ? "".concat(input.options.min) : '';
-    	            var max = input.options.max ? "".concat(input.options.max) : '';
+    	            var min = input.options.min ? "".concat(input.options.min) : "";
+    	            var max = input.options.max ? "".concat(input.options.max) : "";
     	            var msg = input.l10n ? input.options.message || input.l10n.choice.default : input.options.message;
     	            var isValid = !((min && numChoices < parseInt(min, 10)) || (max && numChoices > parseInt(max, 10)));
     	            switch (true) {
@@ -4201,142 +4201,142 @@
     	var CREDIT_CARD_TYPES = {
     	    AMERICAN_EXPRESS: {
     	        length: [15],
-    	        prefix: ['34', '37'],
+    	        prefix: ["34", "37"],
     	    },
     	    DANKORT: {
     	        length: [16],
-    	        prefix: ['5019'],
+    	        prefix: ["5019"],
     	    },
     	    DINERS_CLUB: {
     	        length: [14],
-    	        prefix: ['300', '301', '302', '303', '304', '305', '36'],
+    	        prefix: ["300", "301", "302", "303", "304", "305", "36"],
     	    },
     	    DINERS_CLUB_US: {
     	        length: [16],
-    	        prefix: ['54', '55'],
+    	        prefix: ["54", "55"],
     	    },
     	    DISCOVER: {
     	        length: [16],
     	        prefix: [
-    	            '6011',
-    	            '622126',
-    	            '622127',
-    	            '622128',
-    	            '622129',
-    	            '62213',
-    	            '62214',
-    	            '62215',
-    	            '62216',
-    	            '62217',
-    	            '62218',
-    	            '62219',
-    	            '6222',
-    	            '6223',
-    	            '6224',
-    	            '6225',
-    	            '6226',
-    	            '6227',
-    	            '6228',
-    	            '62290',
-    	            '62291',
-    	            '622920',
-    	            '622921',
-    	            '622922',
-    	            '622923',
-    	            '622924',
-    	            '622925',
-    	            '644',
-    	            '645',
-    	            '646',
-    	            '647',
-    	            '648',
-    	            '649',
-    	            '65',
+    	            "6011",
+    	            "622126",
+    	            "622127",
+    	            "622128",
+    	            "622129",
+    	            "62213",
+    	            "62214",
+    	            "62215",
+    	            "62216",
+    	            "62217",
+    	            "62218",
+    	            "62219",
+    	            "6222",
+    	            "6223",
+    	            "6224",
+    	            "6225",
+    	            "6226",
+    	            "6227",
+    	            "6228",
+    	            "62290",
+    	            "62291",
+    	            "622920",
+    	            "622921",
+    	            "622922",
+    	            "622923",
+    	            "622924",
+    	            "622925",
+    	            "644",
+    	            "645",
+    	            "646",
+    	            "647",
+    	            "648",
+    	            "649",
+    	            "65",
     	        ],
     	    },
     	    ELO: {
     	        length: [16],
     	        prefix: [
-    	            '4011',
-    	            '4312',
-    	            '4389',
-    	            '4514',
-    	            '4573',
-    	            '4576',
-    	            '5041',
-    	            '5066',
-    	            '5067',
-    	            '509',
-    	            '6277',
-    	            '6362',
-    	            '6363',
-    	            '650',
-    	            '6516',
-    	            '6550',
+    	            "4011",
+    	            "4312",
+    	            "4389",
+    	            "4514",
+    	            "4573",
+    	            "4576",
+    	            "5041",
+    	            "5066",
+    	            "5067",
+    	            "509",
+    	            "6277",
+    	            "6362",
+    	            "6363",
+    	            "650",
+    	            "6516",
+    	            "6550",
     	        ],
     	    },
     	    FORBRUGSFORENINGEN: {
     	        length: [16],
-    	        prefix: ['600722'],
+    	        prefix: ["600722"],
     	    },
     	    JCB: {
     	        length: [16],
-    	        prefix: ['3528', '3529', '353', '354', '355', '356', '357', '358'],
+    	        prefix: ["3528", "3529", "353", "354", "355", "356", "357", "358"],
     	    },
     	    LASER: {
     	        length: [16, 17, 18, 19],
-    	        prefix: ['6304', '6706', '6771', '6709'],
+    	        prefix: ["6304", "6706", "6771", "6709"],
     	    },
     	    MAESTRO: {
     	        length: [12, 13, 14, 15, 16, 17, 18, 19],
-    	        prefix: ['5018', '5020', '5038', '5868', '6304', '6759', '6761', '6762', '6763', '6764', '6765', '6766'],
+    	        prefix: ["5018", "5020", "5038", "5868", "6304", "6759", "6761", "6762", "6763", "6764", "6765", "6766"],
     	    },
     	    MASTERCARD: {
     	        length: [16],
-    	        prefix: ['51', '52', '53', '54', '55'],
+    	        prefix: ["51", "52", "53", "54", "55"],
     	    },
     	    SOLO: {
     	        length: [16, 18, 19],
-    	        prefix: ['6334', '6767'],
+    	        prefix: ["6334", "6767"],
     	    },
     	    UNIONPAY: {
     	        length: [16, 17, 18, 19],
     	        prefix: [
-    	            '622126',
-    	            '622127',
-    	            '622128',
-    	            '622129',
-    	            '62213',
-    	            '62214',
-    	            '62215',
-    	            '62216',
-    	            '62217',
-    	            '62218',
-    	            '62219',
-    	            '6222',
-    	            '6223',
-    	            '6224',
-    	            '6225',
-    	            '6226',
-    	            '6227',
-    	            '6228',
-    	            '62290',
-    	            '62291',
-    	            '622920',
-    	            '622921',
-    	            '622922',
-    	            '622923',
-    	            '622924',
-    	            '622925',
+    	            "622126",
+    	            "622127",
+    	            "622128",
+    	            "622129",
+    	            "62213",
+    	            "62214",
+    	            "62215",
+    	            "62216",
+    	            "62217",
+    	            "62218",
+    	            "62219",
+    	            "6222",
+    	            "6223",
+    	            "6224",
+    	            "6225",
+    	            "6226",
+    	            "6227",
+    	            "6228",
+    	            "62290",
+    	            "62291",
+    	            "622920",
+    	            "622921",
+    	            "622922",
+    	            "622923",
+    	            "622924",
+    	            "622925",
     	        ],
     	    },
     	    VISA: {
     	        length: [16],
-    	        prefix: ['4'],
+    	        prefix: ["4"],
     	    },
     	    VISA_ELECTRON: {
     	        length: [16],
-    	        prefix: ['4026', '417500', '4405', '4508', '4844', '4913', '4917'],
+    	        prefix: ["4026", "417500", "4405", "4508", "4844", "4913", "4917"],
     	    },
     	};
     	function creditCard() {
@@ -4345,7 +4345,7 @@
     	         * Return true if the input value is valid credit card number
     	         */
     	        validate: function (input) {
-    	            if (input.value === '') {
+    	            if (input.value === "") {
     	                return {
     	                    meta: {
     	                        type: null,
@@ -4362,7 +4362,7 @@
     	                    valid: false,
     	                };
     	            }
-    	            var v = input.value.replace(/\D/g, '');
+    	            var v = input.value.replace(/\D/g, "");
     	            if (!luhn(v)) {
     	                return {
     	                    meta: {
@@ -4446,13 +4446,13 @@
     	 */
     	var parseDate = function (input, inputFormat, separator) {
     	    // Ensure that the format must consist of year, month and day patterns
-    	    var yearIndex = inputFormat.indexOf('YYYY');
-    	    var monthIndex = inputFormat.indexOf('MM');
-    	    var dayIndex = inputFormat.indexOf('DD');
+    	    var yearIndex = inputFormat.indexOf("YYYY");
+    	    var monthIndex = inputFormat.indexOf("MM");
+    	    var dayIndex = inputFormat.indexOf("DD");
     	    if (yearIndex === -1 || monthIndex === -1 || dayIndex === -1) {
     	        return null;
     	    }
-    	    var sections = input.split(' ');
+    	    var sections = input.split(" ");
     	    var dateSection = sections[0].split(separator);
     	    if (dateSection.length < 3) {
     	        return null;
@@ -4460,9 +4460,9 @@
     	    var d = new Date(parseInt(dateSection[yearIndex], 10), parseInt(dateSection[monthIndex], 10) - 1, parseInt(dateSection[dayIndex], 10));
     	    var amPmSection = sections.length > 2 ? sections[2] : null;
     	    if (sections.length > 1) {
-    	        var timeSection = sections[1].split(':');
+    	        var timeSection = sections[1].split(":");
     	        var h = timeSection.length > 0 ? parseInt(timeSection[0], 10) : 0;
-    	        d.setHours(amPmSection && amPmSection.toUpperCase() === 'PM' && h < 12 ? h + 12 : h);
+    	        d.setHours(amPmSection && amPmSection.toUpperCase() === "PM" && h < 12 ? h + 12 : h);
     	        d.setMinutes(timeSection.length > 1 ? parseInt(timeSection[1], 10) : 0);
     	        d.setSeconds(timeSection.length > 2 ? parseInt(timeSection[2], 10) : 0);
     	    }
@@ -4493,13 +4493,13 @@
     	 */
     	var formatDate = function (input, inputFormat) {
     	    var dateFormat = inputFormat
-    	        .replace(/Y/g, 'y')
-    	        .replace(/M/g, 'm')
-    	        .replace(/D/g, 'd')
-    	        .replace(/:m/g, ':M')
-    	        .replace(/:mm/g, ':MM')
-    	        .replace(/:S/, ':s')
-    	        .replace(/:SS/, ':ss');
+    	        .replace(/Y/g, "y")
+    	        .replace(/M/g, "m")
+    	        .replace(/D/g, "d")
+    	        .replace(/:m/g, ":M")
+    	        .replace(/:mm/g, ":MM")
+    	        .replace(/:S/, ":s")
+    	        .replace(/:SS/, ":ss");
     	    var d = input.getDate();
     	    var dd = d < 10 ? "0".concat(d) : d;
     	    var m = input.getMonth() + 1;
@@ -4537,7 +4537,7 @@
     	var date = function () {
     	    return {
     	        validate: function (input) {
-    	            if (input.value === '') {
+    	            if (input.value === "") {
     	                return {
     	                    meta: {
     	                        date: null,
@@ -4547,8 +4547,8 @@
     	            }
     	            var opts = Object.assign({}, {
     	                // Force the format to `YYYY-MM-DD` as the default browser behaviour when using type="date" attribute
-    	                format: input.element && input.element.getAttribute('type') === 'date' ? 'YYYY-MM-DD' : 'MM/DD/YYYY',
-    	                message: '',
+    	                format: input.element && input.element.getAttribute("type") === "date" ? "YYYY-MM-DD" : "MM/DD/YYYY",
+    	                message: "",
     	            }, removeUndefined(input.options));
     	            var message = input.l10n ? input.l10n.date.default : opts.message;
     	            var invalidResult = {
@@ -4558,10 +4558,10 @@
     	                },
     	                valid: false,
     	            };
-    	            var formats = opts.format.split(' ');
+    	            var formats = opts.format.split(" ");
     	            var timeFormat = formats.length > 1 ? formats[1] : null;
     	            var amOrPm = formats.length > 2 ? formats[2] : null;
-    	            var sections = input.value.split(' ');
+    	            var sections = input.value.split(" ");
     	            var dateSection = sections[0];
     	            var timeSection = sections.length > 1 ? sections[1] : null;
     	            var amPmSection = sections.length > 2 ? sections[2] : null;
@@ -4570,13 +4570,13 @@
     	            }
     	            // Determine the separator
     	            var separator = opts.separator ||
-    	                (dateSection.indexOf('/') !== -1
-    	                    ? '/'
-    	                    : dateSection.indexOf('-') !== -1
-    	                        ? '-'
-    	                        : dateSection.indexOf('.') !== -1
-    	                            ? '.'
-    	                            : '/');
+    	                (dateSection.indexOf("/") !== -1
+    	                    ? "/"
+    	                    : dateSection.indexOf("-") !== -1
+    	                        ? "-"
+    	                        : dateSection.indexOf(".") !== -1
+    	                            ? "."
+    	                            : "/");
     	            if (separator === null || dateSection.indexOf(separator) === -1) {
     	                return invalidResult;
     	            }
@@ -4586,9 +4586,9 @@
     	            if (dateStr.length !== dateFormat.length) {
     	                return invalidResult;
     	            }
-    	            var yearStr = dateStr[dateFormat.indexOf('YYYY')];
-    	            var monthStr = dateStr[dateFormat.indexOf('MM')];
-    	            var dayStr = dateStr[dateFormat.indexOf('DD')];
+    	            var yearStr = dateStr[dateFormat.indexOf("YYYY")];
+    	            var monthStr = dateStr[dateFormat.indexOf("MM")];
+    	            var dayStr = dateStr[dateFormat.indexOf("DD")];
     	            if (!/^\d+$/.test(yearStr) ||
     	                !/^\d+$/.test(monthStr) ||
     	                !/^\d+$/.test(dayStr) ||
@@ -4606,8 +4606,8 @@
     	            // Determine the time
     	            var d = new Date(year, month - 1, day);
     	            if (timeFormat) {
-    	                var hms = timeSection.split(':');
-    	                if (timeFormat.split(':').length !== hms.length) {
+    	                var hms = timeSection.split(":");
+    	                if (timeFormat.split(":").length !== hms.length) {
     	                    return invalidResult;
     	                }
     	                var h = hms.length > 0 ? (hms[0].length <= 2 && /^\d+$/.test(hms[0]) ? parseInt(hms[0], 10) : -1) : 0;
@@ -4628,18 +4628,18 @@
     	                if (m < 0 || m > 59) {
     	                    return invalidResult;
     	                }
-    	                d.setHours(amPmSection && amPmSection.toUpperCase() === 'PM' && h < 12 ? h + 12 : h);
+    	                d.setHours(amPmSection && amPmSection.toUpperCase() === "PM" && h < 12 ? h + 12 : h);
     	                d.setMinutes(m);
     	                d.setSeconds(s);
     	            }
     	            // Validate day, month, and year
-    	            var minOption = typeof opts.min === 'function' ? opts.min() : opts.min;
+    	            var minOption = typeof opts.min === "function" ? opts.min() : opts.min;
     	            var min = minOption instanceof Date
     	                ? minOption
     	                : minOption
     	                    ? parseDate(minOption, dateFormat, separator)
     	                    : d;
-    	            var maxOption = typeof opts.max === 'function' ? opts.max() : opts.max;
+    	            var maxOption = typeof opts.max === "function" ? opts.max() : opts.max;
     	            var max = maxOption instanceof Date
     	                ? maxOption
     	                : maxOption
@@ -4720,11 +4720,11 @@
     	function different() {
     	    return {
     	        validate: function (input) {
-    	            var compareWith = 'function' === typeof input.options.compare
+    	            var compareWith = "function" === typeof input.options.compare
     	                ? input.options.compare.call(this)
     	                : input.options.compare;
     	            return {
-    	                valid: compareWith === '' || input.value !== compareWith,
+    	                valid: compareWith === "" || input.value !== compareWith,
     	            };
     	        },
     	    };
@@ -4767,7 +4767,7 @@
     	         * Return true if the input value contains digits only
     	         */
     	        validate: function (input) {
-    	            return { valid: input.value === '' || /^\d+$/.test(input.value) };
+    	            return { valid: input.value === "" || /^\d+$/.test(input.value) };
     	        },
     	    };
     	}
@@ -4815,7 +4815,7 @@
     	        var quotedFragments = emailAddresses.split(/"/);
     	        var quotedFragmentCount = quotedFragments.length;
     	        var emailAddressArray = [];
-    	        var nextEmailAddress = '';
+    	        var nextEmailAddress = "";
     	        for (var i = 0; i < quotedFragmentCount; i++) {
     	            if (i % 2 === 0) {
     	                var splitEmailAddressFragments = quotedFragments[i].split(separator);
@@ -4832,9 +4832,9 @@
     	                }
     	            }
     	            else {
-    	                nextEmailAddress += '"' + quotedFragments[i];
+    	                nextEmailAddress += "\"" + quotedFragments[i];
     	                if (i < quotedFragmentCount - 1) {
-    	                    nextEmailAddress += '"';
+    	                    nextEmailAddress += "\"";
     	                }
     	            }
     	        }
@@ -4846,7 +4846,7 @@
     	         * Return true if and only if the input value is a valid email address
     	         */
     	        validate: function (input) {
-    	            if (input.value === '') {
+    	            if (input.value === "") {
     	                return { valid: true };
     	            }
     	            var opts = Object.assign({}, {
@@ -4855,7 +4855,7 @@
     	                separator: /[,;]/,
     	            }, removeUndefined(input.options));
     	            var emailRegExp = opts.requireGlobalDomain ? GLOBAL_DOMAIN_REQUIRED : GLOBAL_DOMAIN_OPTIONAL;
-    	            var allowMultiple = opts.multiple === true || "".concat(opts.multiple) === 'true';
+    	            var allowMultiple = opts.multiple === true || "".concat(opts.multiple) === "true";
     	            if (allowMultiple) {
     	                var separator = opts.separator || /[,;]/;
     	                var addresses = splitEmailAddresses(input.value, separator);
@@ -4907,7 +4907,7 @@
     	 */
     	// Get the file name without extension
     	var getFileName = function (fileName) {
-    	    return fileName.indexOf('.') === -1 ? fileName : fileName.split('.').slice(0, -1).join('.');
+    	    return fileName.indexOf(".") === -1 ? fileName : fileName.split(".").slice(0, -1).join(".");
     	};
 
     	/**
@@ -4918,7 +4918,7 @@
     	function file() {
     	    return {
     	        validate: function (input) {
-    	            if (input.value === '') {
+    	            if (input.value === "") {
     	                return { valid: true };
     	            }
     	            var extension;
@@ -4926,16 +4926,16 @@
     	            var extensions = input.options.extension
     	                ? input.options.extension
     	                    .toLowerCase()
-    	                    .split(',')
+    	                    .split(",")
     	                    .map(function (item) { return item.trim(); })
     	                : [];
     	            var types = input.options.type
     	                ? input.options.type
     	                    .toLowerCase()
-    	                    .split(',')
+    	                    .split(",")
     	                    .map(function (item) { return item.trim(); })
     	                : [];
-    	            var html5 = window['File'] && window['FileList'] && window['FileReader'];
+    	            var html5 = window["File"] && window["FileList"] && window["FileReader"];
     	            if (html5) {
     	                // Get FileList instance
     	                var files = input.element.files;
@@ -4944,21 +4944,21 @@
     	                // Check the maxFiles
     	                if (input.options.maxFiles && total > parseInt("".concat(input.options.maxFiles), 10)) {
     	                    return {
-    	                        meta: { error: 'INVALID_MAX_FILES' },
+    	                        meta: { error: "INVALID_MAX_FILES" },
     	                        valid: false,
     	                    };
     	                }
     	                // Check the minFiles
     	                if (input.options.minFiles && total < parseInt("".concat(input.options.minFiles), 10)) {
     	                    return {
-    	                        meta: { error: 'INVALID_MIN_FILES' },
+    	                        meta: { error: "INVALID_MIN_FILES" },
     	                        valid: false,
     	                    };
     	                }
     	                var metaData = {};
     	                for (var i = 0; i < total; i++) {
     	                    allSize += files[i].size;
-    	                    extension = files[i].name.substr(files[i].name.lastIndexOf('.') + 1);
+    	                    extension = files[i].name.substr(files[i].name.lastIndexOf(".") + 1);
     	                    metaData = {
     	                        ext: extension,
     	                        file: files[i],
@@ -4968,35 +4968,35 @@
     	                    // Check the minSize
     	                    if (input.options.minSize && files[i].size < parseInt("".concat(input.options.minSize), 10)) {
     	                        return {
-    	                            meta: Object.assign({}, { error: 'INVALID_MIN_SIZE' }, metaData),
+    	                            meta: Object.assign({}, { error: "INVALID_MIN_SIZE" }, metaData),
     	                            valid: false,
     	                        };
     	                    }
     	                    // Check the maxSize
     	                    if (input.options.maxSize && files[i].size > parseInt("".concat(input.options.maxSize), 10)) {
     	                        return {
-    	                            meta: Object.assign({}, { error: 'INVALID_MAX_SIZE' }, metaData),
+    	                            meta: Object.assign({}, { error: "INVALID_MAX_SIZE" }, metaData),
     	                            valid: false,
     	                        };
     	                    }
     	                    // Check file extension
     	                    if (extensions.length > 0 && extensions.indexOf(extension.toLowerCase()) === -1) {
     	                        return {
-    	                            meta: Object.assign({}, { error: 'INVALID_EXTENSION' }, metaData),
+    	                            meta: Object.assign({}, { error: "INVALID_EXTENSION" }, metaData),
     	                            valid: false,
     	                        };
     	                    }
     	                    // Check file type
     	                    if (types.length > 0 && files[i].type && types.indexOf(files[i].type.toLowerCase()) === -1) {
     	                        return {
-    	                            meta: Object.assign({}, { error: 'INVALID_TYPE' }, metaData),
+    	                            meta: Object.assign({}, { error: "INVALID_TYPE" }, metaData),
     	                            valid: false,
     	                        };
     	                    }
     	                    // Check file name
     	                    if (input.options.validateFileName && !input.options.validateFileName(getFileName(files[i].name))) {
     	                        return {
-    	                            meta: Object.assign({}, { error: 'INVALID_NAME' }, metaData),
+    	                            meta: Object.assign({}, { error: "INVALID_NAME" }, metaData),
     	                            valid: false,
     	                        };
     	                    }
@@ -5005,7 +5005,7 @@
     	                if (input.options.maxTotalSize && allSize > parseInt("".concat(input.options.maxTotalSize), 10)) {
     	                    return {
     	                        meta: Object.assign({}, {
-    	                            error: 'INVALID_MAX_TOTAL_SIZE',
+    	                            error: "INVALID_MAX_TOTAL_SIZE",
     	                            totalSize: allSize,
     	                        }, metaData),
     	                        valid: false,
@@ -5015,7 +5015,7 @@
     	                if (input.options.minTotalSize && allSize < parseInt("".concat(input.options.minTotalSize), 10)) {
     	                    return {
     	                        meta: Object.assign({}, {
-    	                            error: 'INVALID_MIN_TOTAL_SIZE',
+    	                            error: "INVALID_MIN_TOTAL_SIZE",
     	                            totalSize: allSize,
     	                        }, metaData),
     	                        valid: false,
@@ -5024,11 +5024,11 @@
     	            }
     	            else {
     	                // Check file extension
-    	                extension = input.value.substr(input.value.lastIndexOf('.') + 1);
+    	                extension = input.value.substr(input.value.lastIndexOf(".") + 1);
     	                if (extensions.length > 0 && extensions.indexOf(extension.toLowerCase()) === -1) {
     	                    return {
     	                        meta: {
-    	                            error: 'INVALID_EXTENSION',
+    	                            error: "INVALID_EXTENSION",
     	                            ext: extension,
     	                        },
     	                        valid: false,
@@ -5039,7 +5039,7 @@
     	                if (input.options.validateFileName && !input.options.validateFileName(name)) {
     	                    return {
     	                        meta: {
-    	                            error: 'INVALID_NAME',
+    	                            error: "INVALID_NAME",
     	                            name: name,
     	                        },
     	                        valid: false,
@@ -5088,11 +5088,11 @@
     	function greaterThan() {
     	    return {
     	        validate: function (input) {
-    	            if (input.value === '') {
+    	            if (input.value === "") {
     	                return { valid: true };
     	            }
-    	            var opts = Object.assign({}, { inclusive: true, message: '' }, removeUndefined(input.options));
-    	            var minValue = parseFloat("".concat(opts.min).replace(',', '.'));
+    	            var opts = Object.assign({}, { inclusive: true, message: "" }, removeUndefined(input.options));
+    	            var minValue = parseFloat("".concat(opts.min).replace(",", "."));
     	            return opts.inclusive
     	                ? {
     	                    message: format(input.l10n ? opts.message || input.l10n.greaterThan.default : opts.message, "".concat(minValue)),
@@ -5140,11 +5140,11 @@
     	function identical() {
     	    return {
     	        validate: function (input) {
-    	            var compareWith = 'function' === typeof input.options.compare
+    	            var compareWith = "function" === typeof input.options.compare
     	                ? input.options.compare.call(this)
     	                : input.options.compare;
     	            return {
-    	                valid: compareWith === '' || input.value === compareWith,
+    	                valid: compareWith === "" || input.value === compareWith,
     	            };
     	        },
     	    };
@@ -5187,28 +5187,28 @@
     	function integer() {
     	    return {
     	        validate: function (input) {
-    	            if (input.value === '') {
+    	            if (input.value === "") {
     	                return { valid: true };
     	            }
     	            var opts = Object.assign({}, {
-    	                decimalSeparator: '.',
-    	                thousandsSeparator: '',
+    	                decimalSeparator: ".",
+    	                thousandsSeparator: "",
     	            }, removeUndefined(input.options));
-    	            var decimalSeparator = opts.decimalSeparator === '.' ? '\\.' : opts.decimalSeparator;
-    	            var thousandsSeparator = opts.thousandsSeparator === '.' ? '\\.' : opts.thousandsSeparator;
+    	            var decimalSeparator = opts.decimalSeparator === "." ? "\\." : opts.decimalSeparator;
+    	            var thousandsSeparator = opts.thousandsSeparator === "." ? "\\." : opts.thousandsSeparator;
     	            var testRegexp = new RegExp("^-?[0-9]{1,3}(".concat(thousandsSeparator, "[0-9]{3})*(").concat(decimalSeparator, "[0-9]+)?$"));
-    	            var thousandsReplacer = new RegExp(thousandsSeparator, 'g');
+    	            var thousandsReplacer = new RegExp(thousandsSeparator, "g");
     	            var v = "".concat(input.value);
     	            if (!testRegexp.test(v)) {
     	                return { valid: false };
     	            }
     	            // Replace thousands separator with blank
     	            if (thousandsSeparator) {
-    	                v = v.replace(thousandsReplacer, '');
+    	                v = v.replace(thousandsReplacer, "");
     	            }
     	            // Replace decimal separator with a dot
     	            if (decimalSeparator) {
-    	                v = v.replace(decimalSeparator, '.');
+    	                v = v.replace(decimalSeparator, ".");
     	            }
     	            var n = parseFloat(v);
     	            return { valid: !isNaN(n) && isFinite(n) && Math.floor(n) === n };
@@ -5256,7 +5256,7 @@
     	         * Return true if the input value is a IP address.
     	         */
     	        validate: function (input) {
-    	            if (input.value === '') {
+    	            if (input.value === "") {
     	                return { valid: true };
     	            }
     	            var opts = Object.assign({}, {
@@ -5324,11 +5324,11 @@
     	function lessThan() {
     	    return {
     	        validate: function (input) {
-    	            if (input.value === '') {
+    	            if (input.value === "") {
     	                return { valid: true };
     	            }
-    	            var opts = Object.assign({}, { inclusive: true, message: '' }, removeUndefined(input.options));
-    	            var maxValue = parseFloat("".concat(opts.max).replace(',', '.'));
+    	            var opts = Object.assign({}, { inclusive: true, message: "" }, removeUndefined(input.options));
+    	            var maxValue = parseFloat("".concat(opts.max).replace(",", "."));
     	            return opts.inclusive
     	                ? {
     	                    message: format(input.l10n ? opts.message || input.l10n.lessThan.default : opts.message, "".concat(maxValue)),
@@ -5379,7 +5379,7 @@
     	            var trim = !!input.options && !!input.options.trim;
     	            var value = input.value;
     	            return {
-    	                valid: (!trim && value !== '') || (trim && value !== '' && value.trim() !== ''),
+    	                valid: (!trim && value !== "") || (trim && value !== "" && value.trim() !== ""),
     	            };
     	        },
     	    };
@@ -5422,12 +5422,12 @@
     	function numeric() {
     	    return {
     	        validate: function (input) {
-    	            if (input.value === '') {
+    	            if (input.value === "") {
     	                return { valid: true };
     	            }
     	            var opts = Object.assign({}, {
-    	                decimalSeparator: '.',
-    	                thousandsSeparator: '',
+    	                decimalSeparator: ".",
+    	                thousandsSeparator: "",
     	            }, removeUndefined(input.options));
     	            var v = "".concat(input.value);
     	            // Support preceding zero numbers such as .5, -.5
@@ -5437,20 +5437,20 @@
     	            else if (v.substr(0, 2) === "-".concat(opts.decimalSeparator)) {
     	                v = "-0".concat(opts.decimalSeparator).concat(v.substr(2));
     	            }
-    	            var decimalSeparator = opts.decimalSeparator === '.' ? '\\.' : opts.decimalSeparator;
-    	            var thousandsSeparator = opts.thousandsSeparator === '.' ? '\\.' : opts.thousandsSeparator;
+    	            var decimalSeparator = opts.decimalSeparator === "." ? "\\." : opts.decimalSeparator;
+    	            var thousandsSeparator = opts.thousandsSeparator === "." ? "\\." : opts.thousandsSeparator;
     	            var testRegexp = new RegExp("^-?[0-9]{1,3}(".concat(thousandsSeparator, "[0-9]{3})*(").concat(decimalSeparator, "[0-9]+)?$"));
-    	            var thousandsReplacer = new RegExp(thousandsSeparator, 'g');
+    	            var thousandsReplacer = new RegExp(thousandsSeparator, "g");
     	            if (!testRegexp.test(v)) {
     	                return { valid: false };
     	            }
     	            // Replace thousands separator with blank
     	            if (thousandsSeparator) {
-    	                v = v.replace(thousandsReplacer, '');
+    	                v = v.replace(thousandsReplacer, "");
     	            }
     	            // Replace decimal separator with a dot
     	            if (decimalSeparator) {
-    	                v = v.replace(decimalSeparator, '.');
+    	                v = v.replace(decimalSeparator, ".");
     	            }
     	            var n = parseFloat(v);
     	            return { valid: !isNaN(n) && isFinite(n) };
@@ -5565,7 +5565,7 @@
     	         * Check if the element value matches given regular expression
     	         */
     	        validate: function (input) {
-    	            if (input.value === '') {
+    	            if (input.value === "") {
     	                return { valid: true };
     	            }
     	            var reg = input.options.regexp;
@@ -5620,12 +5620,12 @@
     	        crossDomain: false,
     	        data: {},
     	        headers: {},
-    	        method: 'GET',
-    	        validKey: 'valid',
+    	        method: "GET",
+    	        validKey: "valid",
     	    };
     	    return {
     	        validate: function (input) {
-    	            if (input.value === '') {
+    	            if (input.value === "") {
     	                return Promise.resolve({
     	                    valid: true,
     	                });
@@ -5633,16 +5633,16 @@
     	            var opts = Object.assign({}, DEFAULT_OPTIONS, removeUndefined(input.options));
     	            var data = opts.data;
     	            // Support dynamic data
-    	            if ('function' === typeof opts.data) {
+    	            if ("function" === typeof opts.data) {
     	                data = opts.data.call(this, input);
     	            }
     	            // Parse string data from HTML5 attribute
-    	            if ('string' === typeof data) {
+    	            if ("string" === typeof data) {
     	                data = JSON.parse(data);
     	            }
     	            data[opts.name || input.field] = input.value;
     	            // Support dynamic url
-    	            var url = 'function' === typeof opts.url
+    	            var url = "function" === typeof opts.url
     	                ? opts.url.call(this, input)
     	                : opts.url;
     	            return fetch(url, {
@@ -5653,9 +5653,9 @@
     	            })
     	                .then(function (response) {
     	                return Promise.resolve({
-    	                    message: response['message'],
+    	                    message: response["message"],
     	                    meta: response,
-    	                    valid: "".concat(response[opts.validKey]) === 'true',
+    	                    valid: "".concat(response[opts.validKey]) === "true",
     	                });
     	            })
     	                .catch(function (_reason) {
@@ -5707,19 +5707,19 @@
     	         * Check if a string is a lower or upper case one
     	         */
     	        validate: function (input) {
-    	            if (input.value === '') {
+    	            if (input.value === "") {
     	                return { valid: true };
     	            }
-    	            var opts = Object.assign({}, { case: 'lower' }, removeUndefined(input.options));
-    	            var caseOpt = (opts.case || 'lower').toLowerCase();
+    	            var opts = Object.assign({}, { case: "lower" }, removeUndefined(input.options));
+    	            var caseOpt = (opts.case || "lower").toLowerCase();
     	            return {
     	                message: opts.message ||
     	                    (input.l10n
-    	                        ? 'upper' === caseOpt
+    	                        ? "upper" === caseOpt
     	                            ? input.l10n.stringCase.upper
     	                            : input.l10n.stringCase.default
     	                        : opts.message),
-    	                valid: 'upper' === caseOpt
+    	                valid: "upper" === caseOpt
     	                    ? input.value === input.value.toUpperCase()
     	                    : input.value === input.value.toLowerCase(),
     	            };
@@ -5785,17 +5785,17 @@
     	         */
     	        validate: function (input) {
     	            var opts = Object.assign({}, {
-    	                message: '',
+    	                message: "",
     	                trim: false,
     	                utf8Bytes: false,
     	            }, removeUndefined(input.options));
-    	            var v = opts.trim === true || "".concat(opts.trim) === 'true' ? input.value.trim() : input.value;
-    	            if (v === '') {
+    	            var v = opts.trim === true || "".concat(opts.trim) === "true" ? input.value.trim() : input.value;
+    	            if (v === "") {
     	                return { valid: true };
     	            }
     	            // TODO: `min`, `max` can be dynamic options
-    	            var min = opts.min ? "".concat(opts.min) : '';
-    	            var max = opts.max ? "".concat(opts.max) : '';
+    	            var min = opts.min ? "".concat(opts.min) : "";
+    	            var max = opts.max ? "".concat(opts.max) : "";
     	            var length = opts.utf8Bytes ? utf8Length(v) : v.length;
     	            var isValid = true;
     	            var msg = input.l10n ? opts.message || input.l10n.stringLength.default : opts.message;
@@ -5862,14 +5862,14 @@
     	    var DEFAULT_OPTIONS = {
     	        allowEmptyProtocol: false,
     	        allowLocal: false,
-    	        protocol: 'http, https, ftp',
+    	        protocol: "http, https, ftp",
     	    };
     	    return {
     	        /**
     	         * Return true if the input value is a valid URL
     	         */
     	        validate: function (input) {
-    	            if (input.value === '') {
+    	            if (input.value === "") {
     	                return { valid: true };
     	            }
     	            var opts = Object.assign({}, DEFAULT_OPTIONS, removeUndefined(input.options));
@@ -5906,48 +5906,48 @@
     	            //
     	            // - Add option to validate without protocol
     	            //
-    	            var allowLocal = opts.allowLocal === true || "".concat(opts.allowLocal) === 'true';
-    	            var allowEmptyProtocol = opts.allowEmptyProtocol === true || "".concat(opts.allowEmptyProtocol) === 'true';
-    	            var protocol = opts.protocol.split(',').join('|').replace(/\s/g, '');
-    	            var urlExp = new RegExp('^' +
+    	            var allowLocal = opts.allowLocal === true || "".concat(opts.allowLocal) === "true";
+    	            var allowEmptyProtocol = opts.allowEmptyProtocol === true || "".concat(opts.allowEmptyProtocol) === "true";
+    	            var protocol = opts.protocol.split(",").join("|").replace(/\s/g, "");
+    	            var urlExp = new RegExp("^" +
     	                // protocol identifier
-    	                '(?:(?:' +
+    	                "(?:(?:" +
     	                protocol +
-    	                ')://)' +
+    	                ")://)" +
     	                // allow empty protocol
-    	                (allowEmptyProtocol ? '?' : '') +
+    	                (allowEmptyProtocol ? "?" : "") +
     	                // user:pass authentication
-    	                '(?:\\S+(?::\\S*)?@)?' +
-    	                '(?:' +
+    	                "(?:\\S+(?::\\S*)?@)?" +
+    	                "(?:" +
     	                // IP address exclusion
     	                // private & local networks
     	                (allowLocal
-    	                    ? ''
-    	                    : '(?!(?:10|127)(?:\\.\\d{1,3}){3})' +
-    	                        '(?!(?:169\\.254|192\\.168)(?:\\.\\d{1,3}){2})' +
-    	                        '(?!172\\.(?:1[6-9]|2\\d|3[0-1])(?:\\.\\d{1,3}){2})') +
+    	                    ? ""
+    	                    : "(?!(?:10|127)(?:\\.\\d{1,3}){3})" +
+    	                        "(?!(?:169\\.254|192\\.168)(?:\\.\\d{1,3}){2})" +
+    	                        "(?!172\\.(?:1[6-9]|2\\d|3[0-1])(?:\\.\\d{1,3}){2})") +
     	                // IP address dotted notation octets
     	                // excludes loopback network 0.0.0.0
     	                // excludes reserved space >= 224.0.0.0
     	                // excludes network & broadcast addresses
     	                // (first & last IP address of each class)
-    	                '(?:[1-9]\\d?|1\\d\\d|2[01]\\d|22[0-3])' +
-    	                '(?:\\.(?:1?\\d{1,2}|2[0-4]\\d|25[0-5])){2}' +
-    	                '(?:\\.(?:[1-9]\\d?|1\\d\\d|2[0-4]\\d|25[0-4]))' +
-    	                '|' +
+    	                "(?:[1-9]\\d?|1\\d\\d|2[01]\\d|22[0-3])" +
+    	                "(?:\\.(?:1?\\d{1,2}|2[0-4]\\d|25[0-5])){2}" +
+    	                "(?:\\.(?:[1-9]\\d?|1\\d\\d|2[0-4]\\d|25[0-4]))" +
+    	                "|" +
     	                // host name
-    	                '(?:(?:[a-z\\u00a1-\\uffff0-9]-?)*[a-z\\u00a1-\\uffff0-9]+)' +
+    	                "(?:(?:[a-z\\u00a1-\\uffff0-9]-?)*[a-z\\u00a1-\\uffff0-9]+)" +
     	                // domain name
-    	                '(?:\\.(?:[a-z\\u00a1-\\uffff0-9]-?)*[a-z\\u00a1-\\uffff0-9])*' +
+    	                "(?:\\.(?:[a-z\\u00a1-\\uffff0-9]-?)*[a-z\\u00a1-\\uffff0-9])*" +
     	                // TLD identifier
-    	                '(?:\\.(?:[a-z\\u00a1-\\uffff]{2,}))' +
+    	                "(?:\\.(?:[a-z\\u00a1-\\uffff]{2,}))" +
     	                // Allow intranet sites (no TLD) if `allowLocal` is true
-    	                (allowLocal ? '?' : '') +
-    	                ')' +
+    	                (allowLocal ? "?" : "") +
+    	                ")" +
     	                // port number
-    	                '(?::\\d{2,5})?' +
+    	                "(?::\\d{2,5})?" +
     	                // resource path
-    	                '(?:/[^\\s]*)?$', 'i');
+    	                "(?:/[^\\s]*)?$", "i");
     	            return { valid: urlExp.test(input.value) };
     	        },
     	    };
@@ -5988,7 +5988,7 @@
     	    return {
     	        validate: function (input) {
     	            return {
-    	                valid: input.value === '' ||
+    	                valid: input.value === "" ||
     	                    /^(?:[A-Za-z0-9+/]{4})*(?:[A-Za-z0-9+/]{2}==|[A-Za-z0-9+/]{3}=|[A-Za-z0-9+/]{4})$/.test(input.value),
     	            };
     	        },
@@ -6036,7 +6036,7 @@
     	    return {
     	        validate: function (input) {
     	            return {
-    	                valid: input.value === '' || /^[a-zA-Z]{6}[a-zA-Z0-9]{2}([a-zA-Z0-9]{3})?$/.test(input.value),
+    	                valid: input.value === "" || /^[a-zA-Z]{6}[a-zA-Z0-9]{2}([a-zA-Z0-9]{3})?$/.test(input.value),
     	            };
     	        },
     	    };
@@ -6074,176 +6074,176 @@
     	 * (c) 2013 - 2023 Nguyen Huu Phuoc <me@phuoc.ng>
     	 */
     	function color() {
-    	    var SUPPORTED_TYPES = ['hex', 'rgb', 'rgba', 'hsl', 'hsla', 'keyword'];
+    	    var SUPPORTED_TYPES = ["hex", "rgb", "rgba", "hsl", "hsla", "keyword"];
     	    var KEYWORD_COLORS = [
     	        // Colors start with A
-    	        'aliceblue',
-    	        'antiquewhite',
-    	        'aqua',
-    	        'aquamarine',
-    	        'azure',
+    	        "aliceblue",
+    	        "antiquewhite",
+    	        "aqua",
+    	        "aquamarine",
+    	        "azure",
     	        // B
-    	        'beige',
-    	        'bisque',
-    	        'black',
-    	        'blanchedalmond',
-    	        'blue',
-    	        'blueviolet',
-    	        'brown',
-    	        'burlywood',
+    	        "beige",
+    	        "bisque",
+    	        "black",
+    	        "blanchedalmond",
+    	        "blue",
+    	        "blueviolet",
+    	        "brown",
+    	        "burlywood",
     	        // C
-    	        'cadetblue',
-    	        'chartreuse',
-    	        'chocolate',
-    	        'coral',
-    	        'cornflowerblue',
-    	        'cornsilk',
-    	        'crimson',
-    	        'cyan',
+    	        "cadetblue",
+    	        "chartreuse",
+    	        "chocolate",
+    	        "coral",
+    	        "cornflowerblue",
+    	        "cornsilk",
+    	        "crimson",
+    	        "cyan",
     	        // D
-    	        'darkblue',
-    	        'darkcyan',
-    	        'darkgoldenrod',
-    	        'darkgray',
-    	        'darkgreen',
-    	        'darkgrey',
-    	        'darkkhaki',
-    	        'darkmagenta',
-    	        'darkolivegreen',
-    	        'darkorange',
-    	        'darkorchid',
-    	        'darkred',
-    	        'darksalmon',
-    	        'darkseagreen',
-    	        'darkslateblue',
-    	        'darkslategray',
-    	        'darkslategrey',
-    	        'darkturquoise',
-    	        'darkviolet',
-    	        'deeppink',
-    	        'deepskyblue',
-    	        'dimgray',
-    	        'dimgrey',
-    	        'dodgerblue',
+    	        "darkblue",
+    	        "darkcyan",
+    	        "darkgoldenrod",
+    	        "darkgray",
+    	        "darkgreen",
+    	        "darkgrey",
+    	        "darkkhaki",
+    	        "darkmagenta",
+    	        "darkolivegreen",
+    	        "darkorange",
+    	        "darkorchid",
+    	        "darkred",
+    	        "darksalmon",
+    	        "darkseagreen",
+    	        "darkslateblue",
+    	        "darkslategray",
+    	        "darkslategrey",
+    	        "darkturquoise",
+    	        "darkviolet",
+    	        "deeppink",
+    	        "deepskyblue",
+    	        "dimgray",
+    	        "dimgrey",
+    	        "dodgerblue",
     	        // F
-    	        'firebrick',
-    	        'floralwhite',
-    	        'forestgreen',
-    	        'fuchsia',
+    	        "firebrick",
+    	        "floralwhite",
+    	        "forestgreen",
+    	        "fuchsia",
     	        // G
-    	        'gainsboro',
-    	        'ghostwhite',
-    	        'gold',
-    	        'goldenrod',
-    	        'gray',
-    	        'green',
-    	        'greenyellow',
-    	        'grey',
+    	        "gainsboro",
+    	        "ghostwhite",
+    	        "gold",
+    	        "goldenrod",
+    	        "gray",
+    	        "green",
+    	        "greenyellow",
+    	        "grey",
     	        // H
-    	        'honeydew',
-    	        'hotpink',
+    	        "honeydew",
+    	        "hotpink",
     	        // I
-    	        'indianred',
-    	        'indigo',
-    	        'ivory',
+    	        "indianred",
+    	        "indigo",
+    	        "ivory",
     	        // K
-    	        'khaki',
+    	        "khaki",
     	        // L
-    	        'lavender',
-    	        'lavenderblush',
-    	        'lawngreen',
-    	        'lemonchiffon',
-    	        'lightblue',
-    	        'lightcoral',
-    	        'lightcyan',
-    	        'lightgoldenrodyellow',
-    	        'lightgray',
-    	        'lightgreen',
-    	        'lightgrey',
-    	        'lightpink',
-    	        'lightsalmon',
-    	        'lightseagreen',
-    	        'lightskyblue',
-    	        'lightslategray',
-    	        'lightslategrey',
-    	        'lightsteelblue',
-    	        'lightyellow',
-    	        'lime',
-    	        'limegreen',
-    	        'linen',
+    	        "lavender",
+    	        "lavenderblush",
+    	        "lawngreen",
+    	        "lemonchiffon",
+    	        "lightblue",
+    	        "lightcoral",
+    	        "lightcyan",
+    	        "lightgoldenrodyellow",
+    	        "lightgray",
+    	        "lightgreen",
+    	        "lightgrey",
+    	        "lightpink",
+    	        "lightsalmon",
+    	        "lightseagreen",
+    	        "lightskyblue",
+    	        "lightslategray",
+    	        "lightslategrey",
+    	        "lightsteelblue",
+    	        "lightyellow",
+    	        "lime",
+    	        "limegreen",
+    	        "linen",
     	        // M
-    	        'magenta',
-    	        'maroon',
-    	        'mediumaquamarine',
-    	        'mediumblue',
-    	        'mediumorchid',
-    	        'mediumpurple',
-    	        'mediumseagreen',
-    	        'mediumslateblue',
-    	        'mediumspringgreen',
-    	        'mediumturquoise',
-    	        'mediumvioletred',
-    	        'midnightblue',
-    	        'mintcream',
-    	        'mistyrose',
-    	        'moccasin',
+    	        "magenta",
+    	        "maroon",
+    	        "mediumaquamarine",
+    	        "mediumblue",
+    	        "mediumorchid",
+    	        "mediumpurple",
+    	        "mediumseagreen",
+    	        "mediumslateblue",
+    	        "mediumspringgreen",
+    	        "mediumturquoise",
+    	        "mediumvioletred",
+    	        "midnightblue",
+    	        "mintcream",
+    	        "mistyrose",
+    	        "moccasin",
     	        // N
-    	        'navajowhite',
-    	        'navy',
+    	        "navajowhite",
+    	        "navy",
     	        // O
-    	        'oldlace',
-    	        'olive',
-    	        'olivedrab',
-    	        'orange',
-    	        'orangered',
-    	        'orchid',
+    	        "oldlace",
+    	        "olive",
+    	        "olivedrab",
+    	        "orange",
+    	        "orangered",
+    	        "orchid",
     	        // P
-    	        'palegoldenrod',
-    	        'palegreen',
-    	        'paleturquoise',
-    	        'palevioletred',
-    	        'papayawhip',
-    	        'peachpuff',
-    	        'peru',
-    	        'pink',
-    	        'plum',
-    	        'powderblue',
-    	        'purple',
+    	        "palegoldenrod",
+    	        "palegreen",
+    	        "paleturquoise",
+    	        "palevioletred",
+    	        "papayawhip",
+    	        "peachpuff",
+    	        "peru",
+    	        "pink",
+    	        "plum",
+    	        "powderblue",
+    	        "purple",
     	        // R
-    	        'red',
-    	        'rosybrown',
-    	        'royalblue',
+    	        "red",
+    	        "rosybrown",
+    	        "royalblue",
     	        // S
-    	        'saddlebrown',
-    	        'salmon',
-    	        'sandybrown',
-    	        'seagreen',
-    	        'seashell',
-    	        'sienna',
-    	        'silver',
-    	        'skyblue',
-    	        'slateblue',
-    	        'slategray',
-    	        'slategrey',
-    	        'snow',
-    	        'springgreen',
-    	        'steelblue',
+    	        "saddlebrown",
+    	        "salmon",
+    	        "sandybrown",
+    	        "seagreen",
+    	        "seashell",
+    	        "sienna",
+    	        "silver",
+    	        "skyblue",
+    	        "slateblue",
+    	        "slategray",
+    	        "slategrey",
+    	        "snow",
+    	        "springgreen",
+    	        "steelblue",
     	        // T
-    	        'tan',
-    	        'teal',
-    	        'thistle',
-    	        'tomato',
-    	        'transparent',
-    	        'turquoise',
+    	        "tan",
+    	        "teal",
+    	        "thistle",
+    	        "tomato",
+    	        "transparent",
+    	        "turquoise",
     	        // V
-    	        'violet',
+    	        "violet",
     	        // W
-    	        'wheat',
-    	        'white',
-    	        'whitesmoke',
+    	        "wheat",
+    	        "white",
+    	        "whitesmoke",
     	        // Y
-    	        'yellow',
-    	        'yellowgreen',
+    	        "yellow",
+    	        "yellowgreen",
     	    ];
     	    var hex = function (value) {
     	        return /(^#[0-9A-F]{6}$)|(^#[0-9A-F]{3}$)/i.test(value);
@@ -6270,11 +6270,11 @@
     	         * @returns {boolean}
     	         */
     	        validate: function (input) {
-    	            if (input.value === '') {
+    	            if (input.value === "") {
     	                return { valid: true };
     	            }
-    	            var types = typeof input.options.type === 'string'
-    	                ? input.options.type.toString().replace(/s/g, '').split(',')
+    	            var types = typeof input.options.type === "string"
+    	                ? input.options.type.toString().replace(/s/g, "").split(",")
     	                : input.options.type || SUPPORTED_TYPES;
     	            for (var _i = 0, types_1 = types; _i < types_1.length; _i++) {
     	                var type = types_1[_i];
@@ -6284,22 +6284,22 @@
     	                }
     	                var result = true;
     	                switch (tpe) {
-    	                    case 'hex':
+    	                    case "hex":
     	                        result = hex(input.value);
     	                        break;
-    	                    case 'hsl':
+    	                    case "hsl":
     	                        result = hsl(input.value);
     	                        break;
-    	                    case 'hsla':
+    	                    case "hsla":
     	                        result = hsla(input.value);
     	                        break;
-    	                    case 'keyword':
+    	                    case "keyword":
     	                        result = keyword(input.value);
     	                        break;
-    	                    case 'rgb':
+    	                    case "rgb":
     	                        result = rgb(input.value);
     	                        break;
-    	                    case 'rgba':
+    	                    case "rgba":
     	                        result = rgba(input.value);
     	                        break;
     	                }
@@ -6350,7 +6350,7 @@
     	         * @see http://en.wikipedia.org/wiki/CUSIP
     	         */
     	        validate: function (input) {
-    	            if (input.value === '') {
+    	            if (input.value === "") {
     	                return { valid: true };
     	            }
     	            var value = input.value.toUpperCase();
@@ -6359,20 +6359,20 @@
     	                return { valid: false };
     	            }
     	            // Get the last char
-    	            var chars = value.split('');
+    	            var chars = value.split("");
     	            var lastChar = chars.pop();
     	            var converted = chars.map(function (c) {
     	                var code = c.charCodeAt(0);
     	                switch (true) {
-    	                    case c === '*':
+    	                    case c === "*":
     	                        return 36;
-    	                    case c === '@':
+    	                    case c === "@":
     	                        return 37;
-    	                    case c === '#':
+    	                    case c === "#":
     	                        return 38;
     	                    // Replace A, B, C, ..., Z with 10, 11, ..., 35
-    	                    case code >= 'A'.charCodeAt(0) && code <= 'Z'.charCodeAt(0):
-    	                        return code - 'A'.charCodeAt(0) + 10;
+    	                    case code >= "A".charCodeAt(0) && code <= "Z".charCodeAt(0):
+    	                        return code - "A".charCodeAt(0) + 10;
     	                    default:
     	                        return parseInt(c, 10);
     	                }
@@ -6427,7 +6427,7 @@
     	         * @see http://en.wikipedia.org/wiki/European_Article_Number
     	         */
     	        validate: function (input) {
-    	            if (input.value === '') {
+    	            if (input.value === "") {
     	                return { valid: true };
     	            }
     	            if (!/^(\d{8}|\d{12}|\d{13}|\d{14})$/.test(input.value)) {
@@ -6481,75 +6481,75 @@
     	    // See http://en.wikipedia.org/wiki/Employer_Identification_Number
     	    // http://www.irs.gov/Businesses/Small-Businesses-&-Self-Employed/How-EINs-are-Assigned-and-Valid-EIN-Prefixes
     	    var CAMPUS = {
-    	        ANDOVER: ['10', '12'],
-    	        ATLANTA: ['60', '67'],
-    	        AUSTIN: ['50', '53'],
+    	        ANDOVER: ["10", "12"],
+    	        ATLANTA: ["60", "67"],
+    	        AUSTIN: ["50", "53"],
     	        BROOKHAVEN: [
-    	            '01',
-    	            '02',
-    	            '03',
-    	            '04',
-    	            '05',
-    	            '06',
-    	            '11',
-    	            '13',
-    	            '14',
-    	            '16',
-    	            '21',
-    	            '22',
-    	            '23',
-    	            '25',
-    	            '34',
-    	            '51',
-    	            '52',
-    	            '54',
-    	            '55',
-    	            '56',
-    	            '57',
-    	            '58',
-    	            '59',
-    	            '65',
+    	            "01",
+    	            "02",
+    	            "03",
+    	            "04",
+    	            "05",
+    	            "06",
+    	            "11",
+    	            "13",
+    	            "14",
+    	            "16",
+    	            "21",
+    	            "22",
+    	            "23",
+    	            "25",
+    	            "34",
+    	            "51",
+    	            "52",
+    	            "54",
+    	            "55",
+    	            "56",
+    	            "57",
+    	            "58",
+    	            "59",
+    	            "65",
     	        ],
-    	        CINCINNATI: ['30', '32', '35', '36', '37', '38', '61'],
-    	        FRESNO: ['15', '24'],
-    	        INTERNET: ['20', '26', '27', '45', '46', '47'],
-    	        KANSAS_CITY: ['40', '44'],
-    	        MEMPHIS: ['94', '95'],
-    	        OGDEN: ['80', '90'],
+    	        CINCINNATI: ["30", "32", "35", "36", "37", "38", "61"],
+    	        FRESNO: ["15", "24"],
+    	        INTERNET: ["20", "26", "27", "45", "46", "47"],
+    	        KANSAS_CITY: ["40", "44"],
+    	        MEMPHIS: ["94", "95"],
+    	        OGDEN: ["80", "90"],
     	        PHILADELPHIA: [
-    	            '33',
-    	            '39',
-    	            '41',
-    	            '42',
-    	            '43',
-    	            '48',
-    	            '62',
-    	            '63',
-    	            '64',
-    	            '66',
-    	            '68',
-    	            '71',
-    	            '72',
-    	            '73',
-    	            '74',
-    	            '75',
-    	            '76',
-    	            '77',
-    	            '81',
-    	            '82',
-    	            '83',
-    	            '84',
-    	            '85',
-    	            '86',
-    	            '87',
-    	            '88',
-    	            '91',
-    	            '92',
-    	            '93',
-    	            '98',
-    	            '99',
+    	            "33",
+    	            "39",
+    	            "41",
+    	            "42",
+    	            "43",
+    	            "48",
+    	            "62",
+    	            "63",
+    	            "64",
+    	            "66",
+    	            "68",
+    	            "71",
+    	            "72",
+    	            "73",
+    	            "74",
+    	            "75",
+    	            "76",
+    	            "77",
+    	            "81",
+    	            "82",
+    	            "83",
+    	            "84",
+    	            "85",
+    	            "86",
+    	            "87",
+    	            "88",
+    	            "91",
+    	            "92",
+    	            "93",
+    	            "98",
+    	            "99",
     	        ],
-    	        SMALL_BUSINESS_ADMINISTRATION: ['31'],
+    	        SMALL_BUSINESS_ADMINISTRATION: ["31"],
     	    };
     	    return {
     	        /**
@@ -6557,7 +6557,7 @@
     	         * Federal Employer Identification Number (FEIN) or Federal Tax Identification Number
     	         */
     	        validate: function (input) {
-    	            if (input.value === '') {
+    	            if (input.value === "") {
     	                return {
     	                    meta: null,
     	                    valid: true,
@@ -6630,15 +6630,15 @@
     	         * @see http://en.wikipedia.org/wiki/Global_Release_Identifier
     	         */
     	        validate: function (input) {
-    	            if (input.value === '') {
+    	            if (input.value === "") {
     	                return { valid: true };
     	            }
     	            var v = input.value.toUpperCase();
     	            if (!/^[GRID:]*([0-9A-Z]{2})[-\s]*([0-9A-Z]{5})[-\s]*([0-9A-Z]{10})[-\s]*([0-9A-Z]{1})$/g.test(v)) {
     	                return { valid: false };
     	            }
-    	            v = v.replace(/\s/g, '').replace(/-/g, '');
-    	            if ('GRID:' === v.substr(0, 5)) {
+    	            v = v.replace(/\s/g, "").replace(/-/g, "");
+    	            if ("GRID:" === v.substr(0, 5)) {
     	                v = v.substr(5);
     	            }
     	            return { valid: mod37And36(v) };
@@ -6684,7 +6684,7 @@
     	         */
     	        validate: function (input) {
     	            return {
-    	                valid: input.value === '' || /^[0-9a-fA-F]+$/.test(input.value),
+    	                valid: input.value === "" || /^[0-9a-fA-F]+$/.test(input.value),
     	            };
     	        },
     	    };
@@ -6728,125 +6728,125 @@
     	    // http://www.swift.com/dsp/resources/documents/IBAN_Registry.pdf
     	    // http://en.wikipedia.org/wiki/International_Bank_Account_Number#IBAN_formats_by_country
     	    var IBAN_PATTERNS = {
-    	        AD: 'AD[0-9]{2}[0-9]{4}[0-9]{4}[A-Z0-9]{12}',
-    	        AE: 'AE[0-9]{2}[0-9]{3}[0-9]{16}',
-    	        AL: 'AL[0-9]{2}[0-9]{8}[A-Z0-9]{16}',
-    	        AO: 'AO[0-9]{2}[0-9]{21}',
-    	        AT: 'AT[0-9]{2}[0-9]{5}[0-9]{11}',
-    	        AZ: 'AZ[0-9]{2}[A-Z]{4}[A-Z0-9]{20}',
-    	        BA: 'BA[0-9]{2}[0-9]{3}[0-9]{3}[0-9]{8}[0-9]{2}',
-    	        BE: 'BE[0-9]{2}[0-9]{3}[0-9]{7}[0-9]{2}',
-    	        BF: 'BF[0-9]{2}[0-9]{23}',
-    	        BG: 'BG[0-9]{2}[A-Z]{4}[0-9]{4}[0-9]{2}[A-Z0-9]{8}',
-    	        BH: 'BH[0-9]{2}[A-Z]{4}[A-Z0-9]{14}',
-    	        BI: 'BI[0-9]{2}[0-9]{12}',
-    	        BJ: 'BJ[0-9]{2}[A-Z]{1}[0-9]{23}',
-    	        BR: 'BR[0-9]{2}[0-9]{8}[0-9]{5}[0-9]{10}[A-Z][A-Z0-9]',
-    	        CH: 'CH[0-9]{2}[0-9]{5}[A-Z0-9]{12}',
-    	        CI: 'CI[0-9]{2}[A-Z]{1}[0-9]{23}',
-    	        CM: 'CM[0-9]{2}[0-9]{23}',
-    	        CR: 'CR[0-9]{2}[0-9][0-9]{3}[0-9]{14}',
-    	        CV: 'CV[0-9]{2}[0-9]{21}',
-    	        CY: 'CY[0-9]{2}[0-9]{3}[0-9]{5}[A-Z0-9]{16}',
-    	        CZ: 'CZ[0-9]{2}[0-9]{20}',
-    	        DE: 'DE[0-9]{2}[0-9]{8}[0-9]{10}',
-    	        DK: 'DK[0-9]{2}[0-9]{14}',
-    	        DO: 'DO[0-9]{2}[A-Z0-9]{4}[0-9]{20}',
-    	        DZ: 'DZ[0-9]{2}[0-9]{20}',
-    	        EE: 'EE[0-9]{2}[0-9]{2}[0-9]{2}[0-9]{11}[0-9]{1}',
-    	        ES: 'ES[0-9]{2}[0-9]{4}[0-9]{4}[0-9]{1}[0-9]{1}[0-9]{10}',
-    	        FI: 'FI[0-9]{2}[0-9]{6}[0-9]{7}[0-9]{1}',
-    	        FO: 'FO[0-9]{2}[0-9]{4}[0-9]{9}[0-9]{1}',
-    	        FR: 'FR[0-9]{2}[0-9]{5}[0-9]{5}[A-Z0-9]{11}[0-9]{2}',
-    	        GB: 'GB[0-9]{2}[A-Z]{4}[0-9]{6}[0-9]{8}',
-    	        GE: 'GE[0-9]{2}[A-Z]{2}[0-9]{16}',
-    	        GI: 'GI[0-9]{2}[A-Z]{4}[A-Z0-9]{15}',
-    	        GL: 'GL[0-9]{2}[0-9]{4}[0-9]{9}[0-9]{1}',
-    	        GR: 'GR[0-9]{2}[0-9]{3}[0-9]{4}[A-Z0-9]{16}',
-    	        GT: 'GT[0-9]{2}[A-Z0-9]{4}[A-Z0-9]{20}',
-    	        HR: 'HR[0-9]{2}[0-9]{7}[0-9]{10}',
-    	        HU: 'HU[0-9]{2}[0-9]{3}[0-9]{4}[0-9]{1}[0-9]{15}[0-9]{1}',
-    	        IE: 'IE[0-9]{2}[A-Z]{4}[0-9]{6}[0-9]{8}',
-    	        IL: 'IL[0-9]{2}[0-9]{3}[0-9]{3}[0-9]{13}',
-    	        IR: 'IR[0-9]{2}[0-9]{22}',
-    	        IS: 'IS[0-9]{2}[0-9]{4}[0-9]{2}[0-9]{6}[0-9]{10}',
-    	        IT: 'IT[0-9]{2}[A-Z]{1}[0-9]{5}[0-9]{5}[A-Z0-9]{12}',
-    	        JO: 'JO[0-9]{2}[A-Z]{4}[0-9]{4}[0]{8}[A-Z0-9]{10}',
-    	        KW: 'KW[0-9]{2}[A-Z]{4}[0-9]{22}',
-    	        KZ: 'KZ[0-9]{2}[0-9]{3}[A-Z0-9]{13}',
-    	        LB: 'LB[0-9]{2}[0-9]{4}[A-Z0-9]{20}',
-    	        LI: 'LI[0-9]{2}[0-9]{5}[A-Z0-9]{12}',
-    	        LT: 'LT[0-9]{2}[0-9]{5}[0-9]{11}',
-    	        LU: 'LU[0-9]{2}[0-9]{3}[A-Z0-9]{13}',
-    	        LV: 'LV[0-9]{2}[A-Z]{4}[A-Z0-9]{13}',
-    	        MC: 'MC[0-9]{2}[0-9]{5}[0-9]{5}[A-Z0-9]{11}[0-9]{2}',
-    	        MD: 'MD[0-9]{2}[A-Z0-9]{20}',
-    	        ME: 'ME[0-9]{2}[0-9]{3}[0-9]{13}[0-9]{2}',
-    	        MG: 'MG[0-9]{2}[0-9]{23}',
-    	        MK: 'MK[0-9]{2}[0-9]{3}[A-Z0-9]{10}[0-9]{2}',
-    	        ML: 'ML[0-9]{2}[A-Z]{1}[0-9]{23}',
-    	        MR: 'MR13[0-9]{5}[0-9]{5}[0-9]{11}[0-9]{2}',
-    	        MT: 'MT[0-9]{2}[A-Z]{4}[0-9]{5}[A-Z0-9]{18}',
-    	        MU: 'MU[0-9]{2}[A-Z]{4}[0-9]{2}[0-9]{2}[0-9]{12}[0-9]{3}[A-Z]{3}',
-    	        MZ: 'MZ[0-9]{2}[0-9]{21}',
-    	        NL: 'NL[0-9]{2}[A-Z]{4}[0-9]{10}',
-    	        NO: 'NO[0-9]{2}[0-9]{4}[0-9]{6}[0-9]{1}',
-    	        PK: 'PK[0-9]{2}[A-Z]{4}[A-Z0-9]{16}',
-    	        PL: 'PL[0-9]{2}[0-9]{8}[0-9]{16}',
-    	        PS: 'PS[0-9]{2}[A-Z]{4}[A-Z0-9]{21}',
-    	        PT: 'PT[0-9]{2}[0-9]{4}[0-9]{4}[0-9]{11}[0-9]{2}',
-    	        QA: 'QA[0-9]{2}[A-Z]{4}[A-Z0-9]{21}',
-    	        RO: 'RO[0-9]{2}[A-Z]{4}[A-Z0-9]{16}',
-    	        RS: 'RS[0-9]{2}[0-9]{3}[0-9]{13}[0-9]{2}',
-    	        SA: 'SA[0-9]{2}[0-9]{2}[A-Z0-9]{18}',
-    	        SE: 'SE[0-9]{2}[0-9]{3}[0-9]{16}[0-9]{1}',
-    	        SI: 'SI[0-9]{2}[0-9]{5}[0-9]{8}[0-9]{2}',
-    	        SK: 'SK[0-9]{2}[0-9]{4}[0-9]{6}[0-9]{10}',
-    	        SM: 'SM[0-9]{2}[A-Z]{1}[0-9]{5}[0-9]{5}[A-Z0-9]{12}',
-    	        SN: 'SN[0-9]{2}[A-Z]{1}[0-9]{23}',
-    	        TL: 'TL38[0-9]{3}[0-9]{14}[0-9]{2}',
-    	        TN: 'TN59[0-9]{2}[0-9]{3}[0-9]{13}[0-9]{2}',
-    	        TR: 'TR[0-9]{2}[0-9]{5}[A-Z0-9]{1}[A-Z0-9]{16}',
-    	        VG: 'VG[0-9]{2}[A-Z]{4}[0-9]{16}',
-    	        XK: 'XK[0-9]{2}[0-9]{4}[0-9]{10}[0-9]{2}', // Republic of Kosovo
+    	        AD: "AD[0-9]{2}[0-9]{4}[0-9]{4}[A-Z0-9]{12}",
+    	        AE: "AE[0-9]{2}[0-9]{3}[0-9]{16}",
+    	        AL: "AL[0-9]{2}[0-9]{8}[A-Z0-9]{16}",
+    	        AO: "AO[0-9]{2}[0-9]{21}",
+    	        AT: "AT[0-9]{2}[0-9]{5}[0-9]{11}",
+    	        AZ: "AZ[0-9]{2}[A-Z]{4}[A-Z0-9]{20}",
+    	        BA: "BA[0-9]{2}[0-9]{3}[0-9]{3}[0-9]{8}[0-9]{2}",
+    	        BE: "BE[0-9]{2}[0-9]{3}[0-9]{7}[0-9]{2}",
+    	        BF: "BF[0-9]{2}[0-9]{23}",
+    	        BG: "BG[0-9]{2}[A-Z]{4}[0-9]{4}[0-9]{2}[A-Z0-9]{8}",
+    	        BH: "BH[0-9]{2}[A-Z]{4}[A-Z0-9]{14}",
+    	        BI: "BI[0-9]{2}[0-9]{12}",
+    	        BJ: "BJ[0-9]{2}[A-Z]{1}[0-9]{23}",
+    	        BR: "BR[0-9]{2}[0-9]{8}[0-9]{5}[0-9]{10}[A-Z][A-Z0-9]",
+    	        CH: "CH[0-9]{2}[0-9]{5}[A-Z0-9]{12}",
+    	        CI: "CI[0-9]{2}[A-Z]{1}[0-9]{23}",
+    	        CM: "CM[0-9]{2}[0-9]{23}",
+    	        CR: "CR[0-9]{2}[0-9][0-9]{3}[0-9]{14}",
+    	        CV: "CV[0-9]{2}[0-9]{21}",
+    	        CY: "CY[0-9]{2}[0-9]{3}[0-9]{5}[A-Z0-9]{16}",
+    	        CZ: "CZ[0-9]{2}[0-9]{20}",
+    	        DE: "DE[0-9]{2}[0-9]{8}[0-9]{10}",
+    	        DK: "DK[0-9]{2}[0-9]{14}",
+    	        DO: "DO[0-9]{2}[A-Z0-9]{4}[0-9]{20}",
+    	        DZ: "DZ[0-9]{2}[0-9]{20}",
+    	        EE: "EE[0-9]{2}[0-9]{2}[0-9]{2}[0-9]{11}[0-9]{1}",
+    	        ES: "ES[0-9]{2}[0-9]{4}[0-9]{4}[0-9]{1}[0-9]{1}[0-9]{10}",
+    	        FI: "FI[0-9]{2}[0-9]{6}[0-9]{7}[0-9]{1}",
+    	        FO: "FO[0-9]{2}[0-9]{4}[0-9]{9}[0-9]{1}",
+    	        FR: "FR[0-9]{2}[0-9]{5}[0-9]{5}[A-Z0-9]{11}[0-9]{2}",
+    	        GB: "GB[0-9]{2}[A-Z]{4}[0-9]{6}[0-9]{8}",
+    	        GE: "GE[0-9]{2}[A-Z]{2}[0-9]{16}",
+    	        GI: "GI[0-9]{2}[A-Z]{4}[A-Z0-9]{15}",
+    	        GL: "GL[0-9]{2}[0-9]{4}[0-9]{9}[0-9]{1}",
+    	        GR: "GR[0-9]{2}[0-9]{3}[0-9]{4}[A-Z0-9]{16}",
+    	        GT: "GT[0-9]{2}[A-Z0-9]{4}[A-Z0-9]{20}",
+    	        HR: "HR[0-9]{2}[0-9]{7}[0-9]{10}",
+    	        HU: "HU[0-9]{2}[0-9]{3}[0-9]{4}[0-9]{1}[0-9]{15}[0-9]{1}",
+    	        IE: "IE[0-9]{2}[A-Z]{4}[0-9]{6}[0-9]{8}",
+    	        IL: "IL[0-9]{2}[0-9]{3}[0-9]{3}[0-9]{13}",
+    	        IR: "IR[0-9]{2}[0-9]{22}",
+    	        IS: "IS[0-9]{2}[0-9]{4}[0-9]{2}[0-9]{6}[0-9]{10}",
+    	        IT: "IT[0-9]{2}[A-Z]{1}[0-9]{5}[0-9]{5}[A-Z0-9]{12}",
+    	        JO: "JO[0-9]{2}[A-Z]{4}[0-9]{4}[0]{8}[A-Z0-9]{10}",
+    	        KW: "KW[0-9]{2}[A-Z]{4}[0-9]{22}",
+    	        KZ: "KZ[0-9]{2}[0-9]{3}[A-Z0-9]{13}",
+    	        LB: "LB[0-9]{2}[0-9]{4}[A-Z0-9]{20}",
+    	        LI: "LI[0-9]{2}[0-9]{5}[A-Z0-9]{12}",
+    	        LT: "LT[0-9]{2}[0-9]{5}[0-9]{11}",
+    	        LU: "LU[0-9]{2}[0-9]{3}[A-Z0-9]{13}",
+    	        LV: "LV[0-9]{2}[A-Z]{4}[A-Z0-9]{13}",
+    	        MC: "MC[0-9]{2}[0-9]{5}[0-9]{5}[A-Z0-9]{11}[0-9]{2}",
+    	        MD: "MD[0-9]{2}[A-Z0-9]{20}",
+    	        ME: "ME[0-9]{2}[0-9]{3}[0-9]{13}[0-9]{2}",
+    	        MG: "MG[0-9]{2}[0-9]{23}",
+    	        MK: "MK[0-9]{2}[0-9]{3}[A-Z0-9]{10}[0-9]{2}",
+    	        ML: "ML[0-9]{2}[A-Z]{1}[0-9]{23}",
+    	        MR: "MR13[0-9]{5}[0-9]{5}[0-9]{11}[0-9]{2}",
+    	        MT: "MT[0-9]{2}[A-Z]{4}[0-9]{5}[A-Z0-9]{18}",
+    	        MU: "MU[0-9]{2}[A-Z]{4}[0-9]{2}[0-9]{2}[0-9]{12}[0-9]{3}[A-Z]{3}",
+    	        MZ: "MZ[0-9]{2}[0-9]{21}",
+    	        NL: "NL[0-9]{2}[A-Z]{4}[0-9]{10}",
+    	        NO: "NO[0-9]{2}[0-9]{4}[0-9]{6}[0-9]{1}",
+    	        PK: "PK[0-9]{2}[A-Z]{4}[A-Z0-9]{16}",
+    	        PL: "PL[0-9]{2}[0-9]{8}[0-9]{16}",
+    	        PS: "PS[0-9]{2}[A-Z]{4}[A-Z0-9]{21}",
+    	        PT: "PT[0-9]{2}[0-9]{4}[0-9]{4}[0-9]{11}[0-9]{2}",
+    	        QA: "QA[0-9]{2}[A-Z]{4}[A-Z0-9]{21}",
+    	        RO: "RO[0-9]{2}[A-Z]{4}[A-Z0-9]{16}",
+    	        RS: "RS[0-9]{2}[0-9]{3}[0-9]{13}[0-9]{2}",
+    	        SA: "SA[0-9]{2}[0-9]{2}[A-Z0-9]{18}",
+    	        SE: "SE[0-9]{2}[0-9]{3}[0-9]{16}[0-9]{1}",
+    	        SI: "SI[0-9]{2}[0-9]{5}[0-9]{8}[0-9]{2}",
+    	        SK: "SK[0-9]{2}[0-9]{4}[0-9]{6}[0-9]{10}",
+    	        SM: "SM[0-9]{2}[A-Z]{1}[0-9]{5}[0-9]{5}[A-Z0-9]{12}",
+    	        SN: "SN[0-9]{2}[A-Z]{1}[0-9]{23}",
+    	        TL: "TL38[0-9]{3}[0-9]{14}[0-9]{2}",
+    	        TN: "TN59[0-9]{2}[0-9]{3}[0-9]{13}[0-9]{2}",
+    	        TR: "TR[0-9]{2}[0-9]{5}[A-Z0-9]{1}[A-Z0-9]{16}",
+    	        VG: "VG[0-9]{2}[A-Z]{4}[0-9]{16}",
+    	        XK: "XK[0-9]{2}[0-9]{4}[0-9]{10}[0-9]{2}", // Republic of Kosovo
     	    };
     	    // List of SEPA country codes
     	    var SEPA_COUNTRIES = [
-    	        'AT',
-    	        'BE',
-    	        'BG',
-    	        'CH',
-    	        'CY',
-    	        'CZ',
-    	        'DE',
-    	        'DK',
-    	        'EE',
-    	        'ES',
-    	        'FI',
-    	        'FR',
-    	        'GB',
-    	        'GI',
-    	        'GR',
-    	        'HR',
-    	        'HU',
-    	        'IE',
-    	        'IS',
-    	        'IT',
-    	        'LI',
-    	        'LT',
-    	        'LU',
-    	        'LV',
-    	        'MC',
-    	        'MT',
-    	        'NL',
-    	        'NO',
-    	        'PL',
-    	        'PT',
-    	        'RO',
-    	        'SE',
-    	        'SI',
-    	        'SK',
-    	        'SM',
+    	        "AT",
+    	        "BE",
+    	        "BG",
+    	        "CH",
+    	        "CY",
+    	        "CZ",
+    	        "DE",
+    	        "DK",
+    	        "EE",
+    	        "ES",
+    	        "FI",
+    	        "FR",
+    	        "GB",
+    	        "GI",
+    	        "GR",
+    	        "HR",
+    	        "HU",
+    	        "IE",
+    	        "IS",
+    	        "IT",
+    	        "LI",
+    	        "LT",
+    	        "LU",
+    	        "LV",
+    	        "MC",
+    	        "MT",
+    	        "NL",
+    	        "NO",
+    	        "PL",
+    	        "PT",
+    	        "RO",
+    	        "SE",
+    	        "SI",
+    	        "SK",
+    	        "SM",
     	    ];
     	    return {
     	        /**
@@ -6856,11 +6856,11 @@
     	         * International+products+and+services/Cash+Management/IBAN+countries/908462.html
     	         */
     	        validate: function (input) {
-    	            if (input.value === '') {
+    	            if (input.value === "") {
     	                return { valid: true };
     	            }
-    	            var opts = Object.assign({}, { message: '' }, removeUndefined(input.options));
-    	            var v = input.value.replace(/[^a-zA-Z0-9]/g, '').toUpperCase();
+    	            var opts = Object.assign({}, { message: "" }, removeUndefined(input.options));
+    	            var v = input.value.replace(/[^a-zA-Z0-9]/g, "").toUpperCase();
     	            // TODO: `country` can be a dynamic option
     	            var country = opts.country || v.substr(0, 2);
     	            if (!IBAN_PATTERNS[country]) {
@@ -6872,8 +6872,8 @@
     	            // Check whether or not the sepa option is enabled
     	            if (opts.sepa !== undefined) {
     	                var isSepaCountry = SEPA_COUNTRIES.indexOf(country) !== -1;
-    	                if (((opts.sepa === 'true' || opts.sepa === true) && !isSepaCountry) ||
-    	                    ((opts.sepa === 'false' || opts.sepa === false) && isSepaCountry)) {
+    	                if (((opts.sepa === "true" || opts.sepa === true) && !isSepaCountry) ||
+    	                    ((opts.sepa === "false" || opts.sepa === false) && isSepaCountry)) {
     	                    return {
     	                        message: opts.message,
     	                        valid: false,
@@ -6889,15 +6889,15 @@
     	            }
     	            v = "".concat(v.substr(4)).concat(v.substr(0, 4));
     	            v = v
-    	                .split('')
+    	                .split("")
     	                .map(function (n) {
     	                var code = n.charCodeAt(0);
-    	                return code >= 'A'.charCodeAt(0) && code <= 'Z'.charCodeAt(0)
+    	                return code >= "A".charCodeAt(0) && code <= "Z".charCodeAt(0)
     	                    ? // Replace A, B, C, ..., Z with 10, 11, ..., 35
-    	                        code - 'A'.charCodeAt(0) + 10
+    	                        code - "A".charCodeAt(0) + 10
     	                    : n;
     	            })
-    	                .join('');
+    	                .join("");
     	            var temp = parseInt(v.substr(0, 1), 10);
     	            var length = v.length;
     	            for (var i = 1; i < length; ++i) {
@@ -6952,7 +6952,7 @@
     	 */
     	function arId(value) {
     	    // Replace dot with empty space
-    	    var v = value.replace(/\./g, '');
+    	    var v = value.replace(/\./g, "");
     	    return {
     	        meta: {},
     	        valid: /^\d{7,8}$/.test(v),
@@ -7012,15 +7012,15 @@
     	    // 80-89: Serbian province of Vojvodina
     	    // 90-99: Kosovo
     	    switch (countryCode.toUpperCase()) {
-    	        case 'BA':
+    	        case "BA":
     	            return 10 <= rr && rr <= 19;
-    	        case 'MK':
+    	        case "MK":
     	            return 41 <= rr && rr <= 49;
-    	        case 'ME':
+    	        case "ME":
     	            return 20 <= rr && rr <= 29;
-    	        case 'RS':
+    	        case "RS":
     	            return 70 <= rr && rr <= 99;
-    	        case 'SI':
+    	        case "SI":
     	            return 50 <= rr && rr <= 59;
     	        default:
     	            return true;
@@ -7038,7 +7038,7 @@
     	function baId(value) {
     	    return {
     	        meta: {},
-    	        valid: jmbg(value, 'BA'),
+    	        valid: jmbg(value, "BA"),
     	    };
     	}
 
@@ -7061,7 +7061,7 @@
     	            valid: false,
     	        };
     	    }
-    	    var v = value.replace(/\s/g, '');
+    	    var v = value.replace(/\s/g, "");
     	    // Check the birth date
     	    var year = parseInt(v.substr(0, 2), 10) + 1900;
     	    var month = parseInt(v.substr(2, 2), 10);
@@ -7104,7 +7104,7 @@
     	 * @returns {ValidateResult}
     	 */
     	function brId(value) {
-    	    var v = value.replace(/\D/g, '');
+    	    var v = value.replace(/\D/g, "");
     	    if (!/^\d{11}$/.test(v) || /^1{11}|2{11}|3{11}|4{11}|5{11}|6{11}|7{11}|8{11}|9{11}|0{11}$/.test(v)) {
     	        return {
     	            meta: {},
@@ -7159,7 +7159,7 @@
     	            valid: false,
     	        };
     	    }
-    	    var v = value.replace(/\D/g, '').substr(3);
+    	    var v = value.replace(/\D/g, "").substr(3);
     	    var length = v.length;
     	    var weight = length === 8 ? [3, 1] : [1, 3];
     	    var sum = 0;
@@ -7192,7 +7192,7 @@
     	            valid: false,
     	        };
     	    }
-    	    var v = value.replace(/-/g, '');
+    	    var v = value.replace(/-/g, "");
     	    while (v.length < 9) {
     	        v = "0".concat(v);
     	    }
@@ -7204,10 +7204,10 @@
     	    sum = 11 - (sum % 11);
     	    var cd = "".concat(sum);
     	    if (sum === 11) {
-    	        cd = '0';
+    	        cd = "0";
     	    }
     	    else if (sum === 10) {
-    	        cd = 'K';
+    	        cd = "K";
     	    }
     	    return {
     	        meta: {},
@@ -8009,7 +8009,7 @@
     	            sum += parseInt(v.charAt(i), 10) * weight[i];
     	        }
     	        sum = (12 - (sum % 11)) % 11;
-    	        var checksum = v.charAt(17).toUpperCase() !== 'X' ? parseInt(v.charAt(17), 10) : 10;
+    	        var checksum = v.charAt(17).toUpperCase() !== "X" ? parseInt(v.charAt(17), 10) : 10;
     	        return {
     	            meta: {},
     	            valid: checksum === sum,
@@ -8032,7 +8032,7 @@
     	 * @returns {ValidateResult}
     	 */
     	function coId(value) {
-    	    var v = value.replace(/\./g, '').replace('-', '');
+    	    var v = value.replace(/\./g, "").replace("-", "");
     	    if (!/^\d{8,16}$/.test(v)) {
     	        return {
     	            meta: {},
@@ -8132,16 +8132,16 @@
     	            valid: false,
     	        };
     	    }
-    	    var v = value.replace(/-/g, '');
+    	    var v = value.replace(/-/g, "");
     	    var day = parseInt(v.substr(0, 2), 10);
     	    var month = parseInt(v.substr(2, 2), 10);
     	    var year = parseInt(v.substr(4, 2), 10);
     	    switch (true) {
-    	        case '5678'.indexOf(v.charAt(6)) !== -1 && year >= 58:
+    	        case "5678".indexOf(v.charAt(6)) !== -1 && year >= 58:
     	            year += 1800;
     	            break;
-    	        case '0123'.indexOf(v.charAt(6)) !== -1:
-    	        case '49'.indexOf(v.charAt(6)) !== -1 && year >= 37:
+    	        case "0123".indexOf(v.charAt(6)) !== -1:
+    	        case "49".indexOf(v.charAt(6)) !== -1 && year >= 37:
     	            year += 1900;
     	            break;
     	        default:
@@ -8176,20 +8176,20 @@
     	            valid: false,
     	        };
     	    }
-    	    var v = value.replace(/-/g, '');
+    	    var v = value.replace(/-/g, "");
     	    var check;
     	    var tpe;
     	    var isValid = true;
     	    if (isDNI || isNIE) {
-    	        tpe = 'DNI';
-    	        var index = 'XYZ'.indexOf(v.charAt(0));
+    	        tpe = "DNI";
+    	        var index = "XYZ".indexOf(v.charAt(0));
     	        if (index !== -1) {
     	            // It is NIE number
-    	            v = index + v.substr(1) + '';
-    	            tpe = 'NIE';
+    	            v = index + v.substr(1) + "";
+    	            tpe = "NIE";
     	        }
     	        check = parseInt(v.substr(0, 8), 10);
-    	        check = 'TRWAGMYFPDXBNJZSQVHLCKE'[check % 23];
+    	        check = "TRWAGMYFPDXBNJZSQVHLCKE"[check % 23];
     	        return {
     	            meta: {
     	                type: tpe,
@@ -8199,7 +8199,7 @@
     	    }
     	    else {
     	        check = v.substr(1, 7);
-    	        tpe = 'CIF';
+    	        tpe = "CIF";
     	        var letter = v[0];
     	        var control = v.substr(-1);
     	        var sum = 0;
@@ -8212,7 +8212,7 @@
     	                sum += parseInt(check[i], 10);
     	            }
     	            else {
-    	                var tmp = '' + parseInt(check[i], 10) * 2;
+    	                var tmp = "" + parseInt(check[i], 10) * 2;
     	                sum += parseInt(tmp[0], 10);
     	                if (tmp.length === 2) {
     	                    sum += parseInt(tmp[1], 10);
@@ -8225,17 +8225,17 @@
     	        if (lastDigit !== 0) {
     	            lastDigit = 10 - lastDigit;
     	        }
-    	        if ('KQS'.indexOf(letter) !== -1) {
+    	        if ("KQS".indexOf(letter) !== -1) {
     	            // If the CIF starts with a K, Q or S, the control digit must be a letter
-    	            isValid = control === 'JABCDEFGHI'[lastDigit];
+    	            isValid = control === "JABCDEFGHI"[lastDigit];
     	        }
-    	        else if ('ABEH'.indexOf(letter) !== -1) {
+    	        else if ("ABEH".indexOf(letter) !== -1) {
     	            // If it starts with A, B, E or H, it has to be a number
-    	            isValid = control === '' + lastDigit;
+    	            isValid = control === "" + lastDigit;
     	        }
     	        else {
     	            // In any other case, it doesn't matter
-    	            isValid = control === '' + lastDigit || control === 'JABCDEFGHI'[lastDigit];
+    	            isValid = control === "" + lastDigit || control === "JABCDEFGHI"[lastDigit];
     	        }
     	        return {
     	            meta: {
@@ -8268,8 +8268,8 @@
     	    var month = parseInt(value.substr(2, 2), 10);
     	    var year = parseInt(value.substr(4, 2), 10);
     	    var centuries = {
-    	        '+': 1800,
-    	        '-': 1900,
+    	        "+": 1800,
+    	        "-": 1900,
     	        A: 2000,
     	    };
     	    year = centuries[value.charAt(6)] + year;
@@ -8286,10 +8286,10 @@
     	            valid: false,
     	        };
     	    }
-    	    var n = parseInt(value.substr(0, 6) + value.substr(7, 3) + '', 10);
+    	    var n = parseInt(value.substr(0, 6) + value.substr(7, 3) + "", 10);
     	    return {
     	        meta: {},
-    	        valid: '0123456789ABCDEFHJKLMNPRSTUVWXY'.charAt(n % 31) === value.charAt(10),
+    	        valid: "0123456789ABCDEFHJKLMNPRSTUVWXY".charAt(n % 31) === value.charAt(10),
     	    };
     	}
 
@@ -8319,10 +8319,10 @@
     	        case /^\d{2}$/.test(cog):
     	            v = value;
     	            break;
-    	        case cog === '2A':
+    	        case cog === "2A":
     	            v = "".concat(value.substr(0, 5), "19").concat(value.substr(7));
     	            break;
-    	        case cog === '2B':
+    	        case cog === "2B":
     	            v = "".concat(value.substr(0, 5), "18").concat(value.substr(7));
     	            break;
     	        default:
@@ -8358,7 +8358,7 @@
     	            valid: false,
     	        };
     	    }
-    	    var alphabet = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ';
+    	    var alphabet = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
     	    var firstChar = v.charAt(0);
     	    var secondChar = v.charAt(1);
     	    var sum = 0;
@@ -8378,7 +8378,7 @@
     	        sum += (7 - i) * parseInt(digitParts.charAt(i), 10);
     	    }
     	    var remaining = sum % 11;
-    	    var checkDigit = remaining === 0 ? '0' : 11 - remaining === 10 ? 'A' : "".concat(11 - remaining);
+    	    var checkDigit = remaining === 0 ? "0" : 11 - remaining === 10 ? "A" : "".concat(11 - remaining);
     	    return {
     	        meta: {},
     	        valid: checkDigit === digitParts.charAt(length - 1),
@@ -8421,7 +8421,7 @@
     	            valid: false,
     	        };
     	    }
-    	    var converted = value.split('').map(function (item) { return parseInt(item, 10); });
+    	    var converted = value.split("").map(function (item) { return parseInt(item, 10); });
     	    return {
     	        meta: {},
     	        valid: verhoeff(converted),
@@ -8451,7 +8451,7 @@
     	        while (input.length < 7) {
     	            input = "0".concat(input);
     	        }
-    	        var alphabet = 'WABCDEFGHIJKLMNOPQRSTUV';
+    	        var alphabet = "WABCDEFGHIJKLMNOPQRSTUV";
     	        var sum = 0;
     	        for (var i = 0; i < 7; i++) {
     	            sum += parseInt(input.charAt(i), 10) * (8 - i);
@@ -8460,8 +8460,8 @@
     	        return alphabet[sum % 23];
     	    };
     	    // 2013 format
-    	    var isValid = value.length === 9 && ('A' === value.charAt(8) || 'H' === value.charAt(8))
-    	        ? value.charAt(7) === getCheckDigit(value.substr(0, 7) + value.substr(8) + '')
+    	    var isValid = value.length === 9 && ("A" === value.charAt(8) || "H" === value.charAt(8))
+    	        ? value.charAt(7) === getCheckDigit(value.substr(0, 7) + value.substr(8) + "")
     	        : // The old format
     	            value.charAt(7) === getCheckDigit(value.substr(0, 7));
     	    return {
@@ -8515,7 +8515,7 @@
     	            valid: false,
     	        };
     	    }
-    	    var v = value.replace(/-/g, '');
+    	    var v = value.replace(/-/g, "");
     	    var day = parseInt(v.substr(0, 2), 10);
     	    var month = parseInt(v.substr(2, 2), 10);
     	    var year = parseInt(v.substr(4, 2), 10);
@@ -8553,7 +8553,7 @@
     	 * @returns {ValidateResult}
     	 */
     	function krId(value) {
-    	    var v = value.replace('-', '');
+    	    var v = value.replace("-", "");
     	    if (!/^\d{13}$/.test(v)) {
     	        return {
     	            meta: {},
@@ -8566,16 +8566,16 @@
     	    var month = parseInt(v.substr(2, 2), 10);
     	    var day = parseInt(v.substr(4, 2), 10);
     	    switch (sDigit) {
-    	        case '1':
-    	        case '2':
-    	        case '5':
-    	        case '6':
+    	        case "1":
+    	        case "2":
+    	        case "5":
+    	        case "6":
     	            year += 1900;
     	            break;
-    	        case '3':
-    	        case '4':
-    	        case '7':
-    	        case '8':
+    	        case "3":
+    	        case "4":
+    	        case "7":
+    	        case "8":
     	            year += 2000;
     	            break;
     	        default:
@@ -8683,7 +8683,7 @@
     	            valid: false,
     	        };
     	    }
-    	    var v = value.replace(/\D/g, '');
+    	    var v = value.replace(/\D/g, "");
     	    // Check birth date
     	    var day = parseInt(v.substr(0, 2), 10);
     	    var month = parseInt(v.substr(2, 2), 10);
@@ -8719,7 +8719,7 @@
     	function meId(value) {
     	    return {
     	        meta: {},
-    	        valid: jmbg(value, 'ME'),
+    	        valid: jmbg(value, "ME"),
     	    };
     	}
 
@@ -8734,7 +8734,7 @@
     	function mkId(value) {
     	    return {
     	        meta: {},
-    	        valid: jmbg(value, 'MK'),
+    	        valid: jmbg(value, "MK"),
     	    };
     	}
 
@@ -8763,87 +8763,87 @@
     	    // http://quemamadera.blogspot.com/2008/02/las-palabras-inconvenientes-del-curp.html
     	    // https://www.reddit.com/r/mexico/comments/bo8cv/hoy_aprendi_que_existe_un_catalogo_de_palabras/
     	    var blacklistNames = [
-    	        'BACA',
-    	        'BAKA',
-    	        'BUEI',
-    	        'BUEY',
-    	        'CACA',
-    	        'CACO',
-    	        'CAGA',
-    	        'CAGO',
-    	        'CAKA',
-    	        'CAKO',
-    	        'COGE',
-    	        'COGI',
-    	        'COJA',
-    	        'COJE',
-    	        'COJI',
-    	        'COJO',
-    	        'COLA',
-    	        'CULO',
-    	        'FALO',
-    	        'FETO',
-    	        'GETA',
-    	        'GUEI',
-    	        'GUEY',
-    	        'JETA',
-    	        'JOTO',
-    	        'KACA',
-    	        'KACO',
-    	        'KAGA',
-    	        'KAGO',
-    	        'KAKA',
-    	        'KAKO',
-    	        'KOGE',
-    	        'KOGI',
-    	        'KOJA',
-    	        'KOJE',
-    	        'KOJI',
-    	        'KOJO',
-    	        'KOLA',
-    	        'KULO',
-    	        'LILO',
-    	        'LOCA',
-    	        'LOCO',
-    	        'LOKA',
-    	        'LOKO',
-    	        'MAME',
-    	        'MAMO',
-    	        'MEAR',
-    	        'MEAS',
-    	        'MEON',
-    	        'MIAR',
-    	        'MION',
-    	        'MOCO',
-    	        'MOKO',
-    	        'MULA',
-    	        'MULO',
-    	        'NACA',
-    	        'NACO',
-    	        'PEDA',
-    	        'PEDO',
-    	        'PENE',
-    	        'PIPI',
-    	        'PITO',
-    	        'POPO',
-    	        'PUTA',
-    	        'PUTO',
-    	        'QULO',
-    	        'RATA',
-    	        'ROBA',
-    	        'ROBE',
-    	        'ROBO',
-    	        'RUIN',
-    	        'SENO',
-    	        'TETA',
-    	        'VACA',
-    	        'VAGA',
-    	        'VAGO',
-    	        'VAKA',
-    	        'VUEI',
-    	        'VUEY',
-    	        'WUEI',
-    	        'WUEY',
+    	        "BACA",
+    	        "BAKA",
+    	        "BUEI",
+    	        "BUEY",
+    	        "CACA",
+    	        "CACO",
+    	        "CAGA",
+    	        "CAGO",
+    	        "CAKA",
+    	        "CAKO",
+    	        "COGE",
+    	        "COGI",
+    	        "COJA",
+    	        "COJE",
+    	        "COJI",
+    	        "COJO",
+    	        "COLA",
+    	        "CULO",
+    	        "FALO",
+    	        "FETO",
+    	        "GETA",
+    	        "GUEI",
+    	        "GUEY",
+    	        "JETA",
+    	        "JOTO",
+    	        "KACA",
+    	        "KACO",
+    	        "KAGA",
+    	        "KAGO",
+    	        "KAKA",
+    	        "KAKO",
+    	        "KOGE",
+    	        "KOGI",
+    	        "KOJA",
+    	        "KOJE",
+    	        "KOJI",
+    	        "KOJO",
+    	        "KOLA",
+    	        "KULO",
+    	        "LILO",
+    	        "LOCA",
+    	        "LOCO",
+    	        "LOKA",
+    	        "LOKO",
+    	        "MAME",
+    	        "MAMO",
+    	        "MEAR",
+    	        "MEAS",
+    	        "MEON",
+    	        "MIAR",
+    	        "MION",
+    	        "MOCO",
+    	        "MOKO",
+    	        "MULA",
+    	        "MULO",
+    	        "NACA",
+    	        "NACO",
+    	        "PEDA",
+    	        "PEDO",
+    	        "PENE",
+    	        "PIPI",
+    	        "PITO",
+    	        "POPO",
+    	        "PUTA",
+    	        "PUTO",
+    	        "QULO",
+    	        "RATA",
+    	        "ROBA",
+    	        "ROBE",
+    	        "ROBO",
+    	        "RUIN",
+    	        "SENO",
+    	        "TETA",
+    	        "VACA",
+    	        "VAGA",
+    	        "VAGO",
+    	        "VAKA",
+    	        "VUEI",
+    	        "VUEY",
+    	        "WUEI",
+    	        "WUEY",
     	    ];
     	    var name = v.substr(0, 4);
     	    if (blacklistNames.indexOf(name) >= 0) {
@@ -8870,7 +8870,7 @@
     	    }
     	    // Check the gender
     	    var gender = v.charAt(10);
-    	    if (gender !== 'H' && gender !== 'M') {
+    	    if (gender !== "H" && gender !== "M") {
     	        // H for male, M for female
     	        return {
     	            meta: {},
@@ -8880,39 +8880,39 @@
     	    // Check the state
     	    var state = v.substr(11, 2);
     	    var states = [
-    	        'AS',
-    	        'BC',
-    	        'BS',
-    	        'CC',
-    	        'CH',
-    	        'CL',
-    	        'CM',
-    	        'CS',
-    	        'DF',
-    	        'DG',
-    	        'GR',
-    	        'GT',
-    	        'HG',
-    	        'JC',
-    	        'MC',
-    	        'MN',
-    	        'MS',
-    	        'NE',
-    	        'NL',
-    	        'NT',
-    	        'OC',
-    	        'PL',
-    	        'QR',
-    	        'QT',
-    	        'SL',
-    	        'SP',
-    	        'SR',
-    	        'TC',
-    	        'TL',
-    	        'TS',
-    	        'VZ',
-    	        'YN',
-    	        'ZS',
+    	        "AS",
+    	        "BC",
+    	        "BS",
+    	        "CC",
+    	        "CH",
+    	        "CL",
+    	        "CM",
+    	        "CS",
+    	        "DF",
+    	        "DG",
+    	        "GR",
+    	        "GT",
+    	        "HG",
+    	        "JC",
+    	        "MC",
+    	        "MN",
+    	        "MS",
+    	        "NE",
+    	        "NL",
+    	        "NT",
+    	        "OC",
+    	        "PL",
+    	        "QR",
+    	        "QT",
+    	        "SL",
+    	        "SP",
+    	        "SR",
+    	        "TC",
+    	        "TL",
+    	        "TS",
+    	        "VZ",
+    	        "YN",
+    	        "ZS",
     	    ];
     	    if (states.indexOf(state) === -1) {
     	        return {
@@ -8921,7 +8921,7 @@
     	        };
     	    }
     	    // Calculate the check digit
-    	    var alphabet = '0123456789ABCDEFGHIJKLMN&OPQRSTUVWXYZ';
+    	    var alphabet = "0123456789ABCDEFGHIJKLMN&OPQRSTUVWXYZ";
     	    var sum = 0;
     	    var length = v.length;
     	    for (var i = 0; i < length - 1; i++) {
@@ -8965,7 +8965,7 @@
     	    }
     	    // Validate place of birth
     	    var placeOfBirth = value.substr(6, 2);
-    	    var notAvailablePlaces = ['17', '18', '19', '20', '69', '70', '73', '80', '81', '94', '95', '96', '97'];
+    	    var notAvailablePlaces = ["17", "18", "19", "20", "69", "70", "73", "80", "81", "94", "95", "96", "97"];
     	    return {
     	        meta: {},
     	        valid: notAvailablePlaces.indexOf(placeOfBirth) === -1,
@@ -9000,7 +9000,7 @@
     	            valid: false,
     	        };
     	    }
-    	    v = v.replace(/\./g, '');
+    	    v = v.replace(/\./g, "");
     	    if (parseInt(v, 10) === 0) {
     	        return {
     	            meta: {},
@@ -9095,7 +9095,7 @@
     	    }
     	    var cd = sum % 11;
     	    var checkDigit = [6, 5, 4, 3, 2, 1, 1, 0, 9, 8, 7][cd];
-    	    var checkChar = 'KJIHGFEDCBA'.charAt(cd);
+    	    var checkChar = "KJIHGFEDCBA".charAt(cd);
     	    return {
     	        meta: {},
     	        valid: value.charAt(8) === "".concat(checkDigit) || value.charAt(8) === checkChar,
@@ -9184,7 +9184,7 @@
     	        };
     	    }
     	    if (gender !== 9) {
-    	        year = centuries[gender + ''] + year;
+    	        year = centuries[gender + ""] + year;
     	        if (!isValidDate$2(year, month, day)) {
     	            return {
     	                meta: {},
@@ -9220,7 +9220,7 @@
     	function rsId(value) {
     	    return {
     	        meta: {},
-    	        valid: jmbg(value, 'RS'),
+    	        valid: jmbg(value, "RS"),
     	    };
     	}
 
@@ -9244,7 +9244,7 @@
     	            valid: false,
     	        };
     	    }
-    	    var v = value.replace(/[^0-9]/g, '');
+    	    var v = value.replace(/[^0-9]/g, "");
     	    var year = parseInt(v.substr(0, 2), 10) + 1900;
     	    var month = parseInt(v.substr(2, 2), 10);
     	    var day = parseInt(v.substr(4, 2), 10);
@@ -9272,7 +9272,7 @@
     	function siId(value) {
     	    return {
     	        meta: {},
-    	        valid: jmbg(value, 'SI'),
+    	        valid: jmbg(value, "SI"),
     	    };
     	}
 
@@ -9370,7 +9370,7 @@
     	        };
     	    }
     	    var length = v.length;
-    	    var alphabet = 'ABCDEFGHJKLMNPQRSTUVXYWZIO';
+    	    var alphabet = "ABCDEFGHJKLMNPQRSTUVXYWZIO";
     	    var letterIndex = alphabet.indexOf(v.charAt(0)) + 10;
     	    var letterValue = Math.floor(letterIndex / 10) + (letterIndex % 10) * (length - 1);
     	    var sum = 0;
@@ -9463,48 +9463,48 @@
     	function id() {
     	    // Supported country codes
     	    var COUNTRY_CODES = [
-    	        'AR',
-    	        'BA',
-    	        'BG',
-    	        'BR',
-    	        'CH',
-    	        'CL',
-    	        'CN',
-    	        'CO',
-    	        'CZ',
-    	        'DK',
-    	        'EE',
-    	        'ES',
-    	        'FI',
-    	        'FR',
-    	        'HK',
-    	        'HR',
-    	        'ID',
-    	        'IE',
-    	        'IL',
-    	        'IS',
-    	        'KR',
-    	        'LT',
-    	        'LV',
-    	        'ME',
-    	        'MK',
-    	        'MX',
-    	        'MY',
-    	        'NL',
-    	        'NO',
-    	        'PE',
-    	        'PL',
-    	        'RO',
-    	        'RS',
-    	        'SE',
-    	        'SI',
-    	        'SK',
-    	        'SM',
-    	        'TH',
-    	        'TR',
-    	        'TW',
-    	        'UY',
-    	        'ZA',
+    	        "AR",
+    	        "BA",
+    	        "BG",
+    	        "BR",
+    	        "CH",
+    	        "CL",
+    	        "CN",
+    	        "CO",
+    	        "CZ",
+    	        "DK",
+    	        "EE",
+    	        "ES",
+    	        "FI",
+    	        "FR",
+    	        "HK",
+    	        "HR",
+    	        "ID",
+    	        "IE",
+    	        "IL",
+    	        "IS",
+    	        "KR",
+    	        "LT",
+    	        "LV",
+    	        "ME",
+    	        "MK",
+    	        "MX",
+    	        "MY",
+    	        "NL",
+    	        "NO",
+    	        "PE",
+    	        "PL",
+    	        "RO",
+    	        "RS",
+    	        "SE",
+    	        "SI",
+    	        "SK",
+    	        "SM",
+    	        "TH",
+    	        "TR",
+    	        "TW",
+    	        "UY",
+    	        "ZA",
     	    ];
     	    return {
     	        /**
@@ -9512,12 +9512,12 @@
     	         * @see http://en.wikipedia.org/wiki/National_identification_number
     	         */
     	        validate: function (input) {
-    	            if (input.value === '') {
+    	            if (input.value === "") {
     	                return { valid: true };
     	            }
-    	            var opts = Object.assign({}, { message: '' }, removeUndefined(input.options));
+    	            var opts = Object.assign({}, { message: "" }, removeUndefined(input.options));
     	            var country = input.value.substr(0, 2);
-    	            if ('function' === typeof opts.country) {
+    	            if ("function" === typeof opts.country) {
     	                country = opts.country.call(this);
     	            }
     	            else {
@@ -9531,135 +9531,135 @@
     	                valid: true,
     	            };
     	            switch (country.toLowerCase()) {
-    	                case 'ar':
+    	                case "ar":
     	                    result = arId(input.value);
     	                    break;
-    	                case 'ba':
+    	                case "ba":
     	                    result = baId(input.value);
     	                    break;
-    	                case 'bg':
+    	                case "bg":
     	                    result = bgId(input.value);
     	                    break;
-    	                case 'br':
+    	                case "br":
     	                    result = brId(input.value);
     	                    break;
-    	                case 'ch':
+    	                case "ch":
     	                    result = chId(input.value);
     	                    break;
-    	                case 'cl':
+    	                case "cl":
     	                    result = clId(input.value);
     	                    break;
-    	                case 'cn':
+    	                case "cn":
     	                    result = cnId(input.value);
     	                    break;
-    	                case 'co':
+    	                case "co":
     	                    result = coId(input.value);
     	                    break;
-    	                case 'cz':
+    	                case "cz":
     	                    result = czId(input.value);
     	                    break;
-    	                case 'dk':
+    	                case "dk":
     	                    result = dkId(input.value);
     	                    break;
     	                // Validate Estonian Personal Identification Code (isikukood)
     	                // Use the same format as Lithuanian Personal Code
     	                // See http://et.wikipedia.org/wiki/Isikukood
-    	                case 'ee':
+    	                case "ee":
     	                    result = ltId(input.value);
     	                    break;
-    	                case 'es':
+    	                case "es":
     	                    result = esId(input.value);
     	                    break;
-    	                case 'fi':
+    	                case "fi":
     	                    result = fiId(input.value);
     	                    break;
-    	                case 'fr':
+    	                case "fr":
     	                    result = frId(input.value);
     	                    break;
-    	                case 'hk':
+    	                case "hk":
     	                    result = hkId(input.value);
     	                    break;
-    	                case 'hr':
+    	                case "hr":
     	                    result = hrId(input.value);
     	                    break;
-    	                case 'id':
+    	                case "id":
     	                    result = idId(input.value);
     	                    break;
-    	                case 'ie':
+    	                case "ie":
     	                    result = ieId(input.value);
     	                    break;
-    	                case 'il':
+    	                case "il":
     	                    result = ilId(input.value);
     	                    break;
-    	                case 'is':
+    	                case "is":
     	                    result = isId(input.value);
     	                    break;
-    	                case 'kr':
+    	                case "kr":
     	                    result = krId(input.value);
     	                    break;
-    	                case 'lt':
+    	                case "lt":
     	                    result = ltId(input.value);
     	                    break;
-    	                case 'lv':
+    	                case "lv":
     	                    result = lvId(input.value);
     	                    break;
-    	                case 'me':
+    	                case "me":
     	                    result = meId(input.value);
     	                    break;
-    	                case 'mk':
+    	                case "mk":
     	                    result = mkId(input.value);
     	                    break;
-    	                case 'mx':
+    	                case "mx":
     	                    result = mxId(input.value);
     	                    break;
-    	                case 'my':
+    	                case "my":
     	                    result = myId(input.value);
     	                    break;
-    	                case 'nl':
+    	                case "nl":
     	                    result = nlId(input.value);
     	                    break;
-    	                case 'no':
+    	                case "no":
     	                    result = noId(input.value);
     	                    break;
-    	                case 'pe':
+    	                case "pe":
     	                    result = peId(input.value);
     	                    break;
-    	                case 'pl':
+    	                case "pl":
     	                    result = plId(input.value);
     	                    break;
-    	                case 'ro':
+    	                case "ro":
     	                    result = roId(input.value);
     	                    break;
-    	                case 'rs':
+    	                case "rs":
     	                    result = rsId(input.value);
     	                    break;
-    	                case 'se':
+    	                case "se":
     	                    result = seId(input.value);
     	                    break;
-    	                case 'si':
+    	                case "si":
     	                    result = siId(input.value);
     	                    break;
     	                // Validate Slovak national identifier number (RC)
     	                // Slovakia uses the same format as Czech Republic
-    	                case 'sk':
+    	                case "sk":
     	                    result = czId(input.value);
     	                    break;
-    	                case 'sm':
+    	                case "sm":
     	                    result = smId(input.value);
     	                    break;
-    	                case 'th':
+    	                case "th":
     	                    result = thId(input.value);
     	                    break;
-    	                case 'tr':
+    	                case "tr":
     	                    result = trId(input.value);
     	                    break;
-    	                case 'tw':
+    	                case "tw":
     	                    result = twId(input.value);
     	                    break;
-    	                case 'uy':
+    	                case "uy":
     	                    result = uyId(input.value);
     	                    break;
-    	                case 'za':
+    	                case "za":
     	                    result = zaId(input.value);
     	                    break;
     	            }
@@ -9712,14 +9712,14 @@
     	         * @see http://en.wikipedia.org/wiki/International_Mobile_Station_Equipment_Identity
     	         */
     	        validate: function (input) {
-    	            if (input.value === '') {
+    	            if (input.value === "") {
     	                return { valid: true };
     	            }
     	            switch (true) {
     	                case /^\d{15}$/.test(input.value):
     	                case /^\d{2}-\d{6}-\d{6}-\d{1}$/.test(input.value):
     	                case /^\d{2}\s\d{6}\s\d{6}\s\d{1}$/.test(input.value):
-    	                    return { valid: luhn(input.value.replace(/[^0-9]/g, '')) };
+    	                    return { valid: luhn(input.value.replace(/[^0-9]/g, "")) };
     	                case /^\d{14}$/.test(input.value):
     	                case /^\d{16}$/.test(input.value):
     	                case /^\d{2}-\d{6}-\d{6}(|-\d{2})$/.test(input.value):
@@ -9770,14 +9770,14 @@
     	         * @see http://en.wikipedia.org/wiki/IMO_Number
     	         */
     	        validate: function (input) {
-    	            if (input.value === '') {
+    	            if (input.value === "") {
     	                return { valid: true };
     	            }
     	            if (!/^IMO \d{7}$/i.test(input.value)) {
     	                return { valid: false };
     	            }
     	            // Grab just the digits
-    	            var digits = input.value.replace(/^.*(\d{7})$/, '$1');
+    	            var digits = input.value.replace(/^.*(\d{7})$/, "$1");
     	            var sum = 0;
     	            for (var i = 6; i >= 1; i--) {
     	                sum += parseInt(digits.slice(6 - i, -i), 10) * (i + 1);
@@ -9825,7 +9825,7 @@
     	         * @see http://en.wikipedia.org/wiki/International_Standard_Book_Number
     	         */
     	        validate: function (input) {
-    	            if (input.value === '') {
+    	            if (input.value === "") {
     	                return {
     	                    meta: {
     	                        type: null,
@@ -9840,12 +9840,12 @@
     	                case /^\d{9}[\dX]$/.test(input.value):
     	                case input.value.length === 13 && /^(\d+)-(\d+)-(\d+)-([\dX])$/.test(input.value):
     	                case input.value.length === 13 && /^(\d+)\s(\d+)\s(\d+)\s([\dX])$/.test(input.value):
-    	                    tpe = 'ISBN10';
+    	                    tpe = "ISBN10";
     	                    break;
     	                case /^(978|979)\d{9}[\dX]$/.test(input.value):
     	                case input.value.length === 17 && /^(978|979)-(\d+)-(\d+)-(\d+)-([\dX])$/.test(input.value):
     	                case input.value.length === 17 && /^(978|979)\s(\d+)\s(\d+)\s(\d+)\s([\dX])$/.test(input.value):
-    	                    tpe = 'ISBN13';
+    	                    tpe = "ISBN13";
     	                    break;
     	                default:
     	                    return {
@@ -9856,13 +9856,13 @@
     	                    };
     	            }
     	            // Replace all special characters except digits and X
-    	            var chars = input.value.replace(/[^0-9X]/gi, '').split('');
+    	            var chars = input.value.replace(/[^0-9X]/gi, "").split("");
     	            var length = chars.length;
     	            var sum = 0;
     	            var i;
     	            var checksum;
     	            switch (tpe) {
-    	                case 'ISBN10':
+    	                case "ISBN10":
     	                    sum = 0;
     	                    for (i = 0; i < length - 1; i++) {
     	                        sum += parseInt(chars[i], 10) * (10 - i);
@@ -9872,7 +9872,7 @@
     	                        checksum = 0;
     	                    }
     	                    else if (checksum === 10) {
-    	                        checksum = 'X';
+    	                        checksum = "X";
     	                    }
     	                    return {
     	                        meta: {
@@ -9880,14 +9880,14 @@
     	                        },
     	                        valid: "".concat(checksum) === chars[length - 1],
     	                    };
-    	                case 'ISBN13':
+    	                case "ISBN13":
     	                    sum = 0;
     	                    for (i = 0; i < length - 1; i++) {
     	                        sum += i % 2 === 0 ? parseInt(chars[i], 10) : parseInt(chars[i], 10) * 3;
     	                    }
     	                    checksum = 10 - (sum % 10);
     	                    if (checksum === 10) {
-    	                        checksum = '0';
+    	                        checksum = "0";
     	                    }
     	                    return {
     	                        meta: {
@@ -9934,41 +9934,41 @@
     	function isin() {
     	    // Available country codes
     	    // See http://isin.net/country-codes/
-    	    var COUNTRY_CODES = 'AF|AX|AL|DZ|AS|AD|AO|AI|AQ|AG|AR|AM|AW|AU|AT|AZ|BS|BH|BD|BB|BY|BE|BZ|BJ|BM|BT|BO|BQ|BA|BW|' +
-    	        'BV|BR|IO|BN|BG|BF|BI|KH|CM|CA|CV|KY|CF|TD|CL|CN|CX|CC|CO|KM|CG|CD|CK|CR|CI|HR|CU|CW|CY|CZ|DK|DJ|DM|DO|EC|EG|' +
-    	        'SV|GQ|ER|EE|ET|FK|FO|FJ|FI|FR|GF|PF|TF|GA|GM|GE|DE|GH|GI|GR|GL|GD|GP|GU|GT|GG|GN|GW|GY|HT|HM|VA|HN|HK|HU|IS|' +
-    	        'IN|ID|IR|IQ|IE|IM|IL|IT|JM|JP|JE|JO|KZ|KE|KI|KP|KR|KW|KG|LA|LV|LB|LS|LR|LY|LI|LT|LU|MO|MK|MG|MW|MY|MV|ML|MT|' +
-    	        'MH|MQ|MR|MU|YT|MX|FM|MD|MC|MN|ME|MS|MA|MZ|MM|NA|NR|NP|NL|NC|NZ|NI|NE|NG|NU|NF|MP|NO|OM|PK|PW|PS|PA|PG|PY|PE|' +
-    	        'PH|PN|PL|PT|PR|QA|RE|RO|RU|RW|BL|SH|KN|LC|MF|PM|VC|WS|SM|ST|SA|SN|RS|SC|SL|SG|SX|SK|SI|SB|SO|ZA|GS|SS|ES|LK|' +
-    	        'SD|SR|SJ|SZ|SE|CH|SY|TW|TJ|TZ|TH|TL|TG|TK|TO|TT|TN|TR|TM|TC|TV|UG|UA|AE|GB|US|UM|UY|UZ|VU|VE|VN|VG|VI|WF|EH|' +
-    	        'YE|ZM|ZW';
+    	    var COUNTRY_CODES = "AF|AX|AL|DZ|AS|AD|AO|AI|AQ|AG|AR|AM|AW|AU|AT|AZ|BS|BH|BD|BB|BY|BE|BZ|BJ|BM|BT|BO|BQ|BA|BW|" +
+    	        "BV|BR|IO|BN|BG|BF|BI|KH|CM|CA|CV|KY|CF|TD|CL|CN|CX|CC|CO|KM|CG|CD|CK|CR|CI|HR|CU|CW|CY|CZ|DK|DJ|DM|DO|EC|EG|" +
+    	        "SV|GQ|ER|EE|ET|FK|FO|FJ|FI|FR|GF|PF|TF|GA|GM|GE|DE|GH|GI|GR|GL|GD|GP|GU|GT|GG|GN|GW|GY|HT|HM|VA|HN|HK|HU|IS|" +
+    	        "IN|ID|IR|IQ|IE|IM|IL|IT|JM|JP|JE|JO|KZ|KE|KI|KP|KR|KW|KG|LA|LV|LB|LS|LR|LY|LI|LT|LU|MO|MK|MG|MW|MY|MV|ML|MT|" +
+    	        "MH|MQ|MR|MU|YT|MX|FM|MD|MC|MN|ME|MS|MA|MZ|MM|NA|NR|NP|NL|NC|NZ|NI|NE|NG|NU|NF|MP|NO|OM|PK|PW|PS|PA|PG|PY|PE|" +
+    	        "PH|PN|PL|PT|PR|QA|RE|RO|RU|RW|BL|SH|KN|LC|MF|PM|VC|WS|SM|ST|SA|SN|RS|SC|SL|SG|SX|SK|SI|SB|SO|ZA|GS|SS|ES|LK|" +
+    	        "SD|SR|SJ|SZ|SE|CH|SY|TW|TJ|TZ|TH|TL|TG|TK|TO|TT|TN|TR|TM|TC|TV|UG|UA|AE|GB|US|UM|UY|UZ|VU|VE|VN|VG|VI|WF|EH|" +
+    	        "YE|ZM|ZW";
     	    return {
     	        /**
     	         * Validate an ISIN (International Securities Identification Number)
     	         * @see http://en.wikipedia.org/wiki/International_Securities_Identifying_Number
     	         */
     	        validate: function (input) {
-    	            if (input.value === '') {
+    	            if (input.value === "") {
     	                return { valid: true };
     	            }
     	            var v = input.value.toUpperCase();
-    	            var regex = new RegExp('^(' + COUNTRY_CODES + ')[0-9A-Z]{10}$');
+    	            var regex = new RegExp("^(" + COUNTRY_CODES + ")[0-9A-Z]{10}$");
     	            if (!regex.test(input.value)) {
     	                return { valid: false };
     	            }
     	            var length = v.length;
-    	            var converted = '';
+    	            var converted = "";
     	            var i;
     	            // Convert letters to number
     	            for (i = 0; i < length - 1; i++) {
     	                var c = v.charCodeAt(i);
     	                converted += c > 57 ? (c - 55).toString() : v.charAt(i);
     	            }
-    	            var digits = '';
+    	            var digits = "";
     	            var n = converted.length;
     	            var group = n % 2 !== 0 ? 0 : 1;
     	            for (i = 0; i < n; i++) {
-    	                digits += parseInt(converted[i], 10) * (i % 2 === group ? 2 : 1) + '';
+    	                digits += parseInt(converted[i], 10) * (i % 2 === group ? 2 : 1) + "";
     	            }
     	            var sum = 0;
     	            for (i = 0; i < digits.length; i++) {
@@ -10018,7 +10018,7 @@
     	         * @see http://en.wikipedia.org/wiki/International_Standard_Music_Number
     	         */
     	        validate: function (input) {
-    	            if (input.value === '') {
+    	            if (input.value === "") {
     	                return {
     	                    meta: null,
     	                    valid: true,
@@ -10030,12 +10030,12 @@
     	                case /^M\d{9}$/.test(input.value):
     	                case /^M-\d{4}-\d{4}-\d{1}$/.test(input.value):
     	                case /^M\s\d{4}\s\d{4}\s\d{1}$/.test(input.value):
-    	                    tpe = 'ISMN10';
+    	                    tpe = "ISMN10";
     	                    break;
     	                case /^9790\d{9}$/.test(input.value):
     	                case /^979-0-\d{4}-\d{4}-\d{1}$/.test(input.value):
     	                case /^979\s0\s\d{4}\s\d{4}\s\d{1}$/.test(input.value):
-    	                    tpe = 'ISMN13';
+    	                    tpe = "ISMN13";
     	                    break;
     	                default:
     	                    return {
@@ -10044,11 +10044,11 @@
     	                    };
     	            }
     	            var v = input.value;
-    	            if ('ISMN10' === tpe) {
+    	            if ("ISMN10" === tpe) {
     	                v = "9790".concat(v.substr(1));
     	            }
     	            // Replace all special characters except digits
-    	            v = v.replace(/[^0-9]/gi, '');
+    	            v = v.replace(/[^0-9]/gi, "");
     	            var sum = 0;
     	            var length = v.length;
     	            var weight = [1, 3];
@@ -10104,7 +10104,7 @@
     	         * @see http://en.wikipedia.org/wiki/International_Standard_Serial_Number
     	         */
     	        validate: function (input) {
-    	            if (input.value === '') {
+    	            if (input.value === "") {
     	                return { valid: true };
     	            }
     	            // Groups are separated by a hyphen or a space
@@ -10112,11 +10112,11 @@
     	                return { valid: false };
     	            }
     	            // Replace all special characters except digits and X
-    	            var chars = input.value.replace(/[^0-9X]/gi, '').split('');
+    	            var chars = input.value.replace(/[^0-9X]/gi, "").split("");
     	            var length = chars.length;
     	            var sum = 0;
-    	            if (chars[7] === 'X') {
-    	                chars[7] = '10';
+    	            if (chars[7] === "X") {
+    	                chars[7] = "10";
     	            }
     	            for (var i = 0; i < length; i++) {
     	                sum += parseInt(chars[i], 10) * (8 - i);
@@ -10164,7 +10164,7 @@
     	         */
     	        validate: function (input) {
     	            return {
-    	                valid: input.value === '' ||
+    	                valid: input.value === "" ||
     	                    /^([0-9A-Fa-f]{2}[:-]){5}([0-9A-Fa-f]{2})$/.test(input.value) ||
     	                    /^([0-9A-Fa-f]{4}\.){2}([0-9A-Fa-f]{4})$/.test(input.value),
     	            };
@@ -10213,7 +10213,7 @@
     	         * @see http://en.wikipedia.org/wiki/Mobile_equipment_identifier
     	         */
     	        validate: function (input) {
-    	            if (input.value === '') {
+    	            if (input.value === "") {
     	                return { valid: true };
     	            }
     	            var v = input.value;
@@ -10222,12 +10222,12 @@
     	                /^\d{19}$/.test(v) ||
     	                /^\d{5}[- ]\d{5}[- ]\d{4}[- ]\d{4}[- ]\d$/.test(v)) {
     	                var cd = v.charAt(v.length - 1).toUpperCase();
-    	                v = v.replace(/[- ]/g, '');
+    	                v = v.replace(/[- ]/g, "");
     	                if (v.match(/^\d*$/i)) {
     	                    return { valid: luhn(v) };
     	                }
     	                v = v.slice(0, -1);
-    	                var checkDigit = '';
+    	                var checkDigit = "";
     	                var i = void 0;
     	                for (i = 1; i <= 13; i += 2) {
     	                    checkDigit += (parseInt(v.charAt(i), 16) * 2).toString(16);
@@ -10238,7 +10238,7 @@
     	                }
     	                return {
     	                    valid: sum % 10 === 0
-    	                        ? cd === '0'
+    	                        ? cd === "0"
     	                        : // Subtract it from the next highest 10s number (64 goes to 70) and subtract the sum
     	                            // Double it and turn it into a hex char
     	                            cd === ((Math.floor((sum + 10) / 10) * 10 - sum) * 2).toString(16).toUpperCase(),
@@ -10292,26 +10292,26 @@
     	function phone() {
     	    // The supported countries
     	    var COUNTRY_CODES = [
-    	        'AE',
-    	        'BG',
-    	        'BR',
-    	        'CN',
-    	        'CZ',
-    	        'DE',
-    	        'DK',
-    	        'ES',
-    	        'FR',
-    	        'GB',
-    	        'IN',
-    	        'MA',
-    	        'NL',
-    	        'PK',
-    	        'RO',
-    	        'RU',
-    	        'SK',
-    	        'TH',
-    	        'US',
-    	        'VE',
+    	        "AE",
+    	        "BG",
+    	        "BR",
+    	        "CN",
+    	        "CZ",
+    	        "DE",
+    	        "DK",
+    	        "ES",
+    	        "FR",
+    	        "GB",
+    	        "IN",
+    	        "MA",
+    	        "NL",
+    	        "PK",
+    	        "RO",
+    	        "RU",
+    	        "SK",
+    	        "TH",
+    	        "US",
+    	        "VE",
     	    ];
     	    return {
     	        /**
@@ -10319,15 +10319,15 @@
     	         * selected in the options
     	         */
     	        validate: function (input) {
-    	            if (input.value === '') {
+    	            if (input.value === "") {
     	                return {
     	                    valid: true,
     	                };
     	            }
-    	            var opts = Object.assign({}, { message: '' }, removeUndefined(input.options));
+    	            var opts = Object.assign({}, { message: "" }, removeUndefined(input.options));
     	            var v = input.value.trim();
     	            var country = v.substr(0, 2);
-    	            if ('function' === typeof opts.country) {
+    	            if ("function" === typeof opts.country) {
     	                country = opts.country.call(this);
     	            }
     	            else {
@@ -10340,44 +10340,44 @@
     	            }
     	            var isValid = true;
     	            switch (country.toUpperCase()) {
-    	                case 'AE':
+    	                case "AE":
     	                    // http://regexr.com/39tak
     	                    isValid =
     	                        /^(((\+|00)?971[\s.-]?(\(0\)[\s.-]?)?|0)(\(5(0|2|5|6)\)|5(0|2|5|6)|2|3|4|6|7|9)|60)([\s.-]?[0-9]){7}$/.test(v);
     	                    break;
-    	                case 'BG':
+    	                case "BG":
     	                    // https://regex101.com/r/yE6vN4/1
     	                    // See http://en.wikipedia.org/wiki/Telephone_numbers_in_Bulgaria
     	                    isValid =
-    	                        /^(0|359|00)(((700|900)[0-9]{5}|((800)[0-9]{5}|(800)[0-9]{4}))|(87|88|89)([0-9]{7})|((2[0-9]{7})|(([3-9][0-9])(([0-9]{6})|([0-9]{5})))))$/.test(v.replace(/\+|\s|-|\/|\(|\)/gi, ''));
+    	                        /^(0|359|00)(((700|900)[0-9]{5}|((800)[0-9]{5}|(800)[0-9]{4}))|(87|88|89)([0-9]{7})|((2[0-9]{7})|(([3-9][0-9])(([0-9]{6})|([0-9]{5})))))$/.test(v.replace(/\+|\s|-|\/|\(|\)/gi, ""));
     	                    break;
-    	                case 'BR':
+    	                case "BR":
     	                    // http://regexr.com/399m1
     	                    isValid =
     	                        /^(([\d]{4}[-.\s]{1}[\d]{2,3}[-.\s]{1}[\d]{2}[-.\s]{1}[\d]{2})|([\d]{4}[-.\s]{1}[\d]{3}[-.\s]{1}[\d]{4})|((\(?\+?[0-9]{2}\)?\s?)?(\(?\d{2}\)?\s?)?\d{4,5}[-.\s]?\d{4}))$/.test(v);
     	                    break;
-    	                case 'CN':
+    	                case "CN":
     	                    // http://regexr.com/39dq4
     	                    isValid =
     	                        /^((00|\+)?(86(?:-| )))?((\d{11})|(\d{3}[- ]{1}\d{4}[- ]{1}\d{4})|((\d{2,4}[- ]){1}(\d{7,8}|(\d{3,4}[- ]{1}\d{4}))([- ]{1}\d{1,4})?))$/.test(v);
     	                    break;
-    	                case 'CZ':
+    	                case "CZ":
     	                    // http://regexr.com/39hhl
     	                    isValid = /^(((00)([- ]?)|\+)(420)([- ]?))?((\d{3})([- ]?)){2}(\d{3})$/.test(v);
     	                    break;
-    	                case 'DE':
+    	                case "DE":
     	                    // http://regexr.com/39pkg
     	                    isValid =
     	                        /^(((((((00|\+)49[ \-/]?)|0)[1-9][0-9]{1,4})[ \-/]?)|((((00|\+)49\()|\(0)[1-9][0-9]{1,4}\)[ \-/]?))[0-9]{1,7}([ \-/]?[0-9]{1,5})?)$/.test(v);
     	                    break;
-    	                case 'DK':
+    	                case "DK":
     	                    // Mathing DK phone numbers with country code in 1 of 3 formats and an
     	                    // 8 digit phone number not starting with a 0 or 1. Can have 1 space
     	                    // between each character except inside the country code.
     	                    // http://regex101.com/r/sS8fO4/1
     	                    isValid = /^(\+45|0045|\(45\))?\s?[2-9](\s?\d){7}$/.test(v);
     	                    break;
-    	                case 'ES':
+    	                case "ES":
     	                    // http://regex101.com/r/rB9mA9/1
     	                    // Telephone numbers in Spain go like this:
     	                    //     9: Landline phones and special prefixes.
@@ -10388,62 +10388,62 @@
     	                    // maybe it would be overkill to include them all.
     	                    isValid = /^(?:(?:(?:\+|00)34\D?))?(?:5|6|7|8|9)(?:\d\D?){8}$/.test(v);
     	                    break;
-    	                case 'FR':
+    	                case "FR":
     	                    // http://regexr.com/39a2p
     	                    isValid = /^(?:(?:(?:\+|00)33[ ]?(?:\(0\)[ ]?)?)|0){1}[1-9]{1}([ .-]?)(?:\d{2}\1?){3}\d{2}$/.test(v);
     	                    break;
-    	                case 'GB':
+    	                case "GB":
     	                    // http://aa-asterisk.org.uk/index.php/Regular_Expressions_for_Validating_and_Formatting_GB_Telephone_Numbers#Match_GB_telephone_number_in_any_format
     	                    // http://regexr.com/38uhv
     	                    isValid =
     	                        /^\(?(?:(?:0(?:0|11)\)?[\s-]?\(?|\+)44\)?[\s-]?\(?(?:0\)?[\s-]?\(?)?|0)(?:\d{2}\)?[\s-]?\d{4}[\s-]?\d{4}|\d{3}\)?[\s-]?\d{3}[\s-]?\d{3,4}|\d{4}\)?[\s-]?(?:\d{5}|\d{3}[\s-]?\d{3})|\d{5}\)?[\s-]?\d{4,5}|8(?:00[\s-]?11[\s-]?11|45[\s-]?46[\s-]?4\d))(?:(?:[\s-]?(?:x|ext\.?\s?|#)\d+)?)$/.test(v);
     	                    break;
-    	                case 'IN':
+    	                case "IN":
     	                    // http://stackoverflow.com/questions/18351553/regular-expression-validation-for-indian-phone-number-and-mobile-number
     	                    // http://regex101.com/r/qL6eZ5/1
     	                    // May begin with +91. Supports mobile and land line numbers
     	                    isValid = /((\+?)((0[ -]+)*|(91 )*)(\d{12}|\d{10}))|\d{5}([- ]*)\d{6}/.test(v);
     	                    break;
-    	                case 'MA':
+    	                case "MA":
     	                    // http://en.wikipedia.org/wiki/Telephone_numbers_in_Morocco
     	                    // http://regexr.com/399n8
     	                    isValid =
     	                        /^(?:(?:(?:\+|00)212[\s]?(?:[\s]?\(0\)[\s]?)?)|0){1}(?:5[\s.-]?[2-3]|6[\s.-]?[13-9]){1}[0-9]{1}(?:[\s.-]?\d{2}){3}$/.test(v);
     	                    break;
-    	                case 'NL':
+    	                case "NL":
     	                    // http://en.wikipedia.org/wiki/Telephone_numbers_in_the_Netherlands
     	                    // http://regexr.com/3aevr
     	                    isValid =
     	                        /^((\+|00(\s|\s?-\s?)?)31(\s|\s?-\s?)?(\(0\)[-\s]?)?|0)[1-9]((\s|\s?-\s?)?[0-9])((\s|\s?-\s?)?[0-9])((\s|\s?-\s?)?[0-9])\s?[0-9]\s?[0-9]\s?[0-9]\s?[0-9]\s?[0-9]$/gm.test(v);
     	                    break;
-    	                case 'PK':
+    	                case "PK":
     	                    // http://regex101.com/r/yH8aV9/2
     	                    isValid = /^0?3[0-9]{2}[0-9]{7}$/.test(v);
     	                    break;
-    	                case 'RO':
+    	                case "RO":
     	                    // All mobile network and land line
     	                    // http://regexr.com/39fv1
     	                    isValid =
     	                        /^(\+4|)?(07[0-8]{1}[0-9]{1}|02[0-9]{2}|03[0-9]{2}){1}?(\s|\.|-)?([0-9]{3}(\s|\.|-|)){2}$/g.test(v);
     	                    break;
-    	                case 'RU':
+    	                case "RU":
     	                    // http://regex101.com/r/gW7yT5/5
     	                    isValid = /^((8|\+7|007)[-./ ]?)?([(/.]?\d{3}[)/.]?[-./ ]?)?[\d\-./ ]{7,10}$/g.test(v);
     	                    break;
-    	                case 'SK':
+    	                case "SK":
     	                    // http://regexr.com/3a95f
     	                    isValid = /^(((00)([- ]?)|\+)(421)([- ]?))?((\d{3})([- ]?)){2}(\d{3})$/.test(v);
     	                    break;
-    	                case 'TH':
+    	                case "TH":
     	                    // http://regex101.com/r/vM5mZ4/2
     	                    isValid = /^0\(?([6|8-9]{2})*-([0-9]{3})*-([0-9]{4})$/.test(v);
     	                    break;
-    	                case 'VE':
+    	                case "VE":
     	                    // http://regex101.com/r/eM2yY0/6
     	                    isValid =
     	                        /^0(?:2(?:12|4[0-9]|5[1-9]|6[0-9]|7[0-8]|8[1-35-8]|9[1-5]|3[45789])|4(?:1[246]|2[46]))\d{7}$/.test(v);
     	                    break;
-    	                case 'US':
+    	                case "US":
     	                default:
     	                    // Make sure US phone numbers have 10 digits
     	                    // May start with 1, +1, or 1-; should discard
@@ -10500,7 +10500,7 @@
     	         * @see http://en.wikipedia.org/wiki/Routing_transit_number
     	         */
     	        validate: function (input) {
-    	            if (input.value === '') {
+    	            if (input.value === "") {
     	                return { valid: true };
     	            }
     	            if (!/^\d{9}$/.test(input.value)) {
@@ -10556,7 +10556,7 @@
     	         * @see http://en.wikipedia.org/wiki/SEDOL
     	         */
     	        validate: function (input) {
-    	            if (input.value === '') {
+    	            if (input.value === "") {
     	                return { valid: true };
     	            }
     	            var v = input.value.toUpperCase();
@@ -10616,7 +10616,7 @@
     	         */
     	        validate: function (input) {
     	            return {
-    	                valid: input.value === '' || (/^\d{9}$/.test(input.value) && luhn(input.value)),
+    	                valid: input.value === "" || (/^\d{9}$/.test(input.value) && luhn(input.value)),
     	            };
     	        },
     	    };
@@ -10659,7 +10659,7 @@
     	         * Check if a string is a siret number
     	         */
     	        validate: function (input) {
-    	            if (input.value === '') {
+    	            if (input.value === "") {
     	                return { valid: true };
     	            }
     	            var length = input.value.length;
@@ -10737,14 +10737,14 @@
     	        if (y === 0.0) {
     	            return 1.0;
     	        }
-    	        var dotX = "".concat(x).split('.');
-    	        var dotY = "".concat(y).split('.');
+    	        var dotX = "".concat(x).split(".");
+    	        var dotY = "".concat(y).split(".");
     	        var precision = (dotX.length === 1 ? 0 : dotX[1].length) + (dotY.length === 1 ? 0 : dotY[1].length);
     	        return round(x - y * Math.floor(x / y), precision);
     	    };
     	    return {
     	        validate: function (input) {
-    	            if (input.value === '') {
+    	            if (input.value === "") {
     	                return { valid: true };
     	            }
     	            var v = parseFloat(input.value);
@@ -10753,7 +10753,7 @@
     	            }
     	            var opts = Object.assign({}, {
     	                baseValue: 0,
-    	                message: '',
+    	                message: "",
     	                step: 1,
     	            }, input.options);
     	            var mod = floatMod(v - opts.baseValue, opts.step);
@@ -10806,10 +10806,10 @@
     	         * @see http://en.wikipedia.org/wiki/Universally_unique_identifier
     	         */
     	        validate: function (input) {
-    	            if (input.value === '') {
+    	            if (input.value === "") {
     	                return { valid: true };
     	            }
-    	            var opts = Object.assign({}, { message: '' }, removeUndefined(input.options));
+    	            var opts = Object.assign({}, { message: "" }, removeUndefined(input.options));
     	            // See the format at http://en.wikipedia.org/wiki/Universally_unique_identifier#Variants_and_versions
     	            var patterns = {
     	                3: /^[0-9A-F]{8}-[0-9A-F]{4}-3[0-9A-F]{3}-[0-9A-F]{4}-[0-9A-F]{12}$/i,
@@ -10817,7 +10817,7 @@
     	                5: /^[0-9A-F]{8}-[0-9A-F]{4}-5[0-9A-F]{3}-[89AB][0-9A-F]{3}-[0-9A-F]{12}$/i,
     	                all: /^[0-9A-F]{8}-[0-9A-F]{4}-[0-9A-F]{4}-[0-9A-F]{4}-[0-9A-F]{12}$/i,
     	            };
-    	            var version = opts.version ? "".concat(opts.version) : 'all';
+    	            var version = opts.version ? "".concat(opts.version) : "all";
     	            return {
     	                message: opts.version
     	                    ? format(input.l10n ? opts.message || input.l10n.uuid.version : opts.message, opts.version)
@@ -10871,7 +10871,7 @@
     	 */
     	function arVat(value) {
     	    // Replace `-` with empty
-    	    var v = value.replace('-', '');
+    	    var v = value.replace("-", "");
     	    if (/^AR[0-9]{11}$/.test(v)) {
     	        v = v.substr(2);
     	    }
@@ -10962,7 +10962,7 @@
     	    if (v.length === 9) {
     	        v = "0".concat(v);
     	    }
-    	    if (v.substr(1, 1) === '0') {
+    	    if (v.substr(1, 1) === "0") {
     	        return {
     	            meta: {},
     	            valid: false,
@@ -11089,30 +11089,30 @@
     	 * @returns {ValidateResult}
     	 */
     	function brVat(value) {
-    	    if (value === '') {
+    	    if (value === "") {
     	        return {
     	            meta: {},
     	            valid: true,
     	        };
     	    }
-    	    var cnpj = value.replace(/[^\d]+/g, '');
-    	    if (cnpj === '' || cnpj.length !== 14) {
+    	    var cnpj = value.replace(/[^\d]+/g, "");
+    	    if (cnpj === "" || cnpj.length !== 14) {
     	        return {
     	            meta: {},
     	            valid: false,
     	        };
     	    }
     	    // Remove invalids CNPJs
-    	    if (cnpj === '00000000000000' ||
-    	        cnpj === '11111111111111' ||
-    	        cnpj === '22222222222222' ||
-    	        cnpj === '33333333333333' ||
-    	        cnpj === '44444444444444' ||
-    	        cnpj === '55555555555555' ||
-    	        cnpj === '66666666666666' ||
-    	        cnpj === '77777777777777' ||
-    	        cnpj === '88888888888888' ||
-    	        cnpj === '99999999999999') {
+    	    if (cnpj === "00000000000000" ||
+    	        cnpj === "11111111111111" ||
+    	        cnpj === "22222222222222" ||
+    	        cnpj === "33333333333333" ||
+    	        cnpj === "44444444444444" ||
+    	        cnpj === "55555555555555" ||
+    	        cnpj === "66666666666666" ||
+    	        cnpj === "77777777777777" ||
+    	        cnpj === "88888888888888" ||
+    	        cnpj === "99999999999999") {
     	        return {
     	            meta: {},
     	            valid: false,
@@ -11220,7 +11220,7 @@
     	        };
     	    }
     	    // Do not allow to start with "12"
-    	    if (v.substr(0, 2) === '12') {
+    	    if (v.substr(0, 2) === "12") {
     	        return {
     	            meta: {},
     	            valid: false,
@@ -11249,7 +11249,7 @@
     	    }
     	    return {
     	        meta: {},
-    	        valid: "".concat('ABCDEFGHIJKLMNOPQRSTUVWXYZ'[sum % 26]) === v.substr(8, 1),
+    	        valid: "".concat("ABCDEFGHIJKLMNOPQRSTUVWXYZ"[sum % 26]) === v.substr(8, 1),
     	    };
     	}
 
@@ -11279,7 +11279,7 @@
     	    var i = 0;
     	    if (v.length === 8) {
     	        // Do not allow to start with '9'
-    	        if ("".concat(v.charAt(0)) === '9') {
+    	        if ("".concat(v.charAt(0)) === "9") {
     	            return {
     	                meta: {},
     	                valid: false,
@@ -11301,7 +11301,7 @@
     	            valid: "".concat(sum) === v.substr(7, 1),
     	        };
     	    }
-    	    else if (v.length === 9 && "".concat(v.charAt(0)) === '6') {
+    	    else if (v.length === 9 && "".concat(v.charAt(0)) === "6") {
     	        sum = 0;
     	        // Skip the first (which is 6)
     	        for (i = 0; i < 7; i++) {
@@ -11486,25 +11486,25 @@
     	    }
     	    var dni = function (input) {
     	        var check = parseInt(input.substr(0, 8), 10);
-    	        return "".concat('TRWAGMYFPDXBNJZSQVHLCKE'[check % 23]) === input.substr(8, 1);
+    	        return "".concat("TRWAGMYFPDXBNJZSQVHLCKE"[check % 23]) === input.substr(8, 1);
     	    };
     	    var nie = function (input) {
-    	        var check = ['XYZ'.indexOf(input.charAt(0)), input.substr(1)].join('');
-    	        var cd = 'TRWAGMYFPDXBNJZSQVHLCKE'[parseInt(check, 10) % 23];
+    	        var check = ["XYZ".indexOf(input.charAt(0)), input.substr(1)].join("");
+    	        var cd = "TRWAGMYFPDXBNJZSQVHLCKE"[parseInt(check, 10) % 23];
     	        return "".concat(cd) === input.substr(8, 1);
     	    };
     	    var cif = function (input) {
     	        var firstChar = input.charAt(0);
     	        var check;
-    	        if ('KLM'.indexOf(firstChar) !== -1) {
+    	        if ("KLM".indexOf(firstChar) !== -1) {
     	            // K: Spanish younger than 14 year old
     	            // L: Spanish living outside Spain without DNI
     	            // M: Granted the tax to foreigners who have no NIE
     	            check = parseInt(input.substr(1, 8), 10);
-    	            check = 'TRWAGMYFPDXBNJZSQVHLCKE'[check % 23];
+    	            check = "TRWAGMYFPDXBNJZSQVHLCKE"[check % 23];
     	            return "".concat(check) === input.substr(8, 1);
     	        }
-    	        else if ('ABCDEFGHJNPQRSUVW'.indexOf(firstChar) !== -1) {
+    	        else if ("ABCDEFGHJNPQRSUVW".indexOf(firstChar) !== -1) {
     	            var weight = [2, 1, 2, 1, 2, 1, 2];
     	            var sum = 0;
     	            var temp = 0;
@@ -11519,7 +11519,7 @@
     	            if (sum === 10) {
     	                sum = 0;
     	            }
-    	            return "".concat(sum) === input.substr(8, 1) || 'JABCDEFGHI'[sum] === input.substr(8, 1);
+    	            return "".concat(sum) === input.substr(8, 1) || "JABCDEFGHI"[sum] === input.substr(8, 1);
     	        }
     	        return false;
     	    };
@@ -11527,7 +11527,7 @@
     	    if (/^[0-9]$/.test(first)) {
     	        return {
     	            meta: {
-    	                type: 'DNI',
+    	                type: "DNI",
     	            },
     	            valid: dni(v),
     	        };
@@ -11535,7 +11535,7 @@
     	    else if (/^[XYZ]$/.test(first)) {
     	        return {
     	            meta: {
-    	                type: 'NIE',
+    	                type: "NIE",
     	            },
     	            valid: nie(v),
     	        };
@@ -11543,7 +11543,7 @@
     	    else {
     	        return {
     	            meta: {
-    	                type: 'CIF',
+    	                type: "CIF",
     	            },
     	            valid: cif(v),
     	        };
@@ -11605,7 +11605,7 @@
     	            valid: false,
     	        };
     	    }
-    	    if (v.substr(2, 4) !== '000') {
+    	    if (v.substr(2, 4) !== "000") {
     	        return {
     	            meta: {},
     	            valid: luhn$2(v.substr(2)),
@@ -11615,12 +11615,12 @@
     	        // First two characters are digits
     	        return {
     	            meta: {},
-    	            valid: v.substr(0, 2) === "".concat(parseInt(v.substr(2) + '12', 10) % 97),
+    	            valid: v.substr(0, 2) === "".concat(parseInt(v.substr(2) + "12", 10) % 97),
     	        };
     	    }
     	    else {
     	        // The first characters cann't be O and I
-    	        var alphabet = '0123456789ABCDEFGHJKLMNPQRSTUVWXYZ';
+    	        var alphabet = "0123456789ABCDEFGHJKLMNPQRSTUVWXYZ";
     	        var check = void 0;
     	        // First one is digit
     	        if (/^[0-9]$/.test(v.charAt(0))) {
@@ -11671,12 +11671,12 @@
     	        var lastThree = parseInt(v.substr(2), 10);
     	        return {
     	            meta: {},
-    	            valid: ('GD' === firstTwo && lastThree < 500) || ('HA' === firstTwo && lastThree >= 500),
+    	            valid: ("GD" === firstTwo && lastThree < 500) || ("HA" === firstTwo && lastThree >= 500),
     	        };
     	    }
-    	    else if (length === 11 && ('GD8888' === v.substr(0, 6) || 'HA8888' === v.substr(0, 6))) {
-    	        if (('GD' === v.substr(0, 2) && parseInt(v.substr(6, 3), 10) >= 500) ||
-    	            ('HA' === v.substr(0, 2) && parseInt(v.substr(6, 3), 10) < 500)) {
+    	    else if (length === 11 && ("GD8888" === v.substr(0, 6) || "HA8888" === v.substr(0, 6))) {
+    	        if (("GD" === v.substr(0, 2) && parseInt(v.substr(6, 3), 10) >= 500) ||
+    	            ("HA" === v.substr(0, 2) && parseInt(v.substr(6, 3), 10) < 500)) {
     	            return {
     	                meta: {},
     	                valid: false,
@@ -11828,7 +11828,7 @@
     	        while (input.length < 7) {
     	            input = "0".concat(input);
     	        }
-    	        var alphabet = 'WABCDEFGHIJKLMNOPQRSTUV';
+    	        var alphabet = "WABCDEFGHIJKLMNOPQRSTUV";
     	        var sum = 0;
     	        for (var i = 0; i < 7; i++) {
     	            sum += parseInt(input.charAt(i), 10) * (8 - i);
@@ -11844,7 +11844,7 @@
     	            valid: v.charAt(7) === getCheckDigit("".concat(v.substr(0, 7)).concat(v.substr(8))),
     	        };
     	    }
-    	    else if ('ABCDEFGHIJKLMNOPQRSTUVWXYZ+*'.indexOf(v.charAt(1)) !== -1) {
+    	    else if ("ABCDEFGHIJKLMNOPQRSTUVWXYZ+*".indexOf(v.charAt(1)) !== -1) {
     	        // Old system
     	        return {
     	            meta: {},
@@ -12121,7 +12121,7 @@
     	            valid: false,
     	        };
     	    }
-    	    v = v.replace(/\./g, '');
+    	    v = v.replace(/\./g, "");
     	    if (parseInt(v, 10) === 0) {
     	        return {
     	            meta: {},
@@ -12569,44 +12569,44 @@
     	function vat() {
     	    // Supported country codes
     	    var COUNTRY_CODES = [
-    	        'AR',
-    	        'AT',
-    	        'BE',
-    	        'BG',
-    	        'BR',
-    	        'CH',
-    	        'CY',
-    	        'CZ',
-    	        'DE',
-    	        'DK',
-    	        'EE',
-    	        'EL',
-    	        'ES',
-    	        'FI',
-    	        'FR',
-    	        'GB',
-    	        'GR',
-    	        'HR',
-    	        'HU',
-    	        'IE',
-    	        'IS',
-    	        'IT',
-    	        'LT',
-    	        'LU',
-    	        'LV',
-    	        'MT',
-    	        'NL',
-    	        'NO',
-    	        'PL',
-    	        'PT',
-    	        'RO',
-    	        'RU',
-    	        'RS',
-    	        'SE',
-    	        'SK',
-    	        'SI',
-    	        'VE',
-    	        'ZA',
+    	        "AR",
+    	        "AT",
+    	        "BE",
+    	        "BG",
+    	        "BR",
+    	        "CH",
+    	        "CY",
+    	        "CZ",
+    	        "DE",
+    	        "DK",
+    	        "EE",
+    	        "EL",
+    	        "ES",
+    	        "FI",
+    	        "FR",
+    	        "GB",
+    	        "GR",
+    	        "HR",
+    	        "HU",
+    	        "IE",
+    	        "IS",
+    	        "IT",
+    	        "LT",
+    	        "LU",
+    	        "LV",
+    	        "MT",
+    	        "NL",
+    	        "NO",
+    	        "PL",
+    	        "PT",
+    	        "RO",
+    	        "RU",
+    	        "RS",
+    	        "SE",
+    	        "SK",
+    	        "SI",
+    	        "VE",
+    	        "ZA",
     	    ];
     	    return {
     	        /**
@@ -12614,12 +12614,12 @@
     	         */
     	        validate: function (input) {
     	            var value = input.value;
-    	            if (value === '') {
+    	            if (value === "") {
     	                return { valid: true };
     	            }
-    	            var opts = Object.assign({}, { message: '' }, removeUndefined(input.options));
+    	            var opts = Object.assign({}, { message: "" }, removeUndefined(input.options));
     	            var country = value.substr(0, 2);
-    	            if ('function' === typeof opts.country) {
+    	            if ("function" === typeof opts.country) {
     	                country = opts.country.call(this);
     	            }
     	            else {
@@ -12633,119 +12633,119 @@
     	                valid: true,
     	            };
     	            switch (country.toLowerCase()) {
-    	                case 'ar':
+    	                case "ar":
     	                    result = arVat(value);
     	                    break;
-    	                case 'at':
+    	                case "at":
     	                    result = atVat(value);
     	                    break;
-    	                case 'be':
+    	                case "be":
     	                    result = beVat(value);
     	                    break;
-    	                case 'bg':
+    	                case "bg":
     	                    result = bgVat(value);
     	                    break;
-    	                case 'br':
+    	                case "br":
     	                    result = brVat(value);
     	                    break;
-    	                case 'ch':
+    	                case "ch":
     	                    result = chVat(value);
     	                    break;
-    	                case 'cy':
+    	                case "cy":
     	                    result = cyVat(value);
     	                    break;
-    	                case 'cz':
+    	                case "cz":
     	                    result = czVat(value);
     	                    break;
-    	                case 'de':
+    	                case "de":
     	                    result = deVat(value);
     	                    break;
-    	                case 'dk':
+    	                case "dk":
     	                    result = dkVat(value);
     	                    break;
-    	                case 'ee':
+    	                case "ee":
     	                    result = eeVat(value);
     	                    break;
     	                // EL is traditionally prefix of Greek VAT numbers
-    	                case 'el':
+    	                case "el":
     	                    result = grVat(value);
     	                    break;
-    	                case 'es':
+    	                case "es":
     	                    result = esVat(value);
     	                    break;
-    	                case 'fi':
+    	                case "fi":
     	                    result = fiVat(value);
     	                    break;
-    	                case 'fr':
+    	                case "fr":
     	                    result = frVat(value);
     	                    break;
-    	                case 'gb':
+    	                case "gb":
     	                    result = gbVat(value);
     	                    break;
-    	                case 'gr':
+    	                case "gr":
     	                    result = grVat(value);
     	                    break;
-    	                case 'hr':
+    	                case "hr":
     	                    result = hrVat(value);
     	                    break;
-    	                case 'hu':
+    	                case "hu":
     	                    result = huVat(value);
     	                    break;
-    	                case 'ie':
+    	                case "ie":
     	                    result = ieVat(value);
     	                    break;
-    	                case 'is':
+    	                case "is":
     	                    result = isVat(value);
     	                    break;
-    	                case 'it':
+    	                case "it":
     	                    result = itVat(value);
     	                    break;
-    	                case 'lt':
+    	                case "lt":
     	                    result = ltVat(value);
     	                    break;
-    	                case 'lu':
+    	                case "lu":
     	                    result = luVat(value);
     	                    break;
-    	                case 'lv':
+    	                case "lv":
     	                    result = lvVat(value);
     	                    break;
-    	                case 'mt':
+    	                case "mt":
     	                    result = mtVat(value);
     	                    break;
-    	                case 'nl':
+    	                case "nl":
     	                    result = nlVat(value);
     	                    break;
-    	                case 'no':
+    	                case "no":
     	                    result = noVat(value);
     	                    break;
-    	                case 'pl':
+    	                case "pl":
     	                    result = plVat(value);
     	                    break;
-    	                case 'pt':
+    	                case "pt":
     	                    result = ptVat(value);
     	                    break;
-    	                case 'ro':
+    	                case "ro":
     	                    result = roVat(value);
     	                    break;
-    	                case 'rs':
+    	                case "rs":
     	                    result = rsVat(value);
     	                    break;
-    	                case 'ru':
+    	                case "ru":
     	                    result = ruVat(value);
     	                    break;
-    	                case 'se':
+    	                case "se":
     	                    result = seVat(value);
     	                    break;
-    	                case 'si':
+    	                case "si":
     	                    result = siVat(value);
     	                    break;
-    	                case 'sk':
+    	                case "sk":
     	                    result = skVat(value);
     	                    break;
-    	                case 've':
+    	                case "ve":
     	                    result = veVat(value);
     	                    break;
-    	                case 'za':
+    	                case "za":
     	                    result = zaVat(value);
     	                    break;
     	            }
@@ -12794,7 +12794,7 @@
     	         * Validate an US VIN (Vehicle Identification Number)
     	         */
     	        validate: function (input) {
-    	            if (input.value === '') {
+    	            if (input.value === "") {
     	                return { valid: true };
     	            }
     	            // Don't accept I, O, Q characters
@@ -12844,8 +12844,8 @@
     	                sum += chars["".concat(v.charAt(i))] * weights[i];
     	            }
     	            var reminder = "".concat(sum % 11);
-    	            if (reminder === '10') {
-    	                reminder = 'X';
+    	            if (reminder === "10") {
+    	                reminder = "X";
     	            }
     	            return { valid: reminder === v.charAt(8) };
     	        },
@@ -12888,50 +12888,50 @@
     	var format = core.utils.format, removeUndefined = core.utils.removeUndefined;
     	function zipCode() {
     	    var COUNTRY_CODES = [
-    	        'AT',
-    	        'BG',
-    	        'BR',
-    	        'CA',
-    	        'CH',
-    	        'CZ',
-    	        'DE',
-    	        'DK',
-    	        'ES',
-    	        'FR',
-    	        'GB',
-    	        'IE',
-    	        'IN',
-    	        'IT',
-    	        'MA',
-    	        'NL',
-    	        'PL',
-    	        'PT',
-    	        'RO',
-    	        'RU',
-    	        'SE',
-    	        'SG',
-    	        'SK',
-    	        'US',
+    	        "AT",
+    	        "BG",
+    	        "BR",
+    	        "CA",
+    	        "CH",
+    	        "CZ",
+    	        "DE",
+    	        "DK",
+    	        "ES",
+    	        "FR",
+    	        "GB",
+    	        "IE",
+    	        "IN",
+    	        "IT",
+    	        "MA",
+    	        "NL",
+    	        "PL",
+    	        "PT",
+    	        "RO",
+    	        "RU",
+    	        "SE",
+    	        "SG",
+    	        "SK",
+    	        "US",
     	    ];
     	    /**
     	     * Validate United Kingdom postcode
     	     * @returns {boolean}
     	     */
     	    var gb = function (value) {
-    	        var firstChar = '[ABCDEFGHIJKLMNOPRSTUWYZ]'; // Does not accept QVX
-    	        var secondChar = '[ABCDEFGHKLMNOPQRSTUVWXY]'; // Does not accept IJZ
-    	        var thirdChar = '[ABCDEFGHJKPMNRSTUVWXY]';
-    	        var fourthChar = '[ABEHMNPRVWXY]';
-    	        var fifthChar = '[ABDEFGHJLNPQRSTUWXYZ]';
+    	        var firstChar = "[ABCDEFGHIJKLMNOPRSTUWYZ]"; // Does not accept QVX
+    	        var secondChar = "[ABCDEFGHKLMNOPQRSTUVWXY]"; // Does not accept IJZ
+    	        var thirdChar = "[ABCDEFGHJKPMNRSTUVWXY]";
+    	        var fourthChar = "[ABEHMNPRVWXY]";
+    	        var fifthChar = "[ABDEFGHJLNPQRSTUWXYZ]";
     	        var regexps = [
     	            // AN NAA, ANN NAA, AAN NAA, AANN NAA format
-    	            new RegExp("^(".concat(firstChar, "{1}").concat(secondChar, "?[0-9]{1,2})(\\s*)([0-9]{1}").concat(fifthChar, "{2})$"), 'i'),
+    	            new RegExp("^(".concat(firstChar, "{1}").concat(secondChar, "?[0-9]{1,2})(\\s*)([0-9]{1}").concat(fifthChar, "{2})$"), "i"),
     	            // ANA NAA
-    	            new RegExp("^(".concat(firstChar, "{1}[0-9]{1}").concat(thirdChar, "{1})(\\s*)([0-9]{1}").concat(fifthChar, "{2})$"), 'i'),
+    	            new RegExp("^(".concat(firstChar, "{1}[0-9]{1}").concat(thirdChar, "{1})(\\s*)([0-9]{1}").concat(fifthChar, "{2})$"), "i"),
     	            // AANA NAA
-    	            new RegExp("^(".concat(firstChar, "{1}").concat(secondChar, "{1}?[0-9]{1}").concat(fourthChar, "{1})(\\s*)([0-9]{1}").concat(fifthChar, "{2})$"), 'i'),
+    	            new RegExp("^(".concat(firstChar, "{1}").concat(secondChar, "{1}?[0-9]{1}").concat(fourthChar, "{1})(\\s*)([0-9]{1}").concat(fifthChar, "{2})$"), "i"),
     	            // BFPO postcodes
-    	            new RegExp('^(BF1)(\\s*)([0-6]{1}[ABDEFGHJLNPQRST]{1}[ABDEFGHJLNPQRSTUWZYZ]{1})$', 'i'),
+    	            new RegExp("^(BF1)(\\s*)([0-6]{1}[ABDEFGHJLNPQRST]{1}[ABDEFGHJLNPQRSTUWZYZ]{1})$", "i"),
     	            /^(GIR)(\s*)(0AA)$/i,
     	            /^(BFPO)(\s*)([0-9]{1,4})$/i,
     	            /^(BFPO)(\s*)(c\/o\s*[0-9]{1,3})$/i,
@@ -12951,12 +12951,12 @@
     	         * Return true if and only if the input value is a valid country zip code
     	         */
     	        validate: function (input) {
-    	            var opts = Object.assign({}, { message: '' }, removeUndefined(input.options));
-    	            if (input.value === '' || !opts.country) {
+    	            var opts = Object.assign({}, { message: "" }, removeUndefined(input.options));
+    	            if (input.value === "" || !opts.country) {
     	                return { valid: true };
     	            }
     	            var country = input.value.substr(0, 2);
-    	            if ('function' === typeof opts.country) {
+    	            if ("function" === typeof opts.country) {
     	                country = opts.country.call(this);
     	            }
     	            else {
@@ -12969,94 +12969,94 @@
     	            country = country.toUpperCase();
     	            switch (country) {
     	                // http://en.wikipedia.org/wiki/List_of_postal_codes_in_Austria
-    	                case 'AT':
+    	                case "AT":
     	                    isValid = /^([1-9]{1})(\d{3})$/.test(input.value);
     	                    break;
-    	                case 'BG':
+    	                case "BG":
     	                    isValid = /^([1-9]{1}[0-9]{3})$/.test(input.value);
     	                    break;
-    	                case 'BR':
+    	                case "BR":
     	                    isValid = /^(\d{2})([.]?)(\d{3})([-]?)(\d{3})$/.test(input.value);
     	                    break;
-    	                case 'CA':
+    	                case "CA":
     	                    isValid =
     	                        /^(?:A|B|C|E|G|H|J|K|L|M|N|P|R|S|T|V|X|Y){1}[0-9]{1}(?:A|B|C|E|G|H|J|K|L|M|N|P|R|S|T|V|W|X|Y|Z){1}\s?[0-9]{1}(?:A|B|C|E|G|H|J|K|L|M|N|P|R|S|T|V|W|X|Y|Z){1}[0-9]{1}$/i.test(input.value);
     	                    break;
-    	                case 'CH':
+    	                case "CH":
     	                    isValid = /^([1-9]{1})(\d{3})$/.test(input.value);
     	                    break;
-    	                case 'CZ':
+    	                case "CZ":
     	                    // Test: http://regexr.com/39hhr
     	                    isValid = /^(\d{3})([ ]?)(\d{2})$/.test(input.value);
     	                    break;
     	                // http://stackoverflow.com/questions/7926687/regular-expression-german-zip-codes
-    	                case 'DE':
+    	                case "DE":
     	                    isValid = /^(?!01000|99999)(0[1-9]\d{3}|[1-9]\d{4})$/.test(input.value);
     	                    break;
-    	                case 'DK':
+    	                case "DK":
     	                    isValid = /^(DK(-|\s)?)?\d{4}$/i.test(input.value);
     	                    break;
     	                // Zip codes in Spain go from 01XXX to 52XXX.
     	                // Test: http://refiddle.com/1ufo
-    	                case 'ES':
+    	                case "ES":
     	                    isValid = /^(?:0[1-9]|[1-4][0-9]|5[0-2])\d{3}$/.test(input.value);
     	                    break;
     	                // http://en.wikipedia.org/wiki/Postal_codes_in_France
-    	                case 'FR':
+    	                case "FR":
     	                    isValid = /^[0-9]{5}$/i.test(input.value);
     	                    break;
-    	                case 'GB':
+    	                case "GB":
     	                    isValid = gb(input.value);
     	                    break;
     	                // Indian PIN (Postal Index Number) validation
     	                // http://en.wikipedia.org/wiki/Postal_Index_Number
     	                // Test: http://regex101.com/r/kV0vH3/1
-    	                case 'IN':
+    	                case "IN":
     	                    isValid = /^\d{3}\s?\d{3}$/.test(input.value);
     	                    break;
     	                // http://www.eircode.ie/docs/default-source/Common/
     	                // prepare-your-business-for-eircode---published-v2.pdf?sfvrsn=2
     	                // Test: http://refiddle.com/1kpl
-    	                case 'IE':
+    	                case "IE":
     	                    isValid = /^(D6W|[ACDEFHKNPRTVWXY]\d{2})\s[0-9ACDEFHKNPRTVWXY]{4}$/.test(input.value);
     	                    break;
     	                // http://en.wikipedia.org/wiki/List_of_postal_codes_in_Italy
-    	                case 'IT':
+    	                case "IT":
     	                    isValid = /^(I-|IT-)?\d{5}$/i.test(input.value);
     	                    break;
     	                // http://en.wikipedia.org/wiki/List_of_postal_codes_in_Morocco
-    	                case 'MA':
+    	                case "MA":
     	                    isValid = /^[1-9][0-9]{4}$/i.test(input.value);
     	                    break;
     	                // http://en.wikipedia.org/wiki/Postal_codes_in_the_Netherlands
-    	                case 'NL':
+    	                case "NL":
     	                    isValid = /^[1-9][0-9]{3} ?(?!sa|sd|ss)[a-z]{2}$/i.test(input.value);
     	                    break;
     	                // http://en.wikipedia.org/wiki/List_of_postal_codes_in_Poland
-    	                case 'PL':
+    	                case "PL":
     	                    isValid = /^[0-9]{2}-[0-9]{3}$/.test(input.value);
     	                    break;
     	                // Test: http://refiddle.com/1l2t
-    	                case 'PT':
+    	                case "PT":
     	                    isValid = /^[1-9]\d{3}-\d{3}$/.test(input.value);
     	                    break;
-    	                case 'RO':
+    	                case "RO":
     	                    isValid = /^(0[1-8]{1}|[1-9]{1}[0-5]{1})?[0-9]{4}$/i.test(input.value);
     	                    break;
-    	                case 'RU':
+    	                case "RU":
     	                    isValid = /^[0-9]{6}$/i.test(input.value);
     	                    break;
-    	                case 'SE':
+    	                case "SE":
     	                    isValid = /^(S-)?\d{3}\s?\d{2}$/i.test(input.value);
     	                    break;
-    	                case 'SG':
+    	                case "SG":
     	                    isValid = /^([0][1-9]|[1-6][0-9]|[7]([0-3]|[5-9])|[8][0-2])(\d{4})$/i.test(input.value);
     	                    break;
-    	                case 'SK':
+    	                case "SK":
     	                    // Test: http://regexr.com/39hhr
     	                    isValid = /^(\d{3})([ ]?)(\d{2})$/.test(input.value);
     	                    break;
-    	                case 'US':
+    	                case "US":
     	                default:
     	                    isValid = /^\d{4,5}([-]?\d{4})?$/.test(input.value);
     	                    break;

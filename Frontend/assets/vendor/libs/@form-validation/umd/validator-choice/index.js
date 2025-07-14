@@ -1,8 +1,8 @@
 (function (global, factory) {
-    typeof exports === 'object' && typeof module !== 'undefined' ? module.exports = factory(require('@form-validation/core')) :
-    typeof define === 'function' && define.amd ? define(['@form-validation/core'], factory) :
-    (global = typeof globalThis !== 'undefined' ? globalThis : global || self, (global.FormValidation = global.FormValidation || {}, global.FormValidation.validators = global.FormValidation.validators || {}, global.FormValidation.validators.choice = factory(global.FormValidation)));
-})(this, (function (core) { 'use strict';
+    typeof exports === "object" && typeof module !== "undefined" ? module.exports = factory(require("@form-validation/core")) :
+    typeof define === "function" && define.amd ? define(["@form-validation/core"], factory) :
+    (global = typeof globalThis !== "undefined" ? globalThis : global || self, (global.FormValidation = global.FormValidation || {}, global.FormValidation.validators = global.FormValidation.validators || {}, global.FormValidation.validators.choice = factory(global.FormValidation)));
+})(this, (function (core) { "use strict";
 
     /**
      * FormValidation (https://formvalidation.io)
@@ -13,11 +13,11 @@
     function choice() {
         return {
             validate: function (input) {
-                var numChoices = 'select' === input.element.tagName.toLowerCase()
-                    ? input.element.querySelectorAll('option:checked').length
+                var numChoices = "select" === input.element.tagName.toLowerCase()
+                    ? input.element.querySelectorAll("option:checked").length
                     : input.elements.filter(function (ele) { return ele.checked; }).length;
-                var min = input.options.min ? "".concat(input.options.min) : '';
-                var max = input.options.max ? "".concat(input.options.max) : '';
+                var min = input.options.min ? "".concat(input.options.min) : "";
+                var max = input.options.max ? "".concat(input.options.max) : "";
                 var msg = input.l10n ? input.options.message || input.l10n.choice.default : input.options.message;
                 var isValid = !((min && numChoices < parseInt(min, 10)) || (max && numChoices > parseInt(max, 10)));
                 switch (true) {

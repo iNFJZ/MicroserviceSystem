@@ -82,7 +82,7 @@ class AdminAuth {
     localStorage.removeItem("authToken");
     sessionStorage.clear();
     if (typeof toastr !== "undefined") {
-      toastr.success("Logged out successfully!");
+      toastr.success(window.i18next.t("loggedOutSuccessfully"));
     }
     setTimeout(() => {
       this.redirectToLogin();
@@ -402,13 +402,13 @@ function getUserTableColumnDefs(isDeactive) {
       render: function (data, type, full) {
         var $status = full.status;
         var statusObj = {
-          1: { title: "Active", class: "bg-label-success" },
-          2: { title: "Inactive", class: "bg-label-secondary" },
-          3: { title: "Suspended", class: "bg-label-warning" },
-          4: { title: "Banned", class: "bg-label-danger" },
+          1: { title: window.i18next.t("active"), class: "bg-label-success" },
+          2: { title: window.i18next.t("inactive"), class: "bg-label-secondary" },
+          3: { title: window.i18next.t("suspended"), class: "bg-label-warning" },
+          4: { title: window.i18next.t("banned"), class: "bg-label-danger" },
         };
         var obj = statusObj[$status] || {
-          title: "Unknown",
+          title: window.i18next.t("unknown"),
           class: "bg-label-secondary",
         };
         return `<span class="badge ${obj.class}" text-capitalized>${obj.title}</span>`;
@@ -431,7 +431,7 @@ function getUserTableColumnDefs(isDeactive) {
               },
             );
           } else {
-            return '<span class="text-muted">N/A</span>';
+            return "<span class=\"text-muted\">N/A</span>";
           }
         } else {
           if (full.lastLoginAt) {
@@ -444,24 +444,24 @@ function getUserTableColumnDefs(isDeactive) {
               second: "2-digit",
             });
           } else {
-            return '<span class="text-muted">N/A</span>';
+            return "<span class=\"text-muted\">N/A</span>";
           }
         }
       },
     },
     {
       targets: 7, // Actions
-      title: "Actions",
+      title: window.i18next.t("actions"),
       searchable: false,
       orderable: false,
       render: function (data, type, row, meta) {
         let html = "";
-        html += `<a href="javascript:;" class="text-body view-user" title="View User"><i class="ti ti-eye text-primary me-1"></i></a>`;
+        html += `<a href="javascript:;" class="text-body view-user" title="${window.i18next.t("viewUser")}" data-bs-toggle="tooltip"><i class="ti ti-eye text-primary me-1"></i></a>`;
         if (isDeactive) {
-          html += `<a href="javascript:;" class="text-body restore-user" title="Restore User"><i class="ti ti-refresh text-success me-1"></i></a>`;
+          html += `<a href="javascript:;" class="text-body restore-user" title="${window.i18next.t("restoreUser")}" data-bs-toggle="tooltip"><i class="ti ti-refresh text-success me-1"></i></a>`;
         } else {
-          html += `<a href="javascript:;" class="text-body edit-user" title="Edit User"><i class="ti ti-edit text-primary me-1"></i></a>`;
-          html += `<a href="javascript:;" class="text-body delete-user" title="Delete User"><i class="ti ti-trash text-danger me-1"></i></a>`;
+          html += `<a href="javascript:;" class="text-body edit-user" title="${window.i18next.t("editUser")}" data-bs-toggle="tooltip"><i class="ti ti-edit text-primary me-1"></i></a>`;
+          html += `<a href="javascript:;" class="text-body delete-user" title="${window.i18next.t("deleteUser")}" data-bs-toggle="tooltip"><i class="ti ti-trash text-danger me-1"></i></a>`;
         }
         return html;
       },
@@ -470,14 +470,14 @@ function getUserTableColumnDefs(isDeactive) {
 }
 
 function getUserTableDom() {
-  return '<"row me-2"<"col-md-2"<"me-3"l>><"col-md-10"<"dt-action-buttons text-xl-end text-lg-start text-md-end text-start d-flex align-items-center justify-content-end flex-md-row flex-column mb-3 mb-md-0"fB>>>t<"row mx-2"<"col-sm-12 col-md-6"i><"col-sm-12 col-md-6"p>>';
+  return "<\"row me-2\"<\"col-md-2\"<\"me-3\"l>><\"col-md-10\"<\"dt-action-buttons text-xl-end text-lg-start text-md-end text-start d-flex align-items-center justify-content-end flex-md-row flex-column mb-3 mb-md-0\"fB>>>t<\"row mx-2\"<\"col-sm-12 col-md-6\"i><\"col-sm-12 col-md-6\"p>>";
 }
 
 function getUserTableLanguage() {
   return {
     sLengthMenu: "_MENU_",
     search: "",
-    searchPlaceholder: "Search..",
+    searchPlaceholder: window.i18next.t("searchPlaceholder"),
   };
 }
 
@@ -486,11 +486,11 @@ function getUserTableButtons() {
     {
       extend: "collection",
       className: "btn btn-label-secondary dropdown-toggle mx-3",
-      text: '<i class="ti ti-screen-share me-1 ti-xs"></i>Export',
+      text: "<i class=\"ti ti-screen-share me-1 ti-xs\"></i>" + window.i18next.t("export"),
       buttons: [
         {
           extend: "print",
-          text: '<i class="ti ti-printer me-2" ></i>Print',
+          text: "<i class=\"ti ti-printer me-2\" ></i>" + window.i18next.t("print"),
           className: "dropdown-item",
           exportOptions: {
             columns: [1, 2, 3, 4, 5],
@@ -506,7 +506,7 @@ function getUserTableButtons() {
         },
         {
           extend: "csv",
-          text: '<i class="ti ti-file-text me-2" ></i>Csv',
+          text: "<i class=\"ti ti-file-text me-2\" ></i>" + window.i18next.t("csv"),
           className: "dropdown-item",
           exportOptions: {
             columns: [1, 2, 3, 4, 5],
@@ -519,7 +519,7 @@ function getUserTableButtons() {
         },
         {
           extend: "excel",
-          text: '<i class="ti ti-file-spreadsheet me-2"></i>Excel',
+          text: "<i class=\"ti ti-file-spreadsheet me-2\"></i>" + window.i18next.t("excel"),
           className: "dropdown-item",
           exportOptions: {
             columns: [1, 2, 3, 4, 5],
@@ -532,7 +532,7 @@ function getUserTableButtons() {
         },
         {
           extend: "pdf",
-          text: '<i class="ti ti-file-code-2 me-2"></i>Pdf',
+          text: "<i class=\"ti ti-file-code-2 me-2\"></i>" + window.i18next.t("pdf"),
           className: "dropdown-item",
           exportOptions: {
             columns: [1, 2, 3, 4, 5],
@@ -545,7 +545,7 @@ function getUserTableButtons() {
         },
         {
           extend: "copy",
-          text: '<i class="ti ti-copy me-2" ></i>Copy',
+          text: "<i class=\"ti ti-copy me-2\" ></i>" + window.i18next.t("copy"),
           className: "dropdown-item",
           exportOptions: {
             columns: [1, 2, 3, 4, 5],
@@ -573,11 +573,11 @@ function handleAddUser() {
   const email = formData.get("email")?.trim();
   const phoneNumber = formData.get("phoneNumber")?.trim();
   if (!fullName) {
-    toastr.error("Full name is required!");
+    toastr.error(window.i18next.t("fullNameRequired"));
     return;
   }
   if (!email || !isValidEmail(email)) {
-    toastr.error("Valid email is required!");
+    toastr.error(window.i18next.t("validEmailRequired"));
     return;
   }
   const data = { fullName, email };
@@ -594,17 +594,17 @@ function handleAddUser() {
     .then((res) => res.json())
     .then((res) => {
       if (res.success || res.id) {
-        toastr.success("User added successfully!");
+        toastr.success(window.i18next.t("userAddedSuccessfully"));
         form.reset();
         $("#offcanvasAddUser").offcanvas("hide");
         loadAllUsersTable && loadAllUsersTable();
         loadActiveUsersTable && loadActiveUsersTable();
         loadDeactiveUsersTable && loadDeactiveUsersTable();
       } else {
-        toastr.error(res.message || "Add user failed!");
+        toastr.error(res.message || window.i18next.t("addUserFailed"));
       }
     })
-    .catch(() => toastr.error("Add user failed!"));
+    .catch(() => toastr.error(window.i18next.t("addUserFailed")));
 }
 
 // --- CropperJS integration ---
@@ -622,18 +622,18 @@ $(document).on(
     const file = this.files && this.files[0];
     if (file) {
       if (!file.type.startsWith("image/")) {
-        toastr.error("Please select a valid image file!");
+        toastr.error(window.i18next.t("pleaseSelectValidImageFile"));
         this.value = "";
         return;
       }
       if (file.size > 5 * 1024 * 1024) {
-        toastr.error("Image size must be less than 5MB!");
+        toastr.error(window.i18next.t("imageSizeMustBeLessThan5MB"));
         this.value = "";
         return;
       }
       if (file.size < 10 * 1024) {
         toastr.warning(
-          "Image size is very small. For better quality, use an image larger than 10KB.",
+          window.i18next.t("imageSizeIsVerySmall"),
         );
       }
       selectedImageFile = file;
@@ -735,12 +735,12 @@ function initializeCropper(imageElement, imageUrl) {
           return;
         }
         if (imageData.naturalWidth < 100 || imageData.naturalHeight < 100) {
-          toastr.error("Image is too small. Please use an image at least 100x100px.");
+          toastr.error(window.i18next.t("imageIsTooSmall"));
           $("#cropImageModal").modal("hide");
           return;
         }
         if (tryCount > 10 && (!cropBox || cropBox.width <= 0 || cropBox.height <= 0)) {
-          toastr.error("Failed to initialize cropper. Please try another image.");
+          toastr.error(window.i18next.t("failedToInitializeCropper"));
           $("#cropImageModal").modal("hide");
           return;
         }
@@ -888,7 +888,7 @@ function initializeCropper(imageElement, imageUrl) {
       if (cropperReady) updateAvatarPreview();
     },
     error: function () {
-      toastr.error("Failed to load image. Please try another image.");
+      toastr.error(window.i18next.t("failedToLoadImage"));
       $("#cropImageModal").modal("hide");
     }
   });
@@ -936,7 +936,7 @@ $(document).on("drop", ".drag-drop-zone", function (e) {
     if (file.type.startsWith("image/")) {
       handleImageFile(file);
     } else {
-      toastr.error("Please select a valid image file!");
+      toastr.error(window.i18next.t("pleaseSelectValidImageFile"));
     }
   }
 });
@@ -948,12 +948,12 @@ $(document).on("click", ".drag-drop-zone", function () {
 // Handle image file
 function handleImageFile(file) {
   if (file.size > 5 * 1024 * 1024) {
-    toastr.error("Image size must be less than 5MB!");
+    toastr.error(window.i18next.t("imageSizeMustBeLessThan5MB"));
     return;
   }
   if (file.size < 10 * 1024) {
     toastr.warning(
-      "Image size is very small. For better quality, use an image larger than 10KB.",
+      window.i18next.t("imageSizeIsVerySmall"),
     );
   }
 
@@ -1078,17 +1078,17 @@ $("#cropImageModal").on("hidden.bs.modal", function () {
 
 $(document).on("click", "#cropImageBtn", function () {
   if (!cropper || !cropperReady) {
-    toastr.error("Cropper is not ready. Please wait for the image to load.");
+    toastr.error(window.i18next.t("cropperNotReady"));
     return;
   }
   let cropBox = cropper.getCropBoxData();
   const imageData = cropper.getImageData();
   if (!cropBox || cropBox.width <= 0 || cropBox.height <= 0) {
-    toastr.error("Crop area is invalid. Please adjust the crop box.");
+    toastr.error(window.i18next.t("cropAreaInvalid"));
     return;
   }
   if (imageData && (cropBox.width > imageData.naturalWidth || cropBox.height > imageData.naturalHeight)) {
-    toastr.error("Crop area is larger than the image. Please zoom in or use a larger image.");
+    toastr.error(window.i18next.t("cropAreaLargerThanImage"));
     return;
   }
   try {
@@ -1099,7 +1099,7 @@ $(document).on("click", "#cropImageBtn", function () {
       imageSmoothingQuality: "high",
       fillColor: "#fff",
     });
-    if (!canvas) throw new Error("Canvas is null. Image may be too small or crop area invalid.");
+    if (!canvas) throw new Error(window.i18next.t("canvasIsNull"));
     const size = 200;
     const circleCanvas = document.createElement("canvas");
     circleCanvas.width = size;
@@ -1121,14 +1121,14 @@ $(document).on("click", "#cropImageBtn", function () {
     setTimeout(() => {
       $("#cropImageModal").modal("hide");
       toastr.success(
-        "Profile picture cropped successfully! The image will be displayed as a circular avatar.",
+        window.i18next.t("profilePictureCroppedSuccessfully"),
       );
     }, 200);
   } catch (error) {
     window._editProfilePictureBase64 = null;
     $("#crop-avatar-preview, #edit-profilePicture-preview").attr("src", "");
     $("#edit-profilePicture-container, #profile-picture-preview").hide();
-    toastr.error(error.message || "Failed to crop image. Please try again!");
+    toastr.error(error.message || window.i18next.t("failedToCropImage"));
   }
 });
 
@@ -1143,7 +1143,7 @@ $(document).on("click", "#remove-profile-picture", function () {
     cropper.destroy();
     cropper = null;
   }
-  toastr.info("Profile picture removed!");
+  toastr.info(window.i18next.t("profilePictureRemoved"));
 });
 
 function handleUpdateUser(userId) {
@@ -1164,7 +1164,7 @@ function handleUpdateUser(userId) {
   if (dateOfBirth && dateOfBirth.trim() !== "") {
     const today = new Date();
     if (dateOfBirth > today.toISOString().split("T")[0]) {
-      toastr.error("Date of birth cannot be in the future!");
+      toastr.error(window.i18next.t("dateOfBirthCannotBeInFuture"));
       return;
     }
     data.dateOfBirth = new Date(dateOfBirth).toISOString();
@@ -1172,7 +1172,7 @@ function handleUpdateUser(userId) {
   if (window._editProfilePictureBase64) {
     data.profilePicture = window._editProfilePictureBase64;
   } else if (selectedImageFile) {
-    toastr.warning("Please crop your profile picture before saving!");
+    toastr.warning(window.i18next.t("pleaseCropYourProfilePictureBeforeSaving"));
     return;
   } else if (window._profilePictureRemoved) {
     data.profilePicture = null;
@@ -1220,23 +1220,23 @@ function handleUpdateUser(userId) {
     }
   }
   if (!changed) {
-    toastr.warning("You have not changed any information!");
+    toastr.warning(window.i18next.t("noInformationChanged"));
     $("#editUserModal").modal("hide");
     return;
   }
   if (data.phoneNumber !== original.phoneNumber) {
     if (data.phoneNumber && !/^[0-9]{10,11}$/.test(data.phoneNumber)) {
-      toastr.error("Phone number must be 10-11 digits and only numbers!");
+      toastr.error(window.i18next.t("phoneNumberMustBe10To11DigitsAndOnlyNumbers"));
       return;
     }
   }
   if (!data.fullName) {
-    toastr.error("Full name is required!");
+    toastr.error(window.i18next.t("fullNameRequired"));
     return;
   }
   const token = localStorage.getItem("authToken");
   if (!token) {
-    toastr.error("Authentication required!");
+    toastr.error(window.i18next.t("authenticationRequired"));
     return;
   }
   fetch(`http://localhost:5050/api/User/${userId}`, {
@@ -1267,7 +1267,7 @@ function handleUpdateUser(userId) {
         } else if (responseData.message) {
           toastr.error(responseData.message);
         } else {
-          toastr.error("Failed to update user!");
+          toastr.error(window.i18next.t("failedToUpdateUser"));
         }
         throw new Error(
           responseData.message || responseData.error || `HTTP ${res.status}`,
@@ -1276,7 +1276,7 @@ function handleUpdateUser(userId) {
       return responseData;
     })
     .then((res) => {
-      toastr.success("User updated successfully!");
+      toastr.success(window.i18next.t("userUpdatedSuccessfully"));
       $("#editUserModal").modal("hide");
 
       reloadCurrentPageData();
@@ -1296,13 +1296,13 @@ function handleUpdateUser(userId) {
         cropper = null;
       }
     })
-    .catch(() => toastr.error("Failed to update user!"));
+    .catch(() => toastr.error(window.i18next.t("failedToUpdateUser")));
 }
 
 function deleteUser(userId) {
   const token = localStorage.getItem("authToken");
   if (!userId || !token) {
-    toastr.error("Invalid request!");
+    toastr.error(window.i18next.t("invalidRequest"));
     return;
   }
 
@@ -1335,7 +1335,7 @@ function deleteUser(userId) {
       return responseData;
     })
     .then((res) => {
-      toastr.success("User deleted successfully!");
+      toastr.success(window.i18next.t("userDeletedSuccessfully"));
       $("#deleteUserModal").modal("hide");
       const userInfo = res.data || res;
 
@@ -1348,7 +1348,7 @@ function deleteUser(userId) {
       ) {
         localStorage.removeItem("authToken");
         sessionStorage.clear();
-        toastr.info("Your account has been deleted. Redirecting to login...");
+        toastr.info(window.i18next.t("yourAccountHasBeenDeleted"));
         setTimeout(() => {
           window.location.href = "/auth/login.html";
         }, 1000);
@@ -1358,14 +1358,14 @@ function deleteUser(userId) {
     })
     .catch((error) => {
       console.error("Delete user error:", error);
-      toastr.error(error.message || "Failed to delete user!");
+      toastr.error(error.message || window.i18next.t("failedToDeleteUser"));
     });
 }
 
 function restoreUser(userId) {
   const token = localStorage.getItem("authToken");
   if (!userId || !token) {
-    toastr.error("Invalid request!");
+    toastr.error(window.i18next.t("invalidRequest"));
     return;
   }
 
@@ -1381,7 +1381,7 @@ function restoreUser(userId) {
       return responseData;
     })
     .then((res) => {
-      toastr.success("User restored successfully!");
+      toastr.success(window.i18next.t("userRestoredSuccessfully"));
 
       $("#restoreUserModal").modal("hide");
 
@@ -1389,7 +1389,7 @@ function restoreUser(userId) {
     })
     .catch((error) => {
       console.error("Restore user error:", error);
-      toastr.error(error.message || "Failed to restore user!");
+      toastr.error(error.message || window.i18next.t("failedToRestoreUser"));
     });
 }
 
@@ -1435,7 +1435,7 @@ function openEditUserModal(userId) {
     .then((res) => {
       const user = res.data || res;
       if (!user || !user.id) {
-        toastr.error("User not found!");
+        toastr.error(window.i18next.t("userNotFound"));
         return;
       }
       $("#editUserForm").data("userid", user.id);
@@ -1479,7 +1479,7 @@ function openEditUserModal(userId) {
       window._profilePictureRemoved = false;
       $("#editUserModal").modal("show");
     })
-    .catch(() => toastr.error("Failed to load user information!"));
+    .catch(() => toastr.error(window.i18next.t("failedToLoadUserInformation")));
 
   $("#editUserModal").on("hidden.bs.modal", function () {
     if (cropper) {
@@ -1502,14 +1502,14 @@ function openViewUserModal(userId) {
     .then((res) => {
       const user = res.data || res;
       if (!user || !user.id) {
-        toastr.error("User not found!");
+        toastr.error(window.i18next.t("userNotFound"));
         return;
       }
       $("#viewUserModal").data("userid", user.id);
-      $(".user-username").text(user.username || "N/A");
-      $(".user-fullname").text(user.fullName || "N/A");
-      $(".user-email").text(user.email || "N/A");
-      $(".user-phone").text(user.phoneNumber || "N/A");
+      $(".user-username").text(user.username || window.i18next.t("notAvailable"));
+      $(".user-fullname").text(user.fullName || window.i18next.t("notAvailable"));
+      $(".user-email").text(user.email || window.i18next.t("notAvailable"));
+      $(".user-phone").text(user.phoneNumber || window.i18next.t("notAvailable"));
       $(".user-lastlogin").text(
         user.lastLoginAt
           ? new Date(user.lastLoginAt).toLocaleString("en-GB", {
@@ -1520,7 +1520,7 @@ function openViewUserModal(userId) {
               minute: "2-digit",
               second: "2-digit",
             })
-          : "Never",
+          : window.i18next.t("never"),
       );
       $(".user-deletedat").text(
         user.deletedAt
@@ -1532,17 +1532,17 @@ function openViewUserModal(userId) {
               minute: "2-digit",
               second: "2-digit",
             })
-          : "N/A",
+          : window.i18next.t("notAvailable"),
       );
-      $(".user-address").text(user.address || "N/A");
+      $(".user-address").text(user.address || window.i18next.t("notAvailable"));
       $(".user-dob").text(
         user.dateOfBirth
           ? new Date(user.dateOfBirth).toLocaleDateString("en-GB")
-          : "N/A",
+          : window.i18next.t("notAvailable"),
       );
-      $(".user-verified").text(user.isVerified ? "Yes" : "No");
-      $(".user-provider").text(user.loginProvider || "Local");
-      $(".user-bio").text(user.bio || "No bio available");
+      $(".user-verified").text(user.isVerified ? window.i18next.t("yes") : window.i18next.t("no"));
+      $(".user-provider").text(user.loginProvider || window.i18next.t("local"));
+      $(".user-bio").text(user.bio || window.i18next.t("noBioAvailable"));
       const $avatar = $("#view-user-avatar");
       const $fallback = $("#avatar-fallback");
       if (user.profilePicture && user.profilePicture.trim() !== "") {
@@ -1562,7 +1562,7 @@ function openViewUserModal(userId) {
       $("#viewUserModal").modal("show");
     })
     .catch((err) => {
-      toastr.error("Failed to load user information!");
+      toastr.error(window.i18next.t("failedToLoadUserInformation"));
     });
 }
 window.openViewUserModal = openViewUserModal;
@@ -1675,7 +1675,7 @@ $(document).on("submit", "#addNewUserForm", function (e) {
   e.preventDefault();
   handleAddUser();
 });
-$(document).on("click", '.breadcrumb-item a[href="index.html"]', function (e) {
+$(document).on("click", ".breadcrumb-item a[href=\"index.html\"]", function (e) {
   e.preventDefault();
   window.location.href = "index.html";
 });
@@ -1724,18 +1724,18 @@ function getStatusBadge(status) {
   switch (status) {
     case 1:
     case "Active":
-      return '<span class="badge bg-label-success">Active</span>';
+      return "<span class=\"badge bg-label-success\">" + window.i18next.t("active") + "</span>";
     case 2:
     case "Inactive":
-      return '<span class="badge bg-label-secondary">Inactive</span>';
+      return "<span class=\"badge bg-label-secondary\">" + window.i18next.t("inactive") + "</span>";
     case 3:
     case "Suspended":
-      return '<span class="badge bg-label-warning">Suspended</span>';
+      return "<span class=\"badge bg-label-warning\">" + window.i18next.t("suspended") + "</span>";
     case 4:
     case "Banned":
-      return '<span class="badge bg-label-danger">Banned</span>';
+      return "<span class=\"badge bg-label-danger\">" + window.i18next.t("banned") + "</span>";
     default:
-      return '<span class="badge bg-label-secondary">Unknown</span>';
+      return "<span class=\"badge bg-label-secondary\">" + window.i18next.t("unknown") + "</span>";
   }
 }
 
@@ -1749,14 +1749,14 @@ window.openDeleteUserModal = function (userId) {
     .then((res) => {
       const user = res.data || res;
       if (!user || !user.id) {
-        toastr.error("User not found!");
+        toastr.error(window.i18next.t("userNotFound"));
         return;
       }
       $("#deleteUserModal").data("userid", user.id);
-      $(".delete-user-username").text(user.username || "N/A");
-      $(".delete-user-fullname").text(user.fullName || "N/A");
-      $(".delete-user-email").text(user.email || "N/A");
-      $(".delete-user-phone").text(user.phoneNumber || "N/A");
+      $(".delete-user-username").text(user.username || window.i18next.t("notAvailable"));
+      $(".delete-user-fullname").text(user.fullName || window.i18next.t("notAvailable"));
+      $(".delete-user-email").text(user.email || window.i18next.t("notAvailable"));
+      $(".delete-user-phone").text(user.phoneNumber || window.i18next.t("notAvailable"));
       $(".delete-user-status").html(getStatusBadge(user.status));
       $(".delete-user-lastlogin").text(
         user.lastLoginAt
@@ -1768,9 +1768,9 @@ window.openDeleteUserModal = function (userId) {
               minute: "2-digit",
               second: "2-digit",
             })
-          : "Never",
+          : window.i18next.t("never"),
       );
-      $(".delete-user-address").text(user.address || "N/A");
+      $(".delete-user-address").text(user.address || window.i18next.t("notAvailable"));
       $(".delete-user-created").text(
         user.createdAt
           ? new Date(user.createdAt).toLocaleString("en-GB", {
@@ -1781,11 +1781,11 @@ window.openDeleteUserModal = function (userId) {
               minute: "2-digit",
               second: "2-digit",
             })
-          : "N/A",
+          : window.i18next.t("notAvailable"),
       );
       $("#deleteUserModal").modal("show");
     })
-    .catch(() => toastr.error("Failed to load user information!"));
+    .catch(() => toastr.error(window.i18next.t("failedToLoadUserInformation")));
 };
 
 window.openRestoreUserModal = function (userId) {
@@ -1798,14 +1798,14 @@ window.openRestoreUserModal = function (userId) {
     .then((res) => {
       const user = res.data || res;
       if (!user || !user.id) {
-        toastr.error("User not found!");
+        toastr.error(window.i18next.t("userNotFound"));
         return;
       }
       $("#restoreUserModal").data("userid", user.id);
-      $(".restore-user-username").text(user.username || "N/A");
-      $(".restore-user-fullname").text(user.fullName || "N/A");
-      $(".restore-user-email").text(user.email || "N/A");
-      $(".restore-user-phone").text(user.phoneNumber || "N/A");
+      $(".restore-user-username").text(user.username || window.i18next.t("notAvailable"));
+      $(".restore-user-fullname").text(user.fullName || window.i18next.t("notAvailable"));
+      $(".restore-user-email").text(user.email || window.i18next.t("notAvailable"));
+      $(".restore-user-phone").text(user.phoneNumber || window.i18next.t("notAvailable"));
       $(".restore-user-status").html(getStatusBadge(user.status));
       $(".restore-user-deletedat").text(
         user.deletedAt
@@ -1817,9 +1817,9 @@ window.openRestoreUserModal = function (userId) {
               minute: "2-digit",
               second: "2-digit",
             })
-          : "N/A",
+          : window.i18next.t("notAvailable"),
       );
-      $(".restore-user-address").text(user.address || "N/A");
+      $(".restore-user-address").text(user.address || window.i18next.t("notAvailable"));
       $(".restore-user-created").text(
         user.createdAt
           ? new Date(user.createdAt).toLocaleString("en-GB", {
@@ -1830,11 +1830,11 @@ window.openRestoreUserModal = function (userId) {
               minute: "2-digit",
               second: "2-digit",
             })
-          : "N/A",
+          : window.i18next.t("notAvailable"),
       );
       $("#restoreUserModal").modal("show");
     })
-    .catch(() => toastr.error("Failed to load user information!"));
+    .catch(() => toastr.error(window.i18next.t("failedToLoadUserInformation")));
 };
 
 // Helper to generate SVG avatar as data URL
@@ -1878,7 +1878,7 @@ async function loadUserProfile() {
   try {
     const userInfo = window.adminAuth.getCurrentUserInfo();
     if (!userInfo) {
-      toastr.error("User information not found");
+      toastr.error(window.i18next.t("userInformationNotFound"));
       return;
     }
 
@@ -1914,11 +1914,11 @@ async function loadUserProfile() {
         $("#profile-picture-preview").attr("src", dataUrl).show();
       }
     } else {
-      toastr.error("Failed to load user profile");
+      toastr.error(window.i18next.t("failedToLoadUserProfile"));
     }
   } catch (error) {
     console.error("Error loading user profile:", error);
-    toastr.error("Error loading user profile");
+    toastr.error(window.i18next.t("errorLoadingUserProfile"));
   }
 }
 
@@ -1926,7 +1926,7 @@ async function saveUserProfile(formData) {
   try {
     const userInfo = window.adminAuth.getCurrentUserInfo();
     if (!userInfo) {
-      toastr.error("User information not found");
+      toastr.error(window.i18next.t("userInformationNotFound"));
       return false;
     }
 
@@ -1943,16 +1943,16 @@ async function saveUserProfile(formData) {
     );
 
     if (response.ok) {
-      toastr.success("Profile updated successfully");
+      toastr.success(window.i18next.t("profileUpdatedSuccessfully"));
       return true;
     } else {
       const errorData = await response.json();
-      toastr.error(errorData.message || "Failed to update profile");
+      toastr.error(errorData.message || window.i18next.t("failedToUpdateProfile"));
       return false;
     }
   } catch (error) {
     console.error("Error saving user profile:", error);
-    toastr.error("Error saving profile");
+    toastr.error(window.i18next.t("errorSavingProfile"));
     return false;
   }
 }
@@ -1970,10 +1970,10 @@ function loadUserSettings() {
     $("#settings-language").val(settings.language || "en");
     $("#settings-darkmode").prop("checked", settings.darkMode === true);
 
-    toastr.success("Settings loaded");
+    toastr.success(window.i18next.t("settingsLoaded"));
   } catch (error) {
     console.error("Error loading settings:", error);
-    toastr.error("Error loading settings");
+    toastr.error(window.i18next.t("errorLoadingSettings"));
   }
 }
 
@@ -1986,7 +1986,7 @@ function saveUserSettings() {
     };
 
     localStorage.setItem("userSettings", JSON.stringify(settings));
-    toastr.success("Settings saved successfully");
+    toastr.success(window.i18next.t("settingsSavedSuccessfully"));
 
     // Apply settings
     if (settings.darkMode) {
@@ -1998,7 +1998,7 @@ function saveUserSettings() {
     return true;
   } catch (error) {
     console.error("Error saving settings:", error);
-    toastr.error("Error saving settings");
+    toastr.error(window.i18next.t("errorSavingSettings"));
     return false;
   }
 }
@@ -2116,21 +2116,21 @@ document.addEventListener("DOMContentLoaded", function () {
       const newPwd = document.getElementById("new-password").value.trim();
       const confirmPwd = document.getElementById("confirm-password").value.trim();
       if (!oldPwd || !newPwd || !confirmPwd) {
-        toastr.error("All fields are required");
+        toastr.error(window.i18next.t("allFieldsRequired"));
         return;
       }
       if (newPwd.length < 6) {
-        toastr.error("New password must be at least 6 characters");
+        toastr.error(window.i18next.t("newPasswordMustBeAtLeast6Characters"));
         return;
       }
       if (newPwd !== confirmPwd) {
-        toastr.error("Passwords do not match");
+        toastr.error(window.i18next.t("passwordsDoNotMatch"));
         return;
       }
       try {
         const token = localStorage.getItem("authToken");
         if (!token) {
-          toastr.error("Authentication required!");
+          toastr.error(window.i18next.t("authenticationRequired"));
           return;
         }
         const res = await fetch(
@@ -2150,13 +2150,13 @@ document.addEventListener("DOMContentLoaded", function () {
         );
         const data = await res.json();
         if (res.ok && data.success !== false) {
-          toastr.success("Password changed successfully");
+          toastr.success(window.i18next.t("passwordChangedSuccessfully"));
           form.reset();
         } else {
-          toastr.error(data.message || "Change password failed");
+          toastr.error(data.message || window.i18next.t("changePasswordFailed"));
         }
       } catch (err) {
-        toastr.error("Change password failed");
+        toastr.error(window.i18next.t("changePasswordFailed"));
       }
     });
   }

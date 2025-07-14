@@ -1,8 +1,8 @@
 (function (global, factory) {
-    typeof exports === 'object' && typeof module !== 'undefined' ? module.exports = factory(require('@form-validation/core')) :
-    typeof define === 'function' && define.amd ? define(['@form-validation/core'], factory) :
-    (global = typeof globalThis !== 'undefined' ? globalThis : global || self, (global.FormValidation = global.FormValidation || {}, global.FormValidation.plugins = global.FormValidation.plugins || {}, global.FormValidation.plugins.SubmitButton = factory(global.FormValidation)));
-})(this, (function (core) { 'use strict';
+    typeof exports === "object" && typeof module !== "undefined" ? module.exports = factory(require("@form-validation/core")) :
+    typeof define === "function" && define.amd ? define(["@form-validation/core"], factory) :
+    (global = typeof globalThis !== "undefined" ? globalThis : global || self, (global.FormValidation = global.FormValidation || {}, global.FormValidation.plugins = global.FormValidation.plugins || {}, global.FormValidation.plugins.SubmitButton = factory(global.FormValidation)));
+})(this, (function (core) { "use strict";
 
     /******************************************************************************
     Copyright (c) Microsoft Corporation.
@@ -52,7 +52,7 @@
                 // By default, don't perform validation when clicking on
                 // the submit button/input which have `formnovalidate` attribute
                 buttons: function (form) {
-                    return [].slice.call(form.querySelectorAll('[type="submit"]:not([formnovalidate])'));
+                    return [].slice.call(form.querySelectorAll("[type=\"submit\"]:not([formnovalidate])"));
                 },
                 liveMode: true,
             }, opts);
@@ -69,28 +69,28 @@
             var form = this.core.getFormElement();
             this.submitButtons = this.opts.buttons(form);
             // Disable client side validation in HTML 5
-            form.setAttribute('novalidate', 'novalidate');
+            form.setAttribute("novalidate", "novalidate");
             // Disable the default submission first
-            form.addEventListener('submit', this.submitHandler);
-            this.hiddenClickedEle = document.createElement('input');
-            this.hiddenClickedEle.setAttribute('type', 'hidden');
+            form.addEventListener("submit", this.submitHandler);
+            this.hiddenClickedEle = document.createElement("input");
+            this.hiddenClickedEle.setAttribute("type", "hidden");
             form.appendChild(this.hiddenClickedEle);
             this.submitButtons.forEach(function (button) {
-                button.addEventListener('click', _this.buttonClickHandler);
+                button.addEventListener("click", _this.buttonClickHandler);
             });
-            this.core.registerFilter('element-ignored', this.ignoreValidationFilter);
+            this.core.registerFilter("element-ignored", this.ignoreValidationFilter);
         };
         SubmitButton.prototype.uninstall = function () {
             var _this = this;
             var form = this.core.getFormElement();
             if (form instanceof HTMLFormElement) {
-                form.removeEventListener('submit', this.submitHandler);
+                form.removeEventListener("submit", this.submitHandler);
             }
             this.submitButtons.forEach(function (button) {
-                button.removeEventListener('click', _this.buttonClickHandler);
+                button.removeEventListener("click", _this.buttonClickHandler);
             });
             this.hiddenClickedEle.parentElement.removeChild(this.hiddenClickedEle);
-            this.core.deregisterFilter('element-ignored', this.ignoreValidationFilter);
+            this.core.deregisterFilter("element-ignored", this.ignoreValidationFilter);
         };
         SubmitButton.prototype.handleSubmitEvent = function (e) {
             this.validateForm(e);
@@ -102,13 +102,13 @@
                 if (this.opts.aspNetButton && this.isFormValid === true) ;
                 else {
                     var form = this.core.getFormElement();
-                    form.removeEventListener('submit', this.submitHandler);
+                    form.removeEventListener("submit", this.submitHandler);
                     this.clickedButton = e.target;
-                    var name_1 = this.clickedButton.getAttribute('name');
-                    var value = this.clickedButton.getAttribute('value');
+                    var name_1 = this.clickedButton.getAttribute("name");
+                    var value = this.clickedButton.getAttribute("value");
                     if (name_1 && value) {
-                        this.hiddenClickedEle.setAttribute('name', name_1);
-                        this.hiddenClickedEle.setAttribute('value', value);
+                        this.hiddenClickedEle.setAttribute("name", name_1);
+                        this.hiddenClickedEle.setAttribute("value", value);
                     }
                     this.validateForm(e);
                 }
@@ -121,9 +121,9 @@
             }
             e.preventDefault();
             this.core.validate().then(function (result) {
-                if (result === 'Valid' && _this.opts.aspNetButton && !_this.isFormValid && _this.clickedButton) {
+                if (result === "Valid" && _this.opts.aspNetButton && !_this.isFormValid && _this.clickedButton) {
                     _this.isFormValid = true;
-                    _this.clickedButton.removeEventListener('click', _this.buttonClickHandler);
+                    _this.clickedButton.removeEventListener("click", _this.buttonClickHandler);
                     // It's the time for ASP.Net submit button to do its own submission
                     _this.clickedButton.click();
                 }

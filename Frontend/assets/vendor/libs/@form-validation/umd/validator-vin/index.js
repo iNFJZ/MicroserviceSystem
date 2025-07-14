@@ -1,8 +1,8 @@
 (function (global, factory) {
-    typeof exports === 'object' && typeof module !== 'undefined' ? module.exports = factory() :
-    typeof define === 'function' && define.amd ? define(factory) :
-    (global = typeof globalThis !== 'undefined' ? globalThis : global || self, (global.FormValidation = global.FormValidation || {}, global.FormValidation.validators = global.FormValidation.validators || {}, global.FormValidation.validators.vin = factory()));
-})(this, (function () { 'use strict';
+    typeof exports === "object" && typeof module !== "undefined" ? module.exports = factory() :
+    typeof define === "function" && define.amd ? define(factory) :
+    (global = typeof globalThis !== "undefined" ? globalThis : global || self, (global.FormValidation = global.FormValidation || {}, global.FormValidation.validators = global.FormValidation.validators || {}, global.FormValidation.validators.vin = factory()));
+})(this, (function () { "use strict";
 
     /**
      * FormValidation (https://formvalidation.io)
@@ -15,7 +15,7 @@
              * Validate an US VIN (Vehicle Identification Number)
              */
             validate: function (input) {
-                if (input.value === '') {
+                if (input.value === "") {
                     return { valid: true };
                 }
                 // Don't accept I, O, Q characters
@@ -65,8 +65,8 @@
                     sum += chars["".concat(v.charAt(i))] * weights[i];
                 }
                 var reminder = "".concat(sum % 11);
-                if (reminder === '10') {
-                    reminder = 'X';
+                if (reminder === "10") {
+                    reminder = "X";
                 }
                 return { valid: reminder === v.charAt(8) };
             },

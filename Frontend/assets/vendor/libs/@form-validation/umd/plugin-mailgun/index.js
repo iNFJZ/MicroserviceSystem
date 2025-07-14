@@ -1,8 +1,8 @@
 (function (global, factory) {
-    typeof exports === 'object' && typeof module !== 'undefined' ? module.exports = factory(require('@form-validation/core'), require('@form-validation/plugin-alias')) :
-    typeof define === 'function' && define.amd ? define(['@form-validation/core', '@form-validation/plugin-alias'], factory) :
-    (global = typeof globalThis !== 'undefined' ? globalThis : global || self, (global.FormValidation = global.FormValidation || {}, global.FormValidation.plugins = global.FormValidation.plugins || {}, global.FormValidation.plugins.Mailgun = factory(global.FormValidation, global.FormValidation.plugins)));
-})(this, (function (core, pluginAlias) { 'use strict';
+    typeof exports === "object" && typeof module !== "undefined" ? module.exports = factory(require("@form-validation/core"), require("@form-validation/plugin-alias")) :
+    typeof define === "function" && define.amd ? define(["@form-validation/core", "@form-validation/plugin-alias"], factory) :
+    (global = typeof globalThis !== "undefined" ? globalThis : global || self, (global.FormValidation = global.FormValidation || {}, global.FormValidation.plugins = global.FormValidation.plugins || {}, global.FormValidation.plugins.Mailgun = factory(global.FormValidation, global.FormValidation.plugins)));
+})(this, (function (core, pluginAlias) { "use strict";
 
     /******************************************************************************
     Copyright (c) Microsoft Corporation.
@@ -54,10 +54,10 @@
         }
         Mailgun.prototype.install = function () {
             if (this.opts.suggestion) {
-                this.core.on('plugins.message.displayed', this.messageDisplayedHandler);
+                this.core.on("plugins.message.displayed", this.messageDisplayedHandler);
             }
             var aliasOpts = {
-                mailgun: 'remote',
+                mailgun: "remote",
             };
             this.core.registerPlugin(Mailgun.ALIAS_PLUGIN, new pluginAlias.Alias(aliasOpts)).addField(this.opts.field, {
                 validators: {
@@ -67,39 +67,39 @@
                             api_key: this.opts.apiKey,
                         },
                         headers: {
-                            'Content-Type': 'application/json',
+                            "Content-Type": "application/json",
                         },
                         message: this.opts.message,
-                        name: 'address',
-                        url: 'https://api.mailgun.net/v3/address/validate',
-                        validKey: 'is_valid',
+                        name: "address",
+                        url: "https://api.mailgun.net/v3/address/validate",
+                        validKey: "is_valid",
                     },
                 },
             });
         };
         Mailgun.prototype.uninstall = function () {
             if (this.opts.suggestion) {
-                this.core.off('plugins.message.displayed', this.messageDisplayedHandler);
+                this.core.off("plugins.message.displayed", this.messageDisplayedHandler);
             }
             this.core.deregisterPlugin(Mailgun.ALIAS_PLUGIN);
             this.core.removeField(this.opts.field);
         };
         Mailgun.prototype.onEnabled = function () {
-            this.core.enableValidator(this.opts.field, 'mailgun').enablePlugin(Mailgun.ALIAS_PLUGIN);
+            this.core.enableValidator(this.opts.field, "mailgun").enablePlugin(Mailgun.ALIAS_PLUGIN);
         };
         Mailgun.prototype.onDisabled = function () {
-            this.core.disableValidator(this.opts.field, 'mailgun').disablePlugin(Mailgun.ALIAS_PLUGIN);
+            this.core.disableValidator(this.opts.field, "mailgun").disablePlugin(Mailgun.ALIAS_PLUGIN);
         };
         Mailgun.prototype.onMessageDisplayed = function (e) {
             if (this.isEnabled &&
                 e.field === this.opts.field &&
-                'mailgun' === e.validator &&
+                "mailgun" === e.validator &&
                 e.meta &&
-                e.meta['did_you_mean']) {
-                e.messageElement.innerHTML = "Did you mean ".concat(e.meta['did_you_mean'], "?");
+                e.meta["did_you_mean"]) {
+                e.messageElement.innerHTML = "Did you mean ".concat(e.meta["did_you_mean"], "?");
             }
         };
-        Mailgun.ALIAS_PLUGIN = '___mailgunAlias';
+        Mailgun.ALIAS_PLUGIN = "___mailgunAlias";
         return Mailgun;
     }(core.Plugin));
 

@@ -1,8 +1,8 @@
 (function (global, factory) {
-    typeof exports === 'object' && typeof module !== 'undefined' ? module.exports = factory() :
-    typeof define === 'function' && define.amd ? define(factory) :
-    (global = typeof globalThis !== 'undefined' ? globalThis : global || self, (global.FormValidation = global.FormValidation || {}, global.FormValidation.validators = global.FormValidation.validators || {}, global.FormValidation.validators.imo = factory()));
-})(this, (function () { 'use strict';
+    typeof exports === "object" && typeof module !== "undefined" ? module.exports = factory() :
+    typeof define === "function" && define.amd ? define(factory) :
+    (global = typeof globalThis !== "undefined" ? globalThis : global || self, (global.FormValidation = global.FormValidation || {}, global.FormValidation.validators = global.FormValidation.validators || {}, global.FormValidation.validators.imo = factory()));
+})(this, (function () { "use strict";
 
     /**
      * FormValidation (https://formvalidation.io)
@@ -16,14 +16,14 @@
              * @see http://en.wikipedia.org/wiki/IMO_Number
              */
             validate: function (input) {
-                if (input.value === '') {
+                if (input.value === "") {
                     return { valid: true };
                 }
                 if (!/^IMO \d{7}$/i.test(input.value)) {
                     return { valid: false };
                 }
                 // Grab just the digits
-                var digits = input.value.replace(/^.*(\d{7})$/, '$1');
+                var digits = input.value.replace(/^.*(\d{7})$/, "$1");
                 var sum = 0;
                 for (var i = 6; i >= 1; i--) {
                     sum += parseInt(digits.slice(6 - i, -i), 10) * (i + 1);

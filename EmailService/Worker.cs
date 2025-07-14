@@ -417,8 +417,8 @@ Body: {{ ""token"": ""your-token"", ""newPassword"": ""your-new-password"", ""co
             {
                 resetLink = $"{_config["Frontend:BaseUrl"]}/auth/reset-password.html?token={emailEvent.Token}";
             }
-            
-            mail.Body = _emailTemplateService.GenerateRegisterGoogleContent(emailEvent.Username, resetLink);
+            string lang = emailEvent.Language ?? "en";
+            mail.Body = _emailTemplateService.GenerateRegisterGoogleContent(emailEvent.Username, resetLink, lang);
             try
             {
                 using var smtp = new SmtpClient(_smtpHost, _smtpPort)

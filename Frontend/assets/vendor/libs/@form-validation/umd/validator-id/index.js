@@ -1,8 +1,8 @@
 (function (global, factory) {
-    typeof exports === 'object' && typeof module !== 'undefined' ? module.exports = factory(require('@form-validation/core')) :
-    typeof define === 'function' && define.amd ? define(['@form-validation/core'], factory) :
-    (global = typeof globalThis !== 'undefined' ? globalThis : global || self, (global.FormValidation = global.FormValidation || {}, global.FormValidation.validators = global.FormValidation.validators || {}, global.FormValidation.validators.id = factory(global.FormValidation)));
-})(this, (function (core) { 'use strict';
+    typeof exports === "object" && typeof module !== "undefined" ? module.exports = factory(require("@form-validation/core")) :
+    typeof define === "function" && define.amd ? define(["@form-validation/core"], factory) :
+    (global = typeof globalThis !== "undefined" ? globalThis : global || self, (global.FormValidation = global.FormValidation || {}, global.FormValidation.validators = global.FormValidation.validators || {}, global.FormValidation.validators.id = factory(global.FormValidation)));
+})(this, (function (core) { "use strict";
 
     /**
      * FormValidation (https://formvalidation.io)
@@ -17,7 +17,7 @@
      */
     function arId(value) {
         // Replace dot with empty space
-        var v = value.replace(/\./g, '');
+        var v = value.replace(/\./g, "");
         return {
             meta: {},
             valid: /^\d{7,8}$/.test(v),
@@ -77,15 +77,15 @@
         // 80-89: Serbian province of Vojvodina
         // 90-99: Kosovo
         switch (countryCode.toUpperCase()) {
-            case 'BA':
+            case "BA":
                 return 10 <= rr && rr <= 19;
-            case 'MK':
+            case "MK":
                 return 41 <= rr && rr <= 49;
-            case 'ME':
+            case "ME":
                 return 20 <= rr && rr <= 29;
-            case 'RS':
+            case "RS":
                 return 70 <= rr && rr <= 99;
-            case 'SI':
+            case "SI":
                 return 50 <= rr && rr <= 59;
             default:
                 return true;
@@ -103,7 +103,7 @@
     function baId(value) {
         return {
             meta: {},
-            valid: jmbg(value, 'BA'),
+            valid: jmbg(value, "BA"),
         };
     }
 
@@ -126,7 +126,7 @@
                 valid: false,
             };
         }
-        var v = value.replace(/\s/g, '');
+        var v = value.replace(/\s/g, "");
         // Check the birth date
         var year = parseInt(v.substr(0, 2), 10) + 1900;
         var month = parseInt(v.substr(2, 2), 10);
@@ -169,7 +169,7 @@
      * @returns {ValidateResult}
      */
     function brId(value) {
-        var v = value.replace(/\D/g, '');
+        var v = value.replace(/\D/g, "");
         if (!/^\d{11}$/.test(v) || /^1{11}|2{11}|3{11}|4{11}|5{11}|6{11}|7{11}|8{11}|9{11}|0{11}$/.test(v)) {
             return {
                 meta: {},
@@ -224,7 +224,7 @@
                 valid: false,
             };
         }
-        var v = value.replace(/\D/g, '').substr(3);
+        var v = value.replace(/\D/g, "").substr(3);
         var length = v.length;
         var weight = length === 8 ? [3, 1] : [1, 3];
         var sum = 0;
@@ -257,7 +257,7 @@
                 valid: false,
             };
         }
-        var v = value.replace(/-/g, '');
+        var v = value.replace(/-/g, "");
         while (v.length < 9) {
             v = "0".concat(v);
         }
@@ -269,10 +269,10 @@
         sum = 11 - (sum % 11);
         var cd = "".concat(sum);
         if (sum === 11) {
-            cd = '0';
+            cd = "0";
         }
         else if (sum === 10) {
-            cd = 'K';
+            cd = "K";
         }
         return {
             meta: {},
@@ -1074,7 +1074,7 @@
                 sum += parseInt(v.charAt(i), 10) * weight[i];
             }
             sum = (12 - (sum % 11)) % 11;
-            var checksum = v.charAt(17).toUpperCase() !== 'X' ? parseInt(v.charAt(17), 10) : 10;
+            var checksum = v.charAt(17).toUpperCase() !== "X" ? parseInt(v.charAt(17), 10) : 10;
             return {
                 meta: {},
                 valid: checksum === sum,
@@ -1097,7 +1097,7 @@
      * @returns {ValidateResult}
      */
     function coId(value) {
-        var v = value.replace(/\./g, '').replace('-', '');
+        var v = value.replace(/\./g, "").replace("-", "");
         if (!/^\d{8,16}$/.test(v)) {
             return {
                 meta: {},
@@ -1197,16 +1197,16 @@
                 valid: false,
             };
         }
-        var v = value.replace(/-/g, '');
+        var v = value.replace(/-/g, "");
         var day = parseInt(v.substr(0, 2), 10);
         var month = parseInt(v.substr(2, 2), 10);
         var year = parseInt(v.substr(4, 2), 10);
         switch (true) {
-            case '5678'.indexOf(v.charAt(6)) !== -1 && year >= 58:
+            case "5678".indexOf(v.charAt(6)) !== -1 && year >= 58:
                 year += 1800;
                 break;
-            case '0123'.indexOf(v.charAt(6)) !== -1:
-            case '49'.indexOf(v.charAt(6)) !== -1 && year >= 37:
+            case "0123".indexOf(v.charAt(6)) !== -1:
+            case "49".indexOf(v.charAt(6)) !== -1 && year >= 37:
                 year += 1900;
                 break;
             default:
@@ -1241,20 +1241,20 @@
                 valid: false,
             };
         }
-        var v = value.replace(/-/g, '');
+        var v = value.replace(/-/g, "");
         var check;
         var tpe;
         var isValid = true;
         if (isDNI || isNIE) {
-            tpe = 'DNI';
-            var index = 'XYZ'.indexOf(v.charAt(0));
+            tpe = "DNI";
+            var index = "XYZ".indexOf(v.charAt(0));
             if (index !== -1) {
                 // It is NIE number
-                v = index + v.substr(1) + '';
-                tpe = 'NIE';
+                v = index + v.substr(1) + "";
+                tpe = "NIE";
             }
             check = parseInt(v.substr(0, 8), 10);
-            check = 'TRWAGMYFPDXBNJZSQVHLCKE'[check % 23];
+            check = "TRWAGMYFPDXBNJZSQVHLCKE"[check % 23];
             return {
                 meta: {
                     type: tpe,
@@ -1264,7 +1264,7 @@
         }
         else {
             check = v.substr(1, 7);
-            tpe = 'CIF';
+            tpe = "CIF";
             var letter = v[0];
             var control = v.substr(-1);
             var sum = 0;
@@ -1277,7 +1277,7 @@
                     sum += parseInt(check[i], 10);
                 }
                 else {
-                    var tmp = '' + parseInt(check[i], 10) * 2;
+                    var tmp = "" + parseInt(check[i], 10) * 2;
                     sum += parseInt(tmp[0], 10);
                     if (tmp.length === 2) {
                         sum += parseInt(tmp[1], 10);
@@ -1290,17 +1290,17 @@
             if (lastDigit !== 0) {
                 lastDigit = 10 - lastDigit;
             }
-            if ('KQS'.indexOf(letter) !== -1) {
+            if ("KQS".indexOf(letter) !== -1) {
                 // If the CIF starts with a K, Q or S, the control digit must be a letter
-                isValid = control === 'JABCDEFGHI'[lastDigit];
+                isValid = control === "JABCDEFGHI"[lastDigit];
             }
-            else if ('ABEH'.indexOf(letter) !== -1) {
+            else if ("ABEH".indexOf(letter) !== -1) {
                 // If it starts with A, B, E or H, it has to be a number
-                isValid = control === '' + lastDigit;
+                isValid = control === "" + lastDigit;
             }
             else {
                 // In any other case, it doesn't matter
-                isValid = control === '' + lastDigit || control === 'JABCDEFGHI'[lastDigit];
+                isValid = control === "" + lastDigit || control === "JABCDEFGHI"[lastDigit];
             }
             return {
                 meta: {
@@ -1333,8 +1333,8 @@
         var month = parseInt(value.substr(2, 2), 10);
         var year = parseInt(value.substr(4, 2), 10);
         var centuries = {
-            '+': 1800,
-            '-': 1900,
+            "+": 1800,
+            "-": 1900,
             A: 2000,
         };
         year = centuries[value.charAt(6)] + year;
@@ -1351,10 +1351,10 @@
                 valid: false,
             };
         }
-        var n = parseInt(value.substr(0, 6) + value.substr(7, 3) + '', 10);
+        var n = parseInt(value.substr(0, 6) + value.substr(7, 3) + "", 10);
         return {
             meta: {},
-            valid: '0123456789ABCDEFHJKLMNPRSTUVWXY'.charAt(n % 31) === value.charAt(10),
+            valid: "0123456789ABCDEFHJKLMNPRSTUVWXY".charAt(n % 31) === value.charAt(10),
         };
     }
 
@@ -1384,10 +1384,10 @@
             case /^\d{2}$/.test(cog):
                 v = value;
                 break;
-            case cog === '2A':
+            case cog === "2A":
                 v = "".concat(value.substr(0, 5), "19").concat(value.substr(7));
                 break;
-            case cog === '2B':
+            case cog === "2B":
                 v = "".concat(value.substr(0, 5), "18").concat(value.substr(7));
                 break;
             default:
@@ -1423,7 +1423,7 @@
                 valid: false,
             };
         }
-        var alphabet = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ';
+        var alphabet = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
         var firstChar = v.charAt(0);
         var secondChar = v.charAt(1);
         var sum = 0;
@@ -1443,7 +1443,7 @@
             sum += (7 - i) * parseInt(digitParts.charAt(i), 10);
         }
         var remaining = sum % 11;
-        var checkDigit = remaining === 0 ? '0' : 11 - remaining === 10 ? 'A' : "".concat(11 - remaining);
+        var checkDigit = remaining === 0 ? "0" : 11 - remaining === 10 ? "A" : "".concat(11 - remaining);
         return {
             meta: {},
             valid: checkDigit === digitParts.charAt(length - 1),
@@ -1486,7 +1486,7 @@
                 valid: false,
             };
         }
-        var converted = value.split('').map(function (item) { return parseInt(item, 10); });
+        var converted = value.split("").map(function (item) { return parseInt(item, 10); });
         return {
             meta: {},
             valid: verhoeff(converted),
@@ -1516,7 +1516,7 @@
             while (input.length < 7) {
                 input = "0".concat(input);
             }
-            var alphabet = 'WABCDEFGHIJKLMNOPQRSTUV';
+            var alphabet = "WABCDEFGHIJKLMNOPQRSTUV";
             var sum = 0;
             for (var i = 0; i < 7; i++) {
                 sum += parseInt(input.charAt(i), 10) * (8 - i);
@@ -1525,8 +1525,8 @@
             return alphabet[sum % 23];
         };
         // 2013 format
-        var isValid = value.length === 9 && ('A' === value.charAt(8) || 'H' === value.charAt(8))
-            ? value.charAt(7) === getCheckDigit(value.substr(0, 7) + value.substr(8) + '')
+        var isValid = value.length === 9 && ("A" === value.charAt(8) || "H" === value.charAt(8))
+            ? value.charAt(7) === getCheckDigit(value.substr(0, 7) + value.substr(8) + "")
             : // The old format
                 value.charAt(7) === getCheckDigit(value.substr(0, 7));
         return {
@@ -1580,7 +1580,7 @@
                 valid: false,
             };
         }
-        var v = value.replace(/-/g, '');
+        var v = value.replace(/-/g, "");
         var day = parseInt(v.substr(0, 2), 10);
         var month = parseInt(v.substr(2, 2), 10);
         var year = parseInt(v.substr(4, 2), 10);
@@ -1618,7 +1618,7 @@
      * @returns {ValidateResult}
      */
     function krId(value) {
-        var v = value.replace('-', '');
+        var v = value.replace("-", "");
         if (!/^\d{13}$/.test(v)) {
             return {
                 meta: {},
@@ -1631,16 +1631,16 @@
         var month = parseInt(v.substr(2, 2), 10);
         var day = parseInt(v.substr(4, 2), 10);
         switch (sDigit) {
-            case '1':
-            case '2':
-            case '5':
-            case '6':
+            case "1":
+            case "2":
+            case "5":
+            case "6":
                 year += 1900;
                 break;
-            case '3':
-            case '4':
-            case '7':
-            case '8':
+            case "3":
+            case "4":
+            case "7":
+            case "8":
                 year += 2000;
                 break;
             default:
@@ -1748,7 +1748,7 @@
                 valid: false,
             };
         }
-        var v = value.replace(/\D/g, '');
+        var v = value.replace(/\D/g, "");
         // Check birth date
         var day = parseInt(v.substr(0, 2), 10);
         var month = parseInt(v.substr(2, 2), 10);
@@ -1784,7 +1784,7 @@
     function meId(value) {
         return {
             meta: {},
-            valid: jmbg(value, 'ME'),
+            valid: jmbg(value, "ME"),
         };
     }
 
@@ -1799,7 +1799,7 @@
     function mkId(value) {
         return {
             meta: {},
-            valid: jmbg(value, 'MK'),
+            valid: jmbg(value, "MK"),
         };
     }
 
@@ -1828,87 +1828,87 @@
         // http://quemamadera.blogspot.com/2008/02/las-palabras-inconvenientes-del-curp.html
         // https://www.reddit.com/r/mexico/comments/bo8cv/hoy_aprendi_que_existe_un_catalogo_de_palabras/
         var blacklistNames = [
-            'BACA',
-            'BAKA',
-            'BUEI',
-            'BUEY',
-            'CACA',
-            'CACO',
-            'CAGA',
-            'CAGO',
-            'CAKA',
-            'CAKO',
-            'COGE',
-            'COGI',
-            'COJA',
-            'COJE',
-            'COJI',
-            'COJO',
-            'COLA',
-            'CULO',
-            'FALO',
-            'FETO',
-            'GETA',
-            'GUEI',
-            'GUEY',
-            'JETA',
-            'JOTO',
-            'KACA',
-            'KACO',
-            'KAGA',
-            'KAGO',
-            'KAKA',
-            'KAKO',
-            'KOGE',
-            'KOGI',
-            'KOJA',
-            'KOJE',
-            'KOJI',
-            'KOJO',
-            'KOLA',
-            'KULO',
-            'LILO',
-            'LOCA',
-            'LOCO',
-            'LOKA',
-            'LOKO',
-            'MAME',
-            'MAMO',
-            'MEAR',
-            'MEAS',
-            'MEON',
-            'MIAR',
-            'MION',
-            'MOCO',
-            'MOKO',
-            'MULA',
-            'MULO',
-            'NACA',
-            'NACO',
-            'PEDA',
-            'PEDO',
-            'PENE',
-            'PIPI',
-            'PITO',
-            'POPO',
-            'PUTA',
-            'PUTO',
-            'QULO',
-            'RATA',
-            'ROBA',
-            'ROBE',
-            'ROBO',
-            'RUIN',
-            'SENO',
-            'TETA',
-            'VACA',
-            'VAGA',
-            'VAGO',
-            'VAKA',
-            'VUEI',
-            'VUEY',
-            'WUEI',
-            'WUEY',
+            "BACA",
+            "BAKA",
+            "BUEI",
+            "BUEY",
+            "CACA",
+            "CACO",
+            "CAGA",
+            "CAGO",
+            "CAKA",
+            "CAKO",
+            "COGE",
+            "COGI",
+            "COJA",
+            "COJE",
+            "COJI",
+            "COJO",
+            "COLA",
+            "CULO",
+            "FALO",
+            "FETO",
+            "GETA",
+            "GUEI",
+            "GUEY",
+            "JETA",
+            "JOTO",
+            "KACA",
+            "KACO",
+            "KAGA",
+            "KAGO",
+            "KAKA",
+            "KAKO",
+            "KOGE",
+            "KOGI",
+            "KOJA",
+            "KOJE",
+            "KOJI",
+            "KOJO",
+            "KOLA",
+            "KULO",
+            "LILO",
+            "LOCA",
+            "LOCO",
+            "LOKA",
+            "LOKO",
+            "MAME",
+            "MAMO",
+            "MEAR",
+            "MEAS",
+            "MEON",
+            "MIAR",
+            "MION",
+            "MOCO",
+            "MOKO",
+            "MULA",
+            "MULO",
+            "NACA",
+            "NACO",
+            "PEDA",
+            "PEDO",
+            "PENE",
+            "PIPI",
+            "PITO",
+            "POPO",
+            "PUTA",
+            "PUTO",
+            "QULO",
+            "RATA",
+            "ROBA",
+            "ROBE",
+            "ROBO",
+            "RUIN",
+            "SENO",
+            "TETA",
+            "VACA",
+            "VAGA",
+            "VAGO",
+            "VAKA",
+            "VUEI",
+            "VUEY",
+            "WUEI",
+            "WUEY",
         ];
         var name = v.substr(0, 4);
         if (blacklistNames.indexOf(name) >= 0) {
@@ -1935,7 +1935,7 @@
         }
         // Check the gender
         var gender = v.charAt(10);
-        if (gender !== 'H' && gender !== 'M') {
+        if (gender !== "H" && gender !== "M") {
             // H for male, M for female
             return {
                 meta: {},
@@ -1945,39 +1945,39 @@
         // Check the state
         var state = v.substr(11, 2);
         var states = [
-            'AS',
-            'BC',
-            'BS',
-            'CC',
-            'CH',
-            'CL',
-            'CM',
-            'CS',
-            'DF',
-            'DG',
-            'GR',
-            'GT',
-            'HG',
-            'JC',
-            'MC',
-            'MN',
-            'MS',
-            'NE',
-            'NL',
-            'NT',
-            'OC',
-            'PL',
-            'QR',
-            'QT',
-            'SL',
-            'SP',
-            'SR',
-            'TC',
-            'TL',
-            'TS',
-            'VZ',
-            'YN',
-            'ZS',
+            "AS",
+            "BC",
+            "BS",
+            "CC",
+            "CH",
+            "CL",
+            "CM",
+            "CS",
+            "DF",
+            "DG",
+            "GR",
+            "GT",
+            "HG",
+            "JC",
+            "MC",
+            "MN",
+            "MS",
+            "NE",
+            "NL",
+            "NT",
+            "OC",
+            "PL",
+            "QR",
+            "QT",
+            "SL",
+            "SP",
+            "SR",
+            "TC",
+            "TL",
+            "TS",
+            "VZ",
+            "YN",
+            "ZS",
         ];
         if (states.indexOf(state) === -1) {
             return {
@@ -1986,7 +1986,7 @@
             };
         }
         // Calculate the check digit
-        var alphabet = '0123456789ABCDEFGHIJKLMN&OPQRSTUVWXYZ';
+        var alphabet = "0123456789ABCDEFGHIJKLMN&OPQRSTUVWXYZ";
         var sum = 0;
         var length = v.length;
         for (var i = 0; i < length - 1; i++) {
@@ -2030,7 +2030,7 @@
         }
         // Validate place of birth
         var placeOfBirth = value.substr(6, 2);
-        var notAvailablePlaces = ['17', '18', '19', '20', '69', '70', '73', '80', '81', '94', '95', '96', '97'];
+        var notAvailablePlaces = ["17", "18", "19", "20", "69", "70", "73", "80", "81", "94", "95", "96", "97"];
         return {
             meta: {},
             valid: notAvailablePlaces.indexOf(placeOfBirth) === -1,
@@ -2065,7 +2065,7 @@
                 valid: false,
             };
         }
-        v = v.replace(/\./g, '');
+        v = v.replace(/\./g, "");
         if (parseInt(v, 10) === 0) {
             return {
                 meta: {},
@@ -2160,7 +2160,7 @@
         }
         var cd = sum % 11;
         var checkDigit = [6, 5, 4, 3, 2, 1, 1, 0, 9, 8, 7][cd];
-        var checkChar = 'KJIHGFEDCBA'.charAt(cd);
+        var checkChar = "KJIHGFEDCBA".charAt(cd);
         return {
             meta: {},
             valid: value.charAt(8) === "".concat(checkDigit) || value.charAt(8) === checkChar,
@@ -2249,7 +2249,7 @@
             };
         }
         if (gender !== 9) {
-            year = centuries[gender + ''] + year;
+            year = centuries[gender + ""] + year;
             if (!isValidDate$2(year, month, day)) {
                 return {
                     meta: {},
@@ -2285,7 +2285,7 @@
     function rsId(value) {
         return {
             meta: {},
-            valid: jmbg(value, 'RS'),
+            valid: jmbg(value, "RS"),
         };
     }
 
@@ -2309,7 +2309,7 @@
                 valid: false,
             };
         }
-        var v = value.replace(/[^0-9]/g, '');
+        var v = value.replace(/[^0-9]/g, "");
         var year = parseInt(v.substr(0, 2), 10) + 1900;
         var month = parseInt(v.substr(2, 2), 10);
         var day = parseInt(v.substr(4, 2), 10);
@@ -2337,7 +2337,7 @@
     function siId(value) {
         return {
             meta: {},
-            valid: jmbg(value, 'SI'),
+            valid: jmbg(value, "SI"),
         };
     }
 
@@ -2435,7 +2435,7 @@
             };
         }
         var length = v.length;
-        var alphabet = 'ABCDEFGHJKLMNPQRSTUVXYWZIO';
+        var alphabet = "ABCDEFGHJKLMNPQRSTUVXYWZIO";
         var letterIndex = alphabet.indexOf(v.charAt(0)) + 10;
         var letterValue = Math.floor(letterIndex / 10) + (letterIndex % 10) * (length - 1);
         var sum = 0;
@@ -2528,48 +2528,48 @@
     function id() {
         // Supported country codes
         var COUNTRY_CODES = [
-            'AR',
-            'BA',
-            'BG',
-            'BR',
-            'CH',
-            'CL',
-            'CN',
-            'CO',
-            'CZ',
-            'DK',
-            'EE',
-            'ES',
-            'FI',
-            'FR',
-            'HK',
-            'HR',
-            'ID',
-            'IE',
-            'IL',
-            'IS',
-            'KR',
-            'LT',
-            'LV',
-            'ME',
-            'MK',
-            'MX',
-            'MY',
-            'NL',
-            'NO',
-            'PE',
-            'PL',
-            'RO',
-            'RS',
-            'SE',
-            'SI',
-            'SK',
-            'SM',
-            'TH',
-            'TR',
-            'TW',
-            'UY',
-            'ZA',
+            "AR",
+            "BA",
+            "BG",
+            "BR",
+            "CH",
+            "CL",
+            "CN",
+            "CO",
+            "CZ",
+            "DK",
+            "EE",
+            "ES",
+            "FI",
+            "FR",
+            "HK",
+            "HR",
+            "ID",
+            "IE",
+            "IL",
+            "IS",
+            "KR",
+            "LT",
+            "LV",
+            "ME",
+            "MK",
+            "MX",
+            "MY",
+            "NL",
+            "NO",
+            "PE",
+            "PL",
+            "RO",
+            "RS",
+            "SE",
+            "SI",
+            "SK",
+            "SM",
+            "TH",
+            "TR",
+            "TW",
+            "UY",
+            "ZA",
         ];
         return {
             /**
@@ -2577,12 +2577,12 @@
              * @see http://en.wikipedia.org/wiki/National_identification_number
              */
             validate: function (input) {
-                if (input.value === '') {
+                if (input.value === "") {
                     return { valid: true };
                 }
-                var opts = Object.assign({}, { message: '' }, removeUndefined(input.options));
+                var opts = Object.assign({}, { message: "" }, removeUndefined(input.options));
                 var country = input.value.substr(0, 2);
-                if ('function' === typeof opts.country) {
+                if ("function" === typeof opts.country) {
                     country = opts.country.call(this);
                 }
                 else {
@@ -2596,135 +2596,135 @@
                     valid: true,
                 };
                 switch (country.toLowerCase()) {
-                    case 'ar':
+                    case "ar":
                         result = arId(input.value);
                         break;
-                    case 'ba':
+                    case "ba":
                         result = baId(input.value);
                         break;
-                    case 'bg':
+                    case "bg":
                         result = bgId(input.value);
                         break;
-                    case 'br':
+                    case "br":
                         result = brId(input.value);
                         break;
-                    case 'ch':
+                    case "ch":
                         result = chId(input.value);
                         break;
-                    case 'cl':
+                    case "cl":
                         result = clId(input.value);
                         break;
-                    case 'cn':
+                    case "cn":
                         result = cnId(input.value);
                         break;
-                    case 'co':
+                    case "co":
                         result = coId(input.value);
                         break;
-                    case 'cz':
+                    case "cz":
                         result = czId(input.value);
                         break;
-                    case 'dk':
+                    case "dk":
                         result = dkId(input.value);
                         break;
                     // Validate Estonian Personal Identification Code (isikukood)
                     // Use the same format as Lithuanian Personal Code
                     // See http://et.wikipedia.org/wiki/Isikukood
-                    case 'ee':
+                    case "ee":
                         result = ltId(input.value);
                         break;
-                    case 'es':
+                    case "es":
                         result = esId(input.value);
                         break;
-                    case 'fi':
+                    case "fi":
                         result = fiId(input.value);
                         break;
-                    case 'fr':
+                    case "fr":
                         result = frId(input.value);
                         break;
-                    case 'hk':
+                    case "hk":
                         result = hkId(input.value);
                         break;
-                    case 'hr':
+                    case "hr":
                         result = hrId(input.value);
                         break;
-                    case 'id':
+                    case "id":
                         result = idId(input.value);
                         break;
-                    case 'ie':
+                    case "ie":
                         result = ieId(input.value);
                         break;
-                    case 'il':
+                    case "il":
                         result = ilId(input.value);
                         break;
-                    case 'is':
+                    case "is":
                         result = isId(input.value);
                         break;
-                    case 'kr':
+                    case "kr":
                         result = krId(input.value);
                         break;
-                    case 'lt':
+                    case "lt":
                         result = ltId(input.value);
                         break;
-                    case 'lv':
+                    case "lv":
                         result = lvId(input.value);
                         break;
-                    case 'me':
+                    case "me":
                         result = meId(input.value);
                         break;
-                    case 'mk':
+                    case "mk":
                         result = mkId(input.value);
                         break;
-                    case 'mx':
+                    case "mx":
                         result = mxId(input.value);
                         break;
-                    case 'my':
+                    case "my":
                         result = myId(input.value);
                         break;
-                    case 'nl':
+                    case "nl":
                         result = nlId(input.value);
                         break;
-                    case 'no':
+                    case "no":
                         result = noId(input.value);
                         break;
-                    case 'pe':
+                    case "pe":
                         result = peId(input.value);
                         break;
-                    case 'pl':
+                    case "pl":
                         result = plId(input.value);
                         break;
-                    case 'ro':
+                    case "ro":
                         result = roId(input.value);
                         break;
-                    case 'rs':
+                    case "rs":
                         result = rsId(input.value);
                         break;
-                    case 'se':
+                    case "se":
                         result = seId(input.value);
                         break;
-                    case 'si':
+                    case "si":
                         result = siId(input.value);
                         break;
                     // Validate Slovak national identifier number (RC)
                     // Slovakia uses the same format as Czech Republic
-                    case 'sk':
+                    case "sk":
                         result = czId(input.value);
                         break;
-                    case 'sm':
+                    case "sm":
                         result = smId(input.value);
                         break;
-                    case 'th':
+                    case "th":
                         result = thId(input.value);
                         break;
-                    case 'tr':
+                    case "tr":
                         result = trId(input.value);
                         break;
-                    case 'tw':
+                    case "tw":
                         result = twId(input.value);
                         break;
-                    case 'uy':
+                    case "uy":
                         result = uyId(input.value);
                         break;
-                    case 'za':
+                    case "za":
                         result = zaId(input.value);
                         break;
                 }

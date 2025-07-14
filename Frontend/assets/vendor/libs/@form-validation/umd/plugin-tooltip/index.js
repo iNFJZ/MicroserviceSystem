@@ -1,8 +1,8 @@
 (function (global, factory) {
-    typeof exports === 'object' && typeof module !== 'undefined' ? module.exports = factory(require('@form-validation/core')) :
-    typeof define === 'function' && define.amd ? define(['@form-validation/core'], factory) :
-    (global = typeof globalThis !== 'undefined' ? globalThis : global || self, (global.FormValidation = global.FormValidation || {}, global.FormValidation.plugins = global.FormValidation.plugins || {}, global.FormValidation.plugins.Tooltip = factory(global.FormValidation)));
-})(this, (function (core) { 'use strict';
+    typeof exports === "object" && typeof module !== "undefined" ? module.exports = factory(require("@form-validation/core")) :
+    typeof define === "function" && define.amd ? define(["@form-validation/core"], factory) :
+    (global = typeof globalThis !== "undefined" ? globalThis : global || self, (global.FormValidation = global.FormValidation || {}, global.FormValidation.plugins = global.FormValidation.plugins || {}, global.FormValidation.plugins.Tooltip = factory(global.FormValidation)));
+})(this, (function (core) { "use strict";
 
     /******************************************************************************
     Copyright (c) Microsoft Corporation.
@@ -48,8 +48,8 @@
             // Map the element with message
             _this.messages = new Map();
             _this.opts = Object.assign({}, {
-                placement: 'top',
-                trigger: 'click',
+                placement: "top",
+                trigger: "click",
             }, opts);
             _this.iconPlacedHandler = _this.onIconPlaced.bind(_this);
             _this.validatorValidatedHandler = _this.onValidatorValidated.bind(_this);
@@ -59,55 +59,55 @@
         }
         Tooltip.prototype.install = function () {
             var _a;
-            this.tip = document.createElement('div');
+            this.tip = document.createElement("div");
             classSet(this.tip, (_a = {
-                    'fv-plugins-tooltip': true
+                    "fv-plugins-tooltip": true
                 },
                 _a["fv-plugins-tooltip--".concat(this.opts.placement)] = true,
                 _a));
             document.body.appendChild(this.tip);
             this.core
-                .on('plugins.icon.placed', this.iconPlacedHandler)
-                .on('core.validator.validated', this.validatorValidatedHandler)
-                .on('core.element.validated', this.elementValidatedHandler);
-            if ('click' === this.opts.trigger) {
-                document.addEventListener('click', this.documentClickHandler);
+                .on("plugins.icon.placed", this.iconPlacedHandler)
+                .on("core.validator.validated", this.validatorValidatedHandler)
+                .on("core.element.validated", this.elementValidatedHandler);
+            if ("click" === this.opts.trigger) {
+                document.addEventListener("click", this.documentClickHandler);
             }
         };
         Tooltip.prototype.uninstall = function () {
             this.messages.clear();
             document.body.removeChild(this.tip);
             this.core
-                .off('plugins.icon.placed', this.iconPlacedHandler)
-                .off('core.validator.validated', this.validatorValidatedHandler)
-                .off('core.element.validated', this.elementValidatedHandler);
-            if ('click' === this.opts.trigger) {
-                document.removeEventListener('click', this.documentClickHandler);
+                .off("plugins.icon.placed", this.iconPlacedHandler)
+                .off("core.validator.validated", this.validatorValidatedHandler)
+                .off("core.element.validated", this.elementValidatedHandler);
+            if ("click" === this.opts.trigger) {
+                document.removeEventListener("click", this.documentClickHandler);
             }
         };
         Tooltip.prototype.onIconPlaced = function (e) {
             var _this = this;
             classSet(e.iconElement, {
-                'fv-plugins-tooltip-icon': true,
+                "fv-plugins-tooltip-icon": true,
             });
             switch (this.opts.trigger) {
-                case 'hover':
-                    e.iconElement.addEventListener('mouseenter', function (evt) { return _this.show(e.element, evt); });
-                    e.iconElement.addEventListener('mouseleave', function (_evt) { return _this.hide(); });
+                case "hover":
+                    e.iconElement.addEventListener("mouseenter", function (evt) { return _this.show(e.element, evt); });
+                    e.iconElement.addEventListener("mouseleave", function (_evt) { return _this.hide(); });
                     break;
-                case 'click':
+                case "click":
                 default:
-                    e.iconElement.addEventListener('click', function (evt) { return _this.show(e.element, evt); });
+                    e.iconElement.addEventListener("click", function (evt) { return _this.show(e.element, evt); });
                     break;
             }
         };
         Tooltip.prototype.onValidatorValidated = function (e) {
             if (!e.result.valid) {
                 var elements = e.elements;
-                var type = e.element.getAttribute('type');
-                var ele = 'radio' === type || 'checkbox' === type ? elements[0] : e.element;
+                var type = e.element.getAttribute("type");
+                var ele = "radio" === type || "checkbox" === type ? elements[0] : e.element;
                 // Get the message
-                var message = typeof e.result.message === 'string' ? e.result.message : e.result.message[this.core.getLocale()];
+                var message = typeof e.result.message === "string" ? e.result.message : e.result.message[this.core.getLocale()];
                 this.messages.set(ele, message);
             }
         };
@@ -115,8 +115,8 @@
             if (e.valid) {
                 // Clear the message
                 var elements = e.elements;
-                var type = e.element.getAttribute('type');
-                var ele = 'radio' === type || 'checkbox' === type ? elements[0] : e.element;
+                var type = e.element.getAttribute("type");
+                var ele = "radio" === type || "checkbox" === type ? elements[0] : e.element;
                 this.messages.delete(ele);
             }
         };
@@ -133,7 +133,7 @@
                 return;
             }
             classSet(this.tip, {
-                'fv-plugins-tooltip--hide': false,
+                "fv-plugins-tooltip--hide": false,
             });
             this.tip.innerHTML = "<div class=\"fv-plugins-tooltip__content\">".concat(this.messages.get(ele), "</div>");
             // Calculate position of the icon element
@@ -143,35 +143,35 @@
             var top = 0;
             var left = 0;
             switch (this.opts.placement) {
-                case 'bottom':
+                case "bottom":
                     top = targetRect.top + targetRect.height;
                     left = targetRect.left + targetRect.width / 2 - width / 2;
                     break;
-                case 'bottom-left':
+                case "bottom-left":
                     top = targetRect.top + targetRect.height;
                     left = targetRect.left;
                     break;
-                case 'bottom-right':
+                case "bottom-right":
                     top = targetRect.top + targetRect.height;
                     left = targetRect.left + targetRect.width - width;
                     break;
-                case 'left':
+                case "left":
                     top = targetRect.top + targetRect.height / 2 - height / 2;
                     left = targetRect.left - width;
                     break;
-                case 'right':
+                case "right":
                     top = targetRect.top + targetRect.height / 2 - height / 2;
                     left = targetRect.left + targetRect.width;
                     break;
-                case 'top-left':
+                case "top-left":
                     top = targetRect.top - height;
                     left = targetRect.left;
                     break;
-                case 'top-right':
+                case "top-right":
                     top = targetRect.top - height;
                     left = targetRect.left + targetRect.width - width;
                     break;
-                case 'top':
+                case "top":
                 default:
                     top = targetRect.top - height;
                     left = targetRect.left + targetRect.width / 2 - width / 2;
@@ -181,12 +181,12 @@
             var scrollLeft = window.scrollX || document.documentElement.scrollLeft || document.body.scrollLeft || 0;
             top = top + scrollTop;
             left = left + scrollLeft;
-            this.tip.setAttribute('style', "top: ".concat(top, "px; left: ").concat(left, "px"));
+            this.tip.setAttribute("style", "top: ".concat(top, "px; left: ").concat(left, "px"));
         };
         Tooltip.prototype.hide = function () {
             if (this.isEnabled) {
                 classSet(this.tip, {
-                    'fv-plugins-tooltip--hide': true,
+                    "fv-plugins-tooltip--hide": true,
                 });
             }
         };

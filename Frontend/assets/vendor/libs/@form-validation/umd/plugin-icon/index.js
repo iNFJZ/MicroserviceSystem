@@ -1,8 +1,8 @@
 (function (global, factory) {
-    typeof exports === 'object' && typeof module !== 'undefined' ? module.exports = factory(require('@form-validation/core')) :
-    typeof define === 'function' && define.amd ? define(['@form-validation/core'], factory) :
-    (global = typeof globalThis !== 'undefined' ? globalThis : global || self, (global.FormValidation = global.FormValidation || {}, global.FormValidation.plugins = global.FormValidation.plugins || {}, global.FormValidation.plugins.Icon = factory(global.FormValidation)));
-})(this, (function (core) { 'use strict';
+    typeof exports === "object" && typeof module !== "undefined" ? module.exports = factory(require("@form-validation/core")) :
+    typeof define === "function" && define.amd ? define(["@form-validation/core"], factory) :
+    (global = typeof globalThis !== "undefined" ? globalThis : global || self, (global.FormValidation = global.FormValidation || {}, global.FormValidation.plugins = global.FormValidation.plugins || {}, global.FormValidation.plugins.Icon = factory(global.FormValidation)));
+})(this, (function (core) { "use strict";
 
     /******************************************************************************
     Copyright (c) Microsoft Corporation.
@@ -48,11 +48,11 @@
             // Map the field element with icon
             _this.icons = new Map();
             _this.opts = Object.assign({}, {
-                invalid: 'fv-plugins-icon--invalid',
+                invalid: "fv-plugins-icon--invalid",
                 onPlaced: function () { },
                 onSet: function () { },
-                valid: 'fv-plugins-icon--valid',
-                validating: 'fv-plugins-icon--validating',
+                valid: "fv-plugins-icon--valid",
+                validating: "fv-plugins-icon--validating",
             }, opts);
             _this.elementValidatingHandler = _this.onElementValidating.bind(_this);
             _this.elementValidatedHandler = _this.onElementValidated.bind(_this);
@@ -63,35 +63,35 @@
         }
         Icon.prototype.install = function () {
             this.core
-                .on('core.element.validating', this.elementValidatingHandler)
-                .on('core.element.validated', this.elementValidatedHandler)
-                .on('core.element.notvalidated', this.elementNotValidatedHandler)
-                .on('core.element.ignored', this.elementIgnoredHandler)
-                .on('core.field.added', this.fieldAddedHandler);
+                .on("core.element.validating", this.elementValidatingHandler)
+                .on("core.element.validated", this.elementValidatedHandler)
+                .on("core.element.notvalidated", this.elementNotValidatedHandler)
+                .on("core.element.ignored", this.elementIgnoredHandler)
+                .on("core.field.added", this.fieldAddedHandler);
         };
         Icon.prototype.uninstall = function () {
             this.icons.forEach(function (icon) { return icon.parentNode.removeChild(icon); });
             this.icons.clear();
             this.core
-                .off('core.element.validating', this.elementValidatingHandler)
-                .off('core.element.validated', this.elementValidatedHandler)
-                .off('core.element.notvalidated', this.elementNotValidatedHandler)
-                .off('core.element.ignored', this.elementIgnoredHandler)
-                .off('core.field.added', this.fieldAddedHandler);
+                .off("core.element.validating", this.elementValidatingHandler)
+                .off("core.element.validated", this.elementValidatedHandler)
+                .off("core.element.notvalidated", this.elementNotValidatedHandler)
+                .off("core.element.ignored", this.elementIgnoredHandler)
+                .off("core.field.added", this.fieldAddedHandler);
         };
         Icon.prototype.onEnabled = function () {
             this.icons.forEach(function (_element, i, _map) {
                 classSet(i, {
-                    'fv-plugins-icon--enabled': true,
-                    'fv-plugins-icon--disabled': false,
+                    "fv-plugins-icon--enabled": true,
+                    "fv-plugins-icon--disabled": false,
                 });
             });
         };
         Icon.prototype.onDisabled = function () {
             this.icons.forEach(function (_element, i, _map) {
                 classSet(i, {
-                    'fv-plugins-icon--enabled': false,
-                    'fv-plugins-icon--disabled': true,
+                    "fv-plugins-icon--enabled": false,
+                    "fv-plugins-icon--disabled": true,
                 });
             });
         };
@@ -112,8 +112,8 @@
         Icon.prototype.prepareFieldIcon = function (field, elements) {
             var _this = this;
             if (elements.length) {
-                var type = elements[0].getAttribute('type');
-                if ('radio' === type || 'checkbox' === type) {
+                var type = elements[0].getAttribute("type");
+                if ("radio" === type || "checkbox" === type) {
                     this.prepareElementIcon(field, elements[0]);
                 }
                 else {
@@ -122,14 +122,14 @@
             }
         };
         Icon.prototype.prepareElementIcon = function (field, ele) {
-            var i = document.createElement('i');
-            i.setAttribute('data-field', field);
+            var i = document.createElement("i");
+            i.setAttribute("data-field", field);
             // Append the icon right after the field element
             ele.parentNode.insertBefore(i, ele.nextSibling);
             classSet(i, {
-                'fv-plugins-icon': true,
-                'fv-plugins-icon--enabled': this.isEnabled,
-                'fv-plugins-icon--disabled': !this.isEnabled,
+                "fv-plugins-icon": true,
+                "fv-plugins-icon--enabled": this.isEnabled,
+                "fv-plugins-icon--disabled": !this.isEnabled,
             });
             var e = {
                 classes: {
@@ -141,7 +141,7 @@
                 field: field,
                 iconElement: i,
             };
-            this.core.emit('plugins.icon.placed', e);
+            this.core.emit("plugins.icon.placed", e);
             this.opts.onPlaced(e);
             this.icons.set(ele, i);
         };
@@ -156,9 +156,9 @@
                 element: e.element,
                 field: e.field,
                 iconElement: icon,
-                status: 'Validating',
+                status: "Validating",
             };
-            this.core.emit('plugins.icon.set', evt);
+            this.core.emit("plugins.icon.set", evt);
             this.opts.onSet(evt);
         };
         Icon.prototype.onElementValidated = function (e) {
@@ -172,9 +172,9 @@
                 element: e.element,
                 field: e.field,
                 iconElement: icon,
-                status: e.valid ? 'Valid' : 'Invalid',
+                status: e.valid ? "Valid" : "Invalid",
             };
-            this.core.emit('plugins.icon.set', evt);
+            this.core.emit("plugins.icon.set", evt);
             this.opts.onSet(evt);
         };
         Icon.prototype.onElementNotValidated = function (e) {
@@ -188,9 +188,9 @@
                 element: e.element,
                 field: e.field,
                 iconElement: icon,
-                status: 'NotValidated',
+                status: "NotValidated",
             };
-            this.core.emit('plugins.icon.set', evt);
+            this.core.emit("plugins.icon.set", evt);
             this.opts.onSet(evt);
         };
         Icon.prototype.onElementIgnored = function (e) {
@@ -204,14 +204,14 @@
                 element: e.element,
                 field: e.field,
                 iconElement: icon,
-                status: 'Ignored',
+                status: "Ignored",
             };
-            this.core.emit('plugins.icon.set', evt);
+            this.core.emit("plugins.icon.set", evt);
             this.opts.onSet(evt);
         };
         Icon.prototype.setClasses = function (_field, element, elements, classes) {
-            var type = element.getAttribute('type');
-            var ele = 'radio' === type || 'checkbox' === type ? elements[0] : element;
+            var type = element.getAttribute("type");
+            var ele = "radio" === type || "checkbox" === type ? elements[0] : element;
             if (this.icons.has(ele)) {
                 var icon = this.icons.get(ele);
                 classSet(icon, classes);

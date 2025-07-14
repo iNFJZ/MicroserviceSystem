@@ -1,8 +1,8 @@
 (function (global, factory) {
-    typeof exports === 'object' && typeof module !== 'undefined' ? module.exports = factory(require('@form-validation/plugin-framework')) :
-    typeof define === 'function' && define.amd ? define(['@form-validation/plugin-framework'], factory) :
-    (global = typeof globalThis !== 'undefined' ? globalThis : global || self, (global.FormValidation = global.FormValidation || {}, global.FormValidation.plugins = global.FormValidation.plugins || {}, global.FormValidation.plugins.Foundation = factory(global.FormValidation.plugins)));
-})(this, (function (pluginFramework) { 'use strict';
+    typeof exports === "object" && typeof module !== "undefined" ? module.exports = factory(require("@form-validation/plugin-framework")) :
+    typeof define === "function" && define.amd ? define(["@form-validation/plugin-framework"], factory) :
+    (global = typeof globalThis !== "undefined" ? globalThis : global || self, (global.FormValidation = global.FormValidation || {}, global.FormValidation.plugins = global.FormValidation.plugins || {}, global.FormValidation.plugins.Foundation = factory(global.FormValidation.plugins)));
+})(this, (function (pluginFramework) { "use strict";
 
     /******************************************************************************
     Copyright (c) Microsoft Corporation.
@@ -44,28 +44,28 @@
         __extends(Foundation, _super);
         function Foundation(opts) {
             return _super.call(this, Object.assign({}, {
-                formClass: 'fv-plugins-foundation',
+                formClass: "fv-plugins-foundation",
                 // See http://foundation.zurb.com/sites/docs/abide.html#form-errors
-                messageClass: 'form-error',
-                rowInvalidClass: 'fv-row__error',
+                messageClass: "form-error",
+                rowInvalidClass: "fv-row__error",
                 rowPattern: /^.*((small|medium|large)-[0-9]+)\s.*(cell).*$/,
-                rowSelector: '.grid-x',
-                rowValidClass: 'fv-row__success',
+                rowSelector: ".grid-x",
+                rowValidClass: "fv-row__success",
             }, opts)) || this;
         }
         Foundation.prototype.onIconPlaced = function (e) {
-            var type = e.element.getAttribute('type');
-            if ('checkbox' === type || 'radio' === type) {
+            var type = e.element.getAttribute("type");
+            if ("checkbox" === type || "radio" === type) {
                 var nextEle = e.iconElement.nextSibling;
-                if ('LABEL' === nextEle.nodeName) {
+                if ("LABEL" === nextEle.nodeName) {
                     nextEle.parentNode.insertBefore(e.iconElement, nextEle.nextSibling);
                 }
-                else if ('#text' === nextEle.nodeName) {
+                else if ("#text" === nextEle.nodeName) {
                     // There's space between the input and label tags as
                     // <input type="checkbox" id="agreeCheckbox" />
                     // <label for="agreeCheckbox">Agree with the terms and conditions</label>
                     var next = nextEle.nextSibling;
-                    if (next && 'LABEL' === next.nodeName) {
+                    if (next && "LABEL" === next.nodeName) {
                         next.parentNode.insertBefore(e.iconElement, next.nextSibling);
                     }
                 }

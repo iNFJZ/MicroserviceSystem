@@ -9,6 +9,7 @@ using System.Collections.Generic;
 using FileService.DTOs;
 using System.IdentityModel.Tokens.Jwt;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.Extensions.Localization;
 namespace FileService.Controllers
 {
     [ApiController]
@@ -20,17 +21,20 @@ namespace FileService.Controllers
         private readonly IFileValidationService _validationService;
         private readonly ILogger<FileController> _logger;
         private readonly IEmailMessageService _emailMessageService;
+        private readonly IStringLocalizer<FileController> _localizer;
 
         public FileController(
             IFileService fileService, 
             IFileValidationService validationService,
             ILogger<FileController> logger,
-            IEmailMessageService emailMessageService)
+            IEmailMessageService emailMessageService,
+            IStringLocalizer<FileController> localizer)
         {
             _fileService = fileService;
             _validationService = validationService;
             _logger = logger;
             _emailMessageService = emailMessageService;
+            _localizer = localizer;
         }
 
         [HttpPost("upload")]
@@ -39,7 +43,7 @@ namespace FileService.Controllers
         {
             var files = request.Files;
             if (files == null || files.Count == 0)
-                return BadRequest("No files uploaded");
+                return BadRequest(_localizer["NoFilesUploaded"]);
 
             var userEmailClaim = User.FindFirst(ClaimTypes.Email) ?? User.FindFirst("email");
             var userNameClaim = User.FindFirst(JwtRegisteredClaimNames.Name);
@@ -52,7 +56,7 @@ namespace FileService.Controllers
                 var (isValid, errorMessage) = _validationService.ValidateFile(file);
                 if (!isValid)
                 {
-                    results.Add(new { fileName = file?.FileName ?? "", message = errorMessage });
+                    results.Add(new { fileName = file?.FileName ?? "", message = _localizer[errorMessage] });
                     continue;
                 }
 
@@ -62,7 +66,7 @@ namespace FileService.Controllers
                     await _fileService.UploadFileAsync(file.FileName, stream, file.ContentType);
 
                     _logger.LogInformation("File uploaded successfully: {FileName}", file.FileName);
-                    results.Add(new { fileName = file.FileName, message = "File uploaded successfully" });
+                    results.Add(new { fileName = file.FileName, message = _localizer["FileUploadedSuccessfully"] });
 
                     try
                     {
@@ -84,7 +88,7 @@ namespace FileService.Controllers
                 catch (Exception ex)
                 {
                     _logger.LogError(ex, "Error uploading file: {FileName}", file?.FileName);
-                    results.Add(new { fileName = file?.FileName, message = "Error uploading file" });
+                    results.Add(new { fileName = file?.FileName, message = _localizer["ErrorUploadingFile"] });
                 }
             }
             return Ok(results);
@@ -98,7 +102,7 @@ namespace FileService.Controllers
                 var files = await _fileService.ListFilesAsync();
                 if (!files.Any(f => f.FileName == fileName))
                 {
-                    return NotFound(new { message = $"File '{fileName}' not found" });
+                    return NotFound(new { message = string.Format(_localizer["FileNotFound"], fileName) });
                 }
                 var stream = await _fileService.DownloadFileAsync(fileName);
 
@@ -131,7 +135,7 @@ namespace FileService.Controllers
             catch (Exception ex)
             {
                 _logger.LogError(ex, "Error downloading file: {FileName}", fileName);
-                return StatusCode(500, "Error downloading file");
+                return StatusCode(500, _localizer["ErrorDownloadingFile"]);
             }
         }
 
@@ -158,7 +162,7 @@ namespace FileService.Controllers
                 var files = await _fileService.ListFilesAsync();
                 if (!files.Any(f => f.FileName == fileName))
                 {
-                    return NotFound(new { message = $"File '{fileName}' not found" });
+                    return NotFound(new { message = string.Format(_localizer["FileNotFound"], fileName) });
                 }
                 await _fileService.DeleteFileAsync(fileName);
 
@@ -186,12 +190,12 @@ namespace FileService.Controllers
                     _logger.LogWarning(emailEx, "Failed to send email notification for delete: {FileName}. File was deleted successfully.", fileName);
                 }
 
-                return Ok(new { message = "File deleted successfully" });
+                return Ok(new { message = _localizer["FileDeletedSuccessfully"] });
             }
             catch (Exception ex)
             {
                 _logger.LogError(ex, "Error deleting file: {FileName}", fileName);
-                return StatusCode(500, "Error deleting file");
+                return StatusCode(500, _localizer["ErrorDeletingFile"]);
             }
         }
 
@@ -206,7 +210,7 @@ namespace FileService.Controllers
             catch (Exception ex)
             {
                 _logger.LogError(ex, "Error getting file info: {FileName}", fileName);
-                return StatusCode(500, "Error getting file info");
+                return StatusCode(500, _localizer["ErrorGettingFileInfo"]);
             }
         }
     }

@@ -1,8 +1,8 @@
 (function (global, factory) {
-    typeof exports === 'object' && typeof module !== 'undefined' ? module.exports = factory(require('@form-validation/core')) :
-    typeof define === 'function' && define.amd ? define(['@form-validation/core'], factory) :
-    (global = typeof globalThis !== 'undefined' ? globalThis : global || self, (global.FormValidation = global.FormValidation || {}, global.FormValidation.plugins = global.FormValidation.plugins || {}, global.FormValidation.plugins.Aria = factory(global.FormValidation)));
-})(this, (function (core) { 'use strict';
+    typeof exports === "object" && typeof module !== "undefined" ? module.exports = factory(require("@form-validation/core")) :
+    typeof define === "function" && define.amd ? define(["@form-validation/core"], factory) :
+    (global = typeof globalThis !== "undefined" ? globalThis : global || self, (global.FormValidation = global.FormValidation || {}, global.FormValidation.plugins = global.FormValidation.plugins || {}, global.FormValidation.plugins.Aria = factory(global.FormValidation)));
+})(this, (function (core) { "use strict";
 
     /******************************************************************************
     Copyright (c) Microsoft Corporation.
@@ -59,50 +59,50 @@
         }
         Aria.prototype.install = function () {
             this.core
-                .on('core.field.valid', this.fieldValidHandler)
-                .on('core.field.invalid', this.fieldInvalidHandler)
-                .on('core.element.validated', this.elementValidatedHandler)
-                .on('plugins.message.displayed', this.messageDisplayedHandler);
+                .on("core.field.valid", this.fieldValidHandler)
+                .on("core.field.invalid", this.fieldInvalidHandler)
+                .on("core.element.validated", this.elementValidatedHandler)
+                .on("plugins.message.displayed", this.messageDisplayedHandler);
         };
         Aria.prototype.uninstall = function () {
             this.core
-                .off('core.field.valid', this.fieldValidHandler)
-                .off('core.field.invalid', this.fieldInvalidHandler)
-                .off('core.element.validated', this.elementValidatedHandler)
-                .off('plugins.message.displayed', this.messageDisplayedHandler);
+                .off("core.field.valid", this.fieldValidHandler)
+                .off("core.field.invalid", this.fieldInvalidHandler)
+                .off("core.element.validated", this.elementValidatedHandler)
+                .off("plugins.message.displayed", this.messageDisplayedHandler);
         };
         Aria.prototype.onElementValidated = function (e) {
             if (e.valid) {
-                e.element.setAttribute('aria-invalid', 'false');
-                e.element.removeAttribute('aria-describedby');
+                e.element.setAttribute("aria-invalid", "false");
+                e.element.removeAttribute("aria-describedby");
             }
         };
         Aria.prototype.onFieldValid = function (field) {
             var elements = this.core.getElements(field);
             if (elements) {
                 elements.forEach(function (ele) {
-                    ele.setAttribute('aria-invalid', 'false');
-                    ele.removeAttribute('aria-describedby');
+                    ele.setAttribute("aria-invalid", "false");
+                    ele.removeAttribute("aria-describedby");
                 });
             }
         };
         Aria.prototype.onFieldInvalid = function (field) {
             var elements = this.core.getElements(field);
             if (elements) {
-                elements.forEach(function (ele) { return ele.setAttribute('aria-invalid', 'true'); });
+                elements.forEach(function (ele) { return ele.setAttribute("aria-invalid", "true"); });
             }
         };
         Aria.prototype.onMessageDisplayed = function (e) {
-            e.messageElement.setAttribute('role', 'alert');
-            e.messageElement.setAttribute('aria-hidden', 'false');
+            e.messageElement.setAttribute("role", "alert");
+            e.messageElement.setAttribute("aria-hidden", "false");
             var elements = this.core.getElements(e.field);
             var index = elements.indexOf(e.element);
             var id = "js-fv-".concat(e.field, "-").concat(index, "-").concat(Date.now(), "-message");
-            e.messageElement.setAttribute('id', id);
-            e.element.setAttribute('aria-describedby', id);
-            var type = e.element.getAttribute('type');
-            if ('radio' === type || 'checkbox' === type) {
-                elements.forEach(function (ele) { return ele.setAttribute('aria-describedby', id); });
+            e.messageElement.setAttribute("id", id);
+            e.element.setAttribute("aria-describedby", id);
+            var type = e.element.getAttribute("type");
+            if ("radio" === type || "checkbox" === type) {
+                elements.forEach(function (ele) { return ele.setAttribute("aria-describedby", id); });
             }
         };
         return Aria;

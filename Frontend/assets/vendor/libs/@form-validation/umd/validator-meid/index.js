@@ -1,8 +1,8 @@
 (function (global, factory) {
-    typeof exports === 'object' && typeof module !== 'undefined' ? module.exports = factory(require('@form-validation/core')) :
-    typeof define === 'function' && define.amd ? define(['@form-validation/core'], factory) :
-    (global = typeof globalThis !== 'undefined' ? globalThis : global || self, (global.FormValidation = global.FormValidation || {}, global.FormValidation.validators = global.FormValidation.validators || {}, global.FormValidation.validators.meid = factory(global.FormValidation)));
-})(this, (function (core) { 'use strict';
+    typeof exports === "object" && typeof module !== "undefined" ? module.exports = factory(require("@form-validation/core")) :
+    typeof define === "function" && define.amd ? define(["@form-validation/core"], factory) :
+    (global = typeof globalThis !== "undefined" ? globalThis : global || self, (global.FormValidation = global.FormValidation || {}, global.FormValidation.validators = global.FormValidation.validators || {}, global.FormValidation.validators.meid = factory(global.FormValidation)));
+})(this, (function (core) { "use strict";
 
     /**
      * FormValidation (https://formvalidation.io)
@@ -17,7 +17,7 @@
              * @see http://en.wikipedia.org/wiki/Mobile_equipment_identifier
              */
             validate: function (input) {
-                if (input.value === '') {
+                if (input.value === "") {
                     return { valid: true };
                 }
                 var v = input.value;
@@ -26,12 +26,12 @@
                     /^\d{19}$/.test(v) ||
                     /^\d{5}[- ]\d{5}[- ]\d{4}[- ]\d{4}[- ]\d$/.test(v)) {
                     var cd = v.charAt(v.length - 1).toUpperCase();
-                    v = v.replace(/[- ]/g, '');
+                    v = v.replace(/[- ]/g, "");
                     if (v.match(/^\d*$/i)) {
                         return { valid: luhn(v) };
                     }
                     v = v.slice(0, -1);
-                    var checkDigit = '';
+                    var checkDigit = "";
                     var i = void 0;
                     for (i = 1; i <= 13; i += 2) {
                         checkDigit += (parseInt(v.charAt(i), 16) * 2).toString(16);
@@ -42,7 +42,7 @@
                     }
                     return {
                         valid: sum % 10 === 0
-                            ? cd === '0'
+                            ? cd === "0"
                             : // Subtract it from the next highest 10s number (64 goes to 70) and subtract the sum
                                 // Double it and turn it into a hex char
                                 cd === ((Math.floor((sum + 10) / 10) * 10 - sum) * 2).toString(16).toUpperCase(),

@@ -7,6 +7,8 @@ using FileService.Models;
 using FileService.DTOs;
 using Microsoft.IdentityModel.Tokens;
 using System.Text;
+using Microsoft.Extensions.Localization;
+using System.Globalization;
 
 var builder = WebApplication.CreateBuilder(new WebApplicationOptions {
     Args = args,
@@ -135,6 +137,16 @@ builder.Services.AddCors(options =>
     });
 });
 
+// Add localization services
+builder.Services.AddLocalization(options => options.ResourcesPath = "Resources");
+builder.Services.Configure<RequestLocalizationOptions>(options =>
+{
+    var supportedCultures = new[] { new CultureInfo("en"), new CultureInfo("vi") };
+    options.DefaultRequestCulture = new Microsoft.AspNetCore.Localization.RequestCulture("en");
+    options.SupportedCultures = supportedCultures;
+    options.SupportedUICultures = supportedCultures;
+});
+
 // Configure MinIO
 builder.Services.Configure<MinioOptions>(builder.Configuration.GetSection("Minio"));
 builder.Services.AddScoped<IFileService, MinioFileService>();
@@ -166,6 +178,10 @@ app.UseAuthentication();
 app.UseAuthorization();
 
 app.UseTokenValidation();
+
+// Use localization middleware
+var locOptions = app.Services.GetService<Microsoft.Extensions.Options.IOptions<RequestLocalizationOptions>>();
+app.UseRequestLocalization(locOptions?.Value);
 
 app.MapControllers();
 app.MapGrpcService<FileService.Services.FileGrpcService>();

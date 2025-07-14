@@ -1,8 +1,8 @@
 (function (global, factory) {
-    typeof exports === 'object' && typeof module !== 'undefined' ? module.exports = factory(require('@form-validation/core')) :
-    typeof define === 'function' && define.amd ? define(['@form-validation/core'], factory) :
-    (global = typeof globalThis !== 'undefined' ? globalThis : global || self, (global.FormValidation = global.FormValidation || {}, global.FormValidation.plugins = global.FormValidation.plugins || {}, global.FormValidation.plugins.Recaptcha = factory(global.FormValidation)));
-})(this, (function (core) { 'use strict';
+    typeof exports === "object" && typeof module !== "undefined" ? module.exports = factory(require("@form-validation/core")) :
+    typeof define === "function" && define.amd ? define(["@form-validation/core"], factory) :
+    (global = typeof globalThis !== "undefined" ? globalThis : global || self, (global.FormValidation = global.FormValidation || {}, global.FormValidation.plugins = global.FormValidation.plugins || {}, global.FormValidation.plugins.Recaptcha = factory(global.FormValidation)));
+})(this, (function (core) { "use strict";
 
     /******************************************************************************
     Copyright (c) Microsoft Corporation.
@@ -71,7 +71,7 @@
         function Recaptcha(opts) {
             var _this = _super.call(this, opts) || this;
             _this.widgetIds = new Map();
-            _this.captchaStatus = 'NotValidated';
+            _this.captchaStatus = "NotValidated";
             _this.opts = Object.assign({}, Recaptcha.DEFAULT_OPTIONS, removeUndefined(opts));
             _this.fieldResetHandler = _this.onResetField.bind(_this);
             _this.preValidateFilter = _this.preValidate.bind(_this);
@@ -81,10 +81,10 @@
         Recaptcha.prototype.install = function () {
             var _this = this;
             this.core
-                .on('core.field.reset', this.fieldResetHandler)
-                .on('plugins.icon.placed', this.iconPlacedHandler)
-                .registerFilter('validate-pre', this.preValidateFilter);
-            var loadPrevCaptcha = typeof window[Recaptcha.LOADED_CALLBACK] === 'undefined' ? function () { } : window[Recaptcha.LOADED_CALLBACK];
+                .on("core.field.reset", this.fieldResetHandler)
+                .on("plugins.icon.placed", this.iconPlacedHandler)
+                .registerFilter("validate-pre", this.preValidateFilter);
+            var loadPrevCaptcha = typeof window[Recaptcha.LOADED_CALLBACK] === "undefined" ? function () { } : window[Recaptcha.LOADED_CALLBACK];
             window[Recaptcha.LOADED_CALLBACK] = function () {
                 // Call the previous loaded function
                 // to support multiple recaptchas on the same page
@@ -92,25 +92,25 @@
                 var captchaOptions = {
                     badge: _this.opts.badge,
                     callback: function () {
-                        if (_this.opts.backendVerificationUrl === '') {
-                            _this.captchaStatus = 'Valid';
+                        if (_this.opts.backendVerificationUrl === "") {
+                            _this.captchaStatus = "Valid";
                             // Mark the captcha as valid, so the library will remove the error message
-                            _this.core.updateFieldStatus(Recaptcha.CAPTCHA_FIELD, 'Valid');
+                            _this.core.updateFieldStatus(Recaptcha.CAPTCHA_FIELD, "Valid");
                         }
                     },
-                    'error-callback': function () {
-                        _this.captchaStatus = 'Invalid';
-                        _this.core.updateFieldStatus(Recaptcha.CAPTCHA_FIELD, 'Invalid');
+                    "error-callback": function () {
+                        _this.captchaStatus = "Invalid";
+                        _this.core.updateFieldStatus(Recaptcha.CAPTCHA_FIELD, "Invalid");
                     },
-                    'expired-callback': function () {
+                    "expired-callback": function () {
                         // Update the captcha status when session expires
-                        _this.captchaStatus = 'NotValidated';
-                        _this.core.updateFieldStatus(Recaptcha.CAPTCHA_FIELD, 'NotValidated');
+                        _this.captchaStatus = "NotValidated";
+                        _this.core.updateFieldStatus(Recaptcha.CAPTCHA_FIELD, "NotValidated");
                     },
                     sitekey: _this.opts.siteKey,
                     size: _this.opts.size,
                 };
-                var widgetId = window['grecaptcha'].render(_this.opts.element, captchaOptions);
+                var widgetId = window["grecaptcha"].render(_this.opts.element, captchaOptions);
                 _this.widgetIds.set(_this.opts.element, widgetId);
                 _this.core.addField(Recaptcha.CAPTCHA_FIELD, {
                     validators: {
@@ -119,21 +119,21 @@
                             promise: function (input) {
                                 var _a;
                                 var value = _this.widgetIds.has(_this.opts.element)
-                                    ? window['grecaptcha'].getResponse(_this.widgetIds.get(_this.opts.element))
+                                    ? window["grecaptcha"].getResponse(_this.widgetIds.get(_this.opts.element))
                                     : input.value;
-                                if (value === '') {
-                                    _this.captchaStatus = 'Invalid';
+                                if (value === "") {
+                                    _this.captchaStatus = "Invalid";
                                     return Promise.resolve({
                                         valid: false,
                                     });
                                 }
-                                else if (_this.opts.backendVerificationUrl === '') {
-                                    _this.captchaStatus = 'Valid';
+                                else if (_this.opts.backendVerificationUrl === "") {
+                                    _this.captchaStatus = "Valid";
                                     return Promise.resolve({
                                         valid: true,
                                     });
                                 }
-                                else if (_this.captchaStatus === 'Valid') {
+                                else if (_this.captchaStatus === "Valid") {
                                     // Do not need to send the back-end verification request if the captcha is already valid
                                     return Promise.resolve({
                                         valid: true,
@@ -141,21 +141,21 @@
                                 }
                                 else {
                                     return fetch(_this.opts.backendVerificationUrl, {
-                                        method: 'POST',
+                                        method: "POST",
                                         params: (_a = {},
                                             _a[Recaptcha.CAPTCHA_FIELD] = value,
                                             _a),
                                     })
                                         .then(function (response) {
-                                        var isValid = "".concat(response['success']) === 'true';
-                                        _this.captchaStatus = isValid ? 'Valid' : 'Invalid';
+                                        var isValid = "".concat(response["success"]) === "true";
+                                        _this.captchaStatus = isValid ? "Valid" : "Invalid";
                                         return Promise.resolve({
                                             meta: response,
                                             valid: isValid,
                                         });
                                     })
                                         .catch(function (_reason) {
-                                        _this.captchaStatus = 'NotValidated';
+                                        _this.captchaStatus = "NotValidated";
                                         return Promise.reject({
                                             valid: false,
                                         });
@@ -168,8 +168,8 @@
             };
             var src = this.getScript();
             if (!document.body.querySelector("script[src=\"".concat(src, "\"]"))) {
-                var script = document.createElement('script');
-                script.type = 'text/javascript';
+                var script = document.createElement("script");
+                script.type = "text/javascript";
                 script.async = true;
                 script.defer = true;
                 script.src = src;
@@ -182,9 +182,9 @@
                 clearTimeout(this.timer);
             }
             this.core
-                .off('core.field.reset', this.fieldResetHandler)
-                .off('plugins.icon.placed', this.iconPlacedHandler)
-                .deregisterFilter('validate-pre', this.preValidateFilter);
+                .off("core.field.reset", this.fieldResetHandler)
+                .off("plugins.icon.placed", this.iconPlacedHandler)
+                .deregisterFilter("validate-pre", this.preValidateFilter);
             this.widgetIds.clear();
             // Remove script
             var src = this.getScript();
@@ -193,24 +193,24 @@
             this.core.removeField(Recaptcha.CAPTCHA_FIELD);
         };
         Recaptcha.prototype.onEnabled = function () {
-            this.core.enableValidator(Recaptcha.CAPTCHA_FIELD, 'promise');
+            this.core.enableValidator(Recaptcha.CAPTCHA_FIELD, "promise");
         };
         Recaptcha.prototype.onDisabled = function () {
-            this.core.disableValidator(Recaptcha.CAPTCHA_FIELD, 'promise');
+            this.core.disableValidator(Recaptcha.CAPTCHA_FIELD, "promise");
         };
         Recaptcha.prototype.getScript = function () {
-            var lang = this.opts.language ? "&hl=".concat(this.opts.language) : '';
+            var lang = this.opts.language ? "&hl=".concat(this.opts.language) : "";
             return "https://www.google.com/recaptcha/api.js?onload=".concat(Recaptcha.LOADED_CALLBACK, "&render=explicit").concat(lang);
         };
         Recaptcha.prototype.preValidate = function () {
             var _this = this;
             // grecaptcha.execute() is only available for invisible reCAPTCHA
-            if (this.isEnabled && this.opts.size === 'invisible' && this.widgetIds.has(this.opts.element)) {
+            if (this.isEnabled && this.opts.size === "invisible" && this.widgetIds.has(this.opts.element)) {
                 var widgetId_1 = this.widgetIds.get(this.opts.element);
-                return this.captchaStatus === 'Valid'
+                return this.captchaStatus === "Valid"
                     ? Promise.resolve()
                     : new Promise(function (resolve, _reject) {
-                        window['grecaptcha'].execute(widgetId_1).then(function () {
+                        window["grecaptcha"].execute(widgetId_1).then(function () {
                             if (_this.timer) {
                                 clearTimeout(_this.timer);
                             }
@@ -225,14 +225,14 @@
         Recaptcha.prototype.onResetField = function (e) {
             if (e.field === Recaptcha.CAPTCHA_FIELD && this.widgetIds.has(this.opts.element)) {
                 var widgetId = this.widgetIds.get(this.opts.element);
-                window['grecaptcha'].reset(widgetId);
+                window["grecaptcha"].reset(widgetId);
             }
         };
         Recaptcha.prototype.onIconPlaced = function (e) {
             if (e.field === Recaptcha.CAPTCHA_FIELD) {
                 // Hide the icon for captcha element, since it will look weird when the captcha is valid
-                if (this.opts.size === 'invisible') {
-                    e.iconElement.style.display = 'none';
+                if (this.opts.size === "invisible") {
+                    e.iconElement.style.display = "none";
                 }
                 else {
                     var captchaContainer = document.getElementById(this.opts.element);
@@ -245,15 +245,15 @@
             }
         };
         // The captcha field name, generated by Google reCAPTCHA
-        Recaptcha.CAPTCHA_FIELD = 'g-recaptcha-response';
+        Recaptcha.CAPTCHA_FIELD = "g-recaptcha-response";
         Recaptcha.DEFAULT_OPTIONS = {
-            backendVerificationUrl: '',
-            badge: 'bottomright',
-            size: 'normal',
-            theme: 'light',
+            backendVerificationUrl: "",
+            badge: "bottomright",
+            size: "normal",
+            theme: "light",
         };
         // The name of callback that will be executed after reCaptcha script is loaded
-        Recaptcha.LOADED_CALLBACK = '___reCaptchaLoaded___';
+        Recaptcha.LOADED_CALLBACK = "___reCaptchaLoaded___";
         return Recaptcha;
     }(core.Plugin));
 

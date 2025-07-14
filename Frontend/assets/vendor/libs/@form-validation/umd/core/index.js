@@ -1,8 +1,8 @@
 (function (global, factory) {
-    typeof exports === 'object' && typeof module !== 'undefined' ? factory(exports) :
-    typeof define === 'function' && define.amd ? define(['exports'], factory) :
-    (global = typeof globalThis !== 'undefined' ? globalThis : global || self, factory(global.FormValidation = {}));
-})(this, (function (exports) { 'use strict';
+    typeof exports === "object" && typeof module !== "undefined" ? factory(exports) :
+    typeof define === "function" && define.amd ? define(["exports"], factory) :
+    (global = typeof globalThis !== "undefined" ? globalThis : global || self, factory(global.FormValidation = {}));
+})(this, (function (exports) { "use strict";
 
     /**
      * FormValidation (https://formvalidation.io)
@@ -65,7 +65,7 @@
      * @returns {boolean}
      */
     function mod37And36(value, alphabet) {
-        if (alphabet === void 0) { alphabet = '0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ'; }
+        if (alphabet === void 0) { alphabet = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ"; }
         var length = value.length;
         var modulus = alphabet.length;
         var check = Math.floor(modulus / 2);
@@ -82,7 +82,7 @@
      */
     function transform(input) {
         return input
-            .split('')
+            .split("")
             .map(function (c) {
             var code = c.charCodeAt(0);
             // 65, 66, ..., 90 are the char code of A, B, ..., Z
@@ -91,8 +91,8 @@
                     code - 55
                 : c;
         })
-            .join('')
-            .split('')
+            .join("")
+            .split("")
             .map(function (c) { return parseInt(c, 10); });
     }
     function mod97And10(input) {
@@ -206,26 +206,26 @@
      * @return {string}
      */
     function getFieldValue(form, field, element, elements) {
-        var type = (element.getAttribute('type') || '').toLowerCase();
+        var type = (element.getAttribute("type") || "").toLowerCase();
         var tagName = element.tagName.toLowerCase();
-        if (tagName === 'textarea') {
+        if (tagName === "textarea") {
             return element.value;
         }
-        if (tagName === 'select') {
+        if (tagName === "select") {
             var select = element;
             var index = select.selectedIndex;
-            return index >= 0 ? select.options.item(index).value : '';
+            return index >= 0 ? select.options.item(index).value : "";
         }
-        if (tagName === 'input') {
-            if ('radio' === type || 'checkbox' === type) {
+        if (tagName === "input") {
+            if ("radio" === type || "checkbox" === type) {
                 var checked = elements.filter(function (ele) { return ele.checked; }).length;
-                return checked === 0 ? '' : checked + '';
+                return checked === 0 ? "" : checked + "";
             }
             else {
                 return element.value;
             }
         }
-        return '';
+        return "";
     }
 
     /**
@@ -416,7 +416,7 @@
          */
         Core.prototype.addField = function (field, options) {
             var opts = Object.assign({}, {
-                selector: '',
+                selector: "",
                 validators: {},
             }, options);
             // Merge the options
@@ -427,7 +427,7 @@
                 }
                 : opts;
             this.elements[field] = this.queryElements(field);
-            this.emit('core.field.added', {
+            this.emit("core.field.added", {
                 elements: this.elements[field],
                 field: field,
                 options: this.fields[field],
@@ -448,7 +448,7 @@
             var options = this.fields[field];
             delete this.elements[field];
             delete this.fields[field];
-            this.emit('core.field.removed', {
+            this.emit("core.field.removed", {
                 elements: elements,
                 field: field,
                 options: options,
@@ -462,28 +462,28 @@
          */
         Core.prototype.validate = function () {
             var _this = this;
-            this.emit('core.form.validating', {
+            this.emit("core.form.validating", {
                 formValidation: this,
             });
-            return this.filter.execute('validate-pre', Promise.resolve(), []).then(function () {
+            return this.filter.execute("validate-pre", Promise.resolve(), []).then(function () {
                 return Promise.all(Object.keys(_this.fields).map(function (field) { return _this.validateField(field); })).then(function (results) {
                     // `results` is an array of `Valid`, `Invalid` and `NotValidated`
                     switch (true) {
-                        case results.indexOf('Invalid') !== -1:
-                            _this.emit('core.form.invalid', {
+                        case results.indexOf("Invalid") !== -1:
+                            _this.emit("core.form.invalid", {
                                 formValidation: _this,
                             });
-                            return Promise.resolve('Invalid');
-                        case results.indexOf('NotValidated') !== -1:
-                            _this.emit('core.form.notvalidated', {
+                            return Promise.resolve("Invalid");
+                        case results.indexOf("NotValidated") !== -1:
+                            _this.emit("core.form.notvalidated", {
                                 formValidation: _this,
                             });
-                            return Promise.resolve('NotValidated');
+                            return Promise.resolve("NotValidated");
                         default:
-                            _this.emit('core.form.valid', {
+                            _this.emit("core.form.valid", {
                                 formValidation: _this,
                             });
-                            return Promise.resolve('Valid');
+                            return Promise.resolve("Valid");
                     }
                 });
             });
@@ -498,35 +498,35 @@
             var _this = this;
             // Stop validation process if the field is already validated
             var result = this.results.get(field);
-            if (result === 'Valid' || result === 'Invalid') {
+            if (result === "Valid" || result === "Invalid") {
                 return Promise.resolve(result);
             }
-            this.emit('core.field.validating', field);
+            this.emit("core.field.validating", field);
             var elements = this.elements[field];
             if (elements.length === 0) {
-                this.emit('core.field.valid', field);
-                return Promise.resolve('Valid');
+                this.emit("core.field.valid", field);
+                return Promise.resolve("Valid");
             }
-            var type = elements[0].getAttribute('type');
-            if ('radio' === type || 'checkbox' === type || elements.length === 1) {
+            var type = elements[0].getAttribute("type");
+            if ("radio" === type || "checkbox" === type || elements.length === 1) {
                 return this.validateElement(field, elements[0]);
             }
             else {
                 return Promise.all(elements.map(function (ele) { return _this.validateElement(field, ele); })).then(function (results) {
                     // `results` is an array of `Valid`, `Invalid` and `NotValidated`
                     switch (true) {
-                        case results.indexOf('Invalid') !== -1:
-                            _this.emit('core.field.invalid', field);
-                            _this.results.set(field, 'Invalid');
-                            return Promise.resolve('Invalid');
-                        case results.indexOf('NotValidated') !== -1:
-                            _this.emit('core.field.notvalidated', field);
+                        case results.indexOf("Invalid") !== -1:
+                            _this.emit("core.field.invalid", field);
+                            _this.results.set(field, "Invalid");
+                            return Promise.resolve("Invalid");
+                        case results.indexOf("NotValidated") !== -1:
+                            _this.emit("core.field.notvalidated", field);
                             _this.results.delete(field);
-                            return Promise.resolve('NotValidated');
+                            return Promise.resolve("NotValidated");
                         default:
-                            _this.emit('core.field.valid', field);
-                            _this.results.set(field, 'Valid');
-                            return Promise.resolve('Valid');
+                            _this.emit("core.field.valid", field);
+                            _this.results.set(field, "Valid");
+                            return Promise.resolve("Valid");
                     }
                 });
             }
@@ -543,17 +543,17 @@
             // Reset validation result
             this.results.delete(field);
             var elements = this.elements[field];
-            var ignored = this.filter.execute('element-ignored', false, [field, ele, elements]);
+            var ignored = this.filter.execute("element-ignored", false, [field, ele, elements]);
             if (ignored) {
-                this.emit('core.element.ignored', {
+                this.emit("core.element.ignored", {
                     element: ele,
                     elements: elements,
                     field: field,
                 });
-                return Promise.resolve('Ignored');
+                return Promise.resolve("Ignored");
             }
             var validatorList = this.fields[field].validators;
-            this.emit('core.element.validating', {
+            this.emit("core.element.validating", {
                 element: ele,
                 elements: elements,
                 field: field,
@@ -564,22 +564,22 @@
             return this.waterfall(promises)
                 .then(function (results) {
                 // `results` is an array of `Valid` or `Invalid`
-                var isValid = results.indexOf('Invalid') === -1;
-                _this.emit('core.element.validated', {
+                var isValid = results.indexOf("Invalid") === -1;
+                _this.emit("core.element.validated", {
                     element: ele,
                     elements: elements,
                     field: field,
                     valid: isValid,
                 });
-                var type = ele.getAttribute('type');
-                if ('radio' === type || 'checkbox' === type || elements.length === 1) {
-                    _this.emit(isValid ? 'core.field.valid' : 'core.field.invalid', field);
+                var type = ele.getAttribute("type");
+                if ("radio" === type || "checkbox" === type || elements.length === 1) {
+                    _this.emit(isValid ? "core.field.valid" : "core.field.invalid", field);
                 }
-                return Promise.resolve(isValid ? 'Valid' : 'Invalid');
+                return Promise.resolve(isValid ? "Valid" : "Invalid");
             })
                 .catch(function (reason) {
                 // reason is `NotValidated`
-                _this.emit('core.element.notvalidated', {
+                _this.emit("core.element.notvalidated", {
                     element: ele,
                     elements: elements,
                     field: field,
@@ -599,35 +599,35 @@
         Core.prototype.executeValidator = function (field, ele, v, opts) {
             var _this = this;
             var elements = this.elements[field];
-            var name = this.filter.execute('validator-name', v, [v, field]);
-            opts.message = this.filter.execute('validator-message', opts.message, [this.locale, field, name]);
+            var name = this.filter.execute("validator-name", v, [v, field]);
+            opts.message = this.filter.execute("validator-message", opts.message, [this.locale, field, name]);
             // Simply pass the validator if
             // - it isn't defined yet
             // - or the associated validator isn't enabled
             if (!this.validators[name] || opts.enabled === false) {
-                this.emit('core.validator.validated', {
+                this.emit("core.validator.validated", {
                     element: ele,
                     elements: elements,
                     field: field,
                     result: this.normalizeResult(field, name, { valid: true }),
                     validator: name,
                 });
-                return Promise.resolve('Valid');
+                return Promise.resolve("Valid");
             }
             var validator = this.validators[name];
             // Get the field value
             var value = this.getElementValue(field, ele, name);
-            var willValidate = this.filter.execute('field-should-validate', true, [field, ele, value, v]);
+            var willValidate = this.filter.execute("field-should-validate", true, [field, ele, value, v]);
             if (!willValidate) {
-                this.emit('core.validator.notvalidated', {
+                this.emit("core.validator.notvalidated", {
                     element: ele,
                     elements: elements,
                     field: field,
                     validator: v,
                 });
-                return Promise.resolve('NotValidated');
+                return Promise.resolve("NotValidated");
             }
-            this.emit('core.validator.validating', {
+            this.emit("core.validator.validating", {
                 element: ele,
                 elements: elements,
                 field: field,
@@ -643,35 +643,35 @@
                 value: value,
             });
             // Check whether the result is a `Promise`
-            var isPromise = 'function' === typeof result['then'];
+            var isPromise = "function" === typeof result["then"];
             if (isPromise) {
                 return result.then(function (r) {
                     var data = _this.normalizeResult(field, v, r);
-                    _this.emit('core.validator.validated', {
+                    _this.emit("core.validator.validated", {
                         element: ele,
                         elements: elements,
                         field: field,
                         result: data,
                         validator: v,
                     });
-                    return data.valid ? 'Valid' : 'Invalid';
+                    return data.valid ? "Valid" : "Invalid";
                 });
             }
             else {
                 var data = this.normalizeResult(field, v, result);
-                this.emit('core.validator.validated', {
+                this.emit("core.validator.validated", {
                     element: ele,
                     elements: elements,
                     field: field,
                     result: data,
                     validator: v,
                 });
-                return Promise.resolve(data.valid ? 'Valid' : 'Invalid');
+                return Promise.resolve(data.valid ? "Valid" : "Invalid");
             }
         };
         Core.prototype.getElementValue = function (field, ele, validator) {
             var defaultValue = getFieldValue(this.form, field, ele, this.elements[field]);
-            return this.filter.execute('field-value', defaultValue, [defaultValue, field, ele, validator]);
+            return this.filter.execute("field-value", defaultValue, [defaultValue, field, ele, validator]);
         };
         // Some getter methods
         Core.prototype.getElements = function (field) {
@@ -700,33 +700,33 @@
         Core.prototype.updateFieldStatus = function (field, status, validator) {
             var _this = this;
             var elements = this.elements[field];
-            var type = elements[0].getAttribute('type');
-            var list = 'radio' === type || 'checkbox' === type ? [elements[0]] : elements;
+            var type = elements[0].getAttribute("type");
+            var list = "radio" === type || "checkbox" === type ? [elements[0]] : elements;
             list.forEach(function (ele) { return _this.updateElementStatus(field, ele, status, validator); });
             if (!validator) {
                 switch (status) {
-                    case 'NotValidated':
-                        this.emit('core.field.notvalidated', field);
+                    case "NotValidated":
+                        this.emit("core.field.notvalidated", field);
                         this.results.delete(field);
                         break;
-                    case 'Validating':
-                        this.emit('core.field.validating', field);
+                    case "Validating":
+                        this.emit("core.field.validating", field);
                         this.results.delete(field);
                         break;
-                    case 'Valid':
-                        this.emit('core.field.valid', field);
-                        this.results.set(field, 'Valid');
+                    case "Valid":
+                        this.emit("core.field.valid", field);
+                        this.results.set(field, "Valid");
                         break;
-                    case 'Invalid':
-                        this.emit('core.field.invalid', field);
-                        this.results.set(field, 'Invalid');
+                    case "Invalid":
+                        this.emit("core.field.invalid", field);
+                        this.results.set(field, "Invalid");
                         break;
                 }
             }
-            else if (status === 'Invalid') {
+            else if (status === "Invalid") {
                 // We need to mark the field as invalid because it doesn't pass the `validator`
-                this.emit('core.field.invalid', field);
-                this.results.set(field, 'Invalid');
+                this.emit("core.field.invalid", field);
+                this.results.set(field, "Invalid");
             }
             return this;
         };
@@ -745,39 +745,39 @@
             var fieldValidators = this.fields[field].validators;
             var validatorArr = validator ? [validator] : Object.keys(fieldValidators);
             switch (status) {
-                case 'NotValidated':
+                case "NotValidated":
                     validatorArr.forEach(function (v) {
-                        return _this.emit('core.validator.notvalidated', {
+                        return _this.emit("core.validator.notvalidated", {
                             element: ele,
                             elements: elements,
                             field: field,
                             validator: v,
                         });
                     });
-                    this.emit('core.element.notvalidated', {
+                    this.emit("core.element.notvalidated", {
                         element: ele,
                         elements: elements,
                         field: field,
                     });
                     break;
-                case 'Validating':
+                case "Validating":
                     validatorArr.forEach(function (v) {
-                        return _this.emit('core.validator.validating', {
+                        return _this.emit("core.validator.validating", {
                             element: ele,
                             elements: elements,
                             field: field,
                             validator: v,
                         });
                     });
-                    this.emit('core.element.validating', {
+                    this.emit("core.element.validating", {
                         element: ele,
                         elements: elements,
                         field: field,
                     });
                     break;
-                case 'Valid':
+                case "Valid":
                     validatorArr.forEach(function (v) {
-                        return _this.emit('core.validator.validated', {
+                        return _this.emit("core.validator.validated", {
                             element: ele,
                             elements: elements,
                             field: field,
@@ -788,16 +788,16 @@
                             validator: v,
                         });
                     });
-                    this.emit('core.element.validated', {
+                    this.emit("core.element.validated", {
                         element: ele,
                         elements: elements,
                         field: field,
                         valid: true,
                     });
                     break;
-                case 'Invalid':
+                case "Invalid":
                     validatorArr.forEach(function (v) {
-                        return _this.emit('core.validator.validated', {
+                        return _this.emit("core.validator.validated", {
                             element: ele,
                             elements: elements,
                             field: field,
@@ -808,7 +808,7 @@
                             validator: v,
                         });
                     });
-                    this.emit('core.element.validated', {
+                    this.emit("core.element.validated", {
                         element: ele,
                         elements: elements,
                         field: field,
@@ -828,7 +828,7 @@
         Core.prototype.resetForm = function (reset) {
             var _this = this;
             Object.keys(this.fields).forEach(function (field) { return _this.resetField(field, reset); });
-            this.emit('core.form.reset', {
+            this.emit("core.form.reset", {
                 formValidation: this,
                 reset: reset,
             });
@@ -846,24 +846,24 @@
             // Reset the field element value if needed
             if (reset) {
                 var elements = this.elements[field];
-                var type_1 = elements[0].getAttribute('type');
+                var type_1 = elements[0].getAttribute("type");
                 elements.forEach(function (ele) {
-                    if ('radio' === type_1 || 'checkbox' === type_1) {
-                        ele.removeAttribute('selected');
-                        ele.removeAttribute('checked');
+                    if ("radio" === type_1 || "checkbox" === type_1) {
+                        ele.removeAttribute("selected");
+                        ele.removeAttribute("checked");
                         ele.checked = false;
                     }
                     else {
-                        ele.setAttribute('value', '');
+                        ele.setAttribute("value", "");
                         if (ele instanceof HTMLInputElement || ele instanceof HTMLTextAreaElement) {
-                            ele.value = '';
+                            ele.value = "";
                         }
                     }
                 });
             }
             // Mark the field as not validated yet
-            this.updateFieldStatus(field, 'NotValidated');
-            this.emit('core.field.reset', {
+            this.updateFieldStatus(field, "NotValidated");
+            this.emit("core.field.reset", {
                 field: field,
                 reset: reset,
             });
@@ -880,9 +880,9 @@
          */
         Core.prototype.revalidateField = function (field) {
             if (!this.fields[field]) {
-                return Promise.resolve('Ignored');
+                return Promise.resolve("Ignored");
             }
-            this.updateFieldStatus(field, 'NotValidated');
+            this.updateFieldStatus(field, "NotValidated");
             return this.validateField(field);
         };
         /**
@@ -898,7 +898,7 @@
             }
             var elements = this.elements[field];
             this.toggleValidator(false, field, validator);
-            this.emit('core.validator.disabled', {
+            this.emit("core.validator.disabled", {
                 elements: elements,
                 field: field,
                 formValidation: this,
@@ -919,7 +919,7 @@
             }
             var elements = this.elements[field];
             this.toggleValidator(true, field, validator);
-            this.emit('core.validator.enabled', {
+            this.emit("core.validator.enabled", {
                 elements: elements,
                 field: field,
                 formValidation: this,
@@ -974,20 +974,20 @@
         Core.prototype.queryElements = function (field) {
             var selector = this.fields[field].selector
                 ? // Check if the selector is an ID selector which starts with `#`
-                    '#' === this.fields[field].selector.charAt(0)
+                    "#" === this.fields[field].selector.charAt(0)
                         ? "[id=\"".concat(this.fields[field].selector.substring(1), "\"]")
                         : this.fields[field].selector
-                : "[name=\"".concat(field.replace(/"/g, '\\"'), "\"]");
+                : "[name=\"".concat(field.replace(/"/g, "\\\""), "\"]");
             return [].slice.call(this.form.querySelectorAll(selector));
         };
         Core.prototype.normalizeResult = function (field, validator, result) {
             var opts = this.fields[field].validators[validator];
             return Object.assign({}, result, {
                 message: result.message ||
-                    (opts ? opts.message : '') ||
-                    (this.localization && this.localization[validator] && this.localization[validator]['default']
-                        ? this.localization[validator]['default']
-                        : '') ||
+                    (opts ? opts.message : "") ||
+                    (this.localization && this.localization[validator] && this.localization[validator]["default"]
+                        ? this.localization[validator]["default"]
+                        : "") ||
                     "The field ".concat(field, " is not valid"),
             });
         };
@@ -1000,14 +1000,14 @@
             else if (!validator) {
                 Object.keys(validatorArr).forEach(function (v) { return (_this.fields[field].validators[v].enabled = enabled); });
             }
-            return this.updateFieldStatus(field, 'NotValidated', validator);
+            return this.updateFieldStatus(field, "NotValidated", validator);
         };
         return Core;
     }());
     function formValidation(form, options) {
         var opts = Object.assign({}, {
             fields: {},
-            locale: 'en_US',
+            locale: "en_US",
             plugins: {},
             init: function (_) { },
         }, options);
@@ -1073,23 +1073,23 @@
      * @return {any}
      */
     function call(functionName, args) {
-        if ('function' === typeof functionName) {
+        if ("function" === typeof functionName) {
             return functionName.apply(this, args);
         }
-        else if ('string' === typeof functionName) {
+        else if ("string" === typeof functionName) {
             // Node that it doesn't support node.js based environment because we are trying to access `window`
             var name_1 = functionName;
-            if ('()' === name_1.substring(name_1.length - 2)) {
+            if ("()" === name_1.substring(name_1.length - 2)) {
                 name_1 = name_1.substring(0, name_1.length - 2);
             }
-            var ns = name_1.split('.');
+            var ns = name_1.split(".");
             var func = ns.pop();
             var context_1 = window;
             for (var _i = 0, ns_1 = ns; _i < ns_1.length; _i++) {
                 var t = ns_1[_i];
                 context_1 = context_1[t];
             }
-            return typeof context_1[func] === 'undefined' ? null : context_1[func].apply(this, args);
+            return typeof context_1[func] === "undefined" ? null : context_1[func].apply(this, args);
         }
     }
 
@@ -1099,7 +1099,7 @@
      * (c) 2013 - 2023 Nguyen Huu Phuoc <me@phuoc.ng>
      */
     var addClass = function (element, classes) {
-        classes.split(' ').forEach(function (clazz) {
+        classes.split(" ").forEach(function (clazz) {
             if (element.classList) {
                 element.classList.add(clazz);
             }
@@ -1109,10 +1109,10 @@
         });
     };
     var removeClass = function (element, classes) {
-        classes.split(' ').forEach(function (clazz) {
+        classes.split(" ").forEach(function (clazz) {
             element.classList
                 ? element.classList.remove(clazz)
-                : (element.className = element.className.replace(clazz, ''));
+                : (element.className = element.className.replace(clazz, ""));
         });
     };
     var classSet = function (element, classes) {
@@ -1143,8 +1143,8 @@
     var matches = function (element, selector) {
         var nativeMatches = element.matches ||
             element.webkitMatchesSelector ||
-            element['mozMatchesSelector'] ||
-            element['msMatchesSelector'];
+            element["mozMatchesSelector"] ||
+            element["msMatchesSelector"];
         if (nativeMatches) {
             return nativeMatches.call(element, selector);
         }
@@ -1171,32 +1171,32 @@
      */
     var generateString = function (length) {
         return Array(length)
-            .fill('')
+            .fill("")
             .map(function (v) { return Math.random().toString(36).charAt(2); })
-            .join('');
+            .join("");
     };
     var fetch = function (url, options) {
         var toQuery = function (obj) {
             return Object.keys(obj)
                 .map(function (k) { return "".concat(encodeURIComponent(k), "=").concat(encodeURIComponent(obj[k])); })
-                .join('&');
+                .join("&");
         };
         return new Promise(function (resolve, reject) {
             var opts = Object.assign({}, {
                 crossDomain: false,
                 headers: {},
-                method: 'GET',
+                method: "GET",
                 params: {},
             }, options);
             // Build the params for GET request
             var params = Object.keys(opts.params)
                 .map(function (k) { return "".concat(encodeURIComponent(k), "=").concat(encodeURIComponent(opts.params[k])); })
-                .join('&');
-            var hasQuery = url.indexOf('?') > -1;
-            var requestUrl = 'GET' === opts.method ? "".concat(url).concat(hasQuery ? '&' : '?').concat(params) : url;
+                .join("&");
+            var hasQuery = url.indexOf("?") > -1;
+            var requestUrl = "GET" === opts.method ? "".concat(url).concat(hasQuery ? "&" : "?").concat(params) : url;
             if (opts.crossDomain) {
                 // User is making cross domain request
-                var script_1 = document.createElement('script');
+                var script_1 = document.createElement("script");
                 // In some very fast systems, the different `Date.now()` invocations can return the same value
                 // which leads to the issue where there are multiple remove validators are used, for example.
                 // Appending it with a generated random string can fix the value
@@ -1205,28 +1205,28 @@
                     delete window[callback_1];
                     resolve(data);
                 };
-                script_1.src = "".concat(requestUrl).concat(hasQuery ? '&' : '?', "callback=").concat(callback_1);
+                script_1.src = "".concat(requestUrl).concat(hasQuery ? "&" : "?", "callback=").concat(callback_1);
                 script_1.async = true;
-                script_1.addEventListener('load', function () {
+                script_1.addEventListener("load", function () {
                     script_1.parentNode.removeChild(script_1);
                 });
-                script_1.addEventListener('error', function () { return reject; });
+                script_1.addEventListener("error", function () { return reject; });
                 document.head.appendChild(script_1);
             }
             else {
                 var request_1 = new XMLHttpRequest();
                 request_1.open(opts.method, requestUrl);
                 // Set the headers
-                request_1.setRequestHeader('X-Requested-With', 'XMLHttpRequest');
-                if ('POST' === opts.method) {
-                    request_1.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
+                request_1.setRequestHeader("X-Requested-With", "XMLHttpRequest");
+                if ("POST" === opts.method) {
+                    request_1.setRequestHeader("Content-Type", "application/x-www-form-urlencoded");
                 }
                 Object.keys(opts.headers).forEach(function (k) { return request_1.setRequestHeader(k, opts.headers[k]); });
-                request_1.addEventListener('load', function () {
+                request_1.addEventListener("load", function () {
                     // Cannot use arrow function here due to the `this` scope
                     resolve(JSON.parse(this.responseText));
                 });
-                request_1.addEventListener('error', function () { return reject; });
+                request_1.addEventListener("error", function () { return reject; });
                 // GET request will ignore the passed data here
                 request_1.send(toQuery(opts.params));
             }
@@ -1251,7 +1251,7 @@
         var params = Array.isArray(parameters) ? parameters : [parameters];
         var output = message;
         params.forEach(function (p) {
-            output = output.replace('%s', p);
+            output = output.replace("%s", p);
         });
         return output;
     };
@@ -1264,7 +1264,7 @@
     var hasClass = function (element, clazz) {
         return element.classList
             ? element.classList.contains(clazz)
-            : new RegExp("(^| )".concat(clazz, "( |$)"), 'gi').test(element.className);
+            : new RegExp("(^| )".concat(clazz, "( |$)"), "gi").test(element.className);
     };
 
     /**
