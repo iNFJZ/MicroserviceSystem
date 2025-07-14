@@ -1,8 +1,8 @@
 (function (global, factory) {
-    typeof exports === 'object' && typeof module !== 'undefined' ? module.exports = factory() :
-    typeof define === 'function' && define.amd ? define(factory) :
-    (global = typeof globalThis !== 'undefined' ? globalThis : global || self, (global.FormValidation = global.FormValidation || {}, global.FormValidation.validators = global.FormValidation.validators || {}, global.FormValidation.validators.issn = factory()));
-})(this, (function () { 'use strict';
+    typeof exports === "object" && typeof module !== "undefined" ? module.exports = factory() :
+    typeof define === "function" && define.amd ? define(factory) :
+    (global = typeof globalThis !== "undefined" ? globalThis : global || self, (global.FormValidation = global.FormValidation || {}, global.FormValidation.validators = global.FormValidation.validators || {}, global.FormValidation.validators.issn = factory()));
+})(this, (function () { "use strict";
 
     /**
      * FormValidation (https://formvalidation.io)
@@ -16,7 +16,7 @@
              * @see http://en.wikipedia.org/wiki/International_Standard_Serial_Number
              */
             validate: function (input) {
-                if (input.value === '') {
+                if (input.value === "") {
                     return { valid: true };
                 }
                 // Groups are separated by a hyphen or a space
@@ -24,11 +24,11 @@
                     return { valid: false };
                 }
                 // Replace all special characters except digits and X
-                var chars = input.value.replace(/[^0-9X]/gi, '').split('');
+                var chars = input.value.replace(/[^0-9X]/gi, "").split("");
                 var length = chars.length;
                 var sum = 0;
-                if (chars[7] === 'X') {
-                    chars[7] = '10';
+                if (chars[7] === "X") {
+                    chars[7] = "10";
                 }
                 for (var i = 0; i < length; i++) {
                     sum += parseInt(chars[i], 10) * (8 - i);

@@ -1,8 +1,8 @@
 (function (global, factory) {
-    typeof exports === 'object' && typeof module !== 'undefined' ? module.exports = factory(require('@form-validation/core')) :
-    typeof define === 'function' && define.amd ? define(['@form-validation/core'], factory) :
-    (global = typeof globalThis !== 'undefined' ? globalThis : global || self, (global.FormValidation = global.FormValidation || {}, global.FormValidation.plugins = global.FormValidation.plugins || {}, global.FormValidation.plugins.FieldStatus = factory(global.FormValidation)));
-})(this, (function (core) { 'use strict';
+    typeof exports === "object" && typeof module !== "undefined" ? module.exports = factory(require("@form-validation/core")) :
+    typeof define === "function" && define.amd ? define(["@form-validation/core"], factory) :
+    (global = typeof globalThis !== "undefined" ? globalThis : global || self, (global.FormValidation = global.FormValidation || {}, global.FormValidation.plugins = global.FormValidation.plugins || {}, global.FormValidation.plugins.FieldStatus = factory(global.FormValidation)));
+})(this, (function (core) { "use strict";
 
     /******************************************************************************
     Copyright (c) Microsoft Corporation.
@@ -58,33 +58,33 @@
         }
         FieldStatus.prototype.install = function () {
             this.core
-                .on('core.element.validating', this.elementValidatingHandler)
-                .on('core.element.validated', this.elementValidatedHandler)
-                .on('core.element.notvalidated', this.elementNotValidatedHandler)
-                .on('core.element.ignored', this.elementIgnoredHandler)
-                .on('core.field.added', this.fieldAddedHandler)
-                .on('core.field.removed', this.fieldRemovedHandler);
+                .on("core.element.validating", this.elementValidatingHandler)
+                .on("core.element.validated", this.elementValidatedHandler)
+                .on("core.element.notvalidated", this.elementNotValidatedHandler)
+                .on("core.element.ignored", this.elementIgnoredHandler)
+                .on("core.field.added", this.fieldAddedHandler)
+                .on("core.field.removed", this.fieldRemovedHandler);
         };
         FieldStatus.prototype.uninstall = function () {
             this.statuses.clear();
             this.core
-                .off('core.element.validating', this.elementValidatingHandler)
-                .off('core.element.validated', this.elementValidatedHandler)
-                .off('core.element.notvalidated', this.elementNotValidatedHandler)
-                .off('core.element.ignored', this.elementIgnoredHandler)
-                .off('core.field.added', this.fieldAddedHandler)
-                .off('core.field.removed', this.fieldRemovedHandler);
+                .off("core.element.validating", this.elementValidatingHandler)
+                .off("core.element.validated", this.elementValidatedHandler)
+                .off("core.element.notvalidated", this.elementNotValidatedHandler)
+                .off("core.element.ignored", this.elementIgnoredHandler)
+                .off("core.field.added", this.fieldAddedHandler)
+                .off("core.field.removed", this.fieldRemovedHandler);
         };
         FieldStatus.prototype.areFieldsValid = function () {
             return Array.from(this.statuses.values()).every(function (value) {
-                return value === 'Valid' || value === 'NotValidated' || value === 'Ignored';
+                return value === "Valid" || value === "NotValidated" || value === "Ignored";
             });
         };
         FieldStatus.prototype.getStatuses = function () {
             return this.isEnabled ? this.statuses : new Map();
         };
         FieldStatus.prototype.onFieldAdded = function (e) {
-            this.statuses.set(e.field, 'NotValidated');
+            this.statuses.set(e.field, "NotValidated");
         };
         FieldStatus.prototype.onFieldRemoved = function (e) {
             if (this.statuses.has(e.field)) {
@@ -93,11 +93,11 @@
             this.handleStatusChanged(this.areFieldsValid());
         };
         FieldStatus.prototype.onElementValidating = function (e) {
-            this.statuses.set(e.field, 'Validating');
+            this.statuses.set(e.field, "Validating");
             this.handleStatusChanged(false);
         };
         FieldStatus.prototype.onElementValidated = function (e) {
-            this.statuses.set(e.field, e.valid ? 'Valid' : 'Invalid');
+            this.statuses.set(e.field, e.valid ? "Valid" : "Invalid");
             if (e.valid) {
                 this.handleStatusChanged(this.areFieldsValid());
             }
@@ -106,11 +106,11 @@
             }
         };
         FieldStatus.prototype.onElementNotValidated = function (e) {
-            this.statuses.set(e.field, 'NotValidated');
+            this.statuses.set(e.field, "NotValidated");
             this.handleStatusChanged(false);
         };
         FieldStatus.prototype.onElementIgnored = function (e) {
-            this.statuses.set(e.field, 'Ignored');
+            this.statuses.set(e.field, "Ignored");
             this.handleStatusChanged(this.areFieldsValid());
         };
         FieldStatus.prototype.handleStatusChanged = function (areFieldsValid) {

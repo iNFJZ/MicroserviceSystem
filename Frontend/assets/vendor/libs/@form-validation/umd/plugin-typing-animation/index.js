@@ -1,8 +1,8 @@
 (function (global, factory) {
-    typeof exports === 'object' && typeof module !== 'undefined' ? module.exports = factory(require('@form-validation/core')) :
-    typeof define === 'function' && define.amd ? define(['@form-validation/core'], factory) :
-    (global = typeof globalThis !== 'undefined' ? globalThis : global || self, (global.FormValidation = global.FormValidation || {}, global.FormValidation.plugins = global.FormValidation.plugins || {}, global.FormValidation.plugins.TypingAnimation = factory(global.FormValidation)));
-})(this, (function (core) { 'use strict';
+    typeof exports === "object" && typeof module !== "undefined" ? module.exports = factory(require("@form-validation/core")) :
+    typeof define === "function" && define.amd ? define(["@form-validation/core"], factory) :
+    (global = typeof globalThis !== "undefined" ? globalThis : global || self, (global.FormValidation = global.FormValidation || {}, global.FormValidation.plugins = global.FormValidation.plugins || {}, global.FormValidation.plugins.TypingAnimation = factory(global.FormValidation)));
+})(this, (function (core) { "use strict";
 
     /******************************************************************************
     Copyright (c) Microsoft Corporation.
@@ -65,11 +65,11 @@
             }
             var field = this.fields[fieldIndex];
             var ele = this.core.getElements(field)[0];
-            var inputType = ele.getAttribute('type');
+            var inputType = ele.getAttribute("type");
             var samples = this.opts.data[field];
-            if ('checkbox' === inputType || 'radio' === inputType) {
+            if ("checkbox" === inputType || "radio" === inputType) {
                 ele.checked = true;
-                ele.setAttribute('checked', 'true');
+                ele.setAttribute("checked", "true");
                 return this.core.revalidateField(field).then(function (_status) {
                     return _this.animate(fieldIndex + 1);
                 });
@@ -80,7 +80,7 @@
             else {
                 return new Promise(function (resolve) {
                     return new Typed(ele, {
-                        attr: 'value',
+                        attr: "value",
                         autoInsertCss: true,
                         bindInputFocusEvents: true,
                         onComplete: function () {

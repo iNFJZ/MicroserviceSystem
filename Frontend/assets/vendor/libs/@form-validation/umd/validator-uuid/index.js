@@ -1,8 +1,8 @@
 (function (global, factory) {
-    typeof exports === 'object' && typeof module !== 'undefined' ? module.exports = factory(require('@form-validation/core')) :
-    typeof define === 'function' && define.amd ? define(['@form-validation/core'], factory) :
-    (global = typeof globalThis !== 'undefined' ? globalThis : global || self, (global.FormValidation = global.FormValidation || {}, global.FormValidation.validators = global.FormValidation.validators || {}, global.FormValidation.validators.uuid = factory(global.FormValidation)));
-})(this, (function (core) { 'use strict';
+    typeof exports === "object" && typeof module !== "undefined" ? module.exports = factory(require("@form-validation/core")) :
+    typeof define === "function" && define.amd ? define(["@form-validation/core"], factory) :
+    (global = typeof globalThis !== "undefined" ? globalThis : global || self, (global.FormValidation = global.FormValidation || {}, global.FormValidation.validators = global.FormValidation.validators || {}, global.FormValidation.validators.uuid = factory(global.FormValidation)));
+})(this, (function (core) { "use strict";
 
     /**
      * FormValidation (https://formvalidation.io)
@@ -17,10 +17,10 @@
              * @see http://en.wikipedia.org/wiki/Universally_unique_identifier
              */
             validate: function (input) {
-                if (input.value === '') {
+                if (input.value === "") {
                     return { valid: true };
                 }
-                var opts = Object.assign({}, { message: '' }, removeUndefined(input.options));
+                var opts = Object.assign({}, { message: "" }, removeUndefined(input.options));
                 // See the format at http://en.wikipedia.org/wiki/Universally_unique_identifier#Variants_and_versions
                 var patterns = {
                     3: /^[0-9A-F]{8}-[0-9A-F]{4}-3[0-9A-F]{3}-[0-9A-F]{4}-[0-9A-F]{12}$/i,
@@ -28,7 +28,7 @@
                     5: /^[0-9A-F]{8}-[0-9A-F]{4}-5[0-9A-F]{3}-[89AB][0-9A-F]{3}-[0-9A-F]{12}$/i,
                     all: /^[0-9A-F]{8}-[0-9A-F]{4}-[0-9A-F]{4}-[0-9A-F]{4}-[0-9A-F]{12}$/i,
                 };
-                var version = opts.version ? "".concat(opts.version) : 'all';
+                var version = opts.version ? "".concat(opts.version) : "all";
                 return {
                     message: opts.version
                         ? format(input.l10n ? opts.message || input.l10n.uuid.version : opts.message, opts.version)

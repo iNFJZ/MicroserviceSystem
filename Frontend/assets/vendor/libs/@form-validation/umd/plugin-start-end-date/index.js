@@ -1,8 +1,8 @@
 (function (global, factory) {
-    typeof exports === 'object' && typeof module !== 'undefined' ? module.exports = factory(require('@form-validation/core')) :
-    typeof define === 'function' && define.amd ? define(['@form-validation/core'], factory) :
-    (global = typeof globalThis !== 'undefined' ? globalThis : global || self, (global.FormValidation = global.FormValidation || {}, global.FormValidation.plugins = global.FormValidation.plugins || {}, global.FormValidation.plugins.StartEndDate = factory(global.FormValidation)));
-})(this, (function (core) { 'use strict';
+    typeof exports === "object" && typeof module !== "undefined" ? module.exports = factory(require("@form-validation/core")) :
+    typeof define === "function" && define.amd ? define(["@form-validation/core"], factory) :
+    (global = typeof globalThis !== "undefined" ? globalThis : global || self, (global.FormValidation = global.FormValidation || {}, global.FormValidation.plugins = global.FormValidation.plugins || {}, global.FormValidation.plugins.StartEndDate = factory(global.FormValidation)));
+})(this, (function (core) { "use strict";
 
     /******************************************************************************
     Copyright (c) Microsoft Corporation.
@@ -56,8 +56,8 @@
             this.endDateFieldOptions = fieldOptions[this.opts.endDate.field];
             var form = this.core.getFormElement();
             this.core
-                .on('core.field.valid', this.fieldValidHandler)
-                .on('core.field.invalid', this.fieldInvalidHandler)
+                .on("core.field.valid", this.fieldValidHandler)
+                .on("core.field.invalid", this.fieldInvalidHandler)
                 .addField(this.opts.startDate.field, {
                 validators: {
                     date: {
@@ -92,13 +92,13 @@
             if (this.endDateFieldOptions) {
                 this.core.addField(this.opts.endDate.field, this.endDateFieldOptions);
             }
-            this.core.off('core.field.valid', this.fieldValidHandler).off('core.field.invalid', this.fieldInvalidHandler);
+            this.core.off("core.field.valid", this.fieldValidHandler).off("core.field.invalid", this.fieldInvalidHandler);
         };
         StartEndDate.prototype.onEnabled = function () {
-            this.core.enableValidator(this.opts.startDate.field, 'date').enableValidator(this.opts.endDate.field, 'date');
+            this.core.enableValidator(this.opts.startDate.field, "date").enableValidator(this.opts.endDate.field, "date");
         };
         StartEndDate.prototype.onDisabled = function () {
-            this.core.disableValidator(this.opts.startDate.field, 'date').disableValidator(this.opts.endDate.field, 'date');
+            this.core.disableValidator(this.opts.startDate.field, "date").disableValidator(this.opts.endDate.field, "date");
         };
         StartEndDate.prototype.onFieldInvalid = function (field) {
             switch (field) {

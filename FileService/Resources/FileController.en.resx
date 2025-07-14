@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="utf-8"?>
+<root>
+  <data name="NoFilesUploaded" xml:space="preserve">
+    <value>No files uploaded</value>
+  </data>
+  <data name="FileUploadedSuccessfully" xml:space="preserve">
+    <value>File uploaded successfully</value>
+  </data>
+  <data name="ErrorUploadingFile" xml:space="preserve">
+    <value>Error uploading file</value>
+  </data>
+  <data name="FileNotFound" xml:space="preserve">
+    <value>File '{0}' not found</value>
+  </data>
+  <data name="ErrorDownloadingFile" xml:space="preserve">
+    <value>Error downloading file</value>
+  </data>
+  <data name="FileDeletedSuccessfully" xml:space="preserve">
+    <value>File deleted successfully</value>
+  </data>
+  <data name="ErrorDeletingFile" xml:space="preserve">
+    <value>Error deleting file</value>
+  </data>
+  <data name="ErrorGettingFileInfo" xml:space="preserve">
+    <value>Error getting file info</value>
+  </data>
+</root>

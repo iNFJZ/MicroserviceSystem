@@ -1,8 +1,8 @@
 (function (global, factory) {
-    typeof exports === 'object' && typeof module !== 'undefined' ? module.exports = factory(require('@form-validation/core'), require('@form-validation/plugin-framework')) :
-    typeof define === 'function' && define.amd ? define(['@form-validation/core', '@form-validation/plugin-framework'], factory) :
-    (global = typeof globalThis !== 'undefined' ? globalThis : global || self, (global.FormValidation = global.FormValidation || {}, global.FormValidation.plugins = global.FormValidation.plugins || {}, global.FormValidation.plugins.Materialize = factory(global.FormValidation, global.FormValidation.plugins)));
-})(this, (function (core, pluginFramework) { 'use strict';
+    typeof exports === "object" && typeof module !== "undefined" ? module.exports = factory(require("@form-validation/core"), require("@form-validation/plugin-framework")) :
+    typeof define === "function" && define.amd ? define(["@form-validation/core", "@form-validation/plugin-framework"], factory) :
+    (global = typeof globalThis !== "undefined" ? globalThis : global || self, (global.FormValidation = global.FormValidation || {}, global.FormValidation.plugins = global.FormValidation.plugins || {}, global.FormValidation.plugins.Materialize = factory(global.FormValidation, global.FormValidation.plugins)));
+})(this, (function (core, pluginFramework) { "use strict";
 
     /******************************************************************************
     Copyright (c) Microsoft Corporation.
@@ -46,24 +46,24 @@
         __extends(Materialize, _super);
         function Materialize(opts) {
             return _super.call(this, Object.assign({}, {
-                eleInvalidClass: 'validate invalid',
-                eleValidClass: 'validate valid',
-                formClass: 'fv-plugins-materialize',
-                messageClass: 'helper-text',
-                rowInvalidClass: 'fv-invalid-row',
+                eleInvalidClass: "validate invalid",
+                eleValidClass: "validate valid",
+                formClass: "fv-plugins-materialize",
+                messageClass: "helper-text",
+                rowInvalidClass: "fv-invalid-row",
                 rowPattern: /^(.*)col(\s+)s[0-9]+(.*)$/,
-                rowSelector: '.row',
-                rowValidClass: 'fv-valid-row',
+                rowSelector: ".row",
+                rowValidClass: "fv-valid-row",
             }, opts)) || this;
         }
         Materialize.prototype.onIconPlaced = function (e) {
-            var type = e.element.getAttribute('type');
+            var type = e.element.getAttribute("type");
             var parent = e.element.parentElement;
-            if ('checkbox' === type || 'radio' === type) {
+            if ("checkbox" === type || "radio" === type) {
                 // Place it after the container of checkbox/radio
                 parent.parentElement.insertBefore(e.iconElement, parent.nextSibling);
                 classSet(e.iconElement, {
-                    'fv-plugins-icon-check': true,
+                    "fv-plugins-icon-check": true,
                 });
             }
         };

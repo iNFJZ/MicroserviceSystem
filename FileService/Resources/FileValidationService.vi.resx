@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<root>
+  <data name="FileIsNull" xml:space="preserve">
+    <value>Tệp không hợp lệ</value>
+  </data>
+  <data name="FileIsEmpty" xml:space="preserve">
+    <value>Tệp rỗng</value>
+  </data>
+  <data name="FileSizeExceedsLimit" xml:space="preserve">
+    <value>Kích thước tệp vượt quá giới hạn {0}MB</value>
+  </data>
+</root> 

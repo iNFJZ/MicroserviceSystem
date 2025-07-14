@@ -1,8 +1,8 @@
 (function (global, factory) {
-    typeof exports === 'object' && typeof module !== 'undefined' ? module.exports = factory(require('@form-validation/core')) :
-    typeof define === 'function' && define.amd ? define(['@form-validation/core'], factory) :
-    (global = typeof globalThis !== 'undefined' ? globalThis : global || self, (global.FormValidation = global.FormValidation || {}, global.FormValidation.validators = global.FormValidation.validators || {}, global.FormValidation.validators.lessThan = factory(global.FormValidation)));
-})(this, (function (core) { 'use strict';
+    typeof exports === "object" && typeof module !== "undefined" ? module.exports = factory(require("@form-validation/core")) :
+    typeof define === "function" && define.amd ? define(["@form-validation/core"], factory) :
+    (global = typeof globalThis !== "undefined" ? globalThis : global || self, (global.FormValidation = global.FormValidation || {}, global.FormValidation.validators = global.FormValidation.validators || {}, global.FormValidation.validators.lessThan = factory(global.FormValidation)));
+})(this, (function (core) { "use strict";
 
     /**
      * FormValidation (https://formvalidation.io)
@@ -13,11 +13,11 @@
     function lessThan() {
         return {
             validate: function (input) {
-                if (input.value === '') {
+                if (input.value === "") {
                     return { valid: true };
                 }
-                var opts = Object.assign({}, { inclusive: true, message: '' }, removeUndefined(input.options));
-                var maxValue = parseFloat("".concat(opts.max).replace(',', '.'));
+                var opts = Object.assign({}, { inclusive: true, message: "" }, removeUndefined(input.options));
+                var maxValue = parseFloat("".concat(opts.max).replace(",", "."));
                 return opts.inclusive
                     ? {
                         message: format(input.l10n ? opts.message || input.l10n.lessThan.default : opts.message, "".concat(maxValue)),

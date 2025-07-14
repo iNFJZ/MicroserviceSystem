@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="utf-8"?>
+<root>
+  <data name="NoFilesUploaded" xml:space="preserve">
+    <value>Không có tệp nào được tải lên</value>
+  </data>
+  <data name="FileUploadedSuccessfully" xml:space="preserve">
+    <value>Tải tệp lên thành công</value>
+  </data>
+  <data name="ErrorUploadingFile" xml:space="preserve">
+    <value>Lỗi khi tải tệp lên</value>
+  </data>
+  <data name="FileNotFound" xml:space="preserve">
+    <value>Không tìm thấy tệp '{0}'</value>
+  </data>
+  <data name="ErrorDownloadingFile" xml:space="preserve">
+    <value>Lỗi khi tải tệp xuống</value>
+  </data>
+  <data name="FileDeletedSuccessfully" xml:space="preserve">
+    <value>Xóa tệp thành công</value>
+  </data>
+  <data name="ErrorDeletingFile" xml:space="preserve">
+    <value>Lỗi khi xóa tệp</value>
+  </data>
+  <data name="ErrorGettingFileInfo" xml:space="preserve">
+    <value>Lỗi khi lấy thông tin tệp</value>
+  </data>
+</root>

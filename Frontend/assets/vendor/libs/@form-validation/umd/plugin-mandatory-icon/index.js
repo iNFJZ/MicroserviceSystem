@@ -1,8 +1,8 @@
 (function (global, factory) {
-    typeof exports === 'object' && typeof module !== 'undefined' ? module.exports = factory(require('@form-validation/core')) :
-    typeof define === 'function' && define.amd ? define(['@form-validation/core'], factory) :
-    (global = typeof globalThis !== 'undefined' ? globalThis : global || self, (global.FormValidation = global.FormValidation || {}, global.FormValidation.plugins = global.FormValidation.plugins || {}, global.FormValidation.plugins.MandatoryIcon = factory(global.FormValidation)));
-})(this, (function (core) { 'use strict';
+    typeof exports === "object" && typeof module !== "undefined" ? module.exports = factory(require("@form-validation/core")) :
+    typeof define === "function" && define.amd ? define(["@form-validation/core"], factory) :
+    (global = typeof globalThis !== "undefined" ? globalThis : global || self, (global.FormValidation = global.FormValidation || {}, global.FormValidation.plugins = global.FormValidation.plugins || {}, global.FormValidation.plugins.MandatoryIcon = factory(global.FormValidation)));
+})(this, (function (core) { "use strict";
 
     /******************************************************************************
     Copyright (c) Microsoft Corporation.
@@ -46,10 +46,10 @@
         function MandatoryIcon(opts) {
             var _this = _super.call(this, opts) || this;
             _this.removedIcons = {
-                Invalid: '',
-                NotValidated: '',
-                Valid: '',
-                Validating: '',
+                Invalid: "",
+                NotValidated: "",
+                Valid: "",
+                Validating: "",
             };
             // Map the field element with icon
             _this.icons = new Map();
@@ -62,20 +62,20 @@
         }
         MandatoryIcon.prototype.install = function () {
             this.core
-                .on('core.element.validating', this.elementValidatingHandler)
-                .on('core.element.validated', this.elementValidatedHandler)
-                .on('core.element.notvalidated', this.elementNotValidatedHandler)
-                .on('plugins.icon.placed', this.iconPlacedHandler)
-                .on('plugins.icon.set', this.iconSetHandler);
+                .on("core.element.validating", this.elementValidatingHandler)
+                .on("core.element.validated", this.elementValidatedHandler)
+                .on("core.element.notvalidated", this.elementNotValidatedHandler)
+                .on("plugins.icon.placed", this.iconPlacedHandler)
+                .on("plugins.icon.set", this.iconSetHandler);
         };
         MandatoryIcon.prototype.uninstall = function () {
             this.icons.clear();
             this.core
-                .off('core.element.validating', this.elementValidatingHandler)
-                .off('core.element.validated', this.elementValidatedHandler)
-                .off('core.element.notvalidated', this.elementNotValidatedHandler)
-                .off('plugins.icon.placed', this.iconPlacedHandler)
-                .off('plugins.icon.set', this.iconSetHandler);
+                .off("core.element.validating", this.elementValidatingHandler)
+                .off("core.element.validated", this.elementValidatedHandler)
+                .off("core.element.notvalidated", this.elementNotValidatedHandler)
+                .off("plugins.icon.placed", this.iconPlacedHandler)
+                .off("plugins.icon.set", this.iconSetHandler);
         };
         MandatoryIcon.prototype.onEnabled = function () {
             var _this = this;
@@ -100,14 +100,14 @@
             var _this = this;
             var validators = this.core.getFields()[e.field].validators;
             var elements = this.core.getElements(e.field);
-            if (validators && validators['notEmpty'] && validators['notEmpty'].enabled !== false && elements.length) {
+            if (validators && validators["notEmpty"] && validators["notEmpty"].enabled !== false && elements.length) {
                 this.icons.set(e.element, e.iconElement);
-                var eleType = elements[0].getAttribute('type');
-                var type = !eleType ? '' : eleType.toLowerCase();
-                var elementArray = 'checkbox' === type || 'radio' === type ? [elements[0]] : elements;
+                var eleType = elements[0].getAttribute("type");
+                var type = !eleType ? "" : eleType.toLowerCase();
+                var elementArray = "checkbox" === type || "radio" === type ? [elements[0]] : elements;
                 for (var _i = 0, elementArray_1 = elementArray; _i < elementArray_1.length; _i++) {
                     var ele = elementArray_1[_i];
-                    if (this.core.getElementValue(e.field, ele) === '') {
+                    if (this.core.getElementValue(e.field, ele) === "") {
                         // Add required icon
                         classSet(e.iconElement, (_a = {},
                             _a[this.opts.icon] = this.isEnabled,
@@ -118,11 +118,11 @@
             // Maybe the required icon consists of one which is in the list of valid/invalid/validating feedback icons
             // (for example, fa, glyphicon)
             this.iconClasses = e.classes;
-            var icons = this.opts.icon.split(' ');
+            var icons = this.opts.icon.split(" ");
             var feedbackIcons = {
-                Invalid: this.iconClasses.invalid ? this.iconClasses.invalid.split(' ') : [],
-                Valid: this.iconClasses.valid ? this.iconClasses.valid.split(' ') : [],
-                Validating: this.iconClasses.validating ? this.iconClasses.validating.split(' ') : [],
+                Invalid: this.iconClasses.invalid ? this.iconClasses.invalid.split(" ") : [],
+                Valid: this.iconClasses.valid ? this.iconClasses.valid.split(" ") : [],
+                Validating: this.iconClasses.validating ? this.iconClasses.validating.split(" ") : [],
             };
             Object.keys(feedbackIcons).forEach(function (status) {
                 var classes = [];
@@ -132,17 +132,17 @@
                         classes.push(clazz);
                     }
                 }
-                _this.removedIcons[status] = classes.join(' ');
+                _this.removedIcons[status] = classes.join(" ");
             });
         };
         MandatoryIcon.prototype.onElementValidating = function (e) {
-            this.updateIconClasses(e.element, 'Validating');
+            this.updateIconClasses(e.element, "Validating");
         };
         MandatoryIcon.prototype.onElementValidated = function (e) {
-            this.updateIconClasses(e.element, e.valid ? 'Valid' : 'Invalid');
+            this.updateIconClasses(e.element, e.valid ? "Valid" : "Invalid");
         };
         MandatoryIcon.prototype.onElementNotValidated = function (e) {
-            this.updateIconClasses(e.element, 'NotValidated');
+            this.updateIconClasses(e.element, "NotValidated");
         };
         // Remove the required icon when the field updates its status
         MandatoryIcon.prototype.updateIconClasses = function (ele, status) {
@@ -164,8 +164,8 @@
             if (!icon) {
                 return;
             }
-            if ((e.status === 'NotValidated' && this.core.getElementValue(e.field, e.element) === '') ||
-                e.status === 'Ignored') {
+            if ((e.status === "NotValidated" && this.core.getElementValue(e.field, e.element) === "") ||
+                e.status === "Ignored") {
                 classSet(icon, (_a = {},
                     _a[this.opts.icon] = this.isEnabled,
                     _a));

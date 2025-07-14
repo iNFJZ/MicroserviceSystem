@@ -7,13 +7,13 @@
  * If you are looking for production-ready output files, see mode: "production" (https://webpack.js.org/configuration/mode/).
  */
 (function webpackUniversalModuleDefinition(root, factory) {
-	if(typeof exports === 'object' && typeof module === 'object')
+	if(typeof exports === "object" && typeof module === "object")
 		module.exports = factory();
-	else if(typeof define === 'function' && define.amd)
+	else if(typeof define === "function" && define.amd)
 		define([], factory);
 	else {
 		var a = factory();
-		for(var i in a) (typeof exports === 'object' ? exports : root)[i] = a[i];
+		for(var i in a) (typeof exports === "object" ? exports : root)[i] = a[i];
 	}
 })(self, function() {
 return /******/ (function() { // webpackBootstrap
@@ -72,7 +72,7 @@ eval("/* flatpickr v4.6.13, @license MIT */\n(function (global, factory) {\n    
 /******/ 		// getDefaultExport function for compatibility with non-harmony modules
 /******/ 		__webpack_require__.n = function(module) {
 /******/ 			var getter = module && module.__esModule ?
-/******/ 				function() { return module['default']; } :
+/******/ 				function() { return module["default"]; } :
 /******/ 				function() { return module; };
 /******/ 			__webpack_require__.d(getter, { a: getter });
 /******/ 			return getter;
@@ -93,17 +93,17 @@ eval("/* flatpickr v4.6.13, @license MIT */\n(function (global, factory) {\n    
 /******/ 	
 /******/ 	/* webpack/runtime/hasOwnProperty shorthand */
 /******/ 	!function() {
-/******/ 		__webpack_require__.o = function(obj, prop) { return Object.prototype.hasOwnProperty.call(obj, prop); }
+/******/ 		__webpack_require__.o = function(obj, prop) { return Object.prototype.hasOwnProperty.call(obj, prop); };
 /******/ 	}();
 /******/ 	
 /******/ 	/* webpack/runtime/make namespace object */
 /******/ 	!function() {
 /******/ 		// define __esModule on exports
 /******/ 		__webpack_require__.r = function(exports) {
-/******/ 			if(typeof Symbol !== 'undefined' && Symbol.toStringTag) {
-/******/ 				Object.defineProperty(exports, Symbol.toStringTag, { value: 'Module' });
+/******/ 			if(typeof Symbol !== "undefined" && Symbol.toStringTag) {
+/******/ 				Object.defineProperty(exports, Symbol.toStringTag, { value: "Module" });
 /******/ 			}
-/******/ 			Object.defineProperty(exports, '__esModule', { value: true });
+/******/ 			Object.defineProperty(exports, "__esModule", { value: true });
 /******/ 		};
 /******/ 	}();
 /******/ 	

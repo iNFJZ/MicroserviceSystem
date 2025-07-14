@@ -1,8 +1,8 @@
 (function (global, factory) {
-    typeof exports === 'object' && typeof module !== 'undefined' ? module.exports = factory() :
-    typeof define === 'function' && define.amd ? define(factory) :
-    (global = typeof globalThis !== 'undefined' ? globalThis : global || self, (global.FormValidation = global.FormValidation || {}, global.FormValidation.validators = global.FormValidation.validators || {}, global.FormValidation.validators.cusip = factory()));
-})(this, (function () { 'use strict';
+    typeof exports === "object" && typeof module !== "undefined" ? module.exports = factory() :
+    typeof define === "function" && define.amd ? define(factory) :
+    (global = typeof globalThis !== "undefined" ? globalThis : global || self, (global.FormValidation = global.FormValidation || {}, global.FormValidation.validators = global.FormValidation.validators || {}, global.FormValidation.validators.cusip = factory()));
+})(this, (function () { "use strict";
 
     /**
      * FormValidation (https://formvalidation.io)
@@ -16,7 +16,7 @@
              * @see http://en.wikipedia.org/wiki/CUSIP
              */
             validate: function (input) {
-                if (input.value === '') {
+                if (input.value === "") {
                     return { valid: true };
                 }
                 var value = input.value.toUpperCase();
@@ -25,20 +25,20 @@
                     return { valid: false };
                 }
                 // Get the last char
-                var chars = value.split('');
+                var chars = value.split("");
                 var lastChar = chars.pop();
                 var converted = chars.map(function (c) {
                     var code = c.charCodeAt(0);
                     switch (true) {
-                        case c === '*':
+                        case c === "*":
                             return 36;
-                        case c === '@':
+                        case c === "@":
                             return 37;
-                        case c === '#':
+                        case c === "#":
                             return 38;
                         // Replace A, B, C, ..., Z with 10, 11, ..., 35
-                        case code >= 'A'.charCodeAt(0) && code <= 'Z'.charCodeAt(0):
-                            return code - 'A'.charCodeAt(0) + 10;
+                        case code >= "A".charCodeAt(0) && code <= "Z".charCodeAt(0):
+                            return code - "A".charCodeAt(0) + 10;
                         default:
                             return parseInt(c, 10);
                     }

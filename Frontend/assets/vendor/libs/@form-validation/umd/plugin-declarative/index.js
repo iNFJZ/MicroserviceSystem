@@ -1,8 +1,8 @@
 (function (global, factory) {
-    typeof exports === 'object' && typeof module !== 'undefined' ? module.exports = factory(require('@form-validation/core')) :
-    typeof define === 'function' && define.amd ? define(['@form-validation/core'], factory) :
-    (global = typeof globalThis !== 'undefined' ? globalThis : global || self, (global.FormValidation = global.FormValidation || {}, global.FormValidation.plugins = global.FormValidation.plugins || {}, global.FormValidation.plugins.Declarative = factory(global.FormValidation)));
-})(this, (function (core) { 'use strict';
+    typeof exports === "object" && typeof module !== "undefined" ? module.exports = factory(require("@form-validation/core")) :
+    typeof define === "function" && define.amd ? define(["@form-validation/core"], factory) :
+    (global = typeof globalThis !== "undefined" ? globalThis : global || self, (global.FormValidation = global.FormValidation || {}, global.FormValidation.plugins = global.FormValidation.plugins || {}, global.FormValidation.plugins.Declarative = factory(global.FormValidation)));
+})(this, (function (core) { "use strict";
 
     /******************************************************************************
     Copyright (c) Microsoft Corporation.
@@ -57,8 +57,8 @@
             _this.addedFields = new Map();
             _this.opts = Object.assign({}, {
                 html5Input: false,
-                pluginPrefix: 'data-fvp-',
-                prefix: 'data-fv-',
+                pluginPrefix: "data-fvp-",
+                prefix: "data-fv-",
             }, opts);
             _this.fieldAddedHandler = _this.onFieldAdded.bind(_this);
             _this.fieldRemovedHandler = _this.onFieldRemoved.bind(_this);
@@ -75,11 +75,11 @@
                 }
                 _this.core.addField(field, opts[field]);
             });
-            this.core.on('core.field.added', this.fieldAddedHandler).on('core.field.removed', this.fieldRemovedHandler);
+            this.core.on("core.field.added", this.fieldAddedHandler).on("core.field.removed", this.fieldRemovedHandler);
         };
         Declarative.prototype.uninstall = function () {
             this.addedFields.clear();
-            this.core.off('core.field.added', this.fieldAddedHandler).off('core.field.removed', this.fieldRemovedHandler);
+            this.core.off("core.field.added", this.fieldAddedHandler).off("core.field.removed", this.fieldRemovedHandler);
         };
         Declarative.prototype.onFieldAdded = function (e) {
             var _this = this;
@@ -121,7 +121,7 @@
                 // For instance, there are multiple elements having the same name,
                 // we only set the HTML attribute to one of them
                 if (!_this.isEmptyOption(validators)) {
-                    var field = ele.getAttribute('name') || ele.getAttribute("".concat(prefix, "field"));
+                    var field = ele.getAttribute("name") || ele.getAttribute("".concat(prefix, "field"));
                     opts[field] = Object.assign({}, opts[field], validators);
                 }
             });
@@ -139,14 +139,14 @@
             return Object.assign({}, fields, opts);
         };
         Declarative.prototype.createPluginInstance = function (clazz, opts) {
-            var arr = clazz.split('.');
+            var arr = clazz.split(".");
             // TODO: Find a safer way to create a plugin instance from the class
             // Currently, I have to use `any` here instead of a construtable interface
             var fn = window || this; // eslint-disable-line @typescript-eslint/no-explicit-any
             for (var i = 0, len = arr.length; i < len; i++) {
                 fn = fn[arr[i]];
             }
-            if (typeof fn !== 'function') {
+            if (typeof fn !== "function") {
                 throw new Error("the plugin ".concat(clazz, " doesn't exist"));
             }
             return new fn(opts);
@@ -164,16 +164,16 @@
                 var items = reg.exec(name_1);
                 if (items && items.length === 4) {
                     var pluginName = this.toCamelCase(items[1]);
-                    plugins[pluginName] = Object.assign({}, items[3] ? (_a = {}, _a[this.toCamelCase(items[3])] = value, _a) : { enabled: '' === value || 'true' === value }, plugins[pluginName]);
+                    plugins[pluginName] = Object.assign({}, items[3] ? (_a = {}, _a[this.toCamelCase(items[3])] = value, _a) : { enabled: "" === value || "true" === value }, plugins[pluginName]);
                 }
             }
             Object.keys(plugins).forEach(function (pluginName) {
                 var opts = plugins[pluginName];
-                var enabled = opts['enabled'];
-                var clazz = opts['class'];
+                var enabled = opts["enabled"];
+                var clazz = opts["class"];
                 if (enabled && clazz) {
-                    delete opts['enabled'];
-                    delete opts['clazz'];
+                    delete opts["enabled"];
+                    delete opts["clazz"];
                     var p = _this.createPluginInstance(clazz, opts);
                     _this.core.registerPlugin(pluginName, p);
                 }
@@ -187,71 +187,71 @@
             var reg = new RegExp("^".concat(this.opts.prefix, "([a-z0-9-]+)(___)*([a-z0-9-]+)*$"));
             var numAttributes = ele.attributes.length;
             var opts = {};
-            var type = ele.getAttribute('type');
+            var type = ele.getAttribute("type");
             for (var i = 0; i < numAttributes; i++) {
                 var name_2 = ele.attributes[i].name;
                 var value = ele.attributes[i].value;
                 if (this.opts.html5Input) {
                     switch (true) {
-                        case 'minlength' === name_2:
-                            opts['stringLength'] = Object.assign({}, {
+                        case "minlength" === name_2:
+                            opts["stringLength"] = Object.assign({}, {
                                 enabled: true,
                                 min: parseInt(value, 10),
-                            }, opts['stringLength']);
+                            }, opts["stringLength"]);
                             break;
-                        case 'maxlength' === name_2:
-                            opts['stringLength'] = Object.assign({}, {
+                        case "maxlength" === name_2:
+                            opts["stringLength"] = Object.assign({}, {
                                 enabled: true,
                                 max: parseInt(value, 10),
-                            }, opts['stringLength']);
+                            }, opts["stringLength"]);
                             break;
-                        case 'pattern' === name_2:
-                            opts['regexp'] = Object.assign({}, {
+                        case "pattern" === name_2:
+                            opts["regexp"] = Object.assign({}, {
                                 enabled: true,
                                 regexp: value,
-                            }, opts['regexp']);
+                            }, opts["regexp"]);
                             break;
-                        case 'required' === name_2:
-                            opts['notEmpty'] = Object.assign({}, {
+                        case "required" === name_2:
+                            opts["notEmpty"] = Object.assign({}, {
                                 enabled: true,
-                            }, opts['notEmpty']);
+                            }, opts["notEmpty"]);
                             break;
-                        case 'type' === name_2 && 'color' === value:
+                        case "type" === name_2 && "color" === value:
                             // Only accept 6 hex character values due to the HTML 5 spec
                             // See http://www.w3.org/TR/html-markup/input.color.html#input.color.attrs.value
-                            opts['color'] = Object.assign({}, {
+                            opts["color"] = Object.assign({}, {
                                 enabled: true,
-                                type: 'hex',
-                            }, opts['color']);
+                                type: "hex",
+                            }, opts["color"]);
                             break;
-                        case 'type' === name_2 && 'email' === value:
-                            opts['emailAddress'] = Object.assign({}, {
+                        case "type" === name_2 && "email" === value:
+                            opts["emailAddress"] = Object.assign({}, {
                                 enabled: true,
-                            }, opts['emailAddress']);
+                            }, opts["emailAddress"]);
                             break;
-                        case 'type' === name_2 && 'url' === value:
-                            opts['uri'] = Object.assign({}, {
+                        case "type" === name_2 && "url" === value:
+                            opts["uri"] = Object.assign({}, {
                                 enabled: true,
-                            }, opts['uri']);
+                            }, opts["uri"]);
                             break;
-                        case 'type' === name_2 && 'range' === value:
-                            opts['between'] = Object.assign({}, {
+                        case "type" === name_2 && "range" === value:
+                            opts["between"] = Object.assign({}, {
                                 enabled: true,
-                                max: parseFloat(ele.getAttribute('max')),
-                                min: parseFloat(ele.getAttribute('min')),
-                            }, opts['between']);
+                                max: parseFloat(ele.getAttribute("max")),
+                                min: parseFloat(ele.getAttribute("min")),
+                            }, opts["between"]);
                             break;
-                        case 'min' === name_2 && type !== 'date' && type !== 'range':
-                            opts['greaterThan'] = Object.assign({}, {
+                        case "min" === name_2 && type !== "date" && type !== "range":
+                            opts["greaterThan"] = Object.assign({}, {
                                 enabled: true,
                                 min: parseFloat(value),
-                            }, opts['greaterThan']);
+                            }, opts["greaterThan"]);
                             break;
-                        case 'max' === name_2 && type !== 'date' && type !== 'range':
-                            opts['lessThan'] = Object.assign({}, {
+                        case "max" === name_2 && type !== "date" && type !== "range":
+                            opts["lessThan"] = Object.assign({}, {
                                 enabled: true,
                                 max: parseFloat(value),
-                            }, opts['lessThan']);
+                            }, opts["lessThan"]);
                             break;
                     }
                 }
@@ -264,8 +264,8 @@
                     if (items[3]) {
                         opts[v][this.toCamelCase(items[3])] = this.normalizeValue(value);
                     }
-                    else if (opts[v]['enabled'] !== true || opts[v]['enabled'] !== false) {
-                        opts[v]['enabled'] = '' === value || 'true' === value;
+                    else if (opts[v]["enabled"] !== true || opts[v]["enabled"] !== false) {
+                        opts[v]["enabled"] = "" === value || "true" === value;
                     }
                 }
             }
@@ -274,7 +274,7 @@
         // Many validators accept `boolean` options, for example
         // `data-fv-between___inclusive="false"` should be identical to `inclusive: false`, not `inclusive: 'false'`
         Declarative.prototype.normalizeValue = function (value) {
-            return value === 'true' || value === '' ? true : value === 'false' ? false : value;
+            return value === "true" || value === "" ? true : value === "false" ? false : value;
         };
         Declarative.prototype.toUpperCase = function (input) {
             return input.charAt(1).toUpperCase();

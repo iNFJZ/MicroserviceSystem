@@ -1,8 +1,8 @@
 (function (global, factory) {
-    typeof exports === 'object' && typeof module !== 'undefined' ? module.exports = factory(require('@form-validation/core')) :
-    typeof define === 'function' && define.amd ? define(['@form-validation/core'], factory) :
-    (global = typeof globalThis !== 'undefined' ? globalThis : global || self, (global.FormValidation = global.FormValidation || {}, global.FormValidation.plugins = global.FormValidation.plugins || {}, global.FormValidation.plugins.Alias = factory(global.FormValidation)));
-})(this, (function (core) { 'use strict';
+    typeof exports === "object" && typeof module !== "undefined" ? module.exports = factory(require("@form-validation/core")) :
+    typeof define === "function" && define.amd ? define(["@form-validation/core"], factory) :
+    (global = typeof globalThis !== "undefined" ? globalThis : global || self, (global.FormValidation = global.FormValidation || {}, global.FormValidation.plugins = global.FormValidation.plugins || {}, global.FormValidation.plugins.Alias = factory(global.FormValidation)));
+})(this, (function (core) { "use strict";
 
     /******************************************************************************
     Copyright (c) Microsoft Corporation.
@@ -72,10 +72,10 @@
             return _this;
         }
         Alias.prototype.install = function () {
-            this.core.registerFilter('validator-name', this.validatorNameFilter);
+            this.core.registerFilter("validator-name", this.validatorNameFilter);
         };
         Alias.prototype.uninstall = function () {
-            this.core.deregisterFilter('validator-name', this.validatorNameFilter);
+            this.core.deregisterFilter("validator-name", this.validatorNameFilter);
         };
         Alias.prototype.getValidatorName = function (validatorName, _field) {
             return this.isEnabled ? this.opts[validatorName] || validatorName : validatorName;

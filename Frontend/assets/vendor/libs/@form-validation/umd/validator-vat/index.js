@@ -1,8 +1,8 @@
 (function (global, factory) {
-    typeof exports === 'object' && typeof module !== 'undefined' ? module.exports = factory(require('@form-validation/core')) :
-    typeof define === 'function' && define.amd ? define(['@form-validation/core'], factory) :
-    (global = typeof globalThis !== 'undefined' ? globalThis : global || self, (global.FormValidation = global.FormValidation || {}, global.FormValidation.validators = global.FormValidation.validators || {}, global.FormValidation.validators.vat = factory(global.FormValidation)));
-})(this, (function (core) { 'use strict';
+    typeof exports === "object" && typeof module !== "undefined" ? module.exports = factory(require("@form-validation/core")) :
+    typeof define === "function" && define.amd ? define(["@form-validation/core"], factory) :
+    (global = typeof globalThis !== "undefined" ? globalThis : global || self, (global.FormValidation = global.FormValidation || {}, global.FormValidation.validators = global.FormValidation.validators || {}, global.FormValidation.validators.vat = factory(global.FormValidation)));
+})(this, (function (core) { "use strict";
 
     /**
      * FormValidation (https://formvalidation.io)
@@ -17,7 +17,7 @@
      */
     function arVat(value) {
         // Replace `-` with empty
-        var v = value.replace('-', '');
+        var v = value.replace("-", "");
         if (/^AR[0-9]{11}$/.test(v)) {
             v = v.substr(2);
         }
@@ -108,7 +108,7 @@
         if (v.length === 9) {
             v = "0".concat(v);
         }
-        if (v.substr(1, 1) === '0') {
+        if (v.substr(1, 1) === "0") {
             return {
                 meta: {},
                 valid: false,
@@ -235,30 +235,30 @@
      * @returns {ValidateResult}
      */
     function brVat(value) {
-        if (value === '') {
+        if (value === "") {
             return {
                 meta: {},
                 valid: true,
             };
         }
-        var cnpj = value.replace(/[^\d]+/g, '');
-        if (cnpj === '' || cnpj.length !== 14) {
+        var cnpj = value.replace(/[^\d]+/g, "");
+        if (cnpj === "" || cnpj.length !== 14) {
             return {
                 meta: {},
                 valid: false,
             };
         }
         // Remove invalids CNPJs
-        if (cnpj === '00000000000000' ||
-            cnpj === '11111111111111' ||
-            cnpj === '22222222222222' ||
-            cnpj === '33333333333333' ||
-            cnpj === '44444444444444' ||
-            cnpj === '55555555555555' ||
-            cnpj === '66666666666666' ||
-            cnpj === '77777777777777' ||
-            cnpj === '88888888888888' ||
-            cnpj === '99999999999999') {
+        if (cnpj === "00000000000000" ||
+            cnpj === "11111111111111" ||
+            cnpj === "22222222222222" ||
+            cnpj === "33333333333333" ||
+            cnpj === "44444444444444" ||
+            cnpj === "55555555555555" ||
+            cnpj === "66666666666666" ||
+            cnpj === "77777777777777" ||
+            cnpj === "88888888888888" ||
+            cnpj === "99999999999999") {
             return {
                 meta: {},
                 valid: false,
@@ -366,7 +366,7 @@
             };
         }
         // Do not allow to start with "12"
-        if (v.substr(0, 2) === '12') {
+        if (v.substr(0, 2) === "12") {
             return {
                 meta: {},
                 valid: false,
@@ -395,7 +395,7 @@
         }
         return {
             meta: {},
-            valid: "".concat('ABCDEFGHIJKLMNOPQRSTUVWXYZ'[sum % 26]) === v.substr(8, 1),
+            valid: "".concat("ABCDEFGHIJKLMNOPQRSTUVWXYZ"[sum % 26]) === v.substr(8, 1),
         };
     }
 
@@ -425,7 +425,7 @@
         var i = 0;
         if (v.length === 8) {
             // Do not allow to start with '9'
-            if ("".concat(v.charAt(0)) === '9') {
+            if ("".concat(v.charAt(0)) === "9") {
                 return {
                     meta: {},
                     valid: false,
@@ -447,7 +447,7 @@
                 valid: "".concat(sum) === v.substr(7, 1),
             };
         }
-        else if (v.length === 9 && "".concat(v.charAt(0)) === '6') {
+        else if (v.length === 9 && "".concat(v.charAt(0)) === "6") {
             sum = 0;
             // Skip the first (which is 6)
             for (i = 0; i < 7; i++) {
@@ -632,25 +632,25 @@
         }
         var dni = function (input) {
             var check = parseInt(input.substr(0, 8), 10);
-            return "".concat('TRWAGMYFPDXBNJZSQVHLCKE'[check % 23]) === input.substr(8, 1);
+            return "".concat("TRWAGMYFPDXBNJZSQVHLCKE"[check % 23]) === input.substr(8, 1);
         };
         var nie = function (input) {
-            var check = ['XYZ'.indexOf(input.charAt(0)), input.substr(1)].join('');
-            var cd = 'TRWAGMYFPDXBNJZSQVHLCKE'[parseInt(check, 10) % 23];
+            var check = ["XYZ".indexOf(input.charAt(0)), input.substr(1)].join("");
+            var cd = "TRWAGMYFPDXBNJZSQVHLCKE"[parseInt(check, 10) % 23];
             return "".concat(cd) === input.substr(8, 1);
         };
         var cif = function (input) {
             var firstChar = input.charAt(0);
             var check;
-            if ('KLM'.indexOf(firstChar) !== -1) {
+            if ("KLM".indexOf(firstChar) !== -1) {
                 // K: Spanish younger than 14 year old
                 // L: Spanish living outside Spain without DNI
                 // M: Granted the tax to foreigners who have no NIE
                 check = parseInt(input.substr(1, 8), 10);
-                check = 'TRWAGMYFPDXBNJZSQVHLCKE'[check % 23];
+                check = "TRWAGMYFPDXBNJZSQVHLCKE"[check % 23];
                 return "".concat(check) === input.substr(8, 1);
             }
-            else if ('ABCDEFGHJNPQRSUVW'.indexOf(firstChar) !== -1) {
+            else if ("ABCDEFGHJNPQRSUVW".indexOf(firstChar) !== -1) {
                 var weight = [2, 1, 2, 1, 2, 1, 2];
                 var sum = 0;
                 var temp = 0;
@@ -665,7 +665,7 @@
                 if (sum === 10) {
                     sum = 0;
                 }
-                return "".concat(sum) === input.substr(8, 1) || 'JABCDEFGHI'[sum] === input.substr(8, 1);
+                return "".concat(sum) === input.substr(8, 1) || "JABCDEFGHI"[sum] === input.substr(8, 1);
             }
             return false;
         };
@@ -673,7 +673,7 @@
         if (/^[0-9]$/.test(first)) {
             return {
                 meta: {
-                    type: 'DNI',
+                    type: "DNI",
                 },
                 valid: dni(v),
             };
@@ -681,7 +681,7 @@
         else if (/^[XYZ]$/.test(first)) {
             return {
                 meta: {
-                    type: 'NIE',
+                    type: "NIE",
                 },
                 valid: nie(v),
             };
@@ -689,7 +689,7 @@
         else {
             return {
                 meta: {
-                    type: 'CIF',
+                    type: "CIF",
                 },
                 valid: cif(v),
             };
@@ -751,7 +751,7 @@
                 valid: false,
             };
         }
-        if (v.substr(2, 4) !== '000') {
+        if (v.substr(2, 4) !== "000") {
             return {
                 meta: {},
                 valid: luhn$2(v.substr(2)),
@@ -761,12 +761,12 @@
             // First two characters are digits
             return {
                 meta: {},
-                valid: v.substr(0, 2) === "".concat(parseInt(v.substr(2) + '12', 10) % 97),
+                valid: v.substr(0, 2) === "".concat(parseInt(v.substr(2) + "12", 10) % 97),
             };
         }
         else {
             // The first characters cann't be O and I
-            var alphabet = '0123456789ABCDEFGHJKLMNPQRSTUVWXYZ';
+            var alphabet = "0123456789ABCDEFGHJKLMNPQRSTUVWXYZ";
             var check = void 0;
             // First one is digit
             if (/^[0-9]$/.test(v.charAt(0))) {
@@ -817,12 +817,12 @@
             var lastThree = parseInt(v.substr(2), 10);
             return {
                 meta: {},
-                valid: ('GD' === firstTwo && lastThree < 500) || ('HA' === firstTwo && lastThree >= 500),
+                valid: ("GD" === firstTwo && lastThree < 500) || ("HA" === firstTwo && lastThree >= 500),
             };
         }
-        else if (length === 11 && ('GD8888' === v.substr(0, 6) || 'HA8888' === v.substr(0, 6))) {
-            if (('GD' === v.substr(0, 2) && parseInt(v.substr(6, 3), 10) >= 500) ||
-                ('HA' === v.substr(0, 2) && parseInt(v.substr(6, 3), 10) < 500)) {
+        else if (length === 11 && ("GD8888" === v.substr(0, 6) || "HA8888" === v.substr(0, 6))) {
+            if (("GD" === v.substr(0, 2) && parseInt(v.substr(6, 3), 10) >= 500) ||
+                ("HA" === v.substr(0, 2) && parseInt(v.substr(6, 3), 10) < 500)) {
                 return {
                     meta: {},
                     valid: false,
@@ -974,7 +974,7 @@
             while (input.length < 7) {
                 input = "0".concat(input);
             }
-            var alphabet = 'WABCDEFGHIJKLMNOPQRSTUV';
+            var alphabet = "WABCDEFGHIJKLMNOPQRSTUV";
             var sum = 0;
             for (var i = 0; i < 7; i++) {
                 sum += parseInt(input.charAt(i), 10) * (8 - i);
@@ -990,7 +990,7 @@
                 valid: v.charAt(7) === getCheckDigit("".concat(v.substr(0, 7)).concat(v.substr(8))),
             };
         }
-        else if ('ABCDEFGHIJKLMNOPQRSTUVWXYZ+*'.indexOf(v.charAt(1)) !== -1) {
+        else if ("ABCDEFGHIJKLMNOPQRSTUVWXYZ+*".indexOf(v.charAt(1)) !== -1) {
             // Old system
             return {
                 meta: {},
@@ -1267,7 +1267,7 @@
                 valid: false,
             };
         }
-        v = v.replace(/\./g, '');
+        v = v.replace(/\./g, "");
         if (parseInt(v, 10) === 0) {
             return {
                 meta: {},
@@ -1715,44 +1715,44 @@
     function vat() {
         // Supported country codes
         var COUNTRY_CODES = [
-            'AR',
-            'AT',
-            'BE',
-            'BG',
-            'BR',
-            'CH',
-            'CY',
-            'CZ',
-            'DE',
-            'DK',
-            'EE',
-            'EL',
-            'ES',
-            'FI',
-            'FR',
-            'GB',
-            'GR',
-            'HR',
-            'HU',
-            'IE',
-            'IS',
-            'IT',
-            'LT',
-            'LU',
-            'LV',
-            'MT',
-            'NL',
-            'NO',
-            'PL',
-            'PT',
-            'RO',
-            'RU',
-            'RS',
-            'SE',
-            'SK',
-            'SI',
-            'VE',
-            'ZA',
+            "AR",
+            "AT",
+            "BE",
+            "BG",
+            "BR",
+            "CH",
+            "CY",
+            "CZ",
+            "DE",
+            "DK",
+            "EE",
+            "EL",
+            "ES",
+            "FI",
+            "FR",
+            "GB",
+            "GR",
+            "HR",
+            "HU",
+            "IE",
+            "IS",
+            "IT",
+            "LT",
+            "LU",
+            "LV",
+            "MT",
+            "NL",
+            "NO",
+            "PL",
+            "PT",
+            "RO",
+            "RU",
+            "RS",
+            "SE",
+            "SK",
+            "SI",
+            "VE",
+            "ZA",
         ];
         return {
             /**
@@ -1760,12 +1760,12 @@
              */
             validate: function (input) {
                 var value = input.value;
-                if (value === '') {
+                if (value === "") {
                     return { valid: true };
                 }
-                var opts = Object.assign({}, { message: '' }, removeUndefined(input.options));
+                var opts = Object.assign({}, { message: "" }, removeUndefined(input.options));
                 var country = value.substr(0, 2);
-                if ('function' === typeof opts.country) {
+                if ("function" === typeof opts.country) {
                     country = opts.country.call(this);
                 }
                 else {
@@ -1779,119 +1779,119 @@
                     valid: true,
                 };
                 switch (country.toLowerCase()) {
-                    case 'ar':
+                    case "ar":
                         result = arVat(value);
                         break;
-                    case 'at':
+                    case "at":
                         result = atVat(value);
                         break;
-                    case 'be':
+                    case "be":
                         result = beVat(value);
                         break;
-                    case 'bg':
+                    case "bg":
                         result = bgVat(value);
                         break;
-                    case 'br':
+                    case "br":
                         result = brVat(value);
                         break;
-                    case 'ch':
+                    case "ch":
                         result = chVat(value);
                         break;
-                    case 'cy':
+                    case "cy":
                         result = cyVat(value);
                         break;
-                    case 'cz':
+                    case "cz":
                         result = czVat(value);
                         break;
-                    case 'de':
+                    case "de":
                         result = deVat(value);
                         break;
-                    case 'dk':
+                    case "dk":
                         result = dkVat(value);
                         break;
-                    case 'ee':
+                    case "ee":
                         result = eeVat(value);
                         break;
                     // EL is traditionally prefix of Greek VAT numbers
-                    case 'el':
+                    case "el":
                         result = grVat(value);
                         break;
-                    case 'es':
+                    case "es":
                         result = esVat(value);
                         break;
-                    case 'fi':
+                    case "fi":
                         result = fiVat(value);
                         break;
-                    case 'fr':
+                    case "fr":
                         result = frVat(value);
                         break;
-                    case 'gb':
+                    case "gb":
                         result = gbVat(value);
                         break;
-                    case 'gr':
+                    case "gr":
                         result = grVat(value);
                         break;
-                    case 'hr':
+                    case "hr":
                         result = hrVat(value);
                         break;
-                    case 'hu':
+                    case "hu":
                         result = huVat(value);
                         break;
-                    case 'ie':
+                    case "ie":
                         result = ieVat(value);
                         break;
-                    case 'is':
+                    case "is":
                         result = isVat(value);
                         break;
-                    case 'it':
+                    case "it":
                         result = itVat(value);
                         break;
-                    case 'lt':
+                    case "lt":
                         result = ltVat(value);
                         break;
-                    case 'lu':
+                    case "lu":
                         result = luVat(value);
                         break;
-                    case 'lv':
+                    case "lv":
                         result = lvVat(value);
                         break;
-                    case 'mt':
+                    case "mt":
                         result = mtVat(value);
                         break;
-                    case 'nl':
+                    case "nl":
                         result = nlVat(value);
                         break;
-                    case 'no':
+                    case "no":
                         result = noVat(value);
                         break;
-                    case 'pl':
+                    case "pl":
                         result = plVat(value);
                         break;
-                    case 'pt':
+                    case "pt":
                         result = ptVat(value);
                         break;
-                    case 'ro':
+                    case "ro":
                         result = roVat(value);
                         break;
-                    case 'rs':
+                    case "rs":
                         result = rsVat(value);
                         break;
-                    case 'ru':
+                    case "ru":
                         result = ruVat(value);
                         break;
-                    case 'se':
+                    case "se":
                         result = seVat(value);
                         break;
-                    case 'si':
+                    case "si":
                         result = siVat(value);
                         break;
-                    case 'sk':
+                    case "sk":
                         result = skVat(value);
                         break;
-                    case 've':
+                    case "ve":
                         result = veVat(value);
                         break;
-                    case 'za':
+                    case "za":
                         result = zaVat(value);
                         break;
                 }

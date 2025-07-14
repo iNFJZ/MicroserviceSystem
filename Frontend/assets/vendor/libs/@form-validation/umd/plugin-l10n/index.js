@@ -1,8 +1,8 @@
 (function (global, factory) {
-    typeof exports === 'object' && typeof module !== 'undefined' ? module.exports = factory(require('@form-validation/core')) :
-    typeof define === 'function' && define.amd ? define(['@form-validation/core'], factory) :
-    (global = typeof globalThis !== 'undefined' ? globalThis : global || self, (global.FormValidation = global.FormValidation || {}, global.FormValidation.plugins = global.FormValidation.plugins || {}, global.FormValidation.plugins.L10n = factory(global.FormValidation)));
-})(this, (function (core) { 'use strict';
+    typeof exports === "object" && typeof module !== "undefined" ? module.exports = factory(require("@form-validation/core")) :
+    typeof define === "function" && define.amd ? define(["@form-validation/core"], factory) :
+    (global = typeof globalThis !== "undefined" ? globalThis : global || self, (global.FormValidation = global.FormValidation || {}, global.FormValidation.plugins = global.FormValidation.plugins || {}, global.FormValidation.plugins.L10n = factory(global.FormValidation)));
+})(this, (function (core) { "use strict";
 
     /******************************************************************************
     Copyright (c) Microsoft Corporation.
@@ -48,29 +48,29 @@
             return _this;
         }
         L10n.prototype.install = function () {
-            this.core.registerFilter('validator-message', this.messageFilter);
+            this.core.registerFilter("validator-message", this.messageFilter);
         };
         L10n.prototype.uninstall = function () {
-            this.core.deregisterFilter('validator-message', this.messageFilter);
+            this.core.deregisterFilter("validator-message", this.messageFilter);
         };
         L10n.prototype.getMessage = function (locale, field, validator) {
             if (!this.isEnabled) {
-                return '';
+                return "";
             }
             if (this.opts[field] && this.opts[field][validator]) {
                 var message = this.opts[field][validator];
                 var messageType = typeof message;
-                if ('object' === messageType && message[locale]) {
+                if ("object" === messageType && message[locale]) {
                     // message is a literal object
                     return message[locale];
                 }
-                else if ('function' === messageType) {
+                else if ("function" === messageType) {
                     // message is defined by a function
                     var result = message.apply(this, [field, validator]);
-                    return result && result[locale] ? result[locale] : '';
+                    return result && result[locale] ? result[locale] : "";
                 }
             }
-            return '';
+            return "";
         };
         return L10n;
     }(core.Plugin));

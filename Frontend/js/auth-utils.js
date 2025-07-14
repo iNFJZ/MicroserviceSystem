@@ -1,4 +1,4 @@
-const TOKEN_KEY = 'authToken';
+const TOKEN_KEY = "authToken";
 
 export function getToken() {
     return localStorage.getItem(TOKEN_KEY);
@@ -28,21 +28,21 @@ export function getCurrentUser() {
 }
 
 export function sanitizeHtml(str) {
-    if (typeof str !== 'string') return str;
-    const div = document.createElement('div');
+    if (typeof str !== "string") return str;
+    const div = document.createElement("div");
     div.textContent = str;
     return div.innerHTML;
 }
 
 export function sanitizeInput(input) {
-    if (typeof input !== 'string') return input;
+    if (typeof input !== "string") return input;
     return input
-        .replace(/[<>]/g, '')
-        .replace(/javascript:/gi, '')
-        .replace(/on\w+=/gi, '')
-        .replace(/data:/gi, '')
-        .replace(/vbscript:/gi, '')
-        .replace(/file:/gi, '')
+        .replace(/[<>]/g, "")
+        .replace(/javascript:/gi, "")
+        .replace(/on\w+=/gi, "")
+        .replace(/data:/gi, "")
+        .replace(/vbscript:/gi, "")
+        .replace(/file:/gi, "")
         .trim();
 }
 
@@ -63,18 +63,18 @@ export function isValidUsername(username) {
 
 export function parseJwt(token) {
     try {
-        if (!token || typeof token !== 'string') {
+        if (!token || typeof token !== "string") {
             return {};
         }
-        const parts = token.split('.');
+        const parts = token.split(".");
         if (parts.length !== 3) {
             return {};
         }
         const base64Url = parts[1];
-        const base64 = base64Url.replace(/-/g, '+').replace(/_/g, '/');
-        const jsonPayload = decodeURIComponent(atob(base64).split('').map(function(c) {
-            return '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2);
-        }).join(''));
+        const base64 = base64Url.replace(/-/g, "+").replace(/_/g, "/");
+        const jsonPayload = decodeURIComponent(atob(base64).split("").map(function(c) {
+            return "%" + ("00" + c.charCodeAt(0).toString(16)).slice(-2);
+        }).join(""));
         return JSON.parse(jsonPayload);
     } catch {
         return {};
@@ -83,18 +83,18 @@ export function parseJwt(token) {
 
 export function logout() {
     removeToken();
-    window.location.href = '/auth/login.html';
+    window.location.href = "/auth/login.html";
 }
 
 export function showToast(message, isError = false) {
-    if (!message || (typeof message === 'string' && message.trim() === '')) return;
-    if (typeof toastr !== 'undefined') {
+    if (!message || (typeof message === "string" && message.trim() === "")) return;
+    if (typeof toastr !== "undefined") {
         if (isError) {
-            toastr.error(message);
+            toastr.error(window.i18next.t(message));
         } else {
-            toastr.success(message);
+            toastr.success(window.i18next.t(message));
         }
     } else {
-        alert(message);
+        alert(window.i18next.t(message));
     }
 } 

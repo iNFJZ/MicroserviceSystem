@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0" />
-  <title>FAQ - Admin Panel</title>
+  <title data-i18n="faqTitle">FAQ - Admin Panel</title>
   <meta name="description" content="" />
   <link rel="icon" type="image/x-icon" href="../../assets/img/favicon/favicon.ico" />
   <link rel="preconnect" href="https://fonts.googleapis.com" />
@@ -36,9 +36,9 @@
         <div class="app-brand demo">
           <a href="index.html" class="app-brand-link">
                           <span class="app-brand-logo demo">
-                <img src="../assets/img/branding/logo-i-vuexy.svg" alt="iNFJZ System Logo" style="height:32px;width:auto;">
+                <img src="../assets/img/branding/logo-i-vuexy.svg" alt="EDISA Logo" style="height:32px;width:auto;">
               </span>
-              <span class="app-brand-text demo menu-text fw-bold">iNFJZ System</span>
+              <span class="app-brand-text demo menu-text fw-bold">EDISA</span>
           </a>
           <a href="javascript:void(0);" class="layout-menu-toggle menu-link text-large ms-auto">
             <i class="ti menu-toggle-icon d-none d-xl-block ti-sm align-middle"></i>
@@ -49,29 +49,29 @@
         <ul class="menu-inner py-1">
           <!-- Apps & Pages -->
           <li class="menu-header small text-uppercase">
-            <span class="menu-header-text">Apps &amp; Pages</span>
+            <span class="menu-header-text" data-i18n="appsAndPages">Apps & Pages</span>
           </li>
           
           <!-- User Management -->
           <li class="menu-item">
             <a href="javascript:void(0);" class="menu-link menu-toggle">
               <i class="menu-icon tf-icons ti ti-users"></i>
-              <div data-i18n="User Management">User Management</div>
+              <div data-i18n="userManagement">User Management</div>
             </a>
             <ul class="menu-sub">
               <li class="menu-item">
                 <a href="all-users.html" class="menu-link">
-                  <div data-i18n="All Users">All Users</div>
+                  <div data-i18n="allUsers">All Users</div>
                 </a>
               </li>
               <li class="menu-item">
                 <a href="active-users.html" class="menu-link">
-                  <div data-i18n="Active Users">Active Users</div>
+                  <div data-i18n="activeUsers">Active Users</div>
                 </a>
               </li>
               <li class="menu-item">
                 <a href="deactive-users.html" class="menu-link">
-                  <div data-i18n="Deactive Users">Deactive Users</div>
+                  <div data-i18n="deactiveUsers">Deactive Users</div>
                 </a>
               </li>
             </ul>
@@ -81,7 +81,7 @@
           <li class="menu-item">
             <a href="javascript:void(0);" class="menu-link" id="logout-btn">
               <i class="menu-icon tf-icons ti ti-logout"></i>
-              <div data-i18n="Logout">Logout</div>
+              <div data-i18n="logout">Logout</div>
             </a>
           </li>
         </ul>
@@ -96,12 +96,36 @@
             <div class="navbar-nav align-items-center">
               <div class="nav-item d-flex align-items-center">
                 <i class="ti ti-search ti-lg me-2"></i>
-                <input type="text" class="form-control border-0 shadow-none" placeholder="Search..." aria-label="Search..." />
+                <input type="text" class="form-control border-0 shadow-none" data-i18n-placeholder="searchPlaceholder" placeholder="Search..." aria-label="Search..." />
               </div>
             </div>
             <!-- /Search -->
 
             <ul class="navbar-nav flex-row align-items-center ms-auto">
+              <!-- Language -->
+              <li class="nav-item dropdown-language dropdown me-2 me-xl-0">
+                <a class="nav-link dropdown-toggle hide-arrow" href="javascript:void(0);" data-bs-toggle="dropdown">
+                  <i class="ti ti-language rounded-circle ti-md"></i>
+                </a>
+                <ul class="dropdown-menu dropdown-menu-end">
+                  <li>
+                    <a class="dropdown-item" href="javascript:void(0);" data-language="vi">
+                      <span class="align-middle" data-i18n="vietnamese">Vietnamese</span>
+                    </a>
+                  </li>
+                  <li>
+                    <a class="dropdown-item" href="javascript:void(0);" data-language="en">
+                      <span class="align-middle" data-i18n="english">English</span>
+                    </a>
+                  </li>
+                  <li>
+                    <a class="dropdown-item" href="javascript:void(0);" data-language="ja">
+                      <span class="align-middle" data-i18n="japanese">Japanese</span>
+                    </a>
+                  </li>
+                </ul>
+              </li>
+              <!--/ Language -->
               <!-- User -->
               <li class="nav-item navbar-dropdown dropdown-user dropdown">
                 <a class="nav-link dropdown-toggle hide-arrow" href="javascript:void(0);" data-bs-toggle="dropdown">
@@ -112,8 +136,8 @@
                       </div>
                     </div>
                     <div class="flex-grow-1">
-                      <span class="fw-semibold d-block user-name">Loading...</span>
-                      <small class="text-muted user-role">Loading...</small>
+                      <span class="fw-semibold d-block user-name" data-i18n="loading">Loading...</span>
+                      <small class="text-muted user-role" data-i18n="loading">Loading...</small>
                     </div>
                   </div>
                 </a>
@@ -127,8 +151,8 @@
                           </div>
                         </div>
                         <div class="flex-grow-1">
-                          <span class="fw-semibold d-block user-name">Loading...</span>
-                          <small class="text-muted user-role">Loading...</small>
+                          <span class="fw-semibold d-block user-name" data-i18n="loading">Loading...</span>
+                          <small class="text-muted user-role" data-i18n="loading">Loading...</small>
                         </div>
                       </div>
                     </a>
@@ -139,19 +163,19 @@
                   <li>
                     <a class="dropdown-item" href="my-profile.html">
                       <i class="ti ti-user-check me-2 ti-sm"></i>
-                      <span class="align-middle">My Profile</span>
+                      <span class="align-middle" data-i18n="myProfile">My Profile</span>
                     </a>
                   </li>
                   <li>
                     <a class="dropdown-item" href="notifications.html">
                       <i class="ti ti-settings me-2 ti-sm"></i>
-                      <span class="align-middle">Settings</span>
+                      <span class="align-middle" data-i18n="settings">Settings</span>
                     </a>
                   </li>
                   <li>
                     <a class="dropdown-item" href="faq.html">
                       <i class="ti ti-help me-2 ti-sm"></i>
-                      <span class="align-middle">FAQ</span>
+                      <span class="align-middle" data-i18n="faq">FAQ</span>
                     </a>
                   </li>
                   <li>
@@ -160,7 +184,7 @@
                   <li>
                     <a class="dropdown-item" href="javascript:void(0);" id="logout-btn">
                       <i class="ti ti-logout me-2 ti-sm"></i>
-                      <span class="align-middle">Log Out</span>
+                      <span class="align-middle" data-i18n="logout">Log Out</span>
                     </a>
                   </li>
                 </ul>
@@ -175,26 +199,26 @@
           <div class="container-xxl flex-grow-1 container-p-y">
             <div class="row">
               <div class="col-md-12">
-                <h4 class="fw-bold py-3 mb-4">FAQ</h4>
+                <h1 data-i18n="faqTitle">FAQ</h1>
                 <ul class="nav nav-pills flex-column flex-md-row mb-4">
                   <li class="nav-item">
                     <a class="nav-link d-flex align-items-center" href="my-profile.html">
-                      <i class="ti-xs ti ti-users me-1"></i> <span>My Profile</span>
+                      <i class="ti-xs ti ti-users me-1"></i> <span data-i18n="myProfile">My Profile</span>
                     </a>
                   </li>
                   <li class="nav-item">
                     <a class="nav-link d-flex align-items-center" href="security.html">
-                      <i class="ti-xs ti ti-lock me-1"></i> <span>Security</span>
+                      <i class="ti-xs ti ti-lock me-1"></i> <span data-i18n="security">Security</span>
                     </a>
                   </li>
                   <li class="nav-item">
                     <a class="nav-link d-flex align-items-center" href="notifications.html">
-                      <i class="ti-xs ti ti-bell me-1"></i> <span>Settings</span>
+                      <i class="ti-xs ti ti-bell me-1"></i> <span data-i18n="settings">Settings</span>
                     </a>
                   </li>
                   <li class="nav-item">
                     <a class="nav-link active d-flex align-items-center" href="faq.html">
-                      <i class="ti-xs ti ti-help me-1"></i> <span>FAQ</span>
+                      <i class="ti-xs ti ti-help me-1"></i> <span data-i18n="faq">FAQ</span>
                     </a>
                   </li>
                 </ul>
@@ -202,43 +226,43 @@
                   <div class="col-md-10 col-lg-8 mx-auto">
                     <div class="card">
                       <div class="card-header">
-                        <h5 class="card-title mb-0">Frequently Asked Questions</h5>
+                        <h5 class="card-title mb-0" data-i18n="frequentlyAskedQuestions">Frequently Asked Questions</h5>
                       </div>
                       <div class="card-body">
                         <div class="accordion" id="faqAccordion">
                           <div class="accordion-item">
                             <h2 class="accordion-header" id="faq1-heading">
                               <button class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#faq1" aria-expanded="true" aria-controls="faq1">
-                                How do I update my profile?
+                                <span data-i18n="howDoIUpdateMyProfile">How do I update my profile?</span>
                               </button>
                             </h2>
                             <div id="faq1" class="accordion-collapse collapse show" aria-labelledby="faq1-heading" data-bs-parent="#faqAccordion">
                               <div class="accordion-body">
-                                Go to the My Profile page, edit your information, and click Save Changes.
+                                <span data-i18n="goToMyProfilePage">Go to the My Profile page</span>, <span data-i18n="editYourInformation">edit your information</span>, and <span data-i18n="clickSaveChanges">click Save Changes</span>.
                               </div>
                             </div>
                           </div>
                           <div class="accordion-item">
                             <h2 class="accordion-header" id="faq2-heading">
                               <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#faq2" aria-expanded="false" aria-controls="faq2">
-                                How do I change my password?
+                                <span data-i18n="howDoIChangeMyPassword">How do I change my password?</span>
                               </button>
                             </h2>
                             <div id="faq2" class="accordion-collapse collapse" aria-labelledby="faq2-heading" data-bs-parent="#faqAccordion">
                               <div class="accordion-body">
-                                Use the Change Password option in the Settings page.
+                                <span data-i18n="useTheChangePasswordOption">Use the Change Password option in the Settings page</span>.
                               </div>
                             </div>
                           </div>
                           <div class="accordion-item">
                             <h2 class="accordion-header" id="faq3-heading">
                               <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#faq3" aria-expanded="false" aria-controls="faq3">
-                                How do I contact support?
+                                <span data-i18n="howDoIContactSupport">How do I contact support?</span>
                               </button>
                             </h2>
                             <div id="faq3" class="accordion-collapse collapse" aria-labelledby="faq3-heading" data-bs-parent="#faqAccordion">
                               <div class="accordion-body">
-                                Please email support@infjz.com for assistance.
+                                <span data-i18n="pleaseEmailSupport">Please email support@infjz.com for assistance</span>.
                               </div>
                             </div>
                           </div>
@@ -285,13 +309,8 @@
   <script src="../../assets/vendor/js/bootstrap.js"></script>
   <script src="../../assets/vendor/libs/node-waves/node-waves.js"></script>
   <script src="../../assets/vendor/libs/hammer/hammer.js"></script>
-  <script src="../../assets/vendor/libs/i18n/i18n.js"></script>
-  <script src="../../assets/vendor/libs/typeahead-js/typeahead.js"></script>
-  <script src="../../assets/vendor/libs/select2/select2.js"></script>
-  <script src="../../assets/vendor/js/menu.js"></script>
-  <script src="../../assets/vendor/libs/datatables-bs5/datatables-bootstrap5.js"></script>
-  <script src="../../assets/vendor/libs/toastr/toastr.js"></script>
-  <script src="../../assets/vendor/libs/@form-validation/umd/bundle/popular.min.js"></script>
+  <script src="../../assets/vendor/libs/i18n/i18next.min.js"></script>
+  <script src="../../assets/vendor/libs/i18n/i18nextHttpBackend.min.js"></script>
   <script src="../../assets/js/main.js"></script>
   <script src="../../js/admin-auth.js"></script>
   <script src="../../js/api.js"></script>

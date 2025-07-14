@@ -1,8 +1,8 @@
 (function (global, factory) {
-    typeof exports === 'object' && typeof module !== 'undefined' ? module.exports = factory(require('@form-validation/core'), require('@form-validation/plugin-framework')) :
-    typeof define === 'function' && define.amd ? define(['@form-validation/core', '@form-validation/plugin-framework'], factory) :
-    (global = typeof globalThis !== 'undefined' ? globalThis : global || self, (global.FormValidation = global.FormValidation || {}, global.FormValidation.plugins = global.FormValidation.plugins || {}, global.FormValidation.plugins.Bulma = factory(global.FormValidation, global.FormValidation.plugins)));
-})(this, (function (core, pluginFramework) { 'use strict';
+    typeof exports === "object" && typeof module !== "undefined" ? module.exports = factory(require("@form-validation/core"), require("@form-validation/plugin-framework")) :
+    typeof define === "function" && define.amd ? define(["@form-validation/core", "@form-validation/plugin-framework"], factory) :
+    (global = typeof globalThis !== "undefined" ? globalThis : global || self, (global.FormValidation = global.FormValidation || {}, global.FormValidation.plugins = global.FormValidation.plugins || {}, global.FormValidation.plugins.Bulma = factory(global.FormValidation, global.FormValidation.plugins)));
+})(this, (function (core, pluginFramework) { "use strict";
 
     /******************************************************************************
     Copyright (c) Microsoft Corporation.
@@ -46,37 +46,37 @@
         function Bulma(opts) {
             // See http://bulma.io/documentation/elements/form/
             return _super.call(this, Object.assign({}, {
-                formClass: 'fv-plugins-bulma',
-                messageClass: 'help is-danger',
-                rowInvalidClass: 'fv-has-error',
+                formClass: "fv-plugins-bulma",
+                messageClass: "help is-danger",
+                rowInvalidClass: "fv-has-error",
                 rowPattern: /^.*field.*$/,
-                rowSelector: '.field',
-                rowValidClass: 'fv-has-success',
+                rowSelector: ".field",
+                rowValidClass: "fv-has-success",
             }, opts)) || this;
         }
         Bulma.prototype.onIconPlaced = function (e) {
             classSet(e.iconElement, {
-                'fv-plugins-icon': false,
+                "fv-plugins-icon": false,
             });
             // Wrap the icon inside a <span class="icon is-small is-right">
-            var span = document.createElement('span');
-            span.setAttribute('class', 'icon is-small is-right');
+            var span = document.createElement("span");
+            span.setAttribute("class", "icon is-small is-right");
             e.iconElement.parentNode.insertBefore(span, e.iconElement);
             span.appendChild(e.iconElement);
-            var type = e.element.getAttribute('type');
+            var type = e.element.getAttribute("type");
             var parent = e.element.parentElement;
-            if ('checkbox' === type || 'radio' === type) {
+            if ("checkbox" === type || "radio" === type) {
                 classSet(parent.parentElement, {
-                    'has-icons-right': true,
+                    "has-icons-right": true,
                 });
                 classSet(span, {
-                    'fv-plugins-icon-check': true,
+                    "fv-plugins-icon-check": true,
                 });
                 parent.parentElement.insertBefore(span, parent.nextSibling);
             }
             else {
                 classSet(parent, {
-                    'has-icons-right': true,
+                    "has-icons-right": true,
                 });
             }
         };

@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<root>
+  <data name="FileIsNull" xml:space="preserve">
+    <value>File is null</value>
+  </data>
+  <data name="FileIsEmpty" xml:space="preserve">
+    <value>File is empty</value>
+  </data>
+  <data name="FileSizeExceedsLimit" xml:space="preserve">
+    <value>File size exceeds the limit of {0}MB</value>
+  </data>
+</root>

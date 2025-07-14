@@ -1,8 +1,8 @@
 (function (global, factory) {
-    typeof exports === 'object' && typeof module !== 'undefined' ? module.exports = factory(require('@form-validation/core')) :
-    typeof define === 'function' && define.amd ? define(['@form-validation/core'], factory) :
-    (global = typeof globalThis !== 'undefined' ? globalThis : global || self, (global.FormValidation = global.FormValidation || {}, global.FormValidation.plugins = global.FormValidation.plugins || {}, global.FormValidation.plugins.Recaptcha3 = factory(global.FormValidation)));
-})(this, (function (core) { 'use strict';
+    typeof exports === "object" && typeof module !== "undefined" ? module.exports = factory(require("@form-validation/core")) :
+    typeof define === "function" && define.amd ? define(["@form-validation/core"], factory) :
+    (global = typeof globalThis !== "undefined" ? globalThis : global || self, (global.FormValidation = global.FormValidation || {}, global.FormValidation.plugins = global.FormValidation.plugins || {}, global.FormValidation.plugins.Recaptcha3 = factory(global.FormValidation)));
+})(this, (function (core) { "use strict";
 
     /******************************************************************************
     Copyright (c) Microsoft Corporation.
@@ -51,16 +51,16 @@
         }
         Recaptcha3.prototype.install = function () {
             var _this = this;
-            this.core.on('plugins.icon.placed', this.iconPlacedHandler);
-            var loadPrevCaptcha = typeof window[Recaptcha3.LOADED_CALLBACK] === 'undefined' ? function () { } : window[Recaptcha3.LOADED_CALLBACK];
+            this.core.on("plugins.icon.placed", this.iconPlacedHandler);
+            var loadPrevCaptcha = typeof window[Recaptcha3.LOADED_CALLBACK] === "undefined" ? function () { } : window[Recaptcha3.LOADED_CALLBACK];
             window[Recaptcha3.LOADED_CALLBACK] = function () {
                 // Call the previous loaded function
                 // to support multiple recaptchas on the same page
                 loadPrevCaptcha();
                 // Add a hidden field to the form
-                var tokenField = document.createElement('input');
-                tokenField.setAttribute('type', 'hidden');
-                tokenField.setAttribute('name', Recaptcha3.CAPTCHA_FIELD);
+                var tokenField = document.createElement("input");
+                tokenField.setAttribute("type", "hidden");
+                tokenField.setAttribute("name", Recaptcha3.CAPTCHA_FIELD);
                 document.getElementById(_this.opts.element).appendChild(tokenField);
                 _this.core.addField(Recaptcha3.CAPTCHA_FIELD, {
                     validators: {
@@ -68,7 +68,7 @@
                             message: _this.opts.message,
                             promise: function (_input) {
                                 return new Promise(function (resolve, reject) {
-                                    window['grecaptcha']
+                                    window["grecaptcha"]
                                         .execute(_this.opts.siteKey, {
                                         action: _this.opts.action,
                                     })
@@ -76,13 +76,13 @@
                                         var _a;
                                         // Verify it
                                         fetch(_this.opts.backendVerificationUrl, {
-                                            method: 'POST',
+                                            method: "POST",
                                             params: (_a = {},
                                                 _a[Recaptcha3.CAPTCHA_FIELD] = token,
                                                 _a),
                                         })
                                             .then(function (response) {
-                                            var isValid = "".concat(response.success) === 'true' &&
+                                            var isValid = "".concat(response.success) === "true" &&
                                                 response.score >= _this.opts.minimumScore;
                                             resolve({
                                                 message: response.message || _this.opts.message,
@@ -104,8 +104,8 @@
             };
             var src = this.getScript();
             if (!document.body.querySelector("script[src=\"".concat(src, "\"]"))) {
-                var script = document.createElement('script');
-                script.type = 'text/javascript';
+                var script = document.createElement("script");
+                script.type = "text/javascript";
                 script.async = true;
                 script.defer = true;
                 script.src = src;
@@ -114,7 +114,7 @@
         };
         Recaptcha3.prototype.uninstall = function () {
             delete window[Recaptcha3.LOADED_CALLBACK];
-            this.core.off('plugins.icon.placed', this.iconPlacedHandler);
+            this.core.off("plugins.icon.placed", this.iconPlacedHandler);
             // Remove script
             var src = this.getScript();
             var scripts = [].slice.call(document.body.querySelectorAll("script[src=\"".concat(src, "\"]")));
@@ -122,26 +122,26 @@
             this.core.removeField(Recaptcha3.CAPTCHA_FIELD);
         };
         Recaptcha3.prototype.onEnabled = function () {
-            this.core.enableValidator(Recaptcha3.CAPTCHA_FIELD, 'promise');
+            this.core.enableValidator(Recaptcha3.CAPTCHA_FIELD, "promise");
         };
         Recaptcha3.prototype.onDisabled = function () {
-            this.core.disableValidator(Recaptcha3.CAPTCHA_FIELD, 'promise');
+            this.core.disableValidator(Recaptcha3.CAPTCHA_FIELD, "promise");
         };
         Recaptcha3.prototype.getScript = function () {
-            var lang = this.opts.language ? "&hl=".concat(this.opts.language) : '';
-            return ('https://www.google.com/recaptcha/api.js?' +
+            var lang = this.opts.language ? "&hl=".concat(this.opts.language) : "";
+            return ("https://www.google.com/recaptcha/api.js?" +
                 "onload=".concat(Recaptcha3.LOADED_CALLBACK, "&render=").concat(this.opts.siteKey).concat(lang));
         };
         Recaptcha3.prototype.onIconPlaced = function (e) {
             if (e.field === Recaptcha3.CAPTCHA_FIELD) {
                 // Hide the icon for captcha element, since it will look weird when the captcha is valid
-                e.iconElement.style.display = 'none';
+                e.iconElement.style.display = "none";
             }
         };
         // The captcha field name
-        Recaptcha3.CAPTCHA_FIELD = '___g-recaptcha-token___';
+        Recaptcha3.CAPTCHA_FIELD = "___g-recaptcha-token___";
         // The name of callback that will be executed after reCaptcha script is loaded
-        Recaptcha3.LOADED_CALLBACK = '___reCaptcha3Loaded___';
+        Recaptcha3.LOADED_CALLBACK = "___reCaptcha3Loaded___";
         return Recaptcha3;
     }(core.Plugin));
 

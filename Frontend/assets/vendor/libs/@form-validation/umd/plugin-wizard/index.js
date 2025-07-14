@@ -1,8 +1,8 @@
 (function (global, factory) {
-    typeof exports === 'object' && typeof module !== 'undefined' ? module.exports = factory(require('@form-validation/core'), require('@form-validation/plugin-excluded')) :
-    typeof define === 'function' && define.amd ? define(['@form-validation/core', '@form-validation/plugin-excluded'], factory) :
-    (global = typeof globalThis !== 'undefined' ? globalThis : global || self, (global.FormValidation = global.FormValidation || {}, global.FormValidation.plugins = global.FormValidation.plugins || {}, global.FormValidation.plugins.Wizard = factory(global.FormValidation, global.FormValidation.plugins)));
-})(this, (function (core, pluginExcluded) { 'use strict';
+    typeof exports === "object" && typeof module !== "undefined" ? module.exports = factory(require("@form-validation/core"), require("@form-validation/plugin-excluded")) :
+    typeof define === "function" && define.amd ? define(["@form-validation/core", "@form-validation/plugin-excluded"], factory) :
+    (global = typeof globalThis !== "undefined" ? globalThis : global || self, (global.FormValidation = global.FormValidation || {}, global.FormValidation.plugins = global.FormValidation.plugins || {}, global.FormValidation.plugins.Wizard = factory(global.FormValidation, global.FormValidation.plugins)));
+})(this, (function (core, pluginExcluded) { "use strict";
 
     /******************************************************************************
     Copyright (c) Microsoft Corporation.
@@ -49,12 +49,12 @@
             _this.numSteps = 0;
             _this.stepIndexes = [];
             _this.opts = Object.assign({}, {
-                activeStepClass: 'fv-plugins-wizard--active',
+                activeStepClass: "fv-plugins-wizard--active",
                 onStepActive: function () { },
                 onStepInvalid: function () { },
                 onStepValid: function () { },
                 onValid: function () { },
-                stepClass: 'fv-plugins-wizard--step',
+                stepClass: "fv-plugins-wizard--step",
             }, opts);
             _this.prevStepHandler = _this.onClickPrev.bind(_this);
             _this.nextStepHandler = _this.onClickNext.bind(_this);
@@ -80,24 +80,24 @@
                 .fill(0)
                 .map(function (_, i) { return i; });
             this.prevButton =
-                typeof this.opts.prevButton === 'string'
-                    ? this.opts.prevButton.substring(0, 1) === '#'
+                typeof this.opts.prevButton === "string"
+                    ? this.opts.prevButton.substring(0, 1) === "#"
                         ? document.getElementById(this.opts.prevButton.substring(1))
                         : form.querySelector(this.opts.prevButton)
                     : this.opts.prevButton;
             this.nextButton =
-                typeof this.opts.nextButton === 'string'
-                    ? this.opts.nextButton.substring(0, 1) === '#'
+                typeof this.opts.nextButton === "string"
+                    ? this.opts.nextButton.substring(0, 1) === "#"
                         ? document.getElementById(this.opts.nextButton.substring(1))
                         : form.querySelector(this.opts.nextButton)
                     : this.opts.nextButton;
-            this.prevButton.addEventListener('click', this.prevStepHandler);
-            this.nextButton.addEventListener('click', this.nextStepHandler);
+            this.prevButton.addEventListener("click", this.prevStepHandler);
+            this.nextButton.addEventListener("click", this.nextStepHandler);
         };
         Wizard.prototype.uninstall = function () {
             this.core.deregisterPlugin(Wizard.EXCLUDED_PLUGIN);
-            this.prevButton.removeEventListener('click', this.prevStepHandler);
-            this.nextButton.removeEventListener('click', this.nextStepHandler);
+            this.prevButton.removeEventListener("click", this.prevStepHandler);
+            this.nextButton.removeEventListener("click", this.nextStepHandler);
             this.stepIndexes.length = 0;
         };
         /**
@@ -147,7 +147,7 @@
             }
             // When click the Next button, we will validate the current step
             this.core.validate().then(function (status) {
-                if (status === 'Valid') {
+                if (status === "Valid") {
                     var nextStep = _this.currentStep + 1;
                     if (nextStep >= _this.numSteps) {
                         // The last step are valid
@@ -174,7 +174,7 @@
                         _this.onValid();
                     }
                 }
-                else if (status === 'Invalid') {
+                else if (status === "Invalid") {
                     _this.onStepInvalid();
                 }
             });
@@ -209,7 +209,7 @@
                 numSteps: this.numSteps,
                 step: this.currentStep,
             };
-            this.core.emit('plugins.wizard.step.active', e);
+            this.core.emit("plugins.wizard.step.active", e);
             this.opts.onStepActive(e);
         };
         Wizard.prototype.onStepValid = function () {
@@ -217,7 +217,7 @@
                 numSteps: this.numSteps,
                 step: this.currentStep,
             };
-            this.core.emit('plugins.wizard.step.valid', e);
+            this.core.emit("plugins.wizard.step.valid", e);
             this.opts.onStepValid(e);
         };
         Wizard.prototype.onStepInvalid = function () {
@@ -225,17 +225,17 @@
                 numSteps: this.numSteps,
                 step: this.currentStep,
             };
-            this.core.emit('plugins.wizard.step.invalid', e);
+            this.core.emit("plugins.wizard.step.invalid", e);
             this.opts.onStepInvalid(e);
         };
         Wizard.prototype.onValid = function () {
             var e = {
                 numSteps: this.numSteps,
             };
-            this.core.emit('plugins.wizard.valid', e);
+            this.core.emit("plugins.wizard.valid", e);
             this.opts.onValid(e);
         };
-        Wizard.EXCLUDED_PLUGIN = '___wizardExcluded';
+        Wizard.EXCLUDED_PLUGIN = "___wizardExcluded";
         return Wizard;
     }(core.Plugin));
 

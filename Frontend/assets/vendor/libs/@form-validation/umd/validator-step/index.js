@@ -1,8 +1,8 @@
 (function (global, factory) {
-    typeof exports === 'object' && typeof module !== 'undefined' ? module.exports = factory(require('@form-validation/core')) :
-    typeof define === 'function' && define.amd ? define(['@form-validation/core'], factory) :
-    (global = typeof globalThis !== 'undefined' ? globalThis : global || self, (global.FormValidation = global.FormValidation || {}, global.FormValidation.validators = global.FormValidation.validators || {}, global.FormValidation.validators.step = factory(global.FormValidation)));
-})(this, (function (core) { 'use strict';
+    typeof exports === "object" && typeof module !== "undefined" ? module.exports = factory(require("@form-validation/core")) :
+    typeof define === "function" && define.amd ? define(["@form-validation/core"], factory) :
+    (global = typeof globalThis !== "undefined" ? globalThis : global || self, (global.FormValidation = global.FormValidation || {}, global.FormValidation.validators = global.FormValidation.validators || {}, global.FormValidation.validators.step = factory(global.FormValidation)));
+})(this, (function (core) { "use strict";
 
     /**
      * FormValidation (https://formvalidation.io)
@@ -33,14 +33,14 @@
             if (y === 0.0) {
                 return 1.0;
             }
-            var dotX = "".concat(x).split('.');
-            var dotY = "".concat(y).split('.');
+            var dotX = "".concat(x).split(".");
+            var dotY = "".concat(y).split(".");
             var precision = (dotX.length === 1 ? 0 : dotX[1].length) + (dotY.length === 1 ? 0 : dotY[1].length);
             return round(x - y * Math.floor(x / y), precision);
         };
         return {
             validate: function (input) {
-                if (input.value === '') {
+                if (input.value === "") {
                     return { valid: true };
                 }
                 var v = parseFloat(input.value);
@@ -49,7 +49,7 @@
                 }
                 var opts = Object.assign({}, {
                     baseValue: 0,
-                    message: '',
+                    message: "",
                     step: 1,
                 }, input.options);
                 var mod = floatMod(v - opts.baseValue, opts.step);

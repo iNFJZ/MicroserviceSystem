@@ -3,22 +3,25 @@ using Grpc.Core;
 using System.Threading.Tasks;
 using FileService.Services;
 using System.Linq;
+using Microsoft.Extensions.Localization;
 
 namespace FileService.Services
 {
     public class FileGrpcService : GrpcGreeter.FileService.FileServiceBase
     {
         private readonly IFileService _fileService;
-        public FileGrpcService(IFileService fileService)
+        private readonly IStringLocalizer<FileGrpcService> _localizer;
+        public FileGrpcService(IFileService fileService, IStringLocalizer<FileGrpcService> localizer)
         {
             _fileService = fileService;
+            _localizer = localizer;
         }
 
         public override async Task<UploadFileResponse> UploadFile(UploadFileRequest request, ServerCallContext context)
         {
             using var ms = new System.IO.MemoryStream(request.FileData.ToByteArray());
             await _fileService.UploadFileAsync(request.FileName, ms, request.ContentType);
-            return new UploadFileResponse { Success = true, FileName = request.FileName, Message = "File uploaded successfully" };
+            return new UploadFileResponse { Success = true, FileName = request.FileName, Message = _localizer["FileUploadedSuccessfully"] };
         }
 
         public override async Task<DownloadFileResponse> DownloadFile(DownloadFileRequest request, ServerCallContext context)
@@ -33,14 +36,14 @@ namespace FileService.Services
                 FileData = Google.Protobuf.ByteString.CopyFrom(ms.ToArray()),
                 FileName = fileInfo.FileName,
                 ContentType = fileInfo.ContentType,
-                Message = "File downloaded successfully"
+                Message = _localizer["FileDownloadedSuccessfully"]
             };
         }
 
         public override async Task<DeleteFileResponse> DeleteFile(DeleteFileRequest request, ServerCallContext context)
         {
             await _fileService.DeleteFileAsync(request.FileName);
-            return new DeleteFileResponse { Success = true, Message = "File deleted successfully" };
+            return new DeleteFileResponse { Success = true, Message = _localizer["FileDeletedSuccessfully"] };
         }
 
         public override async Task<GetFileInfoResponse> GetFileInfo(GetFileInfoRequest request, ServerCallContext context)
@@ -56,7 +59,7 @@ namespace FileService.Services
                     UploadedBy = fileInfo.UploadedBy ?? string.Empty,
                     UploadedAt = fileInfo.UploadedAt ?? string.Empty,
                 },
-                Message = "File info fetched successfully"
+                Message = _localizer["FileInfoFetchedSuccessfully"]
             };
         }
 
@@ -76,7 +79,7 @@ namespace FileService.Services
                 TotalCount = files.Count,
                 CurrentPage = 1,
                 TotalPages = 1,
-                Message = "Files listed successfully"
+                Message = _localizer["FilesListedSuccessfully"]
             };
         }
     }

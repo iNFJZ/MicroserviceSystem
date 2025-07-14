@@ -1,8 +1,8 @@
 (function (global, factory) {
-    typeof exports === 'object' && typeof module !== 'undefined' ? module.exports = factory(require('@form-validation/core')) :
-    typeof define === 'function' && define.amd ? define(['@form-validation/core'], factory) :
-    (global = typeof globalThis !== 'undefined' ? globalThis : global || self, (global.FormValidation = global.FormValidation || {}, global.FormValidation.plugins = global.FormValidation.plugins || {}, global.FormValidation.plugins.Transformer = factory(global.FormValidation)));
-})(this, (function (core) { 'use strict';
+    typeof exports === "object" && typeof module !== "undefined" ? module.exports = factory(require("@form-validation/core")) :
+    typeof define === "function" && define.amd ? define(["@form-validation/core"], factory) :
+    (global = typeof globalThis !== "undefined" ? globalThis : global || self, (global.FormValidation = global.FormValidation || {}, global.FormValidation.plugins = global.FormValidation.plugins || {}, global.FormValidation.plugins.Transformer = factory(global.FormValidation)));
+})(this, (function (core) { "use strict";
 
     /******************************************************************************
     Copyright (c) Microsoft Corporation.
@@ -48,16 +48,16 @@
             return _this;
         }
         Transformer.prototype.install = function () {
-            this.core.registerFilter('field-value', this.valueFilter);
+            this.core.registerFilter("field-value", this.valueFilter);
         };
         Transformer.prototype.uninstall = function () {
-            this.core.deregisterFilter('field-value', this.valueFilter);
+            this.core.deregisterFilter("field-value", this.valueFilter);
         };
         Transformer.prototype.getElementValue = function (defaultValue, field, element, validator) {
             if (!this.isEnabled) {
                 return defaultValue;
             }
-            return this.opts[field] && this.opts[field][validator] && 'function' === typeof this.opts[field][validator]
+            return this.opts[field] && this.opts[field][validator] && "function" === typeof this.opts[field][validator]
                 ? this.opts[field][validator].apply(this, [field, element, validator])
                 : defaultValue;
         };

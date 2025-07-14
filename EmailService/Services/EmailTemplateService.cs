@@ -13,15 +13,18 @@ namespace EmailService.Services
             _config = config;
         }
 
-        public string LoadTemplate(string templateName)
+        public string LoadTemplate(string templateName, string lang = null)
         {
-            var templatePath = Path.Combine(_templatePath, $"{templateName}.html");
-            
+            string templateFile = templateName + (string.IsNullOrEmpty(lang) || lang == "en" ? "" : "." + lang) + ".html";
+            var templatePath = Path.Combine(_templatePath, templateFile);
             if (!File.Exists(templatePath))
             {
-                throw new FileNotFoundException($"Template {templateName} not found at {templatePath}");
+                templatePath = Path.Combine(_templatePath, templateName + ".html");
+                if (!File.Exists(templatePath))
+                {
+                    throw new FileNotFoundException($"Template {templateName} not found at {templatePath}");
+                }
             }
-
             return File.ReadAllText(templatePath, Encoding.UTF8);
         }
 
@@ -76,9 +79,9 @@ namespace EmailService.Services
             return ReplacePlaceholders(template, placeholders);
         }
 
-        public string GenerateRegisterGoogleContent(string username, string resetLink = "")
+        public string GenerateRegisterGoogleContent(string username, string resetLink = "", string lang = null)
         {
-            var template = LoadTemplate("register-google");
+            var template = LoadTemplate("register-google", lang);
             var placeholders = new Dictionary<string, string>
             {
                 { "Username", username },

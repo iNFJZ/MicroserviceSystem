@@ -1,8 +1,8 @@
 (function (global, factory) {
-    typeof exports === 'object' && typeof module !== 'undefined' ? module.exports = factory(require('@form-validation/core'), require('@form-validation/plugin-field-status')) :
-    typeof define === 'function' && define.amd ? define(['@form-validation/core', '@form-validation/plugin-field-status'], factory) :
-    (global = typeof globalThis !== 'undefined' ? globalThis : global || self, (global.FormValidation = global.FormValidation || {}, global.FormValidation.plugins = global.FormValidation.plugins || {}, global.FormValidation.plugins.AutoFocus = factory(global.FormValidation, global.FormValidation.plugins)));
-})(this, (function (core, pluginFieldStatus) { 'use strict';
+    typeof exports === "object" && typeof module !== "undefined" ? module.exports = factory(require("@form-validation/core"), require("@form-validation/plugin-field-status")) :
+    typeof define === "function" && define.amd ? define(["@form-validation/core", "@form-validation/plugin-field-status"], factory) :
+    (global = typeof globalThis !== "undefined" ? globalThis : global || self, (global.FormValidation = global.FormValidation || {}, global.FormValidation.plugins = global.FormValidation.plugins || {}, global.FormValidation.plugins.AutoFocus = factory(global.FormValidation, global.FormValidation.plugins)));
+})(this, (function (core, pluginFieldStatus) { "use strict";
 
     /******************************************************************************
     Copyright (c) Microsoft Corporation.
@@ -52,11 +52,11 @@
         }
         AutoFocus.prototype.install = function () {
             this.core
-                .on('core.form.invalid', this.invalidFormHandler)
+                .on("core.form.invalid", this.invalidFormHandler)
                 .registerPlugin(AutoFocus.FIELD_STATUS_PLUGIN, new pluginFieldStatus.FieldStatus());
         };
         AutoFocus.prototype.uninstall = function () {
-            this.core.off('core.form.invalid', this.invalidFormHandler).deregisterPlugin(AutoFocus.FIELD_STATUS_PLUGIN);
+            this.core.off("core.form.invalid", this.invalidFormHandler).deregisterPlugin(AutoFocus.FIELD_STATUS_PLUGIN);
         };
         AutoFocus.prototype.onEnabled = function () {
             this.core.enablePlugin(AutoFocus.FIELD_STATUS_PLUGIN);
@@ -70,7 +70,7 @@
             }
             var plugin = this.core.getPlugin(AutoFocus.FIELD_STATUS_PLUGIN);
             var statuses = plugin.getStatuses();
-            var invalidFields = Object.keys(this.core.getFields()).filter(function (key) { return statuses.get(key) === 'Invalid'; });
+            var invalidFields = Object.keys(this.core.getFields()).filter(function (key) { return statuses.get(key) === "Invalid"; });
             if (invalidFields.length > 0) {
                 var firstInvalidField = invalidFields[0];
                 var elements = this.core.getElements(firstInvalidField);
@@ -80,14 +80,14 @@
                         firstElement: firstElement,
                         field: firstInvalidField,
                     };
-                    this.core.emit('plugins.autofocus.prefocus', e);
+                    this.core.emit("plugins.autofocus.prefocus", e);
                     this.opts.onPrefocus(e);
                     // Focus on the first invalid element
                     firstElement.focus();
                 }
             }
         };
-        AutoFocus.FIELD_STATUS_PLUGIN = '___autoFocusFieldStatus';
+        AutoFocus.FIELD_STATUS_PLUGIN = "___autoFocusFieldStatus";
         return AutoFocus;
     }(core.Plugin));
 

@@ -13,7 +13,7 @@
       name="viewport"
       content="width=device-width, initial-scale=1.0, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0" />
 
-    <title>Account Activated - iNFJZ System</title>
+    <title data-i18n="accountActivatedTitle">Account Activated - EDISA</title>
 
     <meta name="description" content="Account activation successful" />
 
@@ -57,6 +57,21 @@
 
     <div class="authentication-wrapper authentication-basic px-4">
       <div class="authentication-inner py-4">
+        <!-- Language Dropdown -->
+        <div class="d-flex justify-content-end mb-3">
+          <div class="dropdown dropdown-language">
+            <a class="btn btn-outline-secondary dropdown-toggle" href="#" data-bs-toggle="dropdown">
+              <i class="flag-icon flag-icon-us"></i>
+              <span data-i18n="changeLanguage">Change language</span>
+            </a>
+            <ul class="dropdown-menu">
+              <li><a class="dropdown-item" href="#" data-language="vi"><i class="flag-icon flag-icon-vn me-2"></i> Tiếng Việt</a></li>
+              <li><a class="dropdown-item" href="#" data-language="en"><i class="flag-icon flag-icon-us me-2"></i> English</a></li>
+              <li><a class="dropdown-item" href="#" data-language="ja"><i class="flag-icon flag-icon-jp me-2"></i> 日本語</a></li>
+            </ul>
+          </div>
+        </div>
+        <!-- /Language Dropdown -->
         <!-- Account Activated -->
         <div class="card">
           <div class="card-body">
@@ -89,8 +104,8 @@
                         fill="#7367F0" />
                     </svg>
                   </span> -->
-                  <img src="../../assets/img/branding/logo-i-vuexy.svg" alt="iNFJZ System Logo" style="height:40px;width:auto;">
-                <span class="app-brand-text demo text-body fw-bold ms-1">iNFJZ System</span>
+                  <img src="../../assets/img/branding/logo-i-vuexy.svg" alt="EDISA Logo" style="height:40px;width:auto;">
+                <span class="app-brand-text demo text-body fw-bold ms-1">EDISA</span>
               </a>
             </div>
             <!-- /Logo -->
@@ -104,19 +119,17 @@
               </div>
             </div>
             
-            <h4 class="mb-1 pt-2 text-center">Account Activated Successfully! 🎉</h4>
-            <p class="text-center mb-4">
-              Your account has been successfully activated. You can now sign in to your account and start using our services.
-            </p>
+            <h4 class="mb-1 pt-2 text-center" data-i18n="accountActivatedTitle">Account Activated Successfully! 🎉</h4>
+            <p class="text-center mb-4" data-i18n="accountActivatedDesc">Your account has been successfully activated. You can now sign in to your account and start using our services.</p>
             
             <div class="text-center mb-4">
-              <p class="mb-2">Redirecting to login page in <span id="countdown" class="fw-bold text-primary">5</span> seconds...</p>
+              <p class="mb-2" data-i18n="redirectingToLogin">Redirecting to login page in <span id="countdown" class="fw-bold text-primary">5</span> seconds...</p>
             </div>
             
-            <a class="btn btn-primary w-100 mb-3" href="/">Go to Login Now</a>
+            <a class="btn btn-primary w-100 mb-3" href="/" data-i18n="goToLogin">Go to Login</a>
             
             <p class="text-center mb-0">
-              <small class="text-muted">If you are not redirected automatically, click the button above.</small>
+              <small class="text-muted" data-i18n="notRedirected">If you are not redirected automatically, click the button above.</small>
             </p>
           </div>
         </div>
@@ -136,6 +149,8 @@
     <script src="../../assets/vendor/libs/select2/select2.js"></script>
 
     <!-- Main JS -->
+    <script src="../../assets/vendor/libs/i18n/i18next.min.js"></script>
+    <script src="../../assets/vendor/libs/i18n/i18nextHttpBackend.min.js"></script>
     <script src="../../assets/js/main.js"></script>
 
     <!-- Toastr JS -->
@@ -163,11 +178,11 @@
                       </div>
                     </div>
                   </div>
-                  <h4 class="mb-1 pt-2 text-center">Account Activated Successfully! 🎉</h4>
-                  <p class="text-center mb-4">Your account has been successfully activated. You can now sign in to your account and start using our services.</p>
-                  <div class="text-center mb-4"><p class="mb-2">Redirecting to login page in <span id='countdown' class='fw-bold text-primary'>5</span> seconds...</p></div>
-                  <a class="btn btn-primary w-100 mb-3" href="/">Go to Login Now</a>
-                  <p class="text-center mb-0"><small class="text-muted">If you are not redirected automatically, click the button above.</small></p>
+                  <h4 class="mb-1 pt-2 text-center" data-i18n="accountActivatedTitle">Account Activated Successfully! 🎉</h4>
+                  <p class="text-center mb-4" data-i18n="accountActivatedDesc">Your account has been successfully activated. You can now sign in to your account and start using our services.</p>
+                  <div class="text-center mb-4"><p class="mb-2" data-i18n="redirectingToLogin">Redirecting to login page in <span id='countdown' class='fw-bold text-primary'>5</span> seconds...</p></div>
+                  <a class="btn btn-primary w-100 mb-3" href="/" data-i18n="goToLogin">Go to Login</a>
+                  <p class="text-center mb-0"><small class="text-muted" data-i18n="notRedirected">If you are not redirected automatically, click the button above.</small></p>
                 `;
                 let countdown = 5;
                 const countdownElement = document.getElementById('countdown');

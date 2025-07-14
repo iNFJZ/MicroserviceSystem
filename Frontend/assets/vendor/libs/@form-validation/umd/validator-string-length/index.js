@@ -1,8 +1,8 @@
 (function (global, factory) {
-    typeof exports === 'object' && typeof module !== 'undefined' ? module.exports = factory(require('@form-validation/core')) :
-    typeof define === 'function' && define.amd ? define(['@form-validation/core'], factory) :
-    (global = typeof globalThis !== 'undefined' ? globalThis : global || self, (global.FormValidation = global.FormValidation || {}, global.FormValidation.validators = global.FormValidation.validators || {}, global.FormValidation.validators.stringLength = factory(global.FormValidation)));
-})(this, (function (core) { 'use strict';
+    typeof exports === "object" && typeof module !== "undefined" ? module.exports = factory(require("@form-validation/core")) :
+    typeof define === "function" && define.amd ? define(["@form-validation/core"], factory) :
+    (global = typeof globalThis !== "undefined" ? globalThis : global || self, (global.FormValidation = global.FormValidation || {}, global.FormValidation.validators = global.FormValidation.validators || {}, global.FormValidation.validators.stringLength = factory(global.FormValidation)));
+})(this, (function (core) { "use strict";
 
     /**
      * FormValidation (https://formvalidation.io)
@@ -34,17 +34,17 @@
              */
             validate: function (input) {
                 var opts = Object.assign({}, {
-                    message: '',
+                    message: "",
                     trim: false,
                     utf8Bytes: false,
                 }, removeUndefined(input.options));
-                var v = opts.trim === true || "".concat(opts.trim) === 'true' ? input.value.trim() : input.value;
-                if (v === '') {
+                var v = opts.trim === true || "".concat(opts.trim) === "true" ? input.value.trim() : input.value;
+                if (v === "") {
                     return { valid: true };
                 }
                 // TODO: `min`, `max` can be dynamic options
-                var min = opts.min ? "".concat(opts.min) : '';
-                var max = opts.max ? "".concat(opts.max) : '';
+                var min = opts.min ? "".concat(opts.min) : "";
+                var max = opts.max ? "".concat(opts.max) : "";
                 var length = opts.utf8Bytes ? utf8Length(v) : v.length;
                 var isValid = true;
                 var msg = input.l10n ? opts.message || input.l10n.stringLength.default : opts.message;

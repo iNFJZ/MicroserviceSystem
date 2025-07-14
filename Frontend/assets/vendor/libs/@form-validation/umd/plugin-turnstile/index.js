@@ -1,8 +1,8 @@
 (function (global, factory) {
-    typeof exports === 'object' && typeof module !== 'undefined' ? module.exports = factory(require('@form-validation/core')) :
-    typeof define === 'function' && define.amd ? define(['@form-validation/core'], factory) :
-    (global = typeof globalThis !== 'undefined' ? globalThis : global || self, (global.FormValidation = global.FormValidation || {}, global.FormValidation.plugins = global.FormValidation.plugins || {}, global.FormValidation.plugins.Turnstile = factory(global.FormValidation)));
-})(this, (function (core) { 'use strict';
+    typeof exports === "object" && typeof module !== "undefined" ? module.exports = factory(require("@form-validation/core")) :
+    typeof define === "function" && define.amd ? define(["@form-validation/core"], factory) :
+    (global = typeof globalThis !== "undefined" ? globalThis : global || self, (global.FormValidation = global.FormValidation || {}, global.FormValidation.plugins = global.FormValidation.plugins || {}, global.FormValidation.plugins.Turnstile = factory(global.FormValidation)));
+})(this, (function (core) { "use strict";
 
     /******************************************************************************
     Copyright (c) Microsoft Corporation.
@@ -46,23 +46,23 @@
         function Turnstile(opts) {
             var _this = _super.call(this, opts) || this;
             _this.widgetIds = new Map();
-            _this.captchaStatus = 'NotValidated';
-            _this.captchaContainer = '';
+            _this.captchaStatus = "NotValidated";
+            _this.captchaContainer = "";
             _this.opts = Object.assign({}, Turnstile.DEFAULT_OPTIONS, removeUndefined(opts));
             _this.fieldResetHandler = _this.onResetField.bind(_this);
             _this.preValidateFilter = _this.preValidate.bind(_this);
             _this.iconPlacedHandler = _this.onIconPlaced.bind(_this);
             // Turnstile accepts ID selector or a given element
-            _this.captchaContainer = _this.opts.element.startsWith('#') ? _this.opts.element : "#".concat(_this.opts.element);
+            _this.captchaContainer = _this.opts.element.startsWith("#") ? _this.opts.element : "#".concat(_this.opts.element);
             return _this;
         }
         Turnstile.prototype.install = function () {
             var _this = this;
             this.core
-                .on('core.field.reset', this.fieldResetHandler)
-                .on('plugins.icon.placed', this.iconPlacedHandler)
-                .registerFilter('validate-pre', this.preValidateFilter);
-            var loadPrevCaptcha = typeof window[Turnstile.LOADED_CALLBACK] === 'undefined' ? function () { } : window[Turnstile.LOADED_CALLBACK];
+                .on("core.field.reset", this.fieldResetHandler)
+                .on("plugins.icon.placed", this.iconPlacedHandler)
+                .registerFilter("validate-pre", this.preValidateFilter);
+            var loadPrevCaptcha = typeof window[Turnstile.LOADED_CALLBACK] === "undefined" ? function () { } : window[Turnstile.LOADED_CALLBACK];
             window[Turnstile.LOADED_CALLBACK] = function () {
                 // Call the previous loaded function
                 // to support multiple recaptchas on the same page
@@ -78,40 +78,40 @@
                                 var value = _this.widgetIds.has(_this.captchaContainer)
                                     ? _this.getTurnstileInstance().getResponse(_this.widgetIds.get(_this.captchaContainer))
                                     : input.value;
-                                if (value === '') {
-                                    _this.captchaStatus = 'Invalid';
+                                if (value === "") {
+                                    _this.captchaStatus = "Invalid";
                                     return Promise.resolve({
                                         valid: false,
                                     });
                                 }
-                                if (_this.opts.backendVerificationUrl === '') {
-                                    _this.captchaStatus = 'Valid';
+                                if (_this.opts.backendVerificationUrl === "") {
+                                    _this.captchaStatus = "Valid";
                                     return Promise.resolve({
                                         valid: true,
                                     });
                                 }
-                                if (_this.captchaStatus === 'Valid') {
+                                if (_this.captchaStatus === "Valid") {
                                     // Do not need to send the back-end verification request if the captcha is already valid
                                     return Promise.resolve({
                                         valid: true,
                                     });
                                 }
                                 return fetch(_this.opts.backendVerificationUrl, {
-                                    method: 'POST',
+                                    method: "POST",
                                     params: (_a = {},
                                         _a[Turnstile.CAPTCHA_FIELD] = value,
                                         _a),
                                 })
                                     .then(function (response) {
-                                    var isValid = "".concat(response['success']) === 'true';
-                                    _this.captchaStatus = isValid ? 'Valid' : 'Invalid';
+                                    var isValid = "".concat(response["success"]) === "true";
+                                    _this.captchaStatus = isValid ? "Valid" : "Invalid";
                                     return Promise.resolve({
                                         meta: response,
                                         valid: isValid,
                                     });
                                 })
                                     .catch(function (_reason) {
-                                    _this.captchaStatus = 'NotValidated';
+                                    _this.captchaStatus = "NotValidated";
                                     return Promise.reject({
                                         valid: false,
                                     });
@@ -123,8 +123,8 @@
             };
             var src = this.getScript();
             if (!document.body.querySelector("script[src=\"".concat(src, "\"]"))) {
-                var script = document.createElement('script');
-                script.type = 'text/javascript';
+                var script = document.createElement("script");
+                script.type = "text/javascript";
                 script.async = true;
                 script.defer = true;
                 script.src = src;
@@ -135,9 +135,9 @@
             var _this = this;
             delete window[Turnstile.LOADED_CALLBACK];
             this.core
-                .off('core.field.reset', this.fieldResetHandler)
-                .off('plugins.icon.placed', this.iconPlacedHandler)
-                .deregisterFilter('validate-pre', this.preValidateFilter);
+                .off("core.field.reset", this.fieldResetHandler)
+                .off("plugins.icon.placed", this.iconPlacedHandler)
+                .deregisterFilter("validate-pre", this.preValidateFilter);
             this.widgetIds.forEach(function (_element, widgetId, _map) {
                 _this.getTurnstileInstance().remove(widgetId);
             });
@@ -149,29 +149,29 @@
             this.core.removeField(Turnstile.CAPTCHA_FIELD);
         };
         Turnstile.prototype.onEnabled = function () {
-            this.core.enableValidator(Turnstile.CAPTCHA_FIELD, 'promise');
+            this.core.enableValidator(Turnstile.CAPTCHA_FIELD, "promise");
         };
         Turnstile.prototype.onDisabled = function () {
-            this.core.disableValidator(Turnstile.CAPTCHA_FIELD, 'promise');
+            this.core.disableValidator(Turnstile.CAPTCHA_FIELD, "promise");
         };
         Turnstile.prototype.buildTurnstileRenderOptions = function () {
             var _this = this;
             return {
                 callback: function () {
-                    if (_this.opts.backendVerificationUrl === '') {
-                        _this.captchaStatus = 'Valid';
+                    if (_this.opts.backendVerificationUrl === "") {
+                        _this.captchaStatus = "Valid";
                         // Mark the captcha as valid, so the library will remove the error message
-                        _this.core.updateFieldStatus(Turnstile.CAPTCHA_FIELD, 'Valid');
+                        _this.core.updateFieldStatus(Turnstile.CAPTCHA_FIELD, "Valid");
                     }
                 },
-                'error-callback': function () {
-                    _this.captchaStatus = 'Invalid';
-                    _this.core.updateFieldStatus(Turnstile.CAPTCHA_FIELD, 'Invalid');
+                "error-callback": function () {
+                    _this.captchaStatus = "Invalid";
+                    _this.core.updateFieldStatus(Turnstile.CAPTCHA_FIELD, "Invalid");
                 },
-                'expired-callback': function () {
+                "expired-callback": function () {
                     // Update the captcha status when session expires
-                    _this.captchaStatus = 'NotValidated';
-                    _this.core.updateFieldStatus(Turnstile.CAPTCHA_FIELD, 'NotValidated');
+                    _this.captchaStatus = "NotValidated";
+                    _this.core.updateFieldStatus(Turnstile.CAPTCHA_FIELD, "NotValidated");
                 },
                 sitekey: this.opts.siteKey,
                 // Optional parameters
@@ -180,15 +180,15 @@
                 cData: this.opts.cData,
                 language: this.opts.language,
                 size: this.opts.size,
-                'refresh-expired': this.opts.refreshExpired,
+                "refresh-expired": this.opts.refreshExpired,
                 retry: this.opts.retry,
-                'retry-interval': this.opts.retryInterval,
+                "retry-interval": this.opts.retryInterval,
                 tabindex: this.opts.tabIndex,
                 theme: this.opts.theme,
             };
         };
         Turnstile.prototype.getTurnstileInstance = function () {
-            return window['turnstile'];
+            return window["turnstile"];
         };
         Turnstile.prototype.getScript = function () {
             return "https://challenges.cloudflare.com/turnstile/v0/api.js?onload=".concat(Turnstile.LOADED_CALLBACK, "&render=explicit");
@@ -196,9 +196,9 @@
         Turnstile.prototype.preValidate = function () {
             // In the `execute` mode, we have to call the `execute()` function to challenge visitors
             if (this.isEnabled &&
-                this.opts.appearance === 'execute' &&
+                this.opts.appearance === "execute" &&
                 this.widgetIds.has(this.captchaContainer) &&
-                this.captchaStatus !== 'Valid') {
+                this.captchaStatus !== "Valid") {
                 this.getTurnstileInstance().execute(this.captchaContainer, this.buildTurnstileRenderOptions());
             }
             return Promise.resolve();
@@ -211,8 +211,8 @@
         };
         Turnstile.prototype.onIconPlaced = function (e) {
             if (e.field === Turnstile.CAPTCHA_FIELD) {
-                if (this.opts.appearance === 'execute') {
-                    e.iconElement.style.display = 'none';
+                if (this.opts.appearance === "execute") {
+                    e.iconElement.style.display = "none";
                 }
                 else {
                     var captchaContainer = document.getElementById(this.captchaContainer);
@@ -225,19 +225,19 @@
             }
         };
         // The captcha field name, generated by Turnstile
-        Turnstile.CAPTCHA_FIELD = 'cf-turnstile-response';
+        Turnstile.CAPTCHA_FIELD = "cf-turnstile-response";
         Turnstile.DEFAULT_OPTIONS = {
-            backendVerificationUrl: '',
-            appearance: 'always',
-            language: 'auto',
-            refreshExpired: 'auto',
-            retry: 'auto',
-            size: 'normal',
+            backendVerificationUrl: "",
+            appearance: "always",
+            language: "auto",
+            refreshExpired: "auto",
+            retry: "auto",
+            size: "normal",
             tabIndex: 0,
-            theme: 'auto',
+            theme: "auto",
         };
         // The name of callback that will be executed after Turnstile script is loaded
-        Turnstile.LOADED_CALLBACK = '___turnstileLoaded___';
+        Turnstile.LOADED_CALLBACK = "___turnstileLoaded___";
         return Turnstile;
     }(core.Plugin));
 

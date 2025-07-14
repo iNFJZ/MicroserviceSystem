@@ -1,8 +1,8 @@
 (function (global, factory) {
-    typeof exports === 'object' && typeof module !== 'undefined' ? module.exports = factory() :
-    typeof define === 'function' && define.amd ? define(factory) :
-    (global = typeof globalThis !== 'undefined' ? globalThis : global || self, (global.FormValidation = global.FormValidation || {}, global.FormValidation.validators = global.FormValidation.validators || {}, global.FormValidation.validators.siret = factory()));
-})(this, (function () { 'use strict';
+    typeof exports === "object" && typeof module !== "undefined" ? module.exports = factory() :
+    typeof define === "function" && define.amd ? define(factory) :
+    (global = typeof globalThis !== "undefined" ? globalThis : global || self, (global.FormValidation = global.FormValidation || {}, global.FormValidation.validators = global.FormValidation.validators || {}, global.FormValidation.validators.siret = factory()));
+})(this, (function () { "use strict";
 
     /**
      * FormValidation (https://formvalidation.io)
@@ -15,7 +15,7 @@
              * Check if a string is a siret number
              */
             validate: function (input) {
-                if (input.value === '') {
+                if (input.value === "") {
                     return { valid: true };
                 }
                 var length = input.value.length;

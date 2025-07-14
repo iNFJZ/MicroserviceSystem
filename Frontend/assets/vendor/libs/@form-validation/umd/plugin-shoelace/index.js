@@ -1,8 +1,8 @@
 (function (global, factory) {
-    typeof exports === 'object' && typeof module !== 'undefined' ? module.exports = factory(require('@form-validation/core'), require('@form-validation/plugin-framework')) :
-    typeof define === 'function' && define.amd ? define(['@form-validation/core', '@form-validation/plugin-framework'], factory) :
-    (global = typeof globalThis !== 'undefined' ? globalThis : global || self, (global.FormValidation = global.FormValidation || {}, global.FormValidation.plugins = global.FormValidation.plugins || {}, global.FormValidation.plugins.Shoelace = factory(global.FormValidation, global.FormValidation.plugins)));
-})(this, (function (core, pluginFramework) { 'use strict';
+    typeof exports === "object" && typeof module !== "undefined" ? module.exports = factory(require("@form-validation/core"), require("@form-validation/plugin-framework")) :
+    typeof define === "function" && define.amd ? define(["@form-validation/core", "@form-validation/plugin-framework"], factory) :
+    (global = typeof globalThis !== "undefined" ? globalThis : global || self, (global.FormValidation = global.FormValidation || {}, global.FormValidation.plugins = global.FormValidation.plugins || {}, global.FormValidation.plugins.Shoelace = factory(global.FormValidation, global.FormValidation.plugins)));
+})(this, (function (core, pluginFramework) { "use strict";
 
     /******************************************************************************
     Copyright (c) Microsoft Corporation.
@@ -47,22 +47,22 @@
         function Shoelace(opts) {
             // See https://shoelace.style/#forms
             return _super.call(this, Object.assign({}, {
-                formClass: 'fv-plugins-shoelace',
-                messageClass: 'fv-help-block',
-                rowInvalidClass: 'input-invalid',
+                formClass: "fv-plugins-shoelace",
+                messageClass: "fv-help-block",
+                rowInvalidClass: "input-invalid",
                 rowPattern: /^(.*)(col|offset)-[0-9]+(.*)$/,
-                rowSelector: '.input-field',
-                rowValidClass: 'input-valid',
+                rowSelector: ".input-field",
+                rowValidClass: "input-valid",
             }, opts)) || this;
         }
         Shoelace.prototype.onIconPlaced = function (e) {
             var parent = e.element.parentElement;
-            var type = e.element.getAttribute('type');
-            if ('checkbox' === type || 'radio' === type) {
+            var type = e.element.getAttribute("type");
+            if ("checkbox" === type || "radio" === type) {
                 classSet(e.iconElement, {
-                    'fv-plugins-icon-check': true,
+                    "fv-plugins-icon-check": true,
                 });
-                if ('LABEL' === parent.tagName) {
+                if ("LABEL" === parent.tagName) {
                     // Place it after the container of checkbox/radio
                     parent.parentElement.insertBefore(e.iconElement, parent.nextSibling);
                 }

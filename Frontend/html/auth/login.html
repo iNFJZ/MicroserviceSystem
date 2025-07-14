@@ -13,7 +13,7 @@
       name="viewport"
       content="width=device-width, initial-scale=1.0, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0" />
 
-    <title>Login - iNFJZ System</title>
+    <title data-i18n="loginTitle">Login - EDISA</title>
 
     <meta name="description" content="" />
 
@@ -69,6 +69,32 @@
     <div class="container-xxl">
       <div class="authentication-wrapper authentication-basic container-p-y">
         <div class="authentication-inner py-4">
+          <!-- Language Dropdown -->
+          <div class="d-flex justify-content-end mb-3">
+            <div class="dropdown-language dropdown me-2 me-xl-0">
+              <a class="btn btn-outline-secondary dropdown-toggle" href="javascript:void(0);" data-bs-toggle="dropdown">
+                <i class="ti ti-language rounded-circle ti-md"></i>
+              </a>
+              <ul class="dropdown-menu dropdown-menu-end">
+                <li>
+                  <a class="dropdown-item" href="javascript:void(0);" data-language="vi">
+                    <span class="align-middle" data-i18n="vietnamese">Vietnamese</span>
+                  </a>
+                </li>
+                <li>
+                  <a class="dropdown-item" href="javascript:void(0);" data-language="en">
+                    <span class="align-middle" data-i18n="english">English</span>
+                  </a>
+                </li>
+                <li>
+                  <a class="dropdown-item" href="javascript:void(0);" data-language="ja">
+                    <span class="align-middle" data-i18n="japanese">Japanese</span>
+                  </a>
+                </li>
+              </ul>
+            </div>
+          </div>
+          <!-- /Language Dropdown -->
           <!-- Login -->
           <div class="card">
             <div class="card-body">
@@ -101,30 +127,29 @@
                         fill="#7367F0" />
                     </svg>
                   </span> -->
-                  <img src="../../assets/img/branding/logo-i-vuexy.svg" alt="iNFJZ System Logo" style="height:40px;width:auto;">
-                  <span class="app-brand-text demo text-body fw-bold ms-1">iNFJZ System</span>
+                  <img src="../../assets/img/branding/logo-i-vuexy.svg" alt="EDISA Logo" style="height:40px;width:auto;">
+                  <span class="app-brand-text demo text-body fw-bold ms-1">EDISA</span>
                 </a>
               </div>
               <!-- /Logo -->
-              <h4 class="mb-1 pt-2">Welcome to iNFJZ System! 👋</h4>
-              <p class="mb-4">Please sign-in to your account and start the adventure</p>
+              <h4 class="mb-1 pt-2" data-i18n="loginWelcome">Welcome to EDISA! 👋</h4>
+              <p class="mb-4" data-i18n="loginSignInDesc">Please sign-in to your account and start the adventure</p>
 
               <form id="login-form" class="mb-3">
                 <div class="mb-3">
-                  <label for="login-email" class="form-label">Email</label>
+                  <label for="login-email" class="form-label" data-i18n="email">Email</label>
                   <input
                     type="text"
                     class="form-control"
                     id="login-email"
                     name="email"
-                    placeholder="Enter your email"
-                    autofocus />
+                    data-i18n-placeholder="enterEmail" />
                 </div>
                 <div class="mb-3 form-password-toggle">
                   <div class="d-flex justify-content-between">
-                    <label class="form-label" for="password">Password</label>
+                    <label class="form-label" for="password" data-i18n="password">Password</label>
                     <a href="javascript:void(0)" onclick="window.location.href='/forgot-password'">
-                      <small>Forgot Password?</small>
+                      <small data-i18n="forgotPassword">Forgot Password?</small>
                     </a>
                   </div>
                   <div class="input-group input-group-merge">
@@ -133,32 +158,31 @@
                       id="login-password"
                       class="form-control"
                       name="password"
-                      placeholder="&#xb7;&#xb7;&#xb7;&#xb7;&#xb7;&#xb7;&#xb7;&#xb7;&#xb7;&#xb7;&#xb7;&#xb7;"
-                      aria-describedby="password" />
+                      data-i18n-placeholder="enterPassword" />
                     <span class="input-group-text cursor-pointer"><i class="ti ti-eye-off"></i></span>
                   </div>
                 </div>
                 <div class="mb-3">
                   <div class="form-check">
                     <input class="form-check-input" type="checkbox" id="remember-me" />
-                    <label class="form-check-label" for="remember-me"> Remember Me </label>
+                    <label class="form-check-label" for="remember-me" data-i18n="rememberMe"> Remember Me </label>
                   </div>
                 </div>
                 <div class="mb-3">
-                  <button class="btn btn-primary d-grid w-100" type="submit">Sign in</button>
+                  <button type="submit" class="btn btn-primary d-grid w-100" data-i18n="signIn">Sign in</button>
                 </div>
 
               </form>
 
               <p class="text-center">
-                <span>New on our platform?</span>
+                <span data-i18n="newOnPlatform">New on our platform?</span>
                 <a href="javascript:void(0)" onclick="window.location.href='/register'">
-                  <span>Create an account</span>
+                  <span data-i18n="createAccount">Create an account</span>
                 </a>
               </p>
 
               <div class="divider my-4">
-                <div class="divider-text">or</div>
+                <div class="divider-text" data-i18n="or">or</div>
               </div>
 
               <div class="d-flex justify-content-center">
@@ -193,6 +217,8 @@
     <script src="../../assets/vendor/libs/select2/select2.js"></script>
 
     <!-- Main JS -->
+    <script src="../../assets/vendor/libs/i18n/i18next.min.js"></script>
+    <script src="../../assets/vendor/libs/i18n/i18nextHttpBackend.min.js"></script>
     <script src="../../assets/js/main.js"></script>
 
     <!-- Toastr JS -->

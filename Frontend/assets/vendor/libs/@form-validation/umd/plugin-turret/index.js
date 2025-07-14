@@ -1,8 +1,8 @@
 (function (global, factory) {
-    typeof exports === 'object' && typeof module !== 'undefined' ? module.exports = factory(require('@form-validation/core'), require('@form-validation/plugin-framework')) :
-    typeof define === 'function' && define.amd ? define(['@form-validation/core', '@form-validation/plugin-framework'], factory) :
-    (global = typeof globalThis !== 'undefined' ? globalThis : global || self, (global.FormValidation = global.FormValidation || {}, global.FormValidation.plugins = global.FormValidation.plugins || {}, global.FormValidation.plugins.Turret = factory(global.FormValidation, global.FormValidation.plugins)));
-})(this, (function (core, pluginFramework) { 'use strict';
+    typeof exports === "object" && typeof module !== "undefined" ? module.exports = factory(require("@form-validation/core"), require("@form-validation/plugin-framework")) :
+    typeof define === "function" && define.amd ? define(["@form-validation/core", "@form-validation/plugin-framework"], factory) :
+    (global = typeof globalThis !== "undefined" ? globalThis : global || self, (global.FormValidation = global.FormValidation || {}, global.FormValidation.plugins = global.FormValidation.plugins || {}, global.FormValidation.plugins.Turret = factory(global.FormValidation, global.FormValidation.plugins)));
+})(this, (function (core, pluginFramework) { "use strict";
 
     /******************************************************************************
     Copyright (c) Microsoft Corporation.
@@ -47,22 +47,22 @@
         function Turret(opts) {
             // See https://turretcss.com/docs/form/
             return _super.call(this, Object.assign({}, {
-                formClass: 'fv-plugins-turret',
-                messageClass: 'form-message',
-                rowInvalidClass: 'fv-invalid-row',
+                formClass: "fv-plugins-turret",
+                messageClass: "form-message",
+                rowInvalidClass: "fv-invalid-row",
                 rowPattern: /^field$/,
-                rowSelector: '.field',
-                rowValidClass: 'fv-valid-row',
+                rowSelector: ".field",
+                rowValidClass: "fv-valid-row",
             }, opts)) || this;
         }
         Turret.prototype.onIconPlaced = function (e) {
-            var type = e.element.getAttribute('type');
+            var type = e.element.getAttribute("type");
             var parent = e.element.parentElement;
-            if ('checkbox' === type || 'radio' === type) {
+            if ("checkbox" === type || "radio" === type) {
                 // Place it after the container of checkbox/radio
                 parent.parentElement.insertBefore(e.iconElement, parent.nextSibling);
                 classSet(e.iconElement, {
-                    'fv-plugins-icon-check': true,
+                    "fv-plugins-icon-check": true,
                 });
             }
         };

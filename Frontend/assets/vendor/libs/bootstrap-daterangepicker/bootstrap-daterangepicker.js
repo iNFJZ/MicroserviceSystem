@@ -7,13 +7,13 @@
  * If you are looking for production-ready output files, see mode: "production" (https://webpack.js.org/configuration/mode/).
  */
 (function webpackUniversalModuleDefinition(root, factory) {
-	if(typeof exports === 'object' && typeof module === 'object')
+	if(typeof exports === "object" && typeof module === "object")
 		module.exports = factory(require("moment"), require("jQuery"));
-	else if(typeof define === 'function' && define.amd)
+	else if(typeof define === "function" && define.amd)
 		define(["moment", "jQuery"], factory);
 	else {
-		var a = typeof exports === 'object' ? factory(require("moment"), require("jQuery")) : factory(root["moment"], root["jQuery"]);
-		for(var i in a) (typeof exports === 'object' ? exports : root)[i] = a[i];
+		var a = typeof exports === "object" ? factory(require("moment"), require("jQuery")) : factory(root["moment"], root["jQuery"]);
+		for(var i in a) (typeof exports === "object" ? exports : root)[i] = a[i];
 	}
 })(self, function(__WEBPACK_EXTERNAL_MODULE_moment__, __WEBPACK_EXTERNAL_MODULE_jquery__) {
 return /******/ (function() { // webpackBootstrap
@@ -94,7 +94,7 @@ module.exports = __WEBPACK_EXTERNAL_MODULE_moment__;
 /******/ 		// getDefaultExport function for compatibility with non-harmony modules
 /******/ 		__webpack_require__.n = function(module) {
 /******/ 			var getter = module && module.__esModule ?
-/******/ 				function() { return module['default']; } :
+/******/ 				function() { return module["default"]; } :
 /******/ 				function() { return module; };
 /******/ 			__webpack_require__.d(getter, { a: getter });
 /******/ 			return getter;
@@ -115,17 +115,17 @@ module.exports = __WEBPACK_EXTERNAL_MODULE_moment__;
 /******/ 	
 /******/ 	/* webpack/runtime/hasOwnProperty shorthand */
 /******/ 	!function() {
-/******/ 		__webpack_require__.o = function(obj, prop) { return Object.prototype.hasOwnProperty.call(obj, prop); }
+/******/ 		__webpack_require__.o = function(obj, prop) { return Object.prototype.hasOwnProperty.call(obj, prop); };
 /******/ 	}();
 /******/ 	
 /******/ 	/* webpack/runtime/make namespace object */
 /******/ 	!function() {
 /******/ 		// define __esModule on exports
 /******/ 		__webpack_require__.r = function(exports) {
-/******/ 			if(typeof Symbol !== 'undefined' && Symbol.toStringTag) {
-/******/ 				Object.defineProperty(exports, Symbol.toStringTag, { value: 'Module' });
+/******/ 			if(typeof Symbol !== "undefined" && Symbol.toStringTag) {
+/******/ 				Object.defineProperty(exports, Symbol.toStringTag, { value: "Module" });
 /******/ 			}
-/******/ 			Object.defineProperty(exports, '__esModule', { value: true });
+/******/ 			Object.defineProperty(exports, "__esModule", { value: true });
 /******/ 		};
 /******/ 	}();
 /******/ 	

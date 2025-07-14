@@ -1,8 +1,8 @@
 (function (global, factory) {
-    typeof exports === 'object' && typeof module !== 'undefined' ? module.exports = factory(require('@form-validation/core'), require('@form-validation/plugin-framework')) :
-    typeof define === 'function' && define.amd ? define(['@form-validation/core', '@form-validation/plugin-framework'], factory) :
-    (global = typeof globalThis !== 'undefined' ? globalThis : global || self, (global.FormValidation = global.FormValidation || {}, global.FormValidation.plugins = global.FormValidation.plugins || {}, global.FormValidation.plugins.Spectre = factory(global.FormValidation, global.FormValidation.plugins)));
-})(this, (function (core, pluginFramework) { 'use strict';
+    typeof exports === "object" && typeof module !== "undefined" ? module.exports = factory(require("@form-validation/core"), require("@form-validation/plugin-framework")) :
+    typeof define === "function" && define.amd ? define(["@form-validation/core", "@form-validation/plugin-framework"], factory) :
+    (global = typeof globalThis !== "undefined" ? globalThis : global || self, (global.FormValidation = global.FormValidation || {}, global.FormValidation.plugins = global.FormValidation.plugins || {}, global.FormValidation.plugins.Spectre = factory(global.FormValidation, global.FormValidation.plugins)));
+})(this, (function (core, pluginFramework) { "use strict";
 
     /******************************************************************************
     Copyright (c) Microsoft Corporation.
@@ -46,20 +46,20 @@
         function Spectre(opts) {
             // See https://picturepan2.github.io/spectre/elements.html#forms
             return _super.call(this, Object.assign({}, {
-                formClass: 'fv-plugins-spectre',
-                messageClass: 'form-input-hint',
-                rowInvalidClass: 'has-error',
+                formClass: "fv-plugins-spectre",
+                messageClass: "form-input-hint",
+                rowInvalidClass: "has-error",
                 rowPattern: /^(.*)(col)(-(xs|sm|md|lg))*-[0-9]+(.*)$/,
-                rowSelector: '.form-group',
-                rowValidClass: 'has-success',
+                rowSelector: ".form-group",
+                rowValidClass: "has-success",
             }, opts)) || this;
         }
         Spectre.prototype.onIconPlaced = function (e) {
-            var type = e.element.getAttribute('type');
+            var type = e.element.getAttribute("type");
             var parent = e.element.parentElement;
-            if ('checkbox' === type || 'radio' === type) {
+            if ("checkbox" === type || "radio" === type) {
                 classSet(e.iconElement, {
-                    'fv-plugins-icon-check': true,
+                    "fv-plugins-icon-check": true,
                 });
                 // Place it after the container of checkbox/radio
                 if (hasClass(parent, "form-".concat(type))) {

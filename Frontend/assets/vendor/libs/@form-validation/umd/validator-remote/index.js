@@ -1,8 +1,8 @@
 (function (global, factory) {
-    typeof exports === 'object' && typeof module !== 'undefined' ? module.exports = factory(require('@form-validation/core')) :
-    typeof define === 'function' && define.amd ? define(['@form-validation/core'], factory) :
-    (global = typeof globalThis !== 'undefined' ? globalThis : global || self, (global.FormValidation = global.FormValidation || {}, global.FormValidation.validators = global.FormValidation.validators || {}, global.FormValidation.validators.remote = factory(global.FormValidation)));
-})(this, (function (core) { 'use strict';
+    typeof exports === "object" && typeof module !== "undefined" ? module.exports = factory(require("@form-validation/core")) :
+    typeof define === "function" && define.amd ? define(["@form-validation/core"], factory) :
+    (global = typeof globalThis !== "undefined" ? globalThis : global || self, (global.FormValidation = global.FormValidation || {}, global.FormValidation.validators = global.FormValidation.validators || {}, global.FormValidation.validators.remote = factory(global.FormValidation)));
+})(this, (function (core) { "use strict";
 
     /**
      * FormValidation (https://formvalidation.io)
@@ -15,12 +15,12 @@
             crossDomain: false,
             data: {},
             headers: {},
-            method: 'GET',
-            validKey: 'valid',
+            method: "GET",
+            validKey: "valid",
         };
         return {
             validate: function (input) {
-                if (input.value === '') {
+                if (input.value === "") {
                     return Promise.resolve({
                         valid: true,
                     });
@@ -28,16 +28,16 @@
                 var opts = Object.assign({}, DEFAULT_OPTIONS, removeUndefined(input.options));
                 var data = opts.data;
                 // Support dynamic data
-                if ('function' === typeof opts.data) {
+                if ("function" === typeof opts.data) {
                     data = opts.data.call(this, input);
                 }
                 // Parse string data from HTML5 attribute
-                if ('string' === typeof data) {
+                if ("string" === typeof data) {
                     data = JSON.parse(data);
                 }
                 data[opts.name || input.field] = input.value;
                 // Support dynamic url
-                var url = 'function' === typeof opts.url
+                var url = "function" === typeof opts.url
                     ? opts.url.call(this, input)
                     : opts.url;
                 return fetch(url, {
@@ -48,9 +48,9 @@
                 })
                     .then(function (response) {
                     return Promise.resolve({
-                        message: response['message'],
+                        message: response["message"],
                         meta: response,
-                        valid: "".concat(response[opts.validKey]) === 'true',
+                        valid: "".concat(response[opts.validKey]) === "true",
                     });
                 })
                     .catch(function (_reason) {
