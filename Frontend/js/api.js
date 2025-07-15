@@ -7,6 +7,7 @@ export async function apiRequest(path, options = {}) {
     const headers = options.headers || {};
     if (token) headers["Authorization"] = "Bearer " + token;
     headers["Content-Type"] = "application/json";
+    headers["Accept-Language"] = window.i18next?.language || localStorage.getItem("i18nextLng") || "en";
     
     const res = await fetch(API_BASE_URL + path, {
         ...options,

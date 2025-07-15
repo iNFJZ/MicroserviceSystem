@@ -39,7 +39,7 @@ namespace AuthService.Controllers
                 success = true, 
                 message = "Registration successful",
                 token,
-                redirectUrl = $"{_config["Frontend:BaseUrl"]}/auth/verify-email.html"
+                redirectUrl = $"{_config["Frontend:BaseUrl"]}/auth/account-activated.html"
             });
         }
 

@@ -148,23 +148,27 @@
               <ul class="navbar-nav flex-row align-items-center ms-auto">
                 <!-- Language -->
                 <li class="nav-item dropdown-language dropdown me-2 me-xl-0">
-                  <a class="nav-link dropdown-toggle hide-arrow" href="javascript:void(0);" data-bs-toggle="dropdown">
-                    <i class="ti ti-language rounded-circle ti-md"></i>
+                  <a class="nav-link dropdown-toggle hide-arrow d-flex align-items-center" href="javascript:void(0);" data-bs-toggle="dropdown" id="languageDropdownBtn">
+                    <span class="fi fi-vn me-2" id="current-lang-flag" style="width: 1.5em; height: 1em;"></span>
+                    <span id="current-lang-name">Tiếng Việt</span>
                   </a>
-                  <ul class="dropdown-menu dropdown-menu-end">
+                  <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="languageDropdownBtn">
                     <li>
-                      <a class="dropdown-item" href="javascript:void(0);" data-language="vi">
-                        <span class="align-middle" data-i18n="vietnamese">Vietnamese</span>
+                      <a class="dropdown-item d-flex align-items-center" href="javascript:void(0);" data-language="vi">
+                        <span class="fi fi-vn me-2" style="width: 1.5em; height: 1em;"></span>
+                        <span class="align-middle">Tiếng Việt</span>
                       </a>
                     </li>
                     <li>
-                      <a class="dropdown-item" href="javascript:void(0);" data-language="en">
-                        <span class="align-middle" data-i18n="english">English</span>
+                      <a class="dropdown-item d-flex align-items-center" href="javascript:void(0);" data-language="en">
+                        <span class="fi fi-us me-2" style="width: 1.5em; height: 1em;"></span>
+                        <span class="align-middle">English</span>
                       </a>
                     </li>
                     <li>
-                      <a class="dropdown-item" href="javascript:void(0);" data-language="ja">
-                        <span class="align-middle" data-i18n="japanese">Japanese</span>
+                      <a class="dropdown-item d-flex align-items-center" href="javascript:void(0);" data-language="ja">
+                        <span class="fi fi-jp me-2" style="width: 1.5em; height: 1em;"></span>
+                        <span class="align-middle">日本語</span>
                       </a>
                     </li>
                   </ul>

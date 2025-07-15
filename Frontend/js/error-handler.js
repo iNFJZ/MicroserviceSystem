@@ -5,7 +5,7 @@
 
 class ErrorHandler {
     constructor() {
-        this.currentLanguage = localStorage.getItem('selectedLanguage') || 'en';
+        this.currentLanguage = window.i18next?.language || localStorage.getItem('i18nextLng') || 'en';
         this.langData = null;
         this.loadLanguageData();
     }
@@ -19,7 +19,6 @@ class ErrorHandler {
             this.langData = await response.json();
         } catch (error) {
             console.error('Failed to load language data:', error);
-            // Fallback to English
             try {
                 const response = await fetch('/assets/lang/en.json');
                 this.langData = await response.json();
