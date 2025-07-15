@@ -112,10 +112,11 @@ if (document.getElementById("login-form")) {
         }
         
         try {
+            const language = getCurrentLanguage();
             const res = await fetch(`${API_BASE_URL}/api/Auth/login`, {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({ email, password })
+                body: JSON.stringify({ email, password, language })
             });
             const data = await res.json();
             
@@ -126,16 +127,24 @@ if (document.getElementById("login-form")) {
                     window.location.href = "/admin/";
                 }, 1000);
             } else {
-                if (data.errors && Array.isArray(data.errors)) {
-                    showToast(data.errors.map(e => window.i18next.t(e)).join(", "), true);
+                // Use error handler for localized error messages
+                if (window.errorHandler && data) {
+                    window.errorHandler.handleApiError(data);
                 } else {
-                    const errorMessage = data.message || window.i18next.t("loginFailed");
-                    if (errorMessage.includes("deleted")) {
-                        showToast(window.i18next.t("accountHasBeenDeletedContactSupport"), true);
-                    } else if (errorMessage.includes("banned")) {
-                        showToast(window.i18next.t("yourAccountHasBeenDeactivated"), true);
+                    // Fallback to old error handling
+                    if (data.errors && Array.isArray(data.errors)) {
+                        showToast(data.errors.map(e => window.i18next.t(e)).join(", "), true);
                     } else {
-                        showToast(window.i18next.t(errorMessage), true);
+                        const errorMessage = data.message || window.i18next.t("loginFailed");
+                        if (errorMessage.includes("deleted")) {
+                            showToast(window.i18next.t("accountHasBeenDeletedContactSupport"), true);
+                        } else if (errorMessage.includes("banned")) {
+                            showToast(window.i18next.t("yourAccountHasBeenDeactivated"), true);
+                        } else if (errorMessage.includes("Invalid email or password") || errorMessage.includes("Email hoặc mật khẩu không đúng") || errorMessage.includes("メールアドレスまたはパスワードが正しくありません")) {
+                            showToast(window.i18next.t("invalidCredentials"), true);
+                        } else {
+                            showToast(window.i18next.t(errorMessage), true);
+                        }
                     }
                 }
             }
@@ -152,7 +161,7 @@ if (document.getElementById("register-form")) {
         e.preventDefault();
         
         const username = sanitizeInput(document.getElementById("register-username").value);
-        const fullName = sanitizeInput(document.getElementById("register-fullname").value);
+        const fullName = sanitizeInput(document.getElementById("register-fullName").value);
         const email = sanitizeInput(document.getElementById("register-email").value);
         const password = document.getElementById("register-password").value;
         const termsChecked = document.getElementById("terms-conditions")?.checked;
@@ -215,7 +224,12 @@ if (document.getElementById("register-form")) {
                 if (data.errors && Array.isArray(data.errors)) {
                     showToast(data.errors.map(e => window.i18next.t(e)).join(", "), true);
                 } else {
-                    showToast(window.i18next.t(data.message || "registrationFailed"), true);
+                    const errorMessage = data.message || "registrationFailed";
+                    if (errorMessage.includes("already exists")) {
+                        showToast(window.i18next.t("userAlreadyExists").replace("{email}", email), true);
+                    } else {
+                        showToast(window.i18next.t(errorMessage), true);
+                    }
                 }
             }
         } catch (err) {

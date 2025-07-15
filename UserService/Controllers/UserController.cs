@@ -221,7 +221,10 @@ public class UserController : ControllerBase
     {
         try
         {
-            var result = await _userService.DeleteUserAsync(id);
+            var userLanguageClaim = User.FindFirst("language");
+            var userLanguage = userLanguageClaim?.Value ?? "en";
+            
+            var result = await _userService.DeleteUserAsync(id, userLanguage);
             if (result)
             {
                 return Ok(new { success = true, message = "User has been deactivated successfully" });
@@ -245,7 +248,10 @@ public class UserController : ControllerBase
     {
         try
         {
-            var result = await _userService.RestoreUserAsync(id);
+            var userLanguageClaim = User.FindFirst("language");
+            var userLanguage = userLanguageClaim?.Value ?? "en";
+            
+            var result = await _userService.RestoreUserAsync(id, userLanguage);
             if (result)
             {
                 return Ok(new { success = true, message = "User has been restored successfully" });

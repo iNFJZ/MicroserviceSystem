@@ -50,7 +50,7 @@ namespace AuthService.Tests
         {
             // Arrange
             var loginDto = new LoginDto { Email = "test@example.com", Password = "password" };
-            var user = new User { Id = Guid.NewGuid(), Email = "test@example.com", Username = "testuser" };
+            var user = new User { Id = Guid.NewGuid(), Email = "test@example.com", Username = "testuser", PasswordHash = "hashedpassword" };
             var token = "test.jwt.token";
             var tokenExpiry = TimeSpan.FromMinutes(60);
 

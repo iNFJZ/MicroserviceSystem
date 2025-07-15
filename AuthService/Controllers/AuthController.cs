@@ -34,20 +34,13 @@ namespace AuthService.Controllers
                 return BadRequest(new { success = false, message = "Validation failed", errors });
             }
 
-            try
-            {
-                var token = await _auth.RegisterAsync(dto);
-                return Ok(new { 
-                    success = true, 
-                    message = "Registration successful. Please check your email to verify your account.",
-                    token,
-                    redirectUrl = $"{_config["Frontend:BaseUrl"]}/auth/verify-email.html"
-                });
-            }
-            catch (Exception ex)
-            {
-                return BadRequest(new { success = false, message = ex.Message });
-            }
+            var token = await _auth.RegisterAsync(dto);
+            return Ok(new { 
+                success = true, 
+                message = "Registration successful",
+                token,
+                redirectUrl = $"{_config["Frontend:BaseUrl"]}/auth/verify-email.html"
+            });
         }
 
         [HttpPost("login")]
@@ -62,20 +55,13 @@ namespace AuthService.Controllers
                 return BadRequest(new { success = false, message = "Validation failed", errors });
             }
 
-            try
-            {
-                var token = await _auth.LoginAsync(dto);
-                return Ok(new { 
-                    success = true, 
-                    message = "Login successful",
-                    token,
-                    redirectUrl = $"{_config["Frontend:BaseUrl"]}/admin/user-list.html"
-                });
-            }
-            catch (Exception ex)
-            {
-                return BadRequest(new { success = false, message = ex.Message });
-            }
+            var token = await _auth.LoginAsync(dto);
+            return Ok(new { 
+                success = true, 
+                message = "Login successful",
+                token,
+                redirectUrl = $"{_config["Frontend:BaseUrl"]}/admin/user-list.html"
+            });
         }
 
         [HttpPost("login/google")]
@@ -169,20 +155,13 @@ namespace AuthService.Controllers
                 return BadRequest(new { success = false, message = "Validation failed", errors });
             }
 
-            try
-            {
-                var clientIp = HttpContext.GetClientIpAddress();
-                var result = await _auth.ForgotPasswordAsync(dto, clientIp);
-                return Ok(new { 
-                    success = true, 
-                    message = "If the email exists, a password reset link has been sent to your email address.",
-                    redirectUrl = $"{_config["Frontend:BaseUrl"]}/auth/login.html?message=reset_link_sent"
-                });
-            }
-            catch (Exception ex)
-            {
-                return BadRequest(new { success = false, message = ex.Message });
-            }
+            var clientIp = HttpContext.GetClientIpAddress();
+            var result = await _auth.ForgotPasswordAsync(dto, clientIp);
+            return Ok(new { 
+                success = true, 
+                message = "If the email exists, a password reset link has been sent to your email address.",
+                redirectUrl = $"{_config["Frontend:BaseUrl"]}/auth/login.html?message=reset_link_sent"
+            });
         }
 
         [HttpPost("reset-password")]

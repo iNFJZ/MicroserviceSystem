@@ -1,4 +1,5 @@
 using System.Text;
+using Newtonsoft.Json;
 
 namespace EmailService.Services
 {
@@ -6,11 +7,41 @@ namespace EmailService.Services
     {
         private readonly string _templatePath;
         private readonly IConfiguration _config;
+        private readonly Dictionary<string, Dictionary<string, object>> _langFiles;
 
         public EmailTemplateService(IConfiguration config)
         {
             _templatePath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Templates");
             _config = config;
+            _langFiles = LoadLangFiles();
+        }
+
+        private Dictionary<string, Dictionary<string, object>> LoadLangFiles()
+        {
+            var langFiles = new Dictionary<string, Dictionary<string, object>>();
+            var frontendPath = _config["Frontend:Path"] ?? Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "..", "..", "..", "..", "frontend", "assets", "lang");
+            
+            var languages = new[] { "en", "vi", "ja" };
+            
+            foreach (var lang in languages)
+            {
+                var langFile = Path.Combine(frontendPath, $"{lang}.json");
+                if (File.Exists(langFile))
+                {
+                    try
+                    {
+                        var json = File.ReadAllText(langFile, Encoding.UTF8);
+                        var langData = JsonConvert.DeserializeObject<Dictionary<string, object>>(json);
+                        langFiles[lang] = langData;
+                    }
+                    catch (Exception ex)
+                    {
+                        Console.WriteLine($"Failed to load language file {langFile}: {ex.Message}");
+                    }
+                }
+            }
+            
+            return langFiles;
         }
 
         public string LoadTemplate(string templateName, string lang = null)
@@ -98,6 +129,41 @@ namespace EmailService.Services
                 { "LoginUrl", _config["Frontend:BaseUrl"] + "/auth/login.html" }
             };
             return ReplacePlaceholders(template, placeholders);
+        }
+
+        public string GetSubject(string type, string lang = null)
+        {
+            lang = string.IsNullOrEmpty(lang) ? "en" : lang;
+            
+            if (_langFiles.TryGetValue(lang, out var langData))
+            {
+                if (langData.TryGetValue("emailSubjects", out var emailSubjectsObj))
+                {
+                    if (emailSubjectsObj is Newtonsoft.Json.Linq.JObject emailSubjects)
+                    {
+                        if (emailSubjects.TryGetValue(type, out var subject))
+                        {
+                            return subject.ToString();
+                        }
+                    }
+                }
+            }
+            
+            if (lang != "en" && _langFiles.TryGetValue("en", out var enLangData))
+            {
+                if (enLangData.TryGetValue("emailSubjects", out var enEmailSubjectsObj))
+                {
+                    if (enEmailSubjectsObj is Newtonsoft.Json.Linq.JObject enEmailSubjects)
+                    {
+                        if (enEmailSubjects.TryGetValue(type, out var subject))
+                        {
+                            return subject.ToString();
+                        }
+                    }
+                }
+            }
+            
+            return type;
         }
     }
 } 
