@@ -70,13 +70,17 @@ namespace FileService.Controllers
 
                     try
                     {
+                        var userLanguageClaim = User.FindFirst("language");
+                        var userLanguage = userLanguageClaim?.Value ?? "en";
+                        
                         await _emailMessageService.PublishFileEventNotificationAsync(new FileEventEmailNotification
                         {
                             To = userEmail,
                             Username = userName,
                             FileName = file.FileName,
                             EventType = "Upload",
-                            EventTime = DateTime.UtcNow
+                            EventTime = DateTime.UtcNow,
+                            Language = userLanguage
                         });
                         _logger.LogInformation("Email notification sent for file: {FileName}", file.FileName);
                     }
@@ -115,13 +119,17 @@ namespace FileService.Controllers
                     var userEmail = userEmailClaim?.Value ?? "";
                     var userName = userNameClaim?.Value ?? "";
 
+                    var userLanguageClaim = User.FindFirst("language");
+                    var userLanguage = userLanguageClaim?.Value ?? "en";
+                    
                     await _emailMessageService.PublishFileEventNotificationAsync(new FileEventEmailNotification
                     {
                         To = userEmail,
                         Username = userName,
                         FileName = fileName,
                         EventType = "Download",
-                        EventTime = DateTime.UtcNow
+                        EventTime = DateTime.UtcNow,
+                        Language = userLanguage
                     });
                     _logger.LogInformation("Email notification sent for download: {FileName}", fileName);
                 }
@@ -175,13 +183,17 @@ namespace FileService.Controllers
                     var userEmail = userEmailClaim?.Value ?? "";
                     var userName = userNameClaim?.Value ?? "";
 
+                    var userLanguageClaim = User.FindFirst("language");
+                    var userLanguage = userLanguageClaim?.Value ?? "en";
+                    
                     await _emailMessageService.PublishFileEventNotificationAsync(new FileEventEmailNotification
                     {
                         To = userEmail,
                         Username = userName ?? "",
                         FileName = fileName,
                         EventType = "Delete",
-                        EventTime = DateTime.UtcNow
+                        EventTime = DateTime.UtcNow,
+                        Language = userLanguage
                     });
                     _logger.LogInformation("Email notification sent for delete: {FileName}", fileName);
                 }

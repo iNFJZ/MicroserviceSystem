@@ -7,23 +7,40 @@ export async function apiRequest(path, options = {}) {
     const headers = options.headers || {};
     if (token) headers["Authorization"] = "Bearer " + token;
     headers["Content-Type"] = "application/json";
+    
     const res = await fetch(API_BASE_URL + path, {
         ...options,
         headers
     });
-    if (res.status === 401) {
-        logout();
-        throw new Error("Unauthorized");
-    }
+    
     let data;
     try {
         data = await res.json();
     } catch {
         data = null;
     }
+    
     if (!res.ok) {
+        // Use error handler to display localized error messages
+        if (window.errorHandler && data) {
+            window.errorHandler.handleApiError(data);
+        } else {
+            // Fallback to default error handling
+            const message = data?.message || `HTTP ${res.status}: ${res.statusText}`;
+            if (typeof toastr !== 'undefined') {
+                toastr.error(message);
+            } else {
+                alert(message);
+            }
+        }
+        
+        if (res.status === 401) {
+            logout();
+        }
+        
         throw new Error(data?.message || "API error");
     }
+    
     return data;
 }
 

@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+<!doctype html>
 
 <html
   lang="en"
@@ -6,26 +6,33 @@
   dir="ltr"
   data-theme="theme-default"
   data-assets-path="../../assets/"
-  data-template="vertical-menu-template">
+  data-template="vertical-menu-template"
+>
   <head>
     <meta charset="utf-8" />
     <meta
       name="viewport"
-      content="width=device-width, initial-scale=1.0, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0" />
+      content="width=device-width, initial-scale=1.0, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0"
+    />
 
     <title data-i18n="deactiveUsersTitle">Deactive Users - Admin Panel</title>
 
     <meta name="description" content="" />
 
     <!-- Favicon -->
-    <link rel="icon" type="image/x-icon" href="../../assets/img/favicon/favicon.ico" />
+    <link
+      rel="icon"
+      type="image/x-icon"
+      href="../../assets/img/favicon/favicon.ico"
+    />
 
     <!-- Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link
       href="https://fonts.googleapis.com/css2?family=Public+Sans:ital,wght@0,300;0,400;0,500;0,600;0,700;1,300;1,400;1,500;1,600;1,700&ampdisplay=swap"
-      rel="stylesheet" />
+      rel="stylesheet"
+    />
 
     <!-- Icons -->
     <link rel="stylesheet" href="../../assets/vendor/fonts/fontawesome.css" />
@@ -33,19 +40,51 @@
     <link rel="stylesheet" href="../../assets/vendor/fonts/flag-icons.css" />
 
     <!-- Core CSS -->
-    <link rel="stylesheet" href="../../assets/vendor/css/rtl/core.css" class="template-customizer-core-css" />
-    <link rel="stylesheet" href="../../assets/vendor/css/rtl/theme-default.css" class="template-customizer-theme-css" />
+    <link
+      rel="stylesheet"
+      href="../../assets/vendor/css/rtl/core.css"
+      class="template-customizer-core-css"
+    />
+    <link
+      rel="stylesheet"
+      href="../../assets/vendor/css/rtl/theme-default.css"
+      class="template-customizer-theme-css"
+    />
     <link rel="stylesheet" href="../../assets/css/demo.css" />
 
     <!-- Vendors CSS -->
-    <link rel="stylesheet" href="../../assets/vendor/libs/node-waves/node-waves.css" />
-    <link rel="stylesheet" href="../../assets/vendor/libs/perfect-scrollbar/perfect-scrollbar.css" />
-    <link rel="stylesheet" href="../../assets/vendor/libs/typeahead-js/typeahead.css" />
-    <link rel="stylesheet" href="../../assets/vendor/libs/datatables-bs5/datatables.bootstrap5.css" />
-    <link rel="stylesheet" href="../../assets/vendor/libs/datatables-responsive-bs5/responsive.bootstrap5.css" />
-    <link rel="stylesheet" href="../../assets/vendor/libs/datatables-buttons-bs5/buttons.bootstrap5.css" />
-    <link rel="stylesheet" href="../../assets/vendor/libs/select2/select2.css" />
-    <link rel="stylesheet" href="../../assets/vendor/libs/@form-validation/umd/styles/index.min.css" />
+    <link
+      rel="stylesheet"
+      href="../../assets/vendor/libs/node-waves/node-waves.css"
+    />
+    <link
+      rel="stylesheet"
+      href="../../assets/vendor/libs/perfect-scrollbar/perfect-scrollbar.css"
+    />
+    <link
+      rel="stylesheet"
+      href="../../assets/vendor/libs/typeahead-js/typeahead.css"
+    />
+    <link
+      rel="stylesheet"
+      href="../../assets/vendor/libs/datatables-bs5/datatables.bootstrap5.css"
+    />
+    <link
+      rel="stylesheet"
+      href="../../assets/vendor/libs/datatables-responsive-bs5/responsive.bootstrap5.css"
+    />
+    <link
+      rel="stylesheet"
+      href="../../assets/vendor/libs/datatables-buttons-bs5/buttons.bootstrap5.css"
+    />
+    <link
+      rel="stylesheet"
+      href="../../assets/vendor/libs/select2/select2.css"
+    />
+    <link
+      rel="stylesheet"
+      href="../../assets/vendor/libs/@form-validation/umd/styles/index.min.css"
+    />
 
     <!-- Page CSS -->
 
@@ -56,7 +95,6 @@
     <script src="../../assets/vendor/js/template-customizer.js"></script>
     <!--? Config:  Mandatory theme config file contain global vars & default theme options, Set your preferred theme option in this file.  -->
     <script src="../../assets/js/config.js"></script>
-
   </head>
 
   <body>
@@ -65,17 +103,29 @@
       <div class="layout-container">
         <!-- Menu -->
 
-        <aside id="layout-menu" class="layout-menu menu-vertical menu bg-menu-theme">
+        <aside
+          id="layout-menu"
+          class="layout-menu menu-vertical menu bg-menu-theme"
+        >
           <div class="app-brand demo">
             <a href="index.html" class="app-brand-link">
               <span class="app-brand-logo demo">
-                <img src="../assets/img/branding/logo-i-vuexy.svg" alt="EDISA Logo" style="height:32px;width:auto;">
+                <img
+                  src="../assets/img/branding/logo-i-vuexy.svg"
+                  alt="EDISA Logo"
+                  style="height: 32px; width: auto"
+                />
               </span>
               <span class="app-brand-text demo menu-text fw-bold">EDISA</span>
             </a>
 
-            <a href="javascript:void(0);" class="layout-menu-toggle menu-link text-large ms-auto">
-              <i class="ti menu-toggle-icon d-none d-xl-block ti-sm align-middle"></i>
+            <a
+              href="javascript:void(0);"
+              class="layout-menu-toggle menu-link text-large ms-auto"
+            >
+              <i
+                class="ti menu-toggle-icon d-none d-xl-block ti-sm align-middle"
+              ></i>
               <i class="ti ti-x d-block d-xl-none ti-sm align-middle"></i>
             </a>
           </div>
@@ -84,27 +134,29 @@
 
           <ul class="menu-inner py-1">
             <li class="menu-header small text-uppercase">
-              <span class="menu-header-text">Apps &amp; Pages</span>
+              <span class="menu-header-text" data-i18n="appsAndPages"
+                >Apps &amp; Pages</span
+              >
             </li>
             <li class="menu-item active">
               <a href="javascript:void(0);" class="menu-link menu-toggle">
                 <i class="menu-icon tf-icons ti ti-users"></i>
-                <div data-i18n="User Management">User Management</div>
+                <div data-i18n="userManagement">User Management</div>
               </a>
               <ul class="menu-sub">
                 <li class="menu-item">
                   <a href="all-users.html" class="menu-link">
-                    <div data-i18n="All Users">All Users</div>
-                  </a>
-                </li>
-                <li class="menu-item active">
-                  <a href="active-users.html" class="menu-link">
-                    <div data-i18n="Active Users">Active Users</div>
+                    <div data-i18n="allUsers">All Users</div>
                   </a>
                 </li>
                 <li class="menu-item">
+                  <a href="active-users.html" class="menu-link">
+                    <div data-i18n="activeUsers">Active Users</div>
+                  </a>
+                </li>
+                <li class="menu-item active">
                   <a href="deactive-users.html" class="menu-link">
-                    <div data-i18n="Deactive Users">Deactive Users</div>
+                    <div data-i18n="deactiveUsers">Deactive Users</div>
                   </a>
                 </li>
               </ul>
@@ -112,7 +164,7 @@
             <li class="menu-item">
               <a href="javascript:void(0);" class="menu-link" id="logout-btn">
                 <i class="menu-icon tf-icons ti ti-logout"></i>
-                <div data-i18n="Logout">Logout</div>
+                <div data-i18n="logOut">Log Out</div>
               </a>
             </li>
           </ul>
@@ -125,19 +177,34 @@
 
           <nav
             class="layout-navbar container-xxl navbar navbar-expand-xl navbar-detached align-items-center bg-navbar-theme"
-            id="layout-navbar">
-            <div class="layout-menu-toggle navbar-nav align-items-xl-center me-3 me-xl-0 d-xl-none">
-              <a class="nav-item nav-link px-0 me-xl-4" href="javascript:void(0)">
+            id="layout-navbar"
+          >
+            <div
+              class="layout-menu-toggle navbar-nav align-items-xl-center me-3 me-xl-0 d-xl-none"
+            >
+              <a
+                class="nav-item nav-link px-0 me-xl-4"
+                href="javascript:void(0)"
+              >
                 <i class="ti ti-menu-2 ti-sm"></i>
               </a>
             </div>
 
-            <div class="navbar-nav-right d-flex align-items-center" id="navbar-collapse">
+            <div
+              class="navbar-nav-right d-flex align-items-center"
+              id="navbar-collapse"
+            >
               <!-- Search -->
               <div class="navbar-nav align-items-center">
                 <div class="nav-item d-flex align-items-center">
                   <i class="ti ti-search ti-lg me-2"></i>
-                  <input type="text" class="form-control border-0 shadow-none" data-i18n-placeholder="searchPlaceholder" placeholder="Search..." aria-label="Search..." />
+                  <input
+                    type="text"
+                    class="form-control search-input container-xxl border-0"
+                    data-i18n-placeholder="search"
+                    placeholder="Search..."
+                    aria-label="Search..."
+                  />
                 </div>
               </div>
               <!-- /Search -->
@@ -145,23 +212,45 @@
               <ul class="navbar-nav flex-row align-items-center ms-auto">
                 <!-- Language -->
                 <li class="nav-item dropdown-language dropdown me-2 me-xl-0">
-                  <a class="nav-link dropdown-toggle hide-arrow" href="javascript:void(0);" data-bs-toggle="dropdown">
+                  <a
+                    class="nav-link dropdown-toggle hide-arrow"
+                    href="javascript:void(0);"
+                    data-bs-toggle="dropdown"
+                  >
                     <i class="ti ti-language rounded-circle ti-md"></i>
                   </a>
                   <ul class="dropdown-menu dropdown-menu-end">
                     <li>
-                      <a class="dropdown-item" href="javascript:void(0);" data-language="vi">
-                        <span class="align-middle" data-i18n="vietnamese">Vietnamese</span>
+                      <a
+                        class="dropdown-item"
+                        href="javascript:void(0);"
+                        data-language="vi"
+                      >
+                        <span class="align-middle" data-i18n="vietnamese"
+                          >Vietnamese</span
+                        >
                       </a>
                     </li>
                     <li>
-                      <a class="dropdown-item" href="javascript:void(0);" data-language="en">
-                        <span class="align-middle" data-i18n="english">English</span>
+                      <a
+                        class="dropdown-item"
+                        href="javascript:void(0);"
+                        data-language="en"
+                      >
+                        <span class="align-middle" data-i18n="english"
+                          >English</span
+                        >
                       </a>
                     </li>
                     <li>
-                      <a class="dropdown-item" href="javascript:void(0);" data-language="ja">
-                        <span class="align-middle" data-i18n="japanese">Japanese</span>
+                      <a
+                        class="dropdown-item"
+                        href="javascript:void(0);"
+                        data-language="ja"
+                      >
+                        <span class="align-middle" data-i18n="japanese"
+                          >Japanese</span
+                        >
                       </a>
                     </li>
                   </ul>
@@ -169,16 +258,28 @@
                 <!--/ Language -->
                 <!-- User -->
                 <li class="nav-item navbar-dropdown dropdown-user dropdown">
-                  <a class="nav-link dropdown-toggle hide-arrow" href="javascript:void(0);" data-bs-toggle="dropdown">
+                  <a
+                    class="nav-link dropdown-toggle hide-arrow"
+                    href="javascript:void(0);"
+                    data-bs-toggle="dropdown"
+                  >
                     <div class="d-flex">
                       <div class="flex-shrink-0 me-3">
                         <div class="avatar avatar-online">
-                          <img alt="User Avatar" class="w-px-40 h-auto rounded-circle user-avatar" />
+                          <img
+                            alt="User Avatar"
+                            class="w-px-40 h-auto rounded-circle user-avatar"
+                          />
                         </div>
                       </div>
                       <div class="flex-grow-1">
-                        <span class="fw-semibold d-block user-name" data-i18n="loading">Loading...</span>
-                        <small class="text-muted user-role" data-i18n="loading">Loading...</small>
+                        <span
+                          class="fw-semibold d-block user-name"
+                          data-i18n="loading"
+                          >Loading...</span
+                        >
+                        <small class="text-muted user-role" data-i18n="admin">Admin</small
+                        >
                       </div>
                     </div>
                   </a>
@@ -188,12 +289,23 @@
                         <div class="d-flex">
                           <div class="flex-shrink-0 me-3">
                             <div class="avatar avatar-online">
-                              <img alt="User Avatar" class="w-px-40 h-auto rounded-circle user-avatar" />
+                              <img
+                                alt="User Avatar"
+                                class="w-px-40 h-auto rounded-circle user-avatar"
+                              />
                             </div>
                           </div>
                           <div class="flex-grow-1">
-                            <span class="fw-semibold d-block user-name" data-i18n="loading">Loading...</span>
-                            <small class="text-muted user-role" data-i18n="loading">Loading...</small>
+                            <span
+                              class="fw-semibold d-block user-name"
+                              data-i18n="loading"
+                              >Loading...</span
+                            >
+                            <small
+                              class="text-muted user-role"
+                              data-i18n="admin"
+                              >Admin</small
+                            >
                           </div>
                         </div>
                       </a>
@@ -204,28 +316,46 @@
                     <li>
                       <a class="dropdown-item" href="my-profile.html">
                         <i class="ti ti-user-check me-2 ti-sm"></i>
-                        <span class="align-middle">My Profile</span>
+                        <span class="align-middle" data-i18n="myProfile"
+                          >My Profile</span
+                        >
+                      </a>
+                    </li>
+                    <li>
+                      <a class="dropdown-item" href="security.html">
+                        <i class="ti ti-lock me-2 ti-sm"></i>
+                        <span class="align-middle" data-i18n="security"
+                          >Security</span
+                        >
                       </a>
                     </li>
                     <li>
                       <a class="dropdown-item" href="notifications.html">
                         <i class="ti ti-settings me-2 ti-sm"></i>
-                        <span class="align-middle">Settings</span>
+                        <span class="align-middle" data-i18n="settings"
+                          >Settings</span
+                        >
                       </a>
                     </li>
                     <li>
                       <a class="dropdown-item" href="faq.html">
                         <i class="ti ti-help me-2 ti-sm"></i>
-                        <span class="align-middle">FAQ</span>
+                        <span class="align-middle" data-i18n="faq">FAQ</span>
                       </a>
                     </li>
                     <li>
                       <div class="dropdown-divider"></div>
                     </li>
                     <li>
-                      <a class="dropdown-item" href="javascript:void(0);" id="logout-btn">
+                      <a
+                        class="dropdown-item"
+                        href="javascript:void(0);"
+                        id="logout-btn"
+                      >
                         <i class="ti ti-logout me-2 ti-sm"></i>
-                        <span class="align-middle">Log Out</span>
+                        <span class="align-middle" data-i18n="logOut"
+                          >Log Out</span
+                        >
                       </a>
                     </li>
                   </ul>
@@ -239,8 +369,10 @@
               <input
                 type="text"
                 class="form-control search-input container-xxl border-0"
+                data-i18n-placeholder="search"
                 placeholder="Search..."
-                aria-label="Search..." />
+                aria-label="Search..."
+              />
               <i class="ti ti-x ti-sm search-toggler cursor-pointer"></i>
             </div>
           </nav>
@@ -255,8 +387,10 @@
               <h4 class="py-3 mb-4">
                 <nav aria-label="breadcrumb">
                   <ol class="breadcrumb">
-                    <li class="breadcrumb-item"><a href="index.html">Dashboard</a></li>
-                    <li class="breadcrumb-item active" aria-current="page">Deactive Users</li>
+                    <li class="breadcrumb-item">
+                      <a href="index.html" data-i18n="dashboard">Dashboard</a>
+                    </li>
+                    <li class="breadcrumb-item active" aria-current="page" data-i18n="deactiveUsers">Deactive Users</li>
                   </ol>
                 </nav>
               </h4>
@@ -264,8 +398,10 @@
               <!-- Users List Table -->
               <div class="card">
                 <div class="card-header border-bottom">
-                  <h5 class="card-title mb-3" data-i18n="deactiveUsersList">Deactive Users List</h5>
-                  <div class="d-flex justify-content-between align-items-center row py-3 gap-3 gap-md-0">
+                  <h5 class="card-title mb-3" data-i18n="deactiveUsersList">
+                    Deactive Users List
+                  </h5>
+                  <!-- <div class="d-flex justify-content-between align-items-center row py-3 gap-3 gap-md-0">
                     <div class="col-md-4 user_role">
                       <select id="UserRole" class="form-select text-capitalize">
                         <option value="" data-i18n="selectRole">Select Role</option>
@@ -291,7 +427,7 @@
                         <option value="Banned" data-i18n="banned">Banned</option>
                       </select>
                     </div>
-                  </div>
+                  </div> -->
                 </div>
                 <div class="card-datatable table-responsive">
                   <table class="datatables-users table border-top">
@@ -299,23 +435,22 @@
                       <tr>
                         <th></th>
                         <th data-i18n="username">Username</th>
-                        <th data-i18n="fullname">Full Name</th>
+                        <th data-i18n="fullName">Full Name</th>
                         <th data-i18n="email">Email</th>
-                        <th data-i18n="phone">Phone</th>
+                        <!-- <th data-i18n="phone">Phone</th> -->
                         <th data-i18n="status">Status</th>
-                        <th data-i18n="lastLoginAt">Last Login At</th>
+                        <th data-i18n="deletedAt">Deleted At</th>
                         <th data-i18n="actions">Actions</th>
                       </tr>
                     </thead>
                   </table>
                 </div>
-
               </div>
             </div>
             <!-- / Content -->
 
             <!-- Footer -->
-            <footer class="content-footer footer bg-footer-theme">
+            <!-- <footer class="content-footer footer bg-footer-theme">
               <div class="container-xxl">
                 <div
                   class="footer-container d-flex align-items-center justify-content-between py-2 flex-md-row flex-column">
@@ -347,7 +482,7 @@
                   </div>
                 </div>
               </div>
-            </footer>
+            </footer> -->
             <!-- / Footer -->
 
             <div class="content-backdrop fade"></div>
@@ -374,7 +509,6 @@
     <script src="../../assets/vendor/libs/node-waves/node-waves.js"></script>
     <script src="../../assets/vendor/libs/perfect-scrollbar/perfect-scrollbar.js"></script>
     <script src="../../assets/vendor/libs/hammer/hammer.js"></script>
-    <script src="../../assets/vendor/libs/i18n/i18n.js"></script>
     <script src="../../assets/vendor/libs/typeahead-js/typeahead.js"></script>
     <script src="../../assets/vendor/js/menu.js"></script>
 
@@ -400,9 +534,11 @@
     <!-- Page JS -->
 
     <script src="../../js/admin-auth.js"></script>
-    <script>loadDeactiveUsersTable();</script>
     <script>
-      $(document).ready(async function() {
+      loadDeactiveUsersTable();
+    </script>
+    <script>
+      $(document).ready(async function () {
         if (window.adminAuth) {
           await window.adminAuth.updateUserProfileDisplay();
         }
@@ -411,108 +547,243 @@
   </body>
 </html>
 
-
-
 <!-- Modal View Details -->
-<div class="modal fade" id="viewUserModal" tabindex="-1" aria-labelledby="viewUserModalLabel" aria-hidden="true">
+<div
+  class="modal fade"
+  id="viewUserModal"
+  tabindex="-1"
+  aria-labelledby="viewUserModalLabel"
+  aria-hidden="true"
+>
   <div class="modal-dialog modal-lg">
     <div class="modal-content">
       <div class="modal-header">
         <h5 class="modal-title" id="viewUserModalLabel">
-          <i class="ti ti-user me-2"></i>User Details
+          <i class="ti ti-user me-2"></i
+          ><span data-i18n="viewUserDetails">User Details</span>
         </h5>
-        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        <button
+          type="button"
+          class="btn-close"
+          data-bs-dismiss="modal"
+          data-i18n="[aria-label]close"
+          aria-label="Close"
+        ></button>
       </div>
       <div class="modal-body">
         <div class="row">
           <div class="col-md-3 text-center mb-3">
-            <div class="d-flex flex-column align-items-center justify-content-center" style="gap: 12px;">
-              <div class="avatar avatar-xl d-flex align-items-center justify-content-center" style="width: 100px; height: 100px; margin: 0 auto;">
-                <img id="view-user-avatar" src="" alt="User Avatar" class="rounded-circle" style="width: 100px; height: 100px; object-fit: cover; display: none;" />
-                <div id="avatar-fallback" class="avatar-initial rounded-circle" style="width: 100px; height: 100px; display: none; align-items: center; justify-content: center; font-weight: bold; font-size: 40px;"></div>
+            <div
+              class="d-flex flex-column align-items-center justify-content-center"
+              style="gap: 12px"
+            >
+              <div
+                class="avatar avatar-xl d-flex align-items-center justify-content-center"
+                style="width: 100px; height: 100px; margin: 0 auto"
+              >
+                <img
+                  id="view-user-avatar"
+                  src=""
+                  alt="User Avatar"
+                  class="rounded-circle"
+                  style="
+                    width: 100px;
+                    height: 100px;
+                    object-fit: cover;
+                    display: none;
+                  "
+                />
+                <div
+                  id="avatar-fallback"
+                  class="avatar-initial rounded-circle"
+                  style="
+                    width: 100px;
+                    height: 100px;
+                    display: none;
+                    align-items: center;
+                    justify-content: center;
+                    font-weight: bold;
+                    font-size: 40px;
+                  "
+                ></div>
               </div>
-              <div class="user-status-badge d-flex justify-content-center"></div>
+              <div
+                class="user-status-badge d-flex justify-content-center"
+              ></div>
             </div>
           </div>
           <div class="col-md-9">
             <div class="row">
               <div class="col-md-6">
                 <div class="mb-3">
-                  <label class="form-label fw-semibold text-muted" data-i18n="username">Username</label>
+                  <label
+                    class="form-label fw-semibold text-muted"
+                    data-i18n="username"
+                    >Username</label
+                  >
                   <p class="mb-0 user-username"></p>
                 </div>
                 <div class="mb-3">
-                  <label class="form-label fw-semibold text-muted" data-i18n="fullname">Full Name</label>
-                  <p class="mb-0 user-fullname"></p>
+                  <label
+                    class="form-label fw-semibold text-muted"
+                    data-i18n="fullName"
+                    >Full Name</label
+                  >
+                  <p class="mb-0 user-fullName"></p>
                 </div>
                 <div class="mb-3">
-                  <label class="form-label fw-semibold text-muted" data-i18n="email">Email</label>
+                  <label
+                    class="form-label fw-semibold text-muted"
+                    data-i18n="email"
+                    >Email</label
+                  >
                   <p class="mb-0 user-email"></p>
                 </div>
-                <div class="mb-2">
-                  <label class="form-label fw-semibold text-muted" data-i18n="phoneNumber">Phone Number</label>
+                <!-- <div class="mb-2">
+                  <label
+                    class="form-label fw-semibold text-muted"
+                    data-i18n="phoneNumber"
+                    >Phone Number</label
+                  >
                   <p class="mb-0 user-phone"></p>
-                </div>
+                </div> -->
                 <div class="mb-3">
-                  <label class="form-label fw-semibold text-muted" data-i18n="deletedAt">Deleted At</label>
+                  <label
+                    class="form-label fw-semibold text-muted"
+                    data-i18n="deletedAt"
+                    >Deleted At</label
+                  >
                   <p class="mb-0 user-deletedat"></p>
                 </div>
               </div>
               <div class="col-md-6">
                 <div class="mb-3">
-                  <label class="form-label fw-semibold text-muted" data-i18n="dateOfBirth">Date of Birth</label>
+                  <label
+                    class="form-label fw-semibold text-muted"
+                    data-i18n="dateOfBirth"
+                    >Date of Birth</label
+                  >
                   <p class="mb-0 user-dob"></p>
                 </div>
                 <div class="mb-3">
-                  <label class="form-label fw-semibold text-muted" data-i18n="address">Address</label>
+                  <label
+                    class="form-label fw-semibold text-muted"
+                    data-i18n="address"
+                    >Address</label
+                  >
                   <p class="mb-0 user-address"></p>
                 </div>
                 <div class="mb-3">
-                  <label class="form-label fw-semibold text-muted" data-i18n="emailVerified">Email Verified</label>
+                  <label
+                    class="form-label fw-semibold text-muted"
+                    data-i18n="emailVerified"
+                    >Email Verified</label
+                  >
                   <p class="mb-0 user-verified"></p>
                 </div>
                 <div class="mb-3">
-                  <label class="form-label fw-semibold text-muted" data-i18n="loginProvider">Login Provider</label>
+                  <label
+                    class="form-label fw-semibold text-muted"
+                    data-i18n="loginProvider"
+                    >Login Provider</label
+                  >
                   <p class="mb-0 user-provider"></p>
                 </div>
               </div>
             </div>
             <div class="mb-3">
-              <label class="form-label fw-semibold text-muted" data-i18n="bio">Bio</label>
+              <label class="form-label fw-semibold text-muted" data-i18n="bio"
+                >Bio</label
+              >
               <p class="mb-0 user-bio"></p>
             </div>
           </div>
         </div>
       </div>
       <div class="modal-footer">
-        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal" data-i18n="close"><i class="ti ti-x me-1"></i>Close</button>
-        <button type="button" class="btn btn-success btn-restore-user" data-bs-toggle="modal" data-bs-target="#restoreUserModal" data-i18n="restoreUser"><i class="ti ti-refresh me-1"></i>Restore User</button>
+        <button
+          type="button"
+          class="btn btn-secondary"
+          data-bs-dismiss="modal"
+          data-i18n="close"
+        >
+          <i class="ti ti-x me-1"></i><span data-i18n="close">Close</span>
+        </button>
+        <button
+          type="button"
+          class="btn btn-success btn-restore-user"
+          data-bs-toggle="modal"
+          data-bs-target="#restoreUserModal"
+          data-i18n="restoreUser"
+        >
+          <i class="ti ti-refresh me-1"></i
+          ><span data-i18n="restoreUser">Restore User</span>
+        </button>
       </div>
     </div>
   </div>
 </div>
 
 <!-- Modal Delete Confirmation -->
-<div class="modal fade" id="restoreUserModal" tabindex="-1" aria-labelledby="restoreUserModalLabel" aria-hidden="true">
+<div
+  class="modal fade"
+  id="restoreUserModal"
+  tabindex="-1"
+  aria-labelledby="restoreUserModalLabel"
+  aria-hidden="true"
+>
   <div class="modal-dialog modal-dialog-centered">
-    <div class="modal-content" style="background: #fff; border-radius: 12px; border: 2px solid #28c76f;">
-      <div class="modal-header" style="background: #e8f8f2; border-bottom: 1px solid #28c76f;">
-        <h5 class="modal-title fw-bold text-success" id="restoreUserModalLabel" style="padding-left: 130px;">
-          <i class="ti ti-refresh me-2"></i><span data-i18n="restoreUserConfirmTitle">Restore User Confirmation</span>
+    <div
+      class="modal-content"
+      style="background: #fff; border-radius: 12px; border: 2px solid #28c76f"
+    >
+      <div
+        class="modal-header"
+        style="background: #e8f8f2; border-bottom: 1px solid #28c76f"
+      >
+        <h5
+          class="modal-title fw-bold text-success"
+          id="restoreUserModalLabel"
+          style="padding-left: 130px"
+        >
+          <i class="ti ti-refresh me-2"></i
+          ><span data-i18n="restoreUserConfirmTitle"
+            >Restore User Confirmation</span
+          >
         </h5>
-        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        <button
+          type="button"
+          class="btn-close"
+          data-bs-dismiss="modal"
+          aria-label="Close"
+        ></button>
       </div>
       <div class="modal-body">
-        <div class="alert alert-info border border-info" role="alert" style="background: #f4faff; color: #1e2e50;">
+        <div
+          class="alert alert-info border border-info"
+          role="alert"
+          style="background: #f4faff; color: #1e2e50"
+        >
           <h6 class="alert-heading mb-2 fw-bold">
-            <i class="ti ti-info-circle me-2"></i><span data-i18n="restoreUserAccount">Restore User Account</span>
+            <i class="ti ti-info-circle me-2"></i
+            ><span data-i18n="restoreUserAccount">Restore User Account</span>
           </h6>
-          <p class="mb-0" data-i18n="restoreUserConfirmDesc">You are about to restore this user account. This action will:</p>
+          <p class="mb-0" data-i18n="restoreUserConfirmDesc">
+            You are about to restore this user account. This action will:
+          </p>
           <ul class="mb-0 mt-2">
-            <li data-i18n="restoreUserReactivate">Reactivate the user account</li>
-            <li data-i18n="restoreUserSendEmail">Send a reactivation email to the user</li>
-            <li data-i18n="restoreUserAllowLogin">Allow the user to log in again</li>
-            <li data-i18n="restoreUserMoveToActive">Move the user back to active users list</li>
+            <li data-i18n="restoreUserReactivate">
+              Reactivate the user account
+            </li>
+            <li data-i18n="restoreUserSendEmail">
+              Send a reactivation email to the user
+            </li>
+            <li data-i18n="restoreUserAllowLogin">
+              Allow the user to log in again
+            </li>
+            <li data-i18n="restoreUserMoveToActive">
+              Move the user back to active users list
+            </li>
           </ul>
         </div>
         <div class="card border-success shadow-sm mt-3">
@@ -521,30 +792,67 @@
               <i class="ti ti-user me-2"></i>User Information
             </h6>
           </div>
-          <div class="card-body" style="padding-top: 25px;">
+          <div class="card-body" style="padding-top: 25px">
             <div class="row">
               <div class="col-md-6">
-                <div class="mb-2"><strong data-i18n="username">Username:</strong> <span class="restore-user-username"></span></div>
-                <div class="mb-2"><strong data-i18n="fullname">Full Name:</strong> <span class="restore-user-fullname"></span></div>
-                <div class="mb-2"><strong data-i18n="email">Email:</strong> <span class="restore-user-email"></span></div>
-                <div class="mb-2"><strong data-i18n="phoneNumber">Phone:</strong> <span class="restore-user-phone"></span></div>
+                <div class="mb-2">
+                  <strong data-i18n="username">Username:</strong>
+                  <span class="restore-user-username"></span>
+                </div>
+                <div class="mb-2">
+                  <strong data-i18n="fullName">Full Name:</strong>
+                  <span class="restore-user-fullName"></span>
+                </div>
+                <div class="mb-2">
+                  <strong data-i18n="email">Email:</strong>
+                  <span class="restore-user-email"></span>
+                </div>
+                <!-- <div class="mb-2">
+                  <strong data-i18n="phoneNumber">Phone:</strong>
+                  <span class="restore-user-phone"></span>
+                </div> -->
               </div>
               <div class="col-md-6">
-                <div class="mb-2"><strong data-i18n="status">Status:</strong> <span class="restore-user-status"></span></div>
-                <div class="mb-2"><strong data-i18n="deletedAt">Deleted At:</strong> <span class="restore-user-deletedat"></span></div>
-                <div class="mb-2"><strong data-i18n="address">Address:</strong> <span class="restore-user-address"></span></div>
-                <div class="mb-2"><strong data-i18n="created">Created:</strong> <span class="restore-user-created"></span></div>
+                <div class="mb-2">
+                  <strong data-i18n="status">Status:</strong>
+                  <span class="restore-user-status"></span>
+                </div>
+                <div class="mb-2">
+                  <strong data-i18n="deletedAt">Deleted At:</strong>
+                  <span class="restore-user-deletedat"></span>
+                </div>
+                <div class="mb-2">
+                  <strong data-i18n="address">Address:</strong>
+                  <span class="restore-user-address"></span>
+                </div>
+                <div class="mb-2">
+                  <strong data-i18n="created">Created:</strong>
+                  <span class="restore-user-created"></span>
+                </div>
               </div>
             </div>
           </div>
         </div>
       </div>
       <div class="modal-footer bg-white border-top border-success">
-        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal" data-i18n="cancel"><i class="ti ti-x me-1"></i>Cancel</button>
-        <button type="button" class="btn btn-success fw-bold" id="confirmRestoreUser" data-i18n="restoreUser"><i class="ti ti-refresh me-1"></i>Restore User</button>
+        <button
+          type="button"
+          class="btn btn-secondary"
+          data-bs-dismiss="modal"
+          data-i18n="cancel"
+        >
+          <i class="ti ti-x me-1"></i><span data-i18n="cancel">Cancel</span>
+        </button>
+        <button
+          type="button"
+          class="btn btn-success fw-bold"
+          id="confirmRestoreUser"
+          data-i18n="restoreUser"
+        >
+          <i class="ti ti-refresh me-1"></i
+          ><span data-i18n="restoreUser">Restore User</span>
+        </button>
       </div>
     </div>
   </div>
 </div>
-
-

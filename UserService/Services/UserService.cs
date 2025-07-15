@@ -294,7 +294,7 @@ public class UserService : IUserService
         return true;
     }
 
-    public async Task<bool> DeleteUserAsync(Guid userId)
+    public async Task<bool> DeleteUserAsync(Guid userId, string language = "en")
     {
         var user = await _userRepository.GetByIdAsync(userId);
         if (user == null || user.IsDeleted)
@@ -316,13 +316,14 @@ public class UserService : IUserService
             To = user.Email,
             Username = user.FullName ?? user.Username,
             DeactivatedAt = DateTime.UtcNow,
-            Reason = "Account deactivated by administrator"
+            Reason = "Account deactivated by administrator",
+            Language = language
         });
 
         return true;
     }
 
-    public async Task<bool> RestoreUserAsync(Guid id)
+    public async Task<bool> RestoreUserAsync(Guid id, string language = "en")
     {
         var user = await _userRepository.GetByIdAsync(id);
         if (user == null || !user.IsDeleted)
@@ -338,7 +339,8 @@ public class UserService : IUserService
                 To = user.Email,
                 Username = user.FullName ?? user.Username,
                 RestoredAt = DateTime.UtcNow,
-                Reason = "Account restored by administrator"
+                Reason = "Account restored by administrator",
+                Language = language
             });
         }
         return result;

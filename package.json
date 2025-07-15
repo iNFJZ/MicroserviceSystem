@@ -1,0 +1,21 @@
+{
+  "name": "microservicesystem",
+  "version": "1.0.0",
+  "description": "Hệ thống microservice .NET 8 gồm các service: - **AuthService**: Xác thực, phân quyền, quản lý user, JWT, Redis session. - **FileService**: Upload/download/list/delete file với MinIO, gửi event qua RabbitMQ. - **GatewayApi**: API Gateway dùng Ocelot. - **EmailService**: Nhận event từ RabbitMQ, gửi email notification qua Gmail SMTP.",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/iNFJZ/MicroserviceSystem.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "commonjs",
+  "bugs": {
+    "url": "https://github.com/iNFJZ/MicroserviceSystem/issues"
+  },
+  "homepage": "https://github.com/iNFJZ/MicroserviceSystem#readme"
+}

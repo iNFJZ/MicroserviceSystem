@@ -118,17 +118,14 @@ class AdminAuth {
   getCurrentUserInfo() {
     const token = this.getAuthToken();
     if (!token) return null;
-
     try {
       const payload = JSON.parse(
         atob(token.split(".")[1].replace(/-/g, "+").replace(/_/g, "/")),
       );
       return {
-        id: payload.nameid || payload.sub,
+        id: payload.sub,
         email: payload.email,
-        username: payload.username,
-        fullName: payload.fullName || payload.name,
-        role: payload.role || "Admin",
+        fullName: payload.name
       };
     } catch (e) {
       console.error("Failed to parse JWT token:", e);
@@ -150,8 +147,8 @@ class AdminAuth {
       return;
     }
 
-    $(".user-name").text(userInfo.fullName || userInfo.username || "Admin");
-    $(".user-role").text(userInfo.role || "Admin");
+    $(".user-name").text(userInfo.fullName || userInfo.email || "Admin");
+    $(".user-role").text("Admin");
     $(".user-avatar")
       .attr("src", generateLetterAvatarFromUser(userInfo))
       .show();
@@ -176,11 +173,12 @@ class AdminAuth {
           }
           if (user.fullName && user.fullName.trim() !== "") {
             $(".user-name").text(user.fullName);
+          } else if (user.email) {
+            $(".user-name").text(user.email);
           }
         }
       }
     } catch (error) {
-      console.error("Failed to fetch user details:", error);
     }
   }
 }
@@ -230,14 +228,13 @@ function loadActiveUsersTable() {
         },
       },
       columns: [
-        { data: null },
+        { data: null }, // Avatar
         { data: "username" },
         { data: "fullName" },
         { data: "email" },
-        { data: "phoneNumber" },
         { data: "status" },
         { data: "lastLoginAt" },
-        { data: null },
+        { data: null }, // Actions
       ],
       columnDefs: getUserTableColumnDefs(),
       order: [[1, "asc"]],
@@ -295,7 +292,7 @@ function loadAllUsersTable() {
         { data: "username" },
         { data: "fullName" },
         { data: "email" },
-        { data: "phoneNumber" },
+        // { data: "phoneNumber" },
         { data: "status" },
         { data: null },
         { data: null },
@@ -338,14 +335,13 @@ function loadDeactiveUsersTable() {
         },
       },
       columns: [
-        { data: null },
+        { data: null }, // Avatar
         { data: "username" },
         { data: "fullName" },
         { data: "email" },
-        { data: "phoneNumber" },
         { data: "status" },
         { data: "deletedAt" },
-        { data: null },
+        { data: null }, // Actions
       ],
       columnDefs: getUserTableColumnDefs(true),
       createdRow: function (row, data) {
@@ -392,13 +388,7 @@ function getUserTableColumnDefs(isDeactive) {
       },
     },
     {
-      targets: 4, // Phone
-      render: function (data, type, full) {
-        return full.phoneNumber || "";
-      },
-    },
-    {
-      targets: 5, // Status
+      targets: 4, // Status
       render: function (data, type, full) {
         var $status = full.status;
         var statusObj = {
@@ -415,7 +405,7 @@ function getUserTableColumnDefs(isDeactive) {
       },
     },
     {
-      targets: 6,
+      targets: isDeactive ? 5 : 5, // Last Login (active) hoặc Deleted At (deactive)
       render: function (data, type, full) {
         if (isDeactive) {
           if (full.deletedAt || full.DeletedAt) {
@@ -450,7 +440,7 @@ function getUserTableColumnDefs(isDeactive) {
       },
     },
     {
-      targets: 7, // Actions
+      targets: isDeactive ? 6 : 6, // Actions
       title: window.i18next.t("actions"),
       searchable: false,
       orderable: false,
@@ -474,87 +464,90 @@ function getUserTableDom() {
 }
 
 function getUserTableLanguage() {
+  const getTranslation = (key) => {
+    if (window.i18next && window.i18next.isInitialized) {
+      return window.i18next.t(key);
+    }
+    // Fallback translations
+    const fallbacks = {
+      searchPlaceholder: "Search...",
+      export: "Export",
+      previous: "Previous",
+      next: "Next",
+      showing: "Showing",
+      to: "to",
+      of: "of",
+      entries: "entries",
+      loading: "Loading...",
+      noData: "No data available",
+      info: "Showing _START_ to _END_ of _TOTAL_ entries",
+      infoEmpty: "Showing 0 to 0 of 0 entries",
+      infoFiltered: "(filtered from _MAX_ total entries)",
+      lengthMenu: "Show _MENU_ entries",
+      zeroRecords: "No matching records found"
+    };
+    return fallbacks[key] || key;
+  };
+
   return {
-    sLengthMenu: "_MENU_",
+    searchPlaceholder: getTranslation("searchPlaceholder"),
+    sLengthMenu: getTranslation("lengthMenu"),
     search: "",
-    searchPlaceholder: window.i18next.t("searchPlaceholder"),
+    paginate: {
+      previous: getTranslation("previous"),
+      next: getTranslation("next")
+    },
+    info: getTranslation("info"),
+    infoEmpty: getTranslation("infoEmpty"),
+    infoFiltered: getTranslation("infoFiltered"),
+    zeroRecords: getTranslation("zeroRecords"),
+    processing: getTranslation("loading"),
+    emptyTable: getTranslation("noData")
   };
 }
 
 function getUserTableButtons() {
+  const getTranslation = (key) => {
+    if (window.i18next && window.i18next.isInitialized) {
+      return window.i18next.t(key);
+    }
+    // Fallback translations
+    const fallbacks = {
+      export: "Export",
+      print: "Print",
+      csv: "CSV",
+      excel: "Excel",
+      pdf: "PDF",
+      copy: "Copy"
+    };
+    return fallbacks[key] || key;
+  };
+
   return [
     {
       extend: "collection",
       className: "btn btn-label-secondary dropdown-toggle mx-3",
-      text: "<i class=\"ti ti-screen-share me-1 ti-xs\"></i>" + window.i18next.t("export"),
+      text: "<i class=\"ti ti-screen-share me-1 ti-xs\"></i>" + getTranslation("export"),
       buttons: [
         {
           extend: "print",
-          text: "<i class=\"ti ti-printer me-2\" ></i>" + window.i18next.t("print"),
-          className: "dropdown-item",
-          exportOptions: {
-            columns: [1, 2, 3, 4, 5],
-            format: {
-              body: function (inner, coldex, rowdex) {
-                return $(inner).text();
-              },
-            },
-          },
-          customize: function (win) {
-            $(win.document.body).css("color", "#697a8d");
-          },
+          text: "<i class=\"ti ti-printer me-2\" ></i>" + getTranslation("print"),
         },
         {
           extend: "csv",
-          text: "<i class=\"ti ti-file-text me-2\" ></i>" + window.i18next.t("csv"),
-          className: "dropdown-item",
-          exportOptions: {
-            columns: [1, 2, 3, 4, 5],
-            format: {
-              body: function (inner, coldex, rowdex) {
-                return $(inner).text();
-              },
-            },
-          },
+          text: "<i class=\"ti ti-file-text me-2\" ></i>" + getTranslation("csv"),
         },
         {
           extend: "excel",
-          text: "<i class=\"ti ti-file-spreadsheet me-2\"></i>" + window.i18next.t("excel"),
-          className: "dropdown-item",
-          exportOptions: {
-            columns: [1, 2, 3, 4, 5],
-            format: {
-              body: function (inner, coldex, rowdex) {
-                return $(inner).text();
-              },
-            },
-          },
+          text: "<i class=\"ti ti-file-spreadsheet me-2\"></i>" + getTranslation("excel"),
         },
         {
           extend: "pdf",
-          text: "<i class=\"ti ti-file-code-2 me-2\"></i>" + window.i18next.t("pdf"),
-          className: "dropdown-item",
-          exportOptions: {
-            columns: [1, 2, 3, 4, 5],
-            format: {
-              body: function (inner, coldex, rowdex) {
-                return $(inner).text();
-              },
-            },
-          },
+          text: "<i class=\"ti ti-file-code-2 me-2\"></i>" + getTranslation("pdf"),
         },
         {
           extend: "copy",
-          text: "<i class=\"ti ti-copy me-2\" ></i>" + window.i18next.t("copy"),
-          className: "dropdown-item",
-          exportOptions: {
-            columns: [1, 2, 3, 4, 5],
-            format: {
-              body: function (inner, coldex, rowdex) {
-                return $(inner).text();
-              },
-            },
-          },
+          text: "<i class=\"ti ti-copy me-2\" ></i>" + getTranslation("copy"),
         },
       ],
     },
@@ -1415,11 +1408,10 @@ function reloadCurrentPageData() {
     } else {
       const dt_user_table = $(".datatables-users");
       if (dt_user_table.length && $.fn.DataTable.isDataTable(dt_user_table)) {
-        dt_user_table.DataTable().ajax.reload(null, false);
-      } else {
-        if (typeof loadAllUsersTable === "function") {
-          loadAllUsersTable();
-        }
+        dt_user_table.DataTable().destroy();
+      }
+      if (typeof loadAllUsersTable === "function") {
+        loadAllUsersTable();
       }
     }
   }, 100);
@@ -1507,7 +1499,7 @@ function openViewUserModal(userId) {
       }
       $("#viewUserModal").data("userid", user.id);
       $(".user-username").text(user.username || window.i18next.t("notAvailable"));
-      $(".user-fullname").text(user.fullName || window.i18next.t("notAvailable"));
+      $(".user-fullName").text(user.fullName || window.i18next.t("notAvailable"));
       $(".user-email").text(user.email || window.i18next.t("notAvailable"));
       $(".user-phone").text(user.phoneNumber || window.i18next.t("notAvailable"));
       $(".user-lastlogin").text(
@@ -1754,7 +1746,7 @@ window.openDeleteUserModal = function (userId) {
       }
       $("#deleteUserModal").data("userid", user.id);
       $(".delete-user-username").text(user.username || window.i18next.t("notAvailable"));
-      $(".delete-user-fullname").text(user.fullName || window.i18next.t("notAvailable"));
+      $(".delete-user-fullName").text(user.fullName || window.i18next.t("notAvailable"));
       $(".delete-user-email").text(user.email || window.i18next.t("notAvailable"));
       $(".delete-user-phone").text(user.phoneNumber || window.i18next.t("notAvailable"));
       $(".delete-user-status").html(getStatusBadge(user.status));
@@ -1803,7 +1795,7 @@ window.openRestoreUserModal = function (userId) {
       }
       $("#restoreUserModal").data("userid", user.id);
       $(".restore-user-username").text(user.username || window.i18next.t("notAvailable"));
-      $(".restore-user-fullname").text(user.fullName || window.i18next.t("notAvailable"));
+      $(".restore-user-fullName").text(user.fullName || window.i18next.t("notAvailable"));
       $(".restore-user-email").text(user.email || window.i18next.t("notAvailable"));
       $(".restore-user-phone").text(user.phoneNumber || window.i18next.t("notAvailable"));
       $(".restore-user-status").html(getStatusBadge(user.status));
@@ -1894,7 +1886,7 @@ async function loadUserProfile() {
       const user = data.data;
 
       // Populate profile form
-      $("#profile-fullname").val(user.fullName || "");
+      $("#profile-fullName").val(user.fullName || "");
       $("#profile-email").val(user.email || "");
       $("#profile-phone").val(user.phone || "");
 
@@ -2017,7 +2009,7 @@ function initializePageFunctionality() {
         e.preventDefault();
 
         const formData = {
-          fullName: $("#profile-fullname").val(),
+          fullName: $("#profile-fullName").val(),
           phone: $("#profile-phone").val(),
         };
 
@@ -2056,7 +2048,7 @@ function initializePageFunctionality() {
         e.preventDefault();
 
         const formData = {
-          fullName: $("#profile-fullname").val(),
+          fullName: $("#profile-fullName").val(),
           phone: $("#profile-phone").val(),
         };
 
@@ -2162,3 +2154,13 @@ document.addEventListener("DOMContentLoaded", function () {
   }
 });
 // --- End Change Password Logic ---
+
+if (typeof window.i18next !== 'undefined') {
+  window.i18next.on('languageChanged', function() {
+    setTimeout(() => {
+      reloadCurrentPageData();
+    }, 100);
+  });
+}
+
+window.generateLetterAvatarFromUser = generateLetterAvatarFromUser;

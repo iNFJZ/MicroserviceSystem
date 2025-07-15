@@ -637,7 +637,7 @@ window.addEventListener("DOMContentLoaded", function() {
             
             const userId = document.getElementById("edit-user-id").value;
             const username = document.getElementById("edit-username").value.trim();
-            const fullName = sanitizeInput(document.getElementById("edit-fullname").value.trim());
+            const fullName = sanitizeInput(document.getElementById("edit-fullName").value.trim());
             const email = sanitizeInput(document.getElementById("edit-email").value.trim());
             const phone = document.getElementById("edit-phone").value.trim();
             const dob = document.getElementById("edit-dob").value.trim();
@@ -787,7 +787,7 @@ function editUser(userId) {
     document.getElementById("edit-user-id").value = user.id;
     document.getElementById("edit-username").value = user.username;
     document.getElementById("edit-email").value = user.email || "";
-    document.getElementById("edit-fullname").value = user.fullName || "";
+    document.getElementById("edit-fullName").value = user.fullName || "";
     document.getElementById("edit-phone").value = user.phoneNumber || "";
     document.getElementById("edit-dob").value = user.dateOfBirth ? user.dateOfBirth.split("T")[0] : "";
     document.getElementById("edit-address").value = user.address || "";

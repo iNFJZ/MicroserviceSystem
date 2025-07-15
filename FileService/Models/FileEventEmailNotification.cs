@@ -7,5 +7,6 @@ namespace FileService.Models
         public string FileName { get; set; } = string.Empty;
         public string EventType { get; set; } = string.Empty;
         public DateTime EventTime { get; set; }
+        public string? Language { get; set; } = "en";
     }
 } 

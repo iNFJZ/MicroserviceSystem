@@ -44,28 +44,63 @@ namespace AuthService.Middleware
             {
                 case UserNotFoundException:
                     response.StatusCode = (int)HttpStatusCode.NotFound;
-                    errorResponse.Message = exception.Message;
+                    errorResponse.ErrorCode = "USER_NOT_FOUND";
                     break;
                 case InvalidCredentialsException:
                     response.StatusCode = (int)HttpStatusCode.Unauthorized;
-                    errorResponse.Message = exception.Message;
+                    errorResponse.ErrorCode = "INVALID_CREDENTIALS";
                     break;
                 case UserAlreadyExistsException:
                     response.StatusCode = (int)HttpStatusCode.Conflict;
-                    errorResponse.Message = exception.Message;
+                    errorResponse.ErrorCode = "USER_ALREADY_EXISTS";
                     break;
                 case InvalidTokenException:
                     response.StatusCode = (int)HttpStatusCode.Unauthorized;
-                    errorResponse.Message = exception.Message;
+                    errorResponse.ErrorCode = "TOKEN_INVALID";
                     break;
-                case AuthException:
+                case AccountDeletedException:
+                    response.StatusCode = (int)HttpStatusCode.Forbidden;
+                    errorResponse.ErrorCode = "ACCOUNT_DELETED";
+                    break;
+                case AccountBannedException:
+                    response.StatusCode = (int)HttpStatusCode.Forbidden;
+                    errorResponse.ErrorCode = "ACCOUNT_BANNED";
+                    break;
+                case AccountNotVerifiedException:
+                    response.StatusCode = (int)HttpStatusCode.Forbidden;
+                    errorResponse.ErrorCode = "ACCOUNT_NOT_VERIFIED";
+                    break;
+                case UserLockedException:
+                    response.StatusCode = (int)HttpStatusCode.TooManyRequests;
+                    errorResponse.ErrorCode = "ACCOUNT_LOCKED";
+                    break;
+                case InvalidResetTokenException:
                     response.StatusCode = (int)HttpStatusCode.BadRequest;
-                    errorResponse.Message = exception.Message;
+                    errorResponse.ErrorCode = "INVALID_RESET_TOKEN";
+                    break;
+                case PasswordMismatchException:
+                    response.StatusCode = (int)HttpStatusCode.BadRequest;
+                    errorResponse.ErrorCode = "PASSWORD_MISMATCH";
+                    break;
+                case InvalidGoogleTokenException:
+                    response.StatusCode = (int)HttpStatusCode.Unauthorized;
+                    errorResponse.ErrorCode = "GOOGLE_AUTH_FAILED";
+                    break;
+                case EmailNotExistsException:
+                    response.StatusCode = (int)HttpStatusCode.BadRequest;
+                    errorResponse.ErrorCode = "EMAIL_NOT_AVAILABLE";
+                    break;
+                case EmailNotVerifiedException:
+                    response.StatusCode = (int)HttpStatusCode.BadRequest;
+                    errorResponse.ErrorCode = "EMAIL_VERIFICATION_FAILED";
+                    break;
+                case AuthException authEx:
+                    response.StatusCode = (int)HttpStatusCode.BadRequest;
+                    errorResponse.ErrorCode = authEx.ErrorCode ?? "AUTHENTICATION_REQUIRED";
                     break;
                 default:
                     response.StatusCode = (int)HttpStatusCode.InternalServerError;
-                    errorResponse.Message = "An unexpected error occurred.";
-                    _logger.LogError(exception, "Unhandled exception occurred");
+                    errorResponse.ErrorCode = "INTERNAL_SERVER_ERROR";
                     break;
             }
 

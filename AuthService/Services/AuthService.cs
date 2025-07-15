@@ -57,27 +57,27 @@ namespace AuthService.Services
             var sanitizedFullName = dto.FullName?.Trim();
             
             if (string.IsNullOrWhiteSpace(sanitizedEmail) || string.IsNullOrWhiteSpace(sanitizedUsername))
-                throw new AuthException("Email and username are required");
+                throw new AuthException("REQUIRED_FIELD_MISSING", "Email and username are required");
             
             try
             {
                 var emailAddress = new System.Net.Mail.MailAddress(sanitizedEmail);
                 if (emailAddress.Address != sanitizedEmail)
-                    throw new AuthException("Invalid email format");
+                    throw new AuthException("INVALID_EMAIL_FORMAT", "Invalid email format");
             }
             catch
             {
-                throw new AuthException("Invalid email format");
+                throw new AuthException("INVALID_EMAIL_FORMAT", "Invalid email format");
             }
             
             if (sanitizedUsername.Length < 3 || sanitizedUsername.Length > 50)
-                throw new AuthException("Username must be between 3 and 50 characters");
+                throw new AuthException("FIELD_TOO_SHORT", "Username must be between 3 and 50 characters");
             
             if (!System.Text.RegularExpressions.Regex.IsMatch(sanitizedUsername, @"^[a-zA-Z0-9]+$"))
-                throw new AuthException("Username can only contain letters and numbers");
+                throw new AuthException("INVALID_CHARACTERS", "Username can only contain letters and numbers");
             
             if (sanitizedFullName != null && !System.Text.RegularExpressions.Regex.IsMatch(sanitizedFullName, @"^[a-zA-ZÀ-ỹ\s]+$"))
-                throw new AuthException("Full name can only contain letters, spaces, and Vietnamese characters");
+                throw new AuthException("INVALID_CHARACTERS", "Full name can only contain letters, spaces, and Vietnamese characters");
             
             var emailExists = await _emailVerifierService.VerifyEmailAsync(sanitizedEmail);
             if (!emailExists)
@@ -87,19 +87,19 @@ namespace AuthService.Services
             if (existingUser != null)
             {
                 if (existingUser.IsDeleted)
-                    throw new AuthException("An account with this email was previously deleted. Please contact support for assistance.");
+                    throw new AccountDeletedException();
                 else
                     throw new UserAlreadyExistsException(sanitizedEmail);
             }
 
             if (string.IsNullOrWhiteSpace(dto.Password))
-                throw new AuthException("Password is required");
+                throw new AuthException("REQUIRED_FIELD_MISSING", "Password is required");
             
             if (dto.Password.Length < 6)
-                throw new AuthException("Password must be at least 6 characters");
+                throw new AuthException("WEAK_PASSWORD", "Password must be at least 6 characters");
             
             if (!System.Text.RegularExpressions.Regex.IsMatch(dto.Password, @"^(?=.*[a-z])(?=.*[A-Z])(?=.*\d).{6,}$"))
-                throw new AuthException("Password must contain at least one uppercase letter, one lowercase letter, and one number");
+                throw new AuthException("WEAK_PASSWORD", "Password must contain at least one uppercase letter, one lowercase letter, and one number");
             
             var user = new User
             {
@@ -113,7 +113,7 @@ namespace AuthService.Services
             };
 
             await _repo.AddAsync(user);
-            var token = _jwtService.GenerateToken(user);
+            var token = _jwtService.GenerateToken(user, dto.Language ?? "en");
             var tokenExpiry = _jwtService.GetTokenExpirationTimeSpan(token);
             await _sessionService.StoreActiveTokenAsync(token, user.Id, tokenExpiry);
             var sessionId = Guid.NewGuid().ToString();
@@ -180,17 +180,17 @@ namespace AuthService.Services
         public async Task<bool> ResendVerificationEmailAsync(string email, string language)
         {
             if (string.IsNullOrWhiteSpace(email))
-                throw new AuthException("Email is required");
+                throw new AuthException("REQUIRED_FIELD_MISSING", "Email is required");
 
             var user = await _repo.GetByEmailIncludeDeletedAsync(email);
             if (user == null)
                 throw new UserNotFoundException(email);
 
             if (user.IsDeleted)
-                throw new AuthException("Account has been deleted. Please contact support for assistance.");
+                throw new AccountDeletedException();
 
             if (user.IsVerified)
-                throw new AuthException("Email is already verified");
+                throw new AuthException("EMAIL_ALREADY_VERIFIED", "Email is already verified");
 
             var token = GenerateEmailVerifyToken(user.Id, user.Email);
             await _sessionService.SetEmailVerifyTokenAsync(user.Id, token, TimeSpan.FromMinutes(15));
@@ -224,34 +224,34 @@ namespace AuthService.Services
         {
             var sanitizedEmail = dto.Email?.Trim().ToLowerInvariant();
             if (string.IsNullOrWhiteSpace(sanitizedEmail))
-                throw new AuthException("Email is required");
+                throw new AuthException("REQUIRED_FIELD_MISSING", "Email is required");
             
             var user = await _repo.GetByEmailIncludeDeletedAsync(sanitizedEmail);
             if (user == null)
                 throw new InvalidCredentialsException();
             
             if (user.IsDeleted)
-                throw new AuthException("Account has been deleted. Please contact support for assistance.");
-            
+                throw new AccountDeletedException();
+
             if (user.Status == UserStatus.Banned)
-                throw new AuthException("Your account has been banned. Please contact support for assistance.");
-            
+                throw new AccountBannedException();
+
             if (!user.IsVerified)
-                throw new AuthException("Account is not verified");
+                throw new AccountNotVerifiedException();
             try
             {
                 var emailAddress = new System.Net.Mail.MailAddress(sanitizedEmail);
                 if (emailAddress.Address != sanitizedEmail)
-                    throw new AuthException("Invalid email format");
+                    throw new AuthException("INVALID_EMAIL_FORMAT", "Invalid email format");
             }
             catch
             {
-                throw new AuthException("Invalid email format");
+                throw new AuthException("INVALID_EMAIL_FORMAT", "Invalid email format");
             }
             if (string.IsNullOrWhiteSpace(dto.Password))
-                throw new AuthException("Password is required");
+                throw new AuthException("REQUIRED_FIELD_MISSING", "Password is required");
             if (dto.Password.Length < 6)
-                throw new AuthException("Password must be at least 6 characters");
+                throw new AuthException("WEAK_PASSWORD", "Password must be at least 6 characters");
             
             var isLocked = await _sessionService.IsUserLockedAsync(user.Id);
             if (isLocked)
@@ -285,7 +285,7 @@ namespace AuthService.Services
                 user.UpdatedAt = DateTime.UtcNow;
                 await _repo.UpdateAsync(user);
             }
-            var token = _jwtService.GenerateToken(user);
+            var token = _jwtService.GenerateToken(user, dto.Language ?? "en");
             var tokenExpiry = _jwtService.GetTokenExpirationTimeSpan(token);
             await _sessionService.StoreActiveTokenAsync(token, user.Id, tokenExpiry);
             var sessionId = Guid.NewGuid().ToString();
@@ -379,13 +379,13 @@ namespace AuthService.Services
                 throw new InvalidCredentialsException();
 
             if (user.IsDeleted)
-                throw new AuthException("Account has been deleted. Please contact support for assistance.");
+                throw new AccountDeletedException();
 
             if (user.Status == UserStatus.Banned)
-                throw new AuthException("Your account has been banned. Please contact support for assistance.");
+                throw new AccountBannedException();
 
             if (!user.IsVerified)
-                throw new AuthException("Account is not verified");
+                throw new AccountNotVerifiedException();
 
             var resetToken = GenerateResetToken();
             var tokenExpiry = TimeSpan.FromMinutes(_resetPasswordTokenExpiryMinutes);
@@ -409,22 +409,22 @@ namespace AuthService.Services
         public async Task<bool> ResetPasswordAsync(ResetPasswordDto dto)
         {
             if (string.IsNullOrWhiteSpace(dto.Token))
-                throw new AuthException("Reset token is required");
+                throw new AuthException("REQUIRED_FIELD_MISSING", "Reset token is required");
             
             if (string.IsNullOrWhiteSpace(dto.NewPassword))
-                throw new AuthException("New password is required");
+                throw new AuthException("REQUIRED_FIELD_MISSING", "New password is required");
             
             if (dto.NewPassword.Length < 6)
-                throw new AuthException("New password must be at least 6 characters");
+                throw new AuthException("WEAK_PASSWORD", "New password must be at least 6 characters");
             
             if (!System.Text.RegularExpressions.Regex.IsMatch(dto.NewPassword, @"^(?=.*[a-z])(?=.*[A-Z])(?=.*\d).{6,}$"))
-                throw new AuthException("New password must contain at least one uppercase letter, one lowercase letter, and one number");
+                throw new AuthException("WEAK_PASSWORD", "New password must contain at least one uppercase letter, one lowercase letter, and one number");
             
             if (string.IsNullOrWhiteSpace(dto.ConfirmPassword))
-                throw new AuthException("Confirm password is required");
+                throw new AuthException("REQUIRED_FIELD_MISSING", "Confirm password is required");
             
             if (dto.NewPassword != dto.ConfirmPassword)
-                throw new AuthException("Passwords do not match");
+                throw new AuthException("PASSWORD_MISMATCH", "Passwords do not match");
             
             var userId = await _sessionService.GetUserIdFromResetTokenAsync(dto.Token);
             if (!userId.HasValue)
@@ -463,28 +463,28 @@ namespace AuthService.Services
                 throw new UserNotFoundException(userId);
 
             if (string.IsNullOrWhiteSpace(dto.CurrentPassword))
-                throw new AuthException("Current password is required");
+                throw new AuthException("REQUIRED_FIELD_MISSING", "Current password is required");
             
             if (dto.CurrentPassword.Length < 6)
-                throw new AuthException("Current password must be at least 6 characters");
+                throw new AuthException("WEAK_PASSWORD", "Current password must be at least 6 characters");
 
             if (string.IsNullOrEmpty(user.PasswordHash) || !_passwordService.VerifyPassword(dto.CurrentPassword, user.PasswordHash))
                 throw new PasswordMismatchException();
 
             if (string.IsNullOrWhiteSpace(dto.NewPassword))
-                throw new AuthException("New password is required");
+                throw new AuthException("REQUIRED_FIELD_MISSING", "New password is required");
             
             if (dto.NewPassword.Length < 6)
-                throw new AuthException("New password must be at least 6 characters");
+                throw new AuthException("WEAK_PASSWORD", "New password must be at least 6 characters");
             
             if (!System.Text.RegularExpressions.Regex.IsMatch(dto.NewPassword, @"^(?=.*[a-z])(?=.*[A-Z])(?=.*\d).{6,}$"))
-                throw new AuthException("New password must contain at least one uppercase letter, one lowercase letter, and one number");
+                throw new AuthException("WEAK_PASSWORD", "New password must contain at least one uppercase letter, one lowercase letter, and one number");
             
             if (string.IsNullOrWhiteSpace(dto.ConfirmPassword))
-                throw new AuthException("Confirm password is required");
+                throw new AuthException("REQUIRED_FIELD_MISSING", "Confirm password is required");
             
             if (dto.NewPassword != dto.ConfirmPassword)
-                throw new AuthException("Passwords do not match");
+                throw new AuthException("PASSWORD_MISMATCH", "Passwords do not match");
 
             user.PasswordHash = _passwordService.HashPassword(dto.NewPassword);
             user.UpdatedAt = DateTime.UtcNow;

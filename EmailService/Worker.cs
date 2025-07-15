@@ -27,13 +27,6 @@ namespace EmailService
         private readonly int _smtpPort;
         private readonly bool _smtpEnableSsl;
         private readonly int _resetTokenExpiryMinutes;
-        private readonly string _registerSubject;
-        private readonly string _fileUploadSubject;
-        private readonly string _fileDownloadSubject;
-        private readonly string _fileDeleteSubject;
-        private readonly string _resetPasswordSubject;
-        private readonly string _changePasswordSubject;
-        private readonly string _deactivateAccountSubject;
 
         public Worker(ILogger<Worker> logger, IConfiguration config, IEmailTemplateService emailTemplateService)
         {
@@ -46,13 +39,6 @@ namespace EmailService
             _smtpPort = int.Parse(_config["Smtp:Port"] ?? "587");
             _smtpEnableSsl = bool.Parse(_config["Smtp:EnableSsl"] ?? "true");
             _resetTokenExpiryMinutes = int.Parse(_config["EmailPolicy:ResetTokenExpiryMinutes"] ?? "15");
-            _registerSubject = _config["EmailPolicy:RegisterSubject"] ?? "Welcome to iNFJZ System!";
-            _fileUploadSubject = _config["EmailPolicy:FileUploadSubject"] ?? "File Uploaded Successfully";
-            _fileDownloadSubject = _config["EmailPolicy:FileDownloadSubject"] ?? "File Download Notification";
-            _fileDeleteSubject = _config["EmailPolicy:FileDeleteSubject"] ?? "File Deleted Successfully";
-            _resetPasswordSubject = _config["EmailPolicy:ResetPasswordSubject"] ?? "Password Reset Request - iNFJZ System";
-            _changePasswordSubject = _config["EmailPolicy:ChangePasswordSubject"] ?? "Password Changed Successfully - iNFJZ System";
-            _deactivateAccountSubject = _config["EmailPolicy:DeactivateAccountSubject"] ?? "Account Deactivated - iNFJZ System";
             Task.Run(() => InitRabbitMQ()).GetAwaiter().GetResult();
         }
 
@@ -192,8 +178,8 @@ namespace EmailService
             var vnTime = TimeZoneInfo.ConvertTimeFromUtc(registerAt, GetVietnamTimeZone());
             var mail = new MailMessage();
             mail.To.Add(emailEvent.To);
-            mail.Subject = _registerSubject;
-            mail.From = new MailAddress(_smtpUser, "iNFJZ System");
+            mail.Subject = _emailTemplateService.GetSubject("register", emailEvent.Language);
+            mail.From = new MailAddress(_smtpUser, "EDISA");
             mail.IsBodyHtml = true;
             
             if (!string.IsNullOrEmpty(emailEvent.VerifyLink))
@@ -203,7 +189,7 @@ namespace EmailService
             else
             {
                 mail.Body = $@"<p>Dear {emailEvent.Username},</p>
-<p>Welcome to <strong>iNFJZ System</strong>! Your account has been successfully created.</p>
+<p>Welcome to <strong>EDISA</strong>! Your account has been successfully created.</p>
 <ul>
     <li>Securely upload and manage your files with our MinIO-powered storage.</li>
     <li>Register, log in, and manage your sessions using JWT authentication.</li>
@@ -211,7 +197,7 @@ namespace EmailService
 </ul>
 <p style='color:#888;'>Registration time: {vnTime:yyyy-MM-dd HH:mm:ss} (Vietnam Time)</p>
 <p>If you have any questions or need support, please contact us.</p>
-<p>Best regards,<br/>iNFJZ System Team</p>";
+<p>Best regards,<br/>EDISA Team</p>";
             }
             
             try
@@ -235,44 +221,44 @@ namespace EmailService
             var vnTime = TimeZoneInfo.ConvertTimeFromUtc(eventTime, GetVietnamTimeZone());
             var mail = new MailMessage();
             mail.To.Add(emailEvent.To);
-            mail.From = new MailAddress(_smtpUser, "iNFJZ System");
+            mail.From = new MailAddress(_smtpUser, "EDISA");
             mail.IsBodyHtml = true;
             switch (emailEvent.EventType?.ToLowerInvariant())
             {
                 case "upload":
-                    mail.Subject = _fileUploadSubject;
+                    mail.Subject = _emailTemplateService.GetSubject("fileUpload", emailEvent.Language);
                     mail.Body = $@"<p>Dear {emailEvent.Username},</p>
 <p>Your file <strong>'{emailEvent.FileName}'</strong> has been <strong>successfully uploaded</strong> to your account.</p>
 <p>Upload time: {vnTime:yyyy-MM-dd HH:mm:ss} (Vietnam Time)</p>
 <p>You can now manage, download, or delete your files at any time using our file management service.</p>
 <p>If you did not perform this action, please review your account activity for security.</p>
-<p>Thank you for using iNFJZ System!</p>
-<p>Best regards,<br/>iNFJZ System Team</p>";
+<p>Thank you for using EDISA!</p>
+<p>Best regards,<br/>EDISA Team</p>";
                     break;
                 case "download":
-                    mail.Subject = _fileDownloadSubject;
+                    mail.Subject = _emailTemplateService.GetSubject("fileDownload", emailEvent.Language);
                     mail.Body = $@"<p>Dear {emailEvent.Username},</p>
 <p>You have <strong>successfully downloaded</strong> the file <strong>'{emailEvent.FileName}'</strong>.</p>
 <p>Download time: {vnTime:yyyy-MM-dd HH:mm:ss} (Vietnam Time)</p>
 <p>If you did not perform this action, please review your account activity for security.</p>
-<p>Thank you for using iNFJZ System!</p>
-<p>Best regards,<br/>iNFJZ System Team</p>";
+<p>Thank you for using EDISA!</p>
+<p>Best regards,<br/>EDISA Team</p>";
                     break;
                 case "delete":
-                    mail.Subject = _fileDeleteSubject;
+                    mail.Subject = _emailTemplateService.GetSubject("fileDelete", emailEvent.Language);
                     mail.Body = $@"<p>Dear {emailEvent.Username},</p>
 <p>Your file <strong>'{emailEvent.FileName}'</strong> has been <strong>deleted</strong> from your account.</p>
 <p>Deletion time: {vnTime:yyyy-MM-dd HH:mm:ss} (Vietnam Time)</p>
 <p>If you did not perform this action, please check your account activity or contact support.</p>
-<p>Thank you for using iNFJZ System!</p>
-<p>Best regards,<br/>iNFJZ System Team</p>";
+<p>Thank you for using EDISA!</p>
+<p>Best regards,<br/>EDISA Team</p>";
                     break;
                 default:
                     mail.Subject = $"File {emailEvent.EventType} Notification";
                     mail.Body = $@"<p>Dear {emailEvent.Username},</p>
 <p>Your file <strong>'{emailEvent.FileName}'</strong> was <strong>{emailEvent.EventType?.ToLowerInvariant()}ed</strong> at {vnTime:yyyy-MM-dd HH:mm:ss} (Vietnam Time).</p>
-<p>Thank you for using iNFJZ System!</p>
-<p>Best regards,<br/>iNFJZ System Team</p>";
+<p>Thank you for using EDISA!</p>
+<p>Best regards,<br/>EDISA Team</p>";
                     break;
             }
             try
@@ -296,8 +282,8 @@ namespace EmailService
             var vnTime = TimeZoneInfo.ConvertTimeFromUtc(requestedAt, GetVietnamTimeZone());
             var mail = new MailMessage();
             mail.To.Add(emailEvent.To);
-            mail.Subject = _resetPasswordSubject;
-            mail.From = new MailAddress(_smtpUser, "iNFJZ System");
+            mail.Subject = _emailTemplateService.GetSubject("resetPassword", emailEvent.Language);
+            mail.From = new MailAddress(_smtpUser, "EDISA");
             mail.IsBodyHtml = true;
             
             if (!string.IsNullOrEmpty(emailEvent.ResetLink))
@@ -315,18 +301,20 @@ namespace EmailService
             else
             {
                 mail.Body = $@"<p>Dear {emailEvent.Username},</p>
-<p>We received a request to <strong>reset your password</strong> for your iNFJZ System account.</p>
+<p>We received a request to <strong>reset your password</strong> for your EDISA account.</p>
 <p>Your password reset token is:</p>
 <p style='font-size:18px;font-weight:bold;color:#667eea'>{emailEvent.ResetToken}</p>
 <p>This token will expire in <strong>{_resetTokenExpiryMinutes} minutes</strong>.</p>
 <p>If you did not request a password reset, please ignore this email or contact support immediately.</p>
 <p style='color:#888;'>Request time: {vnTime:yyyy-MM-dd HH:mm:ss} (Vietnam Time)</p>
 <p>To reset your password, use the following API endpoint:</p>
-<pre style='background:#f8f9fa;padding:10px;border-radius:5px;'>POST /api/auth/reset-password
-Body: {{ ""token"": ""your-token"", ""newPassword"": ""your-new-password"", ""confirmPassword"": ""your-new-password-confirm"" }}</pre>
+<pre style='background:#f8f9fa;padding:10px;border-radius:5px;'>
+POST /api/auth/reset-password
+Body: {{ ""token"": ""your-token"", ""newPassword"": ""your-new-password"", ""confirmPassword"": ""your-new-password-confirm"" }}
+</pre>
 <p>For security reasons, all your active sessions will be invalidated after password reset.</p>
-<p>Thank you for using iNFJZ System!</p>
-<p>Best regards,<br/>iNFJZ System Team</p>";
+<p>Thank you for using EDISA!</p>
+<p>Best regards,<br/>EDISA Team</p>";
             }
             
             try
@@ -350,8 +338,8 @@ Body: {{ ""token"": ""your-token"", ""newPassword"": ""your-new-password"", ""co
             var vnTime = TimeZoneInfo.ConvertTimeFromUtc(changeAt, GetVietnamTimeZone());
             var mail = new MailMessage();
             mail.To.Add(emailEvent.To);
-            mail.Subject = _changePasswordSubject;
-            mail.From = new MailAddress(_smtpUser, "iNFJZ System");
+            mail.Subject = _emailTemplateService.GetSubject("changePassword", emailEvent.Language);
+            mail.From = new MailAddress(_smtpUser, "EDISA");
             mail.IsBodyHtml = true;
             mail.Body = _emailTemplateService.ReplacePlaceholders(
                 _emailTemplateService.LoadTemplate("change-password", emailEvent.Language),
@@ -382,8 +370,8 @@ Body: {{ ""token"": ""your-token"", ""newPassword"": ""your-new-password"", ""co
             var vnTime = TimeZoneInfo.ConvertTimeFromUtc(deactivatedAt, GetVietnamTimeZone());
             var mail = new MailMessage();
             mail.To.Add(emailEvent.To);
-            mail.Subject = _deactivateAccountSubject;
-            mail.From = new MailAddress(_smtpUser, "iNFJZ System");
+            mail.Subject = _emailTemplateService.GetSubject("deactivateAccount", emailEvent.Language);
+            mail.From = new MailAddress(_smtpUser, "EDISA");
             mail.IsBodyHtml = true;
             
             mail.Body = _emailTemplateService.GenerateDeactivateAccountContent(emailEvent.Username, emailEvent.Language);
@@ -409,8 +397,8 @@ Body: {{ ""token"": ""your-token"", ""newPassword"": ""your-new-password"", ""co
             var vnTime = TimeZoneInfo.ConvertTimeFromUtc(registerAt, GetVietnamTimeZone());
             var mail = new MailMessage();
             mail.To.Add(emailEvent.To);
-            mail.Subject = _registerSubject;
-            mail.From = new MailAddress(_smtpUser, "iNFJZ System");     
+            mail.Subject = _emailTemplateService.GetSubject("registerGoogle", emailEvent.Language);
+            mail.From = new MailAddress(_smtpUser, "EDISA");     
             mail.IsBodyHtml = true;
             
             string resetLink = "";
@@ -439,17 +427,18 @@ Body: {{ ""token"": ""your-token"", ""newPassword"": ""your-new-password"", ""co
         {
             try
             {
-                var subject = "Account Restored - iNFJZ System";
+                var subject = _emailTemplateService.GetSubject("restoreAccount", restoreEvent.Language);
                 var body = _emailTemplateService.GenerateRestoreAccountContent(
                     restoreEvent.Username,
                     restoreEvent.RestoredAt,
-                    restoreEvent.Reason
+                    restoreEvent.Reason,
+                    restoreEvent.Language
                 );
 
                 var mail = new MailMessage();
                 mail.To.Add(restoreEvent.To);
                 mail.Subject = subject;
-                mail.From = new MailAddress(_smtpUser, "iNFJZ System");
+                mail.From = new MailAddress(_smtpUser, "EDISA");
                 mail.IsBodyHtml = true;
                 mail.Body = body;
 

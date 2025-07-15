@@ -65,8 +65,8 @@ public class AuthServiceTests
         _jwtServiceMock.Setup(j => j.GenerateToken(It.IsAny<User>())).Returns(token);
         _jwtServiceMock.Setup(j => j.GetTokenExpirationTimeSpan(token)).Returns(tokenExpiry);
         _sessionServiceMock.Setup(s => s.StoreActiveTokenAsync(token, It.IsAny<Guid>(), tokenExpiry)).Returns(Task.CompletedTask);
-        _sessionServiceMock.Setup(s => s.CreateUserSessionAsync(It.IsAny<Guid>(), It.IsAny<string>(), It.IsAny<TimeSpan>())).Returns(Task.CompletedTask);
-        _sessionServiceMock.Setup(s => s.SetUserLoginStatusAsync(It.IsAny<Guid>(), true, It.IsAny<TimeSpan>())).Returns(Task.CompletedTask);
+        _sessionServiceMock.Setup(s => s.CreateUserSessionAsync(It.IsAny<Guid>(), It.IsAny<string>(), tokenExpiry)).Returns(Task.CompletedTask);
+        _sessionServiceMock.Setup(s => s.SetUserLoginStatusAsync(It.IsAny<Guid>(), true, tokenExpiry)).Returns(Task.CompletedTask);
 
         // Act
         var result = await _authService.RegisterAsync(dto);
@@ -75,8 +75,8 @@ public class AuthServiceTests
         Assert.Equal(token, result);
         _userRepoMock.Verify(r => r.AddAsync(It.IsAny<User>()), Times.Once);
         _sessionServiceMock.Verify(s => s.StoreActiveTokenAsync(token, It.IsAny<Guid>(), tokenExpiry), Times.Once);
-        _sessionServiceMock.Verify(s => s.CreateUserSessionAsync(It.IsAny<Guid>(), It.IsAny<string>(), It.IsAny<TimeSpan>()), Times.Once);
-        _sessionServiceMock.Verify(s => s.SetUserLoginStatusAsync(It.IsAny<Guid>(), true, It.IsAny<TimeSpan>()), Times.Once);
+        _sessionServiceMock.Verify(s => s.CreateUserSessionAsync(It.IsAny<Guid>(), It.IsAny<string>(), tokenExpiry), Times.Once);
+        _sessionServiceMock.Verify(s => s.SetUserLoginStatusAsync(It.IsAny<Guid>(), true, tokenExpiry), Times.Once);
     }
 
     [Fact]
@@ -94,8 +94,8 @@ public class AuthServiceTests
         _jwtServiceMock.Setup(j => j.GenerateToken(user)).Returns(token);
         _jwtServiceMock.Setup(j => j.GetTokenExpirationTimeSpan(token)).Returns(tokenExpiry);
         _sessionServiceMock.Setup(s => s.StoreActiveTokenAsync(token, user.Id, tokenExpiry)).Returns(Task.CompletedTask);
-        _sessionServiceMock.Setup(s => s.CreateUserSessionAsync(user.Id, It.IsAny<string>(), It.IsAny<TimeSpan>())).Returns(Task.CompletedTask);
-        _sessionServiceMock.Setup(s => s.SetUserLoginStatusAsync(user.Id, true, It.IsAny<TimeSpan>())).Returns(Task.CompletedTask);
+        _sessionServiceMock.Setup(s => s.CreateUserSessionAsync(user.Id, It.IsAny<string>(), tokenExpiry)).Returns(Task.CompletedTask);
+        _sessionServiceMock.Setup(s => s.SetUserLoginStatusAsync(user.Id, true, tokenExpiry)).Returns(Task.CompletedTask);
 
         // Act
         var result = await _authService.LoginAsync(dto);
@@ -103,8 +103,8 @@ public class AuthServiceTests
         // Assert
         Assert.Equal(token, result);
         _sessionServiceMock.Verify(s => s.StoreActiveTokenAsync(token, user.Id, tokenExpiry), Times.Once);
-        _sessionServiceMock.Verify(s => s.CreateUserSessionAsync(user.Id, It.IsAny<string>(), It.IsAny<TimeSpan>()), Times.Once);
-        _sessionServiceMock.Verify(s => s.SetUserLoginStatusAsync(user.Id, true, It.IsAny<TimeSpan>()), Times.Once);
+        _sessionServiceMock.Verify(s => s.CreateUserSessionAsync(user.Id, It.IsAny<string>(), tokenExpiry), Times.Once);
+        _sessionServiceMock.Verify(s => s.SetUserLoginStatusAsync(user.Id, true, tokenExpiry), Times.Once);
     }
 
     [Fact]

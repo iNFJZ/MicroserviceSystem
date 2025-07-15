@@ -11,4 +11,5 @@ public interface IEmailTemplateService
     string GenerateDeactivateAccountContent(string username, string lang = null);
     string GenerateRegisterGoogleContent(string username, string resetLink = "", string lang = null);
     string GenerateRestoreAccountContent(string username, DateTime restoredAt, string reason, string lang = null);
+    string GetSubject(string type, string lang = null);
 } 

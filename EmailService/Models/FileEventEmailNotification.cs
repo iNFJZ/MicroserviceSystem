@@ -7,5 +7,6 @@ namespace EmailService.Models
         public string FileName { get; set; }
         public string EventType { get; set; }
         public DateTime EventTime { get; set; }
+        public string? Language { get; set; } = "en";
     }
 } 

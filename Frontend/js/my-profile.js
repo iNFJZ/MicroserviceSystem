@@ -28,14 +28,14 @@ document.addEventListener("DOMContentLoaded", async function () {
   }
 
   function getCurrentUserInfo() {
-    if (
-      window.adminAuth &&
-      typeof window.adminAuth.getCurrentUserInfo === "function"
-    ) {
-      return window.adminAuth.getCurrentUserInfo();
-    }
     const token = getToken();
-    return parseJwt(token);
+    const payload = parseJwt(token);
+    if (!payload) return null;
+    return {
+      id: payload.sub,
+      email: payload.email,
+      fullName: payload.name
+    };
   }
 
   function getAuthHeaders() {
@@ -57,19 +57,12 @@ document.addEventListener("DOMContentLoaded", async function () {
   async function loadUserInfo() {
     let user = getCurrentUserInfo();
     if (!user || !user.id) {
-      try {
-        const res = await fetch(`${API_BASE}`, { headers: getAuthHeaders() });
-        const data = await res.json();
-        if (data.success && data.data && data.data.length > 0) {
-          user = data.data[0];
-        } else {
-          toastr.error(window.i18next.t("userNotFoundOrInvalidToken"));
-          return;
-        }
-      } catch (e) {
-        toastr.error(window.i18next.t("userNotFoundOrInvalidToken"));
-        return;
-      }
+      let msg = (window.i18next && typeof window.i18next.t === 'function')
+        ? window.i18next.t("userNotFoundOrInvalidToken")
+        : "User not found or invalid token.";
+      toastr.error(msg);
+      setTimeout(() => { window.location.href = "/auth/login.html"; }, 1000);
+      return;
     }
     try {
       const res = await fetch(`${API_BASE}/${user.id}`, {
@@ -95,7 +88,12 @@ document.addEventListener("DOMContentLoaded", async function () {
           $("#edit-profilePicture-preview").attr("src", u.profilePicture);
           $("#edit-profilePicture-container").show();
         } else {
-          $("#edit-profilePicture-container").hide();
+          if (typeof window.generateLetterAvatarFromUser === 'function') {
+            $("#edit-profilePicture-preview").attr("src", window.generateLetterAvatarFromUser(u));
+            $("#edit-profilePicture-container").show();
+          } else {
+            $("#edit-profilePicture-container").hide();
+          }
         }
         $("#edit-profilePicture").val("");
         window._editProfilePictureBase64 = null;
@@ -185,7 +183,11 @@ document.addEventListener("DOMContentLoaded", async function () {
         toastr.error(window.i18next.t("cropAreaInvalid"));
         return;
       }
-      if (imageData && (cropBox.width > imageData.naturalWidth || cropBox.height > imageData.naturalHeight)) {
+      if (
+        imageData &&
+        (cropBox.width > imageData.naturalWidth ||
+          cropBox.height > imageData.naturalHeight)
+      ) {
         toastr.error(window.i18next.t("cropAreaLargerThanImage"));
         return;
       }
@@ -218,7 +220,13 @@ document.addEventListener("DOMContentLoaded", async function () {
         $("#edit-profilePicture-container, #profile-picture-preview").show();
         setTimeout(() => {
           $("#cropImageModal").modal("hide");
-          toastr.success(window.i18next.t("profilePictureCroppedSuccessfully"));
+          const msg = (window.i18next && typeof window.i18next.t === 'function')
+            ? window.i18next.t("profilePictureCroppedSuccessfully")
+            : "Profile picture cropped successfully!";
+          toastr.success(msg);
+          if (window.adminAuth) {
+            window.adminAuth.updateUserProfileDisplay();
+          }
         }, 200);
       } catch (error) {
         window._editProfilePictureBase64 = null;
@@ -285,7 +293,9 @@ document.addEventListener("DOMContentLoaded", async function () {
       if (window._editProfilePictureBase64) {
         data.profilePicture = window._editProfilePictureBase64;
       } else if (selectedImageFile) {
-        toastr.warning(window.i18next.t("pleaseCropYourProfilePictureBeforeSaving"));
+        toastr.warning(
+          window.i18next.t("pleaseCropYourProfilePictureBeforeSaving"),
+        );
         return;
       } else if (window._profilePictureRemoved) {
         data.profilePicture = null;
@@ -329,7 +339,9 @@ document.addEventListener("DOMContentLoaded", async function () {
       }
 
       if (data.phoneNumber && !/^[0-9]{10,11}$/.test(data.phoneNumber)) {
-        toastr.error(window.i18next.t("phoneNumberMustBe10To11DigitsAndOnlyNumbers"));
+        toastr.error(
+          window.i18next.t("phoneNumberMustBe10To11DigitsAndOnlyNumbers"),
+        );
         return;
       }
 
@@ -398,9 +410,7 @@ document.addEventListener("DOMContentLoaded", async function () {
       e.preventDefault();
 
       if (
-        !confirm(
-          window.i18next.t("areYouSureYouWantToDeactivateYourAccount"),
-        )
+        !confirm(window.i18next.t("areYouSureYouWantToDeactivateYourAccount"))
       ) {
         return;
       }
@@ -472,12 +482,14 @@ document.addEventListener("DOMContentLoaded", async function () {
           if (!imageData || !cropBox) return setTimeout(waitForCropBox, 30);
           // Set cropBox mặc định nhỏ hơn ảnh (80%) và ở chính giữa nếu lần đầu
           if (tryCount === 1) {
-            const boxSize = Math.floor(Math.min(imageData.naturalWidth, imageData.naturalHeight) * 0.8);
+            const boxSize = Math.floor(
+              Math.min(imageData.naturalWidth, imageData.naturalHeight) * 0.8,
+            );
             cropper.setCropBoxData({
               width: boxSize,
               height: boxSize,
               left: imageData.left + (imageData.naturalWidth - boxSize) / 2,
-              top: imageData.top + (imageData.naturalHeight - boxSize) / 2
+              top: imageData.top + (imageData.naturalHeight - boxSize) / 2,
             });
             setTimeout(waitForCropBox, 30);
             return;
@@ -494,11 +506,17 @@ document.addEventListener("DOMContentLoaded", async function () {
             newTop = imageData.top;
             adjusted = true;
           }
-          if (cropBox.left + cropBox.width > imageData.left + imageData.naturalWidth) {
+          if (
+            cropBox.left + cropBox.width >
+            imageData.left + imageData.naturalWidth
+          ) {
             newLeft = imageData.left + imageData.naturalWidth - cropBox.width;
             adjusted = true;
           }
-          if (cropBox.top + cropBox.height > imageData.top + imageData.naturalHeight) {
+          if (
+            cropBox.top + cropBox.height >
+            imageData.top + imageData.naturalHeight
+          ) {
             newTop = imageData.top + imageData.naturalHeight - cropBox.height;
             adjusted = true;
           }
@@ -507,7 +525,7 @@ document.addEventListener("DOMContentLoaded", async function () {
               width: cropBox.width,
               height: cropBox.height,
               left: newLeft,
-              top: newTop
+              top: newTop,
             });
             setTimeout(waitForCropBox, 30);
             return;
@@ -519,7 +537,10 @@ document.addEventListener("DOMContentLoaded", async function () {
             return;
           }
           // Nếu thử quá 10 lần mà cropBox vẫn không hợp lệ, báo lỗi
-          if (tryCount > 10 && (!cropBox || cropBox.width <= 0 || cropBox.height <= 0)) {
+          if (
+            tryCount > 10 &&
+            (!cropBox || cropBox.width <= 0 || cropBox.height <= 0)
+          ) {
             toastr.error(window.i18next.t("failedToInitializeCropper"));
             $("#cropImageModal").modal("hide");
             return;
@@ -530,7 +551,7 @@ document.addEventListener("DOMContentLoaded", async function () {
           let maxZoom = Math.min(
             Math.floor((initialCropBoxWidth / 10) * 100) / 100, // không cho nhỏ hơn 10px
             imageData.naturalWidth / initialCropBoxWidth,
-            3
+            3,
           );
           maxZoom = Math.max(1, maxZoom);
           cropperReady = true;
@@ -567,7 +588,7 @@ document.addEventListener("DOMContentLoaded", async function () {
                 width: newWidth,
                 height: newWidth,
                 left: cropBox.left,
-                top: cropBox.top
+                top: cropBox.top,
               });
             } else {
               cropper.zoomTo(currentZoom);
@@ -594,7 +615,7 @@ document.addEventListener("DOMContentLoaded", async function () {
                 width: newWidth,
                 height: newWidth,
                 left: cropBox.left,
-                top: cropBox.top
+                top: cropBox.top,
               });
             } else {
               cropper.zoomTo(currentZoom);
@@ -616,7 +637,7 @@ document.addEventListener("DOMContentLoaded", async function () {
                 width: newWidth,
                 height: newWidth,
                 left: cropBox.left,
-                top: cropBox.top
+                top: cropBox.top,
               });
             } else {
               cropper.zoomTo(currentZoom);
@@ -674,7 +695,7 @@ document.addEventListener("DOMContentLoaded", async function () {
       error: function () {
         toastr.error(window.i18next.t("failedToLoadImage"));
         $("#cropImageModal").modal("hide");
-      }
+      },
     });
     window._cropper = cropper;
   }
@@ -688,7 +709,8 @@ document.addEventListener("DOMContentLoaded", async function () {
       const minLabel = zoomSlider.parentElement?.previousElementSibling;
       const maxLabel = document.getElementById("zoom-max-label");
       if (minLabel) minLabel.textContent = window.i18next.t("zoom100");
-      if (maxLabel && maxZoom) maxLabel.textContent = `${Math.round(maxZoom * 100)}%`;
+      if (maxLabel && maxZoom)
+        maxLabel.textContent = `${Math.round(maxZoom * 100)}%`;
     }
   }
 
@@ -707,11 +729,17 @@ document.addEventListener("DOMContentLoaded", async function () {
       newTop = imageData.top;
       adjusted = true;
     }
-    if (cropBox.left + cropBox.width > imageData.left + imageData.naturalWidth) {
+    if (
+      cropBox.left + cropBox.width >
+      imageData.left + imageData.naturalWidth
+    ) {
       newLeft = imageData.left + imageData.naturalWidth - cropBox.width;
       adjusted = true;
     }
-    if (cropBox.top + cropBox.height > imageData.top + imageData.naturalHeight) {
+    if (
+      cropBox.top + cropBox.height >
+      imageData.top + imageData.naturalHeight
+    ) {
       newTop = imageData.top + imageData.naturalHeight - cropBox.height;
       adjusted = true;
     }
@@ -720,7 +748,7 @@ document.addEventListener("DOMContentLoaded", async function () {
         width: cropBox.width,
         height: cropBox.height,
         left: newLeft,
-        top: newTop
+        top: newTop,
       });
     }
   }
@@ -755,14 +783,19 @@ document.addEventListener("DOMContentLoaded", async function () {
       if (
         cropBox.left < imageData.left ||
         cropBox.top < imageData.top ||
-        cropBox.left + cropBox.width > imageData.left + imageData.naturalWidth ||
+        cropBox.left + cropBox.width >
+          imageData.left + imageData.naturalWidth ||
         cropBox.top + cropBox.height > imageData.top + imageData.naturalHeight
       ) {
         ensureCropBoxInBounds();
         cropBox = cropper.getCropBoxData();
       }
       if (!cropBox || cropBox.width <= 0 || cropBox.height <= 0) return;
-      if (imageData && (cropBox.width > imageData.naturalWidth || cropBox.height > imageData.naturalHeight)) {
+      if (
+        imageData &&
+        (cropBox.width > imageData.naturalWidth ||
+          cropBox.height > imageData.naturalHeight)
+      ) {
         const preview = document.getElementById("crop-avatar-preview");
         if (preview) {
           preview.src = "";
@@ -881,7 +914,10 @@ document.addEventListener("DOMContentLoaded", async function () {
 
   await loadUserInfo();
 
-  // Ensure cropper is destroyed when modal is closed (prevents errors and double-initialization)
+  if (window.adminAuth && typeof window.adminAuth.updateUserProfileDisplay === "function") {
+    window.adminAuth.updateUserProfileDisplay();
+  }
+
   $("#cropImageModal").on("hidden.bs.modal", function () {
     if (cropper) {
       cropper.destroy();

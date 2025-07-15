@@ -107,12 +107,12 @@ namespace AuthService.Services
             {
                 if (existingUser.DeletedAt.HasValue)
                 {
-                    throw new AuthException("Account has been deleted. Please contact support for assistance.");
+                    throw new AccountDeletedException();
                 }
                 
                 if (existingUser.Status == UserStatus.Banned)
                 {
-                    throw new AuthException("Your account has been banned. Please contact support for assistance.");
+                    throw new AccountBannedException();
                 }
                 
                 existingUser.LoginProvider = "Google";
@@ -132,12 +132,12 @@ namespace AuthService.Services
                 {
                     if (existingUser.DeletedAt.HasValue)
                     {
-                        throw new AuthException("Account has been deleted. Please contact support for assistance.");
+                        throw new AccountDeletedException();
                     }
                     
                     if (existingUser.Status == UserStatus.Banned)
                     {
-                        throw new AuthException("Your account has been banned. Please contact support for assistance.");
+                        throw new AccountBannedException();
                     }
                     
                     existingUser.GoogleId = googleUserInfo.Sub;
@@ -192,7 +192,7 @@ namespace AuthService.Services
                 });
             }
 
-            var token = _jwtService.GenerateToken(existingUser);
+            var token = _jwtService.GenerateToken(existingUser, dto?.Language ?? "en");
             var tokenExpiry = _jwtService.GetTokenExpirationTimeSpan(token);
 
             await _sessionService.StoreActiveTokenAsync(token, existingUser.Id, tokenExpiry);
