@@ -90,7 +90,7 @@ class AdminAuth {
   }
 
   redirectToLogin() {
-    window.location.href = "/";
+    window.location.href = "/auth/login.html";
   }
 
   setupGlobalErrorHandling() {
@@ -197,7 +197,7 @@ if (typeof module !== "undefined" && module.exports) {
 function loadActiveUsersTable() {
   const token = localStorage.getItem("authToken");
   if (!token) {
-    window.location.href = "/";
+    window.location.href = "/auth/login.html";
     return;
   }
   const dt_user_table = $(".datatables-users");
@@ -251,7 +251,7 @@ function loadActiveUsersTable() {
 function loadAllUsersTable() {
   const token = localStorage.getItem("authToken");
   if (!token) {
-    window.location.href = "/";
+    window.location.href = "/auth/login.html";
     return;
   }
   const dt_user_table = $(".datatables-users");
@@ -313,7 +313,7 @@ function loadAllUsersTable() {
 function loadDeactiveUsersTable() {
   const token = localStorage.getItem("authToken");
   if (!token) {
-    window.location.href = "/";
+    window.location.href = "/auth/login.html";
     return;
   }
   const dt_user_table = $(".datatables-users");
@@ -1343,7 +1343,7 @@ function deleteUser(userId) {
         sessionStorage.clear();
         toastr.info(window.i18next.t("yourAccountHasBeenDeleted"));
         setTimeout(() => {
-          window.location.href = "/auth/login.html";
+          window.location.href = "/admin/index.html";
         }, 1000);
         return;
       }
@@ -1669,7 +1669,7 @@ $(document).on("submit", "#addNewUserForm", function (e) {
 });
 $(document).on("click", ".breadcrumb-item a[href=\"index.html\"]", function (e) {
   e.preventDefault();
-  window.location.href = "index.html";
+  window.location.href = "/admin/index.html";
 });
 
 function updateUserStatsDashboard() {
@@ -1952,16 +1952,15 @@ async function saveUserProfile(formData) {
 // Settings page functionality
 function loadUserSettings() {
   try {
-    // Load settings from localStorage
     const settings = JSON.parse(localStorage.getItem("userSettings") || "{}");
-
     $("#settings-notifications").prop(
       "checked",
       settings.notifications !== false,
     );
-    $("#settings-language").val(settings.language || "en");
+    if (settings.language) {
+      window.i18next.changeLanguage(settings.language);
+    }
     $("#settings-darkmode").prop("checked", settings.darkMode === true);
-
     toastr.success(window.i18next.t("settingsLoaded"));
   } catch (error) {
     console.error("Error loading settings:", error);
@@ -1971,22 +1970,34 @@ function loadUserSettings() {
 
 function saveUserSettings() {
   try {
+    const lang = $("#settings-language").val();
     const settings = {
       notifications: $("#settings-notifications").is(":checked"),
-      language: $("#settings-language").val(),
       darkMode: $("#settings-darkmode").is(":checked"),
     };
-
     localStorage.setItem("userSettings", JSON.stringify(settings));
     toastr.success(window.i18next.t("settingsSavedSuccessfully"));
-
-    // Apply settings
+    if (lang) {
+      window.i18next.changeLanguage(lang);
+      // Nếu đã đăng nhập, gọi API cập nhật ngôn ngữ vào profile
+      const token = localStorage.getItem("authToken");
+      if (token) {
+        fetch("/api/User/update-language", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            "Authorization": `Bearer ${token}`,
+            "Accept-Language": lang
+          },
+          body: JSON.stringify({ language: lang })
+        });
+      }
+    }
     if (settings.darkMode) {
       $("html").addClass("dark-style");
     } else {
       $("html").removeClass("dark-style");
     }
-
     return true;
   } catch (error) {
     console.error("Error saving settings:", error);

@@ -83,42 +83,31 @@
         <div class="d-flex justify-content-end mb-3">
           <div class="dropdown-language dropdown me-2 me-xl-0">
             <a
-              class="btn btn-outline-secondary dropdown-toggle"
+              class="btn btn-outline-secondary dropdown-toggle d-flex align-items-center"
               href="javascript:void(0);"
               data-bs-toggle="dropdown"
+              id="languageDropdownBtn"
             >
-              <i class="ti ti-language rounded-circle ti-md"></i>
+              <span class="fi fi-vn me-2" id="current-lang-flag" style="width: 1.5em; height: 1em;"></span>
+              <span id="current-lang-name">Tiếng Việt</span>
             </a>
-            <ul class="dropdown-menu dropdown-menu-end">
+            <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="languageDropdownBtn">
               <li>
-                <a
-                  class="dropdown-item"
-                  href="javascript:void(0);"
-                  data-language="vi"
-                >
-                  <span class="align-middle" data-i18n="vietnamese"
-                    >Vietnamese</span
-                  >
+                <a class="dropdown-item d-flex align-items-center" href="javascript:void(0);" data-language="vi">
+                  <span class="fi fi-vn me-2" style="width: 1.5em; height: 1em;"></span>
+                  <span class="align-middle">Tiếng Việt</span>
                 </a>
               </li>
               <li>
-                <a
-                  class="dropdown-item"
-                  href="javascript:void(0);"
-                  data-language="en"
-                >
-                  <span class="align-middle" data-i18n="english">English</span>
+                <a class="dropdown-item d-flex align-items-center" href="javascript:void(0);" data-language="en">
+                  <span class="fi fi-us me-2" style="width: 1.5em; height: 1em;"></span>
+                  <span class="align-middle">English</span>
                 </a>
               </li>
               <li>
-                <a
-                  class="dropdown-item"
-                  href="javascript:void(0);"
-                  data-language="ja"
-                >
-                  <span class="align-middle" data-i18n="japanese"
-                    >Japanese</span
-                  >
+                <a class="dropdown-item d-flex align-items-center" href="javascript:void(0);" data-language="ja">
+                  <span class="fi fi-jp me-2" style="width: 1.5em; height: 1em;"></span>
+                  <span class="align-middle">日本語</span>
                 </a>
               </li>
             </ul>
@@ -171,13 +160,11 @@
             <h4 class="mb-1 pt-2" data-i18n="verifyEmailTitle">
               Account Created Successfully! 🎉
             </h4>
-            <p class="text-start mb-4" data-i18n="verifyEmailDesc">
-              Your account has been created successfully! A verification email
-              has been sent to your email address:
-              <span id="userEmail" class="fw-medium">Loading...</span>. Please
-              check your email and click the verification link to activate your
-              account.
-            </p>
+            <div class="text-center mb-4" id="verify-success-section" style="display:block;">
+              <p class="mb-2" data-i18n="verifyEmailInstruction">
+                Please check your email and click the verification link to activate your account.
+              </p>
+            </div>
             <a class="btn btn-primary w-100 mb-3" href="/" data-i18n="goToLogin"
               >Go to Login</a
             >
@@ -220,86 +207,5 @@
     <script type="module" src="../../js/api.js"></script>
     <script type="module" src="../../js/auth-forms.js"></script>
 
-    <script>
-      // Wait for i18n to be initialized before updating email
-      function updateUserEmail() {
-        const userEmailElement = document.getElementById("userEmail");
-        if (userEmailElement) {
-          const pendingEmail = localStorage.getItem("pendingVerificationEmail");
-
-          console.log("Updating user email, pendingEmail:", pendingEmail);
-
-          if (pendingEmail) {
-            userEmailElement.textContent = pendingEmail;
-            localStorage.removeItem("pendingVerificationEmail");
-            console.log("Email updated successfully:", pendingEmail);
-            return true;
-          } else {
-            const fallbackText = window.i18next
-              ? window.i18next.t("emailNotAvailable")
-              : "Email not available";
-            userEmailElement.textContent = fallbackText;
-            console.log(
-              "No pending email found, using fallback:",
-              fallbackText,
-            );
-            return true;
-          }
-        }
-        console.log("userEmail element not found");
-        return false;
-      }
-
-      document.addEventListener("DOMContentLoaded", updateUserEmail);
-
-      setTimeout(updateUserEmail, 100);
-      setTimeout(updateUserEmail, 500);
-      setTimeout(updateUserEmail, 1000);
-      setTimeout(updateUserEmail, 2000);
-      setTimeout(updateUserEmail, 3000);
-
-      if (window.i18next) {
-        window.i18next.on("languageChanged", updateUserEmail);
-        window.i18next.on("initialized", updateUserEmail);
-      }
-
-      window.addEventListener("load", updateUserEmail);
-
-      if (window.i18next && window.i18next.isInitialized) {
-        updateUserEmail();
-      }
-
-      const observer = new MutationObserver(function (mutations) {
-        mutations.forEach(function (mutation) {
-          if (
-            mutation.type === "childList" &&
-            mutation.target.id === "userEmail"
-          ) {
-            const pendingEmail = localStorage.getItem(
-              "pendingVerificationEmail",
-            );
-            if (pendingEmail && mutation.target.textContent !== pendingEmail) {
-              console.log(
-                "MutationObserver: Email was changed by i18n, restoring:",
-                pendingEmail,
-              );
-              mutation.target.textContent = pendingEmail;
-              localStorage.removeItem("pendingVerificationEmail");
-            }
-          }
-        });
-      });
-
-      document.addEventListener("DOMContentLoaded", function () {
-        const userEmailElement = document.getElementById("userEmail");
-        if (userEmailElement) {
-          observer.observe(userEmailElement, {
-            childList: true,
-            subtree: true,
-          });
-          console.log("MutationObserver started for userEmail element");
-        }
-      });
-    </script>
   </body>
 </html>

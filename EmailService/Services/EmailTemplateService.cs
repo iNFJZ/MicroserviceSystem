@@ -134,35 +134,26 @@ namespace EmailService.Services
         public string GetSubject(string type, string lang = null)
         {
             lang = string.IsNullOrEmpty(lang) ? "en" : lang;
-            
             if (_langFiles.TryGetValue(lang, out var langData))
             {
-                if (langData.TryGetValue("emailSubjects", out var emailSubjectsObj))
+                if (langData.TryGetValue("emailSubjects", out var emailSubjectsObj) && emailSubjectsObj is Newtonsoft.Json.Linq.JObject emailSubjects)
                 {
-                    if (emailSubjectsObj is Newtonsoft.Json.Linq.JObject emailSubjects)
+                    if (emailSubjects.TryGetValue(type, out var subject))
                     {
-                        if (emailSubjects.TryGetValue(type, out var subject))
-                        {
-                            return subject.ToString();
-                        }
+                        return subject.ToString();
                     }
                 }
             }
-            
             if (lang != "en" && _langFiles.TryGetValue("en", out var enLangData))
             {
-                if (enLangData.TryGetValue("emailSubjects", out var enEmailSubjectsObj))
+                if (enLangData.TryGetValue("emailSubjects", out var enEmailSubjectsObj) && enEmailSubjectsObj is Newtonsoft.Json.Linq.JObject enEmailSubjects)
                 {
-                    if (enEmailSubjectsObj is Newtonsoft.Json.Linq.JObject enEmailSubjects)
+                    if (enEmailSubjects.TryGetValue(type, out var subject))
                     {
-                        if (enEmailSubjects.TryGetValue(type, out var subject))
-                        {
-                            return subject.ToString();
-                        }
+                        return subject.ToString();
                     }
                 }
             }
-            
             return type;
         }
     }

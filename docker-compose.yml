@@ -138,6 +138,8 @@ services:
     networks:
       - microservice-network
     command: dotnet EmailService.dll
+    volumes:
+      - ./Frontend/assets/lang:/app/Frontend/assets/lang
 
   user-service:
     build:

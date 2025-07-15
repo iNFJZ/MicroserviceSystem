@@ -121,7 +121,7 @@ namespace AuthService.Services
             await _sessionService.SetUserLoginStatusAsync(user.Id, true, tokenExpiry);
 
             var verifyToken = GenerateEmailVerifyToken(user.Id, user.Email);
-            var verifyLink = $"{_config["Frontend:BaseUrl"]}/account-activated?token={verifyToken}";
+            var verifyLink = $"{_config["Frontend:BaseUrl"]}/auth/account-activated.html?token={verifyToken}&lang={dto.Language ?? "en"}";
             await _emailMessageService.PublishRegisterNotificationAsync(new RegisterNotificationEmailEvent
             {
                 To = user.Email,
@@ -160,6 +160,8 @@ namespace AuthService.Services
             var handler = new JwtSecurityTokenHandler();
             try
             {
+                if (await _sessionService.IsTokenBlacklistedAsync(token))
+                    return false;
                 var jwt = handler.ReadJwtToken(token);
                 var typeClaim = jwt.Claims.FirstOrDefault(c => c.Type == "type");
                 if (typeClaim == null || typeClaim.Value != "verify") return false;
@@ -167,11 +169,27 @@ namespace AuthService.Services
                 if (userIdClaim == null || !Guid.TryParse(userIdClaim.Value, out Guid userId)) return false;
                 var user = await _repo.GetByIdAsync(userId);
                 if (user == null) return false;
-                if (user.IsVerified) return true;
+                if (user.IsVerified) {
+                    var expClaim = jwt.Claims.FirstOrDefault(c => c.Type == "exp");
+                    if (expClaim != null && long.TryParse(expClaim.Value, out long expUnix)) {
+                        var expDate = DateTimeOffset.FromUnixTimeSeconds(expUnix).UtcDateTime;
+                        var ttl = expDate - DateTime.UtcNow;
+                        if (ttl > TimeSpan.Zero)
+                            await _sessionService.BlacklistTokenAsync(token, ttl);
+                    }
+                    return false;
+                }
                 user.IsVerified = true;
                 user.Status = UserStatus.Active;
                 user.UpdatedAt = DateTime.UtcNow;
                 await _repo.UpdateAsync(user);
+                var expClaim2 = jwt.Claims.FirstOrDefault(c => c.Type == "exp");
+                if (expClaim2 != null && long.TryParse(expClaim2.Value, out long expUnix2)) {
+                    var expDate2 = DateTimeOffset.FromUnixTimeSeconds(expUnix2).UtcDateTime;
+                    var ttl2 = expDate2 - DateTime.UtcNow;
+                    if (ttl2 > TimeSpan.Zero)
+                        await _sessionService.BlacklistTokenAsync(token, ttl2);
+                }
                 return true;
             }
             catch { return false; }
@@ -199,7 +217,7 @@ namespace AuthService.Services
             {
                 To = user.Email,
                 Username = user.FullName ?? user.Username,
-                VerifyLink = $"{_config["Frontend:BaseUrl"]}/verify-email?token={token}",
+                VerifyLink = $"{_config["Frontend:BaseUrl"]}/auth/account-activated.html?token={token}&lang={language ?? "en"}",
                 RegisterAt = user.CreatedAt,
                 Language = language ?? "en"
             });
@@ -400,7 +418,9 @@ namespace AuthService.Services
                 ResetToken = resetToken,
                 ResetLink = resetLink,
                 RequestedAt = DateTime.UtcNow,
-                Language = dto.Language ?? "en"
+                Language = dto.Language ?? "en",
+                UserId = user.Id.ToString(),
+                IpAddress = clientIp ?? "Unknown"
             });
 
             return true;

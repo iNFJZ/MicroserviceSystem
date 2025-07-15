@@ -40,6 +40,9 @@ window.addEventListener("DOMContentLoaded", async function() {
       const data = await res.json();
       if (res.ok && data.token) {
         localStorage.setItem("authToken", data.token);
+        if (data.language) {
+          window.i18next.changeLanguage(data.language);
+        }
         showToast(window.i18next.t("googleLoginSuccessfulRedirecting"), false);
         setTimeout(() => {
                           window.location.href = "/admin/";
@@ -62,6 +65,7 @@ window.addEventListener("DOMContentLoaded", async function() {
 
 window.addEventListener("DOMContentLoaded", async function() {
   const emailElem = document.getElementById("reset-password-email");
+  const descElem = document.querySelector('[data-i18n="auth.reset-password.description"]');
   if (emailElem) {
     let email = "";
     const urlParams = new URLSearchParams(window.location.search);
@@ -80,6 +84,16 @@ window.addEventListener("DOMContentLoaded", async function() {
       }
     }
     emailElem.textContent = email || "not available";
+    if (descElem) {
+      descElem.textContent = window.i18next.t("auth.reset-password.description").replace("{email}", email || "...");
+    }
+  }
+});
+
+window.addEventListener("DOMContentLoaded", function() {
+  const userEmailElem = document.getElementById("userEmail");
+  if (userEmailElem) {
+    userEmailElem.textContent = window.i18next ? window.i18next.t("notAvailable") : "not available";
   }
 });
 
@@ -122,6 +136,9 @@ if (document.getElementById("login-form")) {
             
             if (res.ok && data.token) {
                 localStorage.setItem("authToken", data.token);
+                if (data.language) {
+                  window.i18next.changeLanguage(data.language);
+                }
                 showToast(window.i18next.t("loginSuccessfulRedirecting"), false);
                 setTimeout(() => {
                     window.location.href = "/admin/";
@@ -215,7 +232,6 @@ if (document.getElementById("register-form")) {
             const data = await res.json();
             
             if (res.ok) {
-                localStorage.setItem("pendingVerificationEmail", email);
                 showToast(window.i18next.t("registrationSuccessfulCheckEmail"), false);
                 setTimeout(() => {
                     window.location.href = "/auth/verify-email.html";
@@ -406,6 +422,50 @@ if (document.getElementById("change-password-form")) {
     });
 }
 
+window.addEventListener("DOMContentLoaded", function() {
+  if (!window.location.pathname.endsWith("verify-email.html") && !window.location.pathname.endsWith("verify-email")) return;
+  const verifySuccessSection = document.getElementById("verify-success-section");
+  if (verifySuccessSection) verifySuccessSection.style.display = "block";
+});
+window.addEventListener("DOMContentLoaded", async function() {
+  if (!window.location.pathname.endsWith("account-activated.html") && !window.location.pathname.endsWith("account-activated")) return;
+  const urlParams = new URLSearchParams(window.location.search);
+  const token = urlParams.get("token");
+  const countdownElem = document.getElementById("countdown");
+  let countdown = 5;
+  function startCountdown() {
+    if (countdownElem) countdownElem.textContent = countdown;
+    const interval = setInterval(() => {
+      countdown--;
+      if (countdownElem) countdownElem.textContent = countdown;
+      if (countdown <= 0) {
+        clearInterval(interval);
+        window.location.href = "/auth/login.html";
+      }
+    }, 1000);
+  }
+  if (!token) {
+    if (typeof toastr !== "undefined") toastr.error(window.i18next.t("invalidOrExpiredToken"));
+    if (countdownElem) countdownElem.textContent = "-";
+    return;
+  }
+  try {
+    const res = await fetch(`${API_BASE_URL}/api/Auth/verify-email?token=${encodeURIComponent(token)}`);
+    const data = await res.json();
+    if (res.ok && data.success) {
+      if (typeof toastr !== "undefined") toastr.success(window.i18next.t("emailVerifiedSuccessfully"));
+      startCountdown();
+    } else {
+      let msg = data.message || "invalidOrExpiredToken";
+      if (typeof toastr !== "undefined") toastr.error(window.i18next.t(msg));
+      if (countdownElem) countdownElem.textContent = "-";
+    }
+  } catch (err) {
+    if (typeof toastr !== "undefined") toastr.error(window.i18next.t("verifyEmailFailed"));
+    if (countdownElem) countdownElem.textContent = "-";
+  }
+});
+
 function getCurrentLanguage() {
-  return localStorage.getItem("selectedLanguage") || localStorage.getItem("language") || "en";
+  return window.i18next?.language || localStorage.getItem("i18nextLng") || "en";
 }

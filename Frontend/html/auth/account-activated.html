@@ -79,30 +79,34 @@
       <div class="authentication-inner py-4">
         <!-- Language Dropdown -->
         <div class="d-flex justify-content-end mb-3">
-          <div class="dropdown dropdown-language">
+          <div class="dropdown-language dropdown me-2 me-xl-0">
             <a
-              class="btn btn-outline-secondary dropdown-toggle"
-              href="#"
+              class="btn btn-outline-secondary dropdown-toggle d-flex align-items-center"
+              href="javascript:void(0);"
               data-bs-toggle="dropdown"
+              id="languageDropdownBtn"
             >
-              <i class="flag-icon flag-icon-us"></i>
-              <span data-i18n="changeLanguage">Change language</span>
+              <span class="fi fi-vn me-2" id="current-lang-flag" style="width: 1.5em; height: 1em;"></span>
+              <span id="current-lang-name">Tiếng Việt</span>
             </a>
-            <ul class="dropdown-menu">
+            <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="languageDropdownBtn">
               <li>
-                <a class="dropdown-item" href="#" data-language="vi"
-                  ><i class="flag-icon flag-icon-vn me-2"></i> Tiếng Việt</a
-                >
+                <a class="dropdown-item d-flex align-items-center" href="javascript:void(0);" data-language="vi">
+                  <span class="fi fi-vn me-2" style="width: 1.5em; height: 1em;"></span>
+                  <span class="align-middle">Tiếng Việt</span>
+                </a>
               </li>
               <li>
-                <a class="dropdown-item" href="#" data-language="en"
-                  ><i class="flag-icon flag-icon-us me-2"></i> English</a
-                >
+                <a class="dropdown-item d-flex align-items-center" href="javascript:void(0);" data-language="en">
+                  <span class="fi fi-us me-2" style="width: 1.5em; height: 1em;"></span>
+                  <span class="align-middle">English</span>
+                </a>
               </li>
               <li>
-                <a class="dropdown-item" href="#" data-language="ja"
-                  ><i class="flag-icon flag-icon-jp me-2"></i> 日本語</a
-                >
+                <a class="dropdown-item d-flex align-items-center" href="javascript:void(0);" data-language="ja">
+                  <span class="fi fi-jp me-2" style="width: 1.5em; height: 1em;"></span>
+                  <span class="align-middle">日本語</span>
+                </a>
               </li>
             </ul>
           </div>
@@ -177,7 +181,7 @@
               </p>
             </div>
 
-            <a class="btn btn-primary w-100 mb-3" href="/" data-i18n="goToLogin"
+            <a class="btn btn-primary w-100 mb-3" href="login.html" data-i18n="goToLogin"
               >Go to Login</a
             >
 
@@ -214,78 +218,5 @@
     <script type="module" src="../../js/auth-utils.js"></script>
     <script type="module" src="../../js/api.js"></script>
     <script type="module" src="../../js/auth-forms.js"></script>
-
-    <!-- Page JS -->
-    <script>
-      function verifyEmailIfToken() {
-        const params = new URLSearchParams(window.location.search);
-        const token = params.get("token");
-        if (token) {
-          document.querySelector(".card-body").innerHTML =
-            '<div class="text-center py-5"><div class="spinner-border text-success" role="status"></div><p class="mt-3">Verifying your email, please wait...</p></div>';
-          fetch(
-            "http://localhost:5050/api/Auth/verify-email?token=" +
-              encodeURIComponent(token),
-          )
-            .then((res) => res.json().then((data) => ({ ok: res.ok, data })))
-            .then(({ ok, data }) => {
-              if (ok) {
-                document.querySelector(".card-body").innerHTML = `
-                  <div class="text-center mb-4">
-                    <div class="avatar avatar-lg mx-auto mb-3">
-                      <div class="avatar-initial rounded-circle bg-success">
-                        <i class="ti ti-check fs-1 text-white"></i>
-                      </div>
-                    </div>
-                  </div>
-                  <h4 class="mb-1 pt-2 text-center" data-i18n="accountActivatedTitle">Account Activated Successfully! 🎉</h4>
-                  <p class="text-center mb-4" data-i18n="accountActivatedDesc">Your account has been successfully activated. You can now sign in to your account and start using our services.</p>
-                  <div class="text-center mb-4"><p class="mb-2" data-i18n="redirectingToLogin">Redirecting to login page in <span id='countdown' class='fw-bold text-primary'>5</span> seconds...</p></div>
-                  <a class="btn btn-primary w-100 mb-3" href="/" data-i18n="goToLogin">Go to Login</a>
-                  <p class="text-center mb-0"><small class="text-muted" data-i18n="notRedirected">If you are not redirected automatically, click the button above.</small></p>
-                `;
-                let countdown = 5;
-                const countdownElement = document.getElementById("countdown");
-                const timer = setInterval(() => {
-                  countdown--;
-                  countdownElement.textContent = countdown;
-                  if (countdown <= 0) {
-                    clearInterval(timer);
-                    window.location.href = "login.html";
-                  }
-                }, 1000);
-              } else {
-                document.querySelector(".card-body").innerHTML = `
-                  <div class="text-center mb-4">
-                    <div class="avatar avatar-lg mx-auto mb-3">
-                      <div class="avatar-initial rounded-circle bg-danger">
-                        <i class="ti ti-x fs-1 text-white"></i>
-                      </div>
-                    </div>
-                  </div>
-                  <h4 class="mb-1 pt-2 text-center text-danger">Activation Failed</h4>
-                  <p class="text-center mb-4">${data.message || "Email verification failed. The link may be invalid or expired."}</p>
-                  <a class="btn btn-primary w-100 mb-3" href="/">Go to Login</a>
-                `;
-              }
-            })
-            .catch(() => {
-              document.querySelector(".card-body").innerHTML = `
-                <div class="text-center mb-4">
-                  <div class="avatar avatar-lg mx-auto mb-3">
-                    <div class="avatar-initial rounded-circle bg-danger">
-                      <i class="ti ti-x fs-1 text-white"></i>
-                    </div>
-                  </div>
-                </div>
-                <h4 class="mb-1 pt-2 text-center text-danger">Activation Failed</h4>
-                <p class="text-center mb-4">An error occurred during verification. Please try again later.</p>
-                <a class="btn btn-primary w-100 mb-3" href="/">Go to Login</a>
-              `;
-            });
-        }
-      }
-      document.addEventListener("DOMContentLoaded", verifyEmailIfToken);
-    </script>
   </body>
 </html>

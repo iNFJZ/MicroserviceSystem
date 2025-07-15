@@ -167,17 +167,23 @@ if (document.getElementById("layout-menu")) {
   // Internationalization (Language Dropdown)
   // ---------------------------------------
 
+  // --- Đảm bảo toastr luôn hiển thị khi đổi ngôn ngữ ở mọi trang ---
   function setLanguage(lang) {
-    if (!["en", "vi", "ja"].includes(lang)) lang = "en";
-    localStorage.setItem("selectedLanguage", lang);
+    if (!['en', 'vi', 'ja'].includes(lang)) lang = 'en';
     window.i18next.changeLanguage(lang, (err, t) => {
-      if (err) return console.log("something went wrong loading", err);
+      if (err) {
+        console.log('something went wrong loading', err);
+        return;
+      }
       localize();
+      if (typeof toastr !== 'undefined') {
+        toastr.success(window.i18next.t('languageChanged'));
+        console.log('[i18n] Toastr notification shown:', window.i18next.t('languageChanged'));
+      } else {
+        console.warn('[i18n] Toastr is undefined!');
+      }
+      updateLanguageDropdown(lang);
     });
-  }
-
-  if (!localStorage.getItem("selectedLanguage")) {
-    localStorage.setItem("selectedLanguage", "en");
   }
 
   if (typeof window.i18next !== "undefined") {
@@ -187,7 +193,7 @@ if (document.getElementById("layout-menu")) {
       }
       window.i18next
         .init({
-          lng: localStorage.getItem("selectedLanguage") || "en",
+          lng: localStorage.getItem("i18nextLng") || "en",
           debug: false,
           fallbackLng: "en",
           backend: {
@@ -207,11 +213,24 @@ if (document.getElementById("layout-menu")) {
     }
   }
 
-  document.querySelectorAll(".dropdown-language .dropdown-item").forEach(function (item) {
-    item.addEventListener("click", function () {
-      const lang = this.getAttribute("data-language");
-      setLanguage(lang);
+  function bindLanguageDropdownHandlers() {
+    document.querySelectorAll('.dropdown-language [data-language]').forEach(function(item) {
+      item.addEventListener('click', function() {
+        const lang = this.getAttribute('data-language');
+        if (lang) {
+          localStorage.setItem('i18nextLng', lang);
+          setLanguage(lang);
+        }
+      });
     });
+    const initialLang = localStorage.getItem('i18nextLng') || 'vi';
+    updateLanguageDropdown(initialLang);
+  }
+
+  document.addEventListener('DOMContentLoaded', function() {
+    if (document.querySelector('.dropdown-language')) {
+      bindLanguageDropdownHandlers();
+    }
   });
 
   function updateDocumentTitle() {
@@ -243,6 +262,17 @@ if (document.getElementById("layout-menu")) {
       }
     });
     updateDocumentTitle();
+  }
+
+  function updateLanguageDropdown(lang) {
+    const flagMap = { vi: 'vn', en: 'us', ja: 'jp' };
+    const nameMap = { vi: 'Tiếng Việt', en: 'English', ja: '日本語' };
+    document.querySelectorAll('#current-lang-flag').forEach(function(flagEl) {
+      flagEl.className = 'fi fi-' + (flagMap[lang] || 'us') + ' me-2';
+    });
+    document.querySelectorAll('#current-lang-name').forEach(function(nameEl) {
+      nameEl.textContent = nameMap[lang] || 'English';
+    });
   }
 
   // Notification
