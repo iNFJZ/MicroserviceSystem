@@ -134,10 +134,10 @@
   "phoneNumberMustBe10To11DigitsAndOnlyNumbers": "Phone number must be 10-11 digits and only numbers.",
   "fullNameIsRequired": "Full name is required.",
   "authenticationRequired": "Authentication required.",
-  "usernameRequired": "Username is required.",
   "usernameInvalidFormat": "Username can only contain letters and numbers, no spaces or special characters.",
   "usernameRequirements": "Username can only contain letters and numbers, no spaces or special characters",
   "fullNameRequired": "Full name is required.",
+  "fullNameInvalidCharacters": "Full name can only contain letters, spaces, and Vietnamese characters.",
   "validEmailRequired": "A valid email is required.",
   "emailRequired": "Email is required.",
   "passwordRequired": "Password is required.",
@@ -276,6 +276,7 @@
   "examplePhoneNumber": "e.g. +44 20 7946 0958",
   "enterConfirmPassword": "Enter confirm password",
   "usernameRequired": "Username is required",
+  "deleteUserMoveToDeactive": "Move the user to the deactivated users list",
   "usernameInvalid": "Username must be between 3 and 50 characters and contain only letters and numbers",
   "mustAgreeToTerms": "You must agree to the privacy policy & terms to register.",
   "registrationSuccessfulCheckEmail": "Registration successful! Please check your email to verify your account.",
@@ -305,6 +306,7 @@
   "activeUsersTitle": "Active Users - Admin Panel",
   "deactiveUsers": "Deactive Users",
   "settingsTitle": "Settings",
+  "newPasswordMustBeAtLeast6Characters": "New password must be at least 6 characters.",
   "accountHasBeenDeletedContactSupport": "Account has been deleted. Please contact support for assistance.",
   "errorCodes": {
     "ACCOUNT_DELETED": "Account has been deleted.",
@@ -552,4 +554,10 @@
   "auth.reset-password.set-new-password-button": "Set New Password",
   "failedToValidateResetToken": "Failed to validate reset token!",
   "verifyEmailInstruction": "Please check your email and click the verification link to activate your account."
+  ,"exporting": "Exporting..."
+  ,"noDataToExport": "No data to export"
+  ,"exportSuccess": "Export successful"
+  ,"exportFailed": "Export failed"
+  ,"updatedAt": "Updated At"
+  ,"isDeleted": "Is Deleted"
 }

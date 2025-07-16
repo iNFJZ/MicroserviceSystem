@@ -51,7 +51,7 @@
       class="template-customizer-theme-css"
     />
     <link rel="stylesheet" href="../../assets/css/demo.css" />
-
+    <link rel="stylesheet" href="../../css/styles.css" />
     <!-- Vendors CSS -->
     <link
       rel="stylesheet"
@@ -65,27 +65,11 @@
       rel="stylesheet"
       href="../../assets/vendor/libs/typeahead-js/typeahead.css"
     />
+    <!-- Page CSS -->
+    <link rel="stylesheet" href="../../assets/vendor/css/pages/page-auth.css" />
+    <link rel="stylesheet" href="../../css/auth.css" />
     <!-- Toastr CSS -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.css" />
-    <link
-      rel="stylesheet"
-      href="../../assets/vendor/libs/datatables-bs5/datatables.bootstrap5.css"
-    />
-    <link
-      rel="stylesheet"
-      href="../../assets/vendor/libs/datatables-responsive-bs5/responsive.bootstrap5.css"
-    />
-    <link
-      rel="stylesheet"
-      href="../../assets/vendor/libs/datatables-buttons-bs5/buttons.bootstrap5.css"
-    />
-    <link
-      rel="stylesheet"
-      href="../../assets/vendor/libs/select2/select2.css"
-    />
-
-    <!-- Page CSS -->
-
     <!-- Helpers -->
     <script src="../../assets/vendor/js/helpers.js"></script>
     <!--! Template customizer & Theme config files MUST be included after core stylesheets and helpers.js in the <head> section -->
@@ -534,11 +518,9 @@
                           </a>
                         </div>
                         <div class="col-md-3 mb-3">
-                          <a href="index.html" class="btn btn-info w-100">
+                          <a href="#" id="export-all-users-btn" class="btn btn-info w-100">
                             <i class="ti ti-download me-2"></i>
-                            <span data-i18n="exportAllUsers"
-                              >Export All Users</span
-                            >
+                            <span data-i18n="exportAllUsers">Export All Users</span>
                           </a>
                         </div>
                         <div class="col-md-3 mb-3">
@@ -624,6 +606,7 @@
 
     <!-- Toastr JS -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.js"></script>
+    <script src="../../js/notification.js"></script>
 
     <!-- Page JS -->
     <script src="../../js/admin-auth.js"></script>
@@ -635,6 +618,106 @@
         if (window.adminAuth) {
           await window.adminAuth.updateUserProfileDisplay();
         }
+      });
+    </script>
+    <script>
+      document.addEventListener("DOMContentLoaded", function () {
+        const btn = document.getElementById("export-all-users-btn");
+        if (!btn) return;
+        btn.addEventListener("click", async function (e) {
+          e.preventDefault();
+          btn.disabled = true;
+          btn.innerHTML = '<span class="spinner-border spinner-border-sm me-2"></span>' + (window.i18next ? window.i18next.t("exporting") : "Exporting...");
+          try {
+            const token = localStorage.getItem("authToken");
+            const res = await fetch("http://localhost:5050/api/User?includeDeleted=true", {
+              headers: token ? { Authorization: `Bearer ${token}` } : {},
+            });
+            const json = await res.json();
+            const users = Array.isArray(json.data) ? json.data : [];
+            if (!users.length) {
+              if (window.toastr) toastr.warning(window.i18next ? window.i18next.t("noDataToExport") : "No data to export");
+              btn.disabled = false;
+              btn.innerHTML = '<i class="ti ti-download me-2"></i>' + (window.i18next ? window.i18next.t("exportAllUsers") : "Export All Users");
+              return;
+            }
+            const allFields = users.reduce((fields, u) => {
+              Object.keys(u).forEach(k => { if (!fields.includes(k)) fields.push(k); });
+              return fields;
+            }, []);
+            const preferredOrder = [
+              "id", "username", "email", "fullName", "phoneNumber", "dateOfBirth", "address", "bio", "status", "isVerified", "googleId", "profilePicture", "loginProvider", "createdAt", "updatedAt", "lastLoginAt", "deletedAt", "isDeleted"
+            ];
+            const fields = preferredOrder.filter(f => allFields.includes(f)).concat(allFields.filter(f => !preferredOrder.includes(f)));
+            const fieldToI18nKey = {
+              id: "id",
+              username: "username",
+              fullName: "fullName",
+              email: "email",
+              phoneNumber: "phoneNumber",
+              dateOfBirth: "dateOfBirth",
+              address: "address",
+              bio: "bio",
+              status: "status",
+              isVerified: "emailVerified",
+              googleId: "googleId",
+              profilePicture: "profilePicture",
+              loginProvider: "loginProvider",
+              createdAt: "createdAt",
+              updatedAt: "updatedAt",
+              lastLoginAt: "lastLoginAt",
+              deletedAt: "deletedAt",
+              isDeleted: "isDeleted"
+            };
+            const headers = fields.map(f => window.i18next ? window.i18next.t(fieldToI18nKey[f] || f) : (fieldToI18nKey[f] || f));
+            const rows = users.map(u => fields.map(f => {
+              let val = u[f];
+              if (f === "status") {
+                switch (val) {
+                  case 1: return window.i18next ? window.i18next.t("active") : "Active";
+                  case 2: return window.i18next ? window.i18next.t("inactive") : "Inactive";
+                  case 3: return window.i18next ? window.i18next.t("suspended") : "Suspended";
+                  case 4: return window.i18next ? window.i18next.t("banned") : "Banned";
+                  default: return window.i18next ? window.i18next.t("unknown") : "Unknown";
+                }
+              }
+              if (f === "isVerified") return val ? (window.i18next ? window.i18next.t("yes") : "Yes") : (window.i18next ? window.i18next.t("no") : "No");
+              if (val === undefined || val === null) return "";
+              if (val instanceof Date) return val.toLocaleString("en-GB");
+              if (typeof val === "string" && val.match(/^\d{4}-\d{2}-\d{2}T/)) {
+                try { return new Date(val).toLocaleString("en-GB"); } catch { return val; }
+              }
+              return val;
+            }));
+            function escapeCsvValue(val) {
+              if (val == null) return "";
+              val = String(val);
+              if (val.includes('"')) val = val.replace(/"/g, '""');
+              if (val.includes(',') || val.includes('\n') || val.includes('"')) {
+                return `"${val}"`;
+              }
+              return val;
+            }
+            const delimiter = ";";
+            const headersCsv = headers.map(escapeCsvValue).join(delimiter);
+            const rowsCsv = rows.map(r => r.map(escapeCsvValue).join(delimiter)).join("\n");
+            const BOM = "\uFEFF";
+            const csv = BOM + headersCsv + "\n" + rowsCsv;
+            const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
+            const link = document.createElement('a');
+            link.href = URL.createObjectURL(blob);
+            link.download = 'users_export_' + (new Date().toISOString().replace(/[:.]/g, '-')) + '.csv';
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+            if (window.toastr) toastr.success(window.i18next ? window.i18next.t("exportSuccess") : "Export successful");
+          } catch (err) {
+            if (window.toastr) toastr.error(window.i18next ? window.i18next.t("exportFailed") : "Export failed");
+          } finally {
+            btn.disabled = false;
+            btn.innerHTML = '<i class="ti ti-download me-2"></i>' + (window.i18next ? window.i18next.t("exportAllUsers") : "Export All Users");
+          }
+        });
       });
     </script>
   </body>

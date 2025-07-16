@@ -51,7 +51,7 @@
       class="template-customizer-theme-css"
     />
     <link rel="stylesheet" href="../../assets/css/demo.css" />
-
+    <link rel="stylesheet" href="../../css/styles.css" />
     <!-- Vendors CSS -->
     <link
       rel="stylesheet"
@@ -515,6 +515,7 @@
 
     <!-- Toastr JS -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.js"></script>
+    <script src="../../js/notification.js"></script>
 
     <!-- Page JS -->
     <script src="../../js/admin-auth.js"></script>
@@ -707,134 +708,53 @@
   </div>
 </div>
 
-<!-- Modal Delete Confirmation -->
-<div
-  class="modal fade"
-  id="restoreUserModal"
-  tabindex="-1"
-  aria-labelledby="restoreUserModalLabel"
-  aria-hidden="true"
->
+<!-- Modal Restore User Confirmation (đồng bộ với active-users.html) -->
+<div class="modal fade" id="restoreUserModal" tabindex="-1" aria-labelledby="restoreUserModalLabel" aria-hidden="true">
   <div class="modal-dialog modal-dialog-centered">
-    <div
-      class="modal-content"
-      style="background: #fff; border-radius: 12px; border: 2px solid #28c76f"
-    >
-      <div
-        class="modal-header"
-        style="background: #e8f8f2; border-bottom: 1px solid #28c76f"
-      >
-        <h5
-          class="modal-title fw-bold text-success"
-          id="restoreUserModalLabel"
-          style="padding-left: 130px"
-        >
-          <i class="ti ti-refresh me-2"></i
-          ><span data-i18n="restoreUserConfirmTitle"
-            >Restore User Confirmation</span
-          >
+    <div class="modal-content" style="background: #fff; border-radius: 12px; border: 2px solid #28c76f;">
+      <div class="modal-header" style="background: #e8f8f2; border-bottom: 1px solid #28c76f;">
+        <h5 class="modal-title fw-bold text-success w-100 text-center" id="restoreUserModalLabel" style="padding: 0; text-align: center;">
+          <i class="ti ti-refresh me-2"></i><span data-i18n="restoreUserConfirmTitle">Restore User Confirmation</span>
         </h5>
-        <button
-          type="button"
-          class="btn-close"
-          data-bs-dismiss="modal"
-          aria-label="Close"
-        ></button>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
       </div>
       <div class="modal-body">
-        <div
-          class="alert alert-info border border-info"
-          role="alert"
-          style="background: #f4faff; color: #1e2e50"
-        >
+        <div class="alert alert-info border border-info" role="alert" style="background: #f4faff; color: #1e2e50;">
           <h6 class="alert-heading mb-2 fw-bold">
-            <i class="ti ti-info-circle me-2"></i
-            ><span data-i18n="restoreUserAccount">Restore User Account</span>
+            <i class="ti ti-info-circle me-2"></i><span data-i18n="restoreUserAccount">Restore User Account</span>
           </h6>
-          <p class="mb-0" data-i18n="restoreUserConfirmDesc">
-            You are about to restore this user account. This action will:
-          </p>
+          <p class="mb-0" data-i18n="restoreUserConfirmDesc">You are about to restore this user account. This action will:</p>
           <ul class="mb-0 mt-2">
-            <li data-i18n="restoreUserReactivate">
-              Reactivate the user account
-            </li>
-            <li data-i18n="restoreUserSendEmail">
-              Send a reactivation email to the user
-            </li>
-            <li data-i18n="restoreUserAllowLogin">
-              Allow the user to log in again
-            </li>
-            <li data-i18n="restoreUserMoveToActive">
-              Move the user back to active users list
-            </li>
+            <li data-i18n="restoreUserReactivate">Reactivate the user account</li>
+            <li data-i18n="restoreUserSendEmail">Send a reactivation email to the user</li>
+            <li data-i18n="restoreUserAllowLogin">Allow the user to log in again</li>
+            <li data-i18n="restoreUserMoveToActive">Move the user back to active users list</li>
           </ul>
         </div>
         <div class="card border-success shadow-sm mt-3">
           <div class="card-header bg-white border-bottom border-success">
-            <h6 class="mb-0 text-success fw-bold" data-i18n="userInformation">
-              <i class="ti ti-user me-2"></i>User Information
-            </h6>
+            <h6 class="mb-0 text-success fw-bold" data-i18n="userInformation"><i class="ti ti-user me-2"></i>User Information</h6>
           </div>
-          <div class="card-body" style="padding-top: 25px">
+          <div class="card-body" style="padding-top: 25px;">
             <div class="row">
               <div class="col-md-6">
-                <div class="mb-2">
-                  <strong data-i18n="username">Username:</strong>
-                  <span class="restore-user-username"></span>
-                </div>
-                <div class="mb-2">
-                  <strong data-i18n="fullName">Full Name:</strong>
-                  <span class="restore-user-fullName"></span>
-                </div>
-                <div class="mb-2">
-                  <strong data-i18n="email">Email:</strong>
-                  <span class="restore-user-email"></span>
-                </div>
-                <!-- <div class="mb-2">
-                  <strong data-i18n="phoneNumber">Phone:</strong>
-                  <span class="restore-user-phone"></span>
-                </div> -->
+                <div class="mb-2"><strong data-i18n="username">Username:</strong> <span class="restore-user-username"></span></div>
+                <div class="mb-2"><strong data-i18n="fullName">Full Name:</strong> <span class="restore-user-fullName"></span></div>
+                <div class="mb-2"><strong data-i18n="email">Email:</strong> <span class="restore-user-email"></span></div>
               </div>
               <div class="col-md-6">
-                <div class="mb-2">
-                  <strong data-i18n="status">Status:</strong>
-                  <span class="restore-user-status"></span>
-                </div>
-                <div class="mb-2">
-                  <strong data-i18n="deletedAt">Deleted At:</strong>
-                  <span class="restore-user-deletedat"></span>
-                </div>
-                <div class="mb-2">
-                  <strong data-i18n="address">Address:</strong>
-                  <span class="restore-user-address"></span>
-                </div>
-                <div class="mb-2">
-                  <strong data-i18n="created">Created:</strong>
-                  <span class="restore-user-created"></span>
-                </div>
+                <div class="mb-2"><strong data-i18n="status">Status:</strong> <span class="restore-user-status"></span></div>
+                <div class="mb-2"><strong data-i18n="deletedAt">Deleted At:</strong> <span class="restore-user-deletedat"></span></div>
+                <div class="mb-2"><strong data-i18n="address">Address:</strong> <span class="restore-user-address"></span></div>
+                <div class="mb-2"><strong data-i18n="created">Created:</strong> <span class="restore-user-created"></span></div>
               </div>
             </div>
           </div>
         </div>
       </div>
       <div class="modal-footer bg-white border-top border-success">
-        <button
-          type="button"
-          class="btn btn-secondary"
-          data-bs-dismiss="modal"
-          data-i18n="cancel"
-        >
-          <i class="ti ti-x me-1"></i><span data-i18n="cancel">Cancel</span>
-        </button>
-        <button
-          type="button"
-          class="btn btn-success fw-bold"
-          id="confirmRestoreUser"
-          data-i18n="restoreUser"
-        >
-          <i class="ti ti-refresh me-1"></i
-          ><span data-i18n="restoreUser">Restore User</span>
-        </button>
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal" data-i18n="cancel"><i class="ti ti-x me-1"></i>Cancel</button>
+        <button type="button" class="btn btn-success fw-bold w-100" id="confirmRestoreUser" data-i18n="restoreUser"><i class="ti ti-refresh me-1"></i>Restore User</button>
       </div>
     </div>
   </div>

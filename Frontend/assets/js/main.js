@@ -11,7 +11,9 @@ let isRtl = window.Helpers.isRtl(),
   isHorizontalLayout = false;
 
 if (document.getElementById("layout-menu")) {
-  isHorizontalLayout = document.getElementById("layout-menu").classList.contains("menu-horizontal");
+  isHorizontalLayout = document
+    .getElementById("layout-menu")
+    .classList.contains("menu-horizontal");
 }
 
 (function () {
@@ -21,7 +23,10 @@ if (document.getElementById("layout-menu")) {
 
   if (typeof Waves !== "undefined") {
     Waves.init();
-    Waves.attach(".btn[class*='btn-']:not([class*='btn-outline-']):not([class*='btn-label-'])", ["waves-light"]);
+    Waves.attach(
+      ".btn[class*='btn-']:not([class*='btn-outline-']):not([class*='btn-label-'])",
+      ["waves-light"],
+    );
     Waves.attach("[class*='btn-outline-']");
     Waves.attach("[class*='btn-label-']");
     Waves.attach(".pagination .page-item .page-link");
@@ -36,11 +41,15 @@ if (document.getElementById("layout-menu")) {
       orientation: isHorizontalLayout ? "horizontal" : "vertical",
       closeChildren: isHorizontalLayout ? true : false,
       // ? This option only works with Horizontal menu
-      showDropdownOnHover: localStorage.getItem("templateCustomizer-" + templateName + "--ShowDropdownOnHover") // If value(showDropdownOnHover) is set in local storage
-        ? localStorage.getItem("templateCustomizer-" + templateName + "--ShowDropdownOnHover") === "true" // Use the local storage value
+      showDropdownOnHover: localStorage.getItem(
+        "templateCustomizer-" + templateName + "--ShowDropdownOnHover",
+      ) // If value(showDropdownOnHover) is set in local storage
+        ? localStorage.getItem(
+            "templateCustomizer-" + templateName + "--ShowDropdownOnHover",
+          ) === "true" // Use the local storage value
         : window.templateCustomizer !== undefined // If value is set in config.js
-        ? window.templateCustomizer.settings.defaultShowDropdownOnHover // Use the config.js value
-        : true // Use this if you are not using the config.js and want to set value directly from here
+          ? window.templateCustomizer.settings.defaultShowDropdownOnHover // Use the config.js value
+          : true, // Use this if you are not using the config.js and want to set value directly from here
     });
     // Change parameter to true if you want scroll animation
     window.Helpers.scrollToActive((animate = false));
@@ -49,8 +58,8 @@ if (document.getElementById("layout-menu")) {
 
   // Initialize menu togglers and bind click on each
   let menuToggler = document.querySelectorAll(".layout-menu-toggle");
-  menuToggler.forEach(item => {
-    item.addEventListener("click", event => {
+  menuToggler.forEach((item) => {
+    item.addEventListener("click", (event) => {
       event.preventDefault();
       window.Helpers.toggleCollapsed();
       // Enable menu state with local storage support if enableMenuLocalStorage = true from config.js
@@ -58,13 +67,19 @@ if (document.getElementById("layout-menu")) {
         try {
           localStorage.setItem(
             "templateCustomizer-" + templateName + "--LayoutCollapsed",
-            String(window.Helpers.isCollapsed())
+            String(window.Helpers.isCollapsed()),
           );
           // Update customizer checkbox state on click of menu toggler
-          let layoutCollapsedCustomizerOptions = document.querySelector(".template-customizer-layouts-options");
+          let layoutCollapsedCustomizerOptions = document.querySelector(
+            ".template-customizer-layouts-options",
+          );
           if (layoutCollapsedCustomizerOptions) {
-            let layoutCollapsedVal = window.Helpers.isCollapsed() ? "collapsed" : "expanded";
-            layoutCollapsedCustomizerOptions.querySelector(`input[value="${layoutCollapsedVal}"]`).click();
+            let layoutCollapsedVal = window.Helpers.isCollapsed()
+              ? "collapsed"
+              : "expanded";
+            layoutCollapsedCustomizerOptions
+              .querySelector(`input[value="${layoutCollapsedVal}"]`)
+              .click();
           }
         } catch (e) {}
       }
@@ -105,7 +120,9 @@ if (document.getElementById("layout-menu")) {
         style = "light";
       }
     }
-    const switchImagesList = [].slice.call(document.querySelectorAll("[data-app-" + style + "-img]"));
+    const switchImagesList = [].slice.call(
+      document.querySelectorAll("[data-app-" + style + "-img]"),
+    );
     switchImagesList.map(function (imageEl) {
       const setImage = imageEl.getAttribute("data-app-" + style + "-img");
       imageEl.src = assetsPath + "img/" + setImage; // Using window.assetsPath to get the exact relative path
@@ -122,7 +139,9 @@ if (document.getElementById("layout-menu")) {
       localStorage.getItem("templateCustomizer-" + templateName + "--Style") ||
       window.templateCustomizer.settings.defaultStyle;
 
-    let styleSwitcherItems = [].slice.call(styleSwitcher.children[1].querySelectorAll(".dropdown-item"));
+    let styleSwitcherItems = [].slice.call(
+      styleSwitcher.children[1].querySelectorAll(".dropdown-item"),
+    );
     styleSwitcherItems.forEach(function (item) {
       item.addEventListener("click", function () {
         let currentStyle = this.getAttribute("data-theme");
@@ -144,19 +163,19 @@ if (document.getElementById("layout-menu")) {
       styleSwitcherIcon.classList.add("ti-sun");
       new bootstrap.Tooltip(styleSwitcherIcon, {
         title: "Light Mode",
-        fallbackPlacements: ["bottom"]
+        fallbackPlacements: ["bottom"],
       });
     } else if (storedStyle === "dark") {
       styleSwitcherIcon.classList.add("ti-moon");
       new bootstrap.Tooltip(styleSwitcherIcon, {
         title: "Dark Mode",
-        fallbackPlacements: ["bottom"]
+        fallbackPlacements: ["bottom"],
       });
     } else {
       styleSwitcherIcon.classList.add("ti-device-desktop");
       new bootstrap.Tooltip(styleSwitcherIcon, {
         title: "System Mode",
-        fallbackPlacements: ["bottom"]
+        fallbackPlacements: ["bottom"],
       });
     }
 
@@ -168,22 +187,23 @@ if (document.getElementById("layout-menu")) {
   // ---------------------------------------
 
   function setLanguage(lang) {
-    if (!['en', 'vi', 'ja'].includes(lang)) lang = 'en';
+    if (!["en", "vi", "ja"].includes(lang)) lang = "en";
     window.i18next.changeLanguage(lang, (err, t) => {
       if (err) {
         return;
       }
       localize();
-      if (typeof toastr !== 'undefined') {
-        toastr.success(window.i18next.t('languageChanged'));
-      } else {
-      }
+      showToastr(window.i18next.t("languageChanged"), "success");
       updateLanguageDropdown(lang);
     });
   }
 
   if (typeof window.i18next !== "undefined") {
-    if (typeof window.i18nextHttpBackend === "function" || (window.i18nextHttpBackend && typeof window.i18nextHttpBackend === "object")) {
+    if (
+      typeof window.i18nextHttpBackend === "function" ||
+      (window.i18nextHttpBackend &&
+        typeof window.i18nextHttpBackend === "object")
+    ) {
       if (typeof window.i18next.use === "function") {
         window.i18next.use(window.i18nextHttpBackend);
       }
@@ -193,9 +213,9 @@ if (document.getElementById("layout-menu")) {
           debug: false,
           fallbackLng: "vi",
           backend: {
-            loadPath: assetsPath + "lang/{{lng}}.json"
+            loadPath: assetsPath + "lang/{{lng}}.json",
           },
-          returnObjects: true
+          returnObjects: true,
         })
         .then(function (t) {
           localize();
@@ -203,7 +223,9 @@ if (document.getElementById("layout-menu")) {
           updateLanguageDropdown(currentLang);
         });
     } else {
-      console.error("[i18n] i18nextHttpBackend is missing! File i18n.js may be incorrect or missing backend plugin. Please check your vendor/i18n/i18n.js build.");
+      console.error(
+        "[i18n] i18nextHttpBackend is missing! File i18n.js may be incorrect or missing backend plugin. Please check your vendor/i18n/i18n.js build.",
+      );
       let i18nList = document.querySelectorAll("[data-i18n]");
       i18nList.forEach(function (item) {
         item.innerHTML = "[i18n backend missing]";
@@ -212,35 +234,37 @@ if (document.getElementById("layout-menu")) {
   }
 
   function bindLanguageDropdownHandlers() {
-    document.querySelectorAll('.dropdown-language [data-language]').forEach(function(item) {
-      item.addEventListener('click', function() {
-        const lang = this.getAttribute('data-language');
-        if (lang) {
-          localStorage.setItem('i18nextLng', lang);
-          setLanguage(lang);
-        }
+    document
+      .querySelectorAll(".dropdown-language [data-language]")
+      .forEach(function (item) {
+        item.addEventListener("click", function () {
+          const lang = this.getAttribute("data-language");
+          if (lang) {
+            localStorage.setItem("i18nextLng", lang);
+            setLanguage(lang);
+          }
+        });
       });
-    });
-    const initialLang = localStorage.getItem('i18nextLng') || 'vi';
+    const initialLang = localStorage.getItem("i18nextLng") || "vi";
     updateLanguageDropdown(initialLang);
   }
 
-  document.addEventListener('DOMContentLoaded', function() {
-    if (document.querySelector('.dropdown-language')) {
+  document.addEventListener("DOMContentLoaded", function () {
+    if (document.querySelector(".dropdown-language")) {
       bindLanguageDropdownHandlers();
     }
   });
 
   function updateDocumentTitle() {
-    var titleEl = document.querySelector('title[data-i18n]');
+    var titleEl = document.querySelector("title[data-i18n]");
     if (titleEl && window.i18next) {
-      var key = titleEl.getAttribute('data-i18n');
+      var key = titleEl.getAttribute("data-i18n");
       var translated = window.i18next.t(key);
       document.title = translated || titleEl.textContent;
     }
   }
-  if (typeof window.i18next !== 'undefined') {
-    window.i18next.on('languageChanged', updateDocumentTitle);
+  if (typeof window.i18next !== "undefined") {
+    window.i18next.on("languageChanged", updateDocumentTitle);
     updateDocumentTitle();
   }
 
@@ -249,56 +273,73 @@ if (document.getElementById("layout-menu")) {
     i18nList.forEach(function (item) {
       item.innerHTML = window.i18next.t(item.dataset.i18n);
     });
-    let i18nPlaceholderList = document.querySelectorAll("[data-i18n-placeholder]");
+    let i18nPlaceholderList = document.querySelectorAll(
+      "[data-i18n-placeholder]",
+    );
     i18nPlaceholderList.forEach(function (item) {
-      item.setAttribute("placeholder", window.i18next.t(item.dataset.i18nPlaceholder));
+      item.setAttribute(
+        "placeholder",
+        window.i18next.t(item.dataset.i18nPlaceholder),
+      );
     });
-    document.querySelectorAll(".dropdown-language .dropdown-item").forEach(function (el) {
-      el.classList.remove("selected");
-      if (el.getAttribute("data-language") === window.i18next.language) {
-        el.classList.add("selected");
-      }
-    });
+    document
+      .querySelectorAll(".dropdown-language .dropdown-item")
+      .forEach(function (el) {
+        el.classList.remove("selected");
+        if (el.getAttribute("data-language") === window.i18next.language) {
+          el.classList.add("selected");
+        }
+      });
     updateDocumentTitle();
   }
 
   function updateLanguageDropdown(lang) {
-    const flagMap = { vi: 'vn', en: 'us', ja: 'jp' };
-    const nameMap = { vi: 'Tiếng Việt', en: 'English', ja: '日本語' };
-    document.querySelectorAll('#current-lang-flag').forEach(function(flagEl) {
-      flagEl.className = 'fi fi-' + (flagMap[lang] || 'us') + ' me-2';
+    const flagMap = { vi: "vn", en: "us", ja: "jp" };
+    const nameMap = { vi: "Tiếng Việt", en: "English", ja: "日本語" };
+    document.querySelectorAll("#current-lang-flag").forEach(function (flagEl) {
+      flagEl.className = "fi fi-" + (flagMap[lang] || "us") + " me-2";
     });
-    document.querySelectorAll('#current-lang-name').forEach(function(nameEl) {
-      nameEl.textContent = nameMap[lang] || 'English';
+    document.querySelectorAll("#current-lang-name").forEach(function (nameEl) {
+      nameEl.textContent = nameMap[lang] || "English";
     });
   }
 
   // Notification
   // ------------
-  const notificationMarkAsReadAll = document.querySelector(".dropdown-notifications-all");
-  const notificationMarkAsReadList = document.querySelectorAll(".dropdown-notifications-read");
+  const notificationMarkAsReadAll = document.querySelector(
+    ".dropdown-notifications-all",
+  );
+  const notificationMarkAsReadList = document.querySelectorAll(
+    ".dropdown-notifications-read",
+  );
 
   // Notification: Mark as all as read
   if (notificationMarkAsReadAll) {
-    notificationMarkAsReadAll.addEventListener("click", event => {
-      notificationMarkAsReadList.forEach(item => {
-        item.closest(".dropdown-notifications-item").classList.add("marked-as-read");
+    notificationMarkAsReadAll.addEventListener("click", (event) => {
+      notificationMarkAsReadList.forEach((item) => {
+        item
+          .closest(".dropdown-notifications-item")
+          .classList.add("marked-as-read");
       });
     });
   }
   // Notification: Mark as read/unread onclick of dot
   if (notificationMarkAsReadList) {
-    notificationMarkAsReadList.forEach(item => {
-      item.addEventListener("click", event => {
-        item.closest(".dropdown-notifications-item").classList.toggle("marked-as-read");
+    notificationMarkAsReadList.forEach((item) => {
+      item.addEventListener("click", (event) => {
+        item
+          .closest(".dropdown-notifications-item")
+          .classList.toggle("marked-as-read");
       });
     });
   }
 
   // Notification: Mark as read/unread onclick of dot
-  const notificationArchiveMessageList = document.querySelectorAll(".dropdown-notifications-archive");
-  notificationArchiveMessageList.forEach(item => {
-    item.addEventListener("click", event => {
+  const notificationArchiveMessageList = document.querySelectorAll(
+    ".dropdown-notifications-archive",
+  );
+  notificationArchiveMessageList.forEach((item) => {
+    item.addEventListener("click", (event) => {
       item.closest(".dropdown-notifications-item").remove();
     });
   });
@@ -307,7 +348,9 @@ if (document.getElementById("layout-menu")) {
   // --------------------
 
   // Init BS Tooltip
-  const tooltipTriggerList = [].slice.call(document.querySelectorAll("[data-bs-toggle=\"tooltip\"]"));
+  const tooltipTriggerList = [].slice.call(
+    document.querySelectorAll('[data-bs-toggle="tooltip"]'),
+  );
   tooltipTriggerList.map(function (tooltipTriggerEl) {
     return new bootstrap.Tooltip(tooltipTriggerEl);
   });
@@ -321,10 +364,18 @@ if (document.getElementById("layout-menu")) {
     }
   };
 
-  const accordionTriggerList = [].slice.call(document.querySelectorAll(".accordion"));
+  const accordionTriggerList = [].slice.call(
+    document.querySelectorAll(".accordion"),
+  );
   const accordionList = accordionTriggerList.map(function (accordionTriggerEl) {
-    accordionTriggerEl.addEventListener("show.bs.collapse", accordionActiveFunction);
-    accordionTriggerEl.addEventListener("hide.bs.collapse", accordionActiveFunction);
+    accordionTriggerEl.addEventListener(
+      "show.bs.collapse",
+      accordionActiveFunction,
+    );
+    accordionTriggerEl.addEventListener(
+      "hide.bs.collapse",
+      accordionActiveFunction,
+    );
   });
 
   // If layout is RTL add .dropdown-menu-end class to .dropdown-menu
@@ -352,23 +403,35 @@ if (document.getElementById("layout-menu")) {
       // Hide open search input and set value blank
       if (window.innerWidth >= window.Helpers.LAYOUT_BREAKPOINT) {
         if (document.querySelector(".search-input-wrapper")) {
-          document.querySelector(".search-input-wrapper").classList.add("d-none");
+          document
+            .querySelector(".search-input-wrapper")
+            .classList.add("d-none");
           document.querySelector(".search-input").value = "";
         }
       }
       // Horizontal Layout : Update menu based on window size
-      let horizontalMenuTemplate = document.querySelector("[data-template^='horizontal-menu']");
+      let horizontalMenuTemplate = document.querySelector(
+        "[data-template^='horizontal-menu']",
+      );
       if (horizontalMenuTemplate) {
         setTimeout(function () {
           if (window.innerWidth < window.Helpers.LAYOUT_BREAKPOINT) {
             if (document.getElementById("layout-menu")) {
-              if (document.getElementById("layout-menu").classList.contains("menu-horizontal")) {
+              if (
+                document
+                  .getElementById("layout-menu")
+                  .classList.contains("menu-horizontal")
+              ) {
                 menu.switchMenu("vertical");
               }
             }
           } else {
             if (document.getElementById("layout-menu")) {
-              if (document.getElementById("layout-menu").classList.contains("menu-vertical")) {
+              if (
+                document
+                  .getElementById("layout-menu")
+                  .classList.contains("menu-vertical")
+              ) {
                 menu.switchMenu("horizontal");
               }
             }
@@ -376,7 +439,7 @@ if (document.getElementById("layout-menu")) {
         }, 100);
       }
     },
-    true
+    true,
   );
 
   // Manage menu expanded/collapsed with templateCustomizer & local storage
@@ -401,12 +464,18 @@ if (document.getElementById("layout-menu")) {
     if (config.enableMenuLocalStorage) {
       try {
         if (
-          localStorage.getItem("templateCustomizer-" + templateName + "--LayoutCollapsed") !== null &&
-          localStorage.getItem("templateCustomizer-" + templateName + "--LayoutCollapsed") !== "false"
+          localStorage.getItem(
+            "templateCustomizer-" + templateName + "--LayoutCollapsed",
+          ) !== null &&
+          localStorage.getItem(
+            "templateCustomizer-" + templateName + "--LayoutCollapsed",
+          ) !== "false"
         )
           window.Helpers.setCollapsed(
-            localStorage.getItem("templateCustomizer-" + templateName + "--LayoutCollapsed") === "true",
-            false
+            localStorage.getItem(
+              "templateCustomizer-" + templateName + "--LayoutCollapsed",
+            ) === "true",
+            false,
           );
       } catch (e) {}
     }
@@ -498,7 +567,7 @@ if (typeof $ !== "undefined") {
       var searchData = $.ajax({
         url: assetsPath + "json/" + searchJson, //? Use your own search api instead
         dataType: "json",
-        async: false
+        async: false,
       }).responseJSON;
       // Init typeahead on searchInput
       searchInput.each(function () {
@@ -510,8 +579,9 @@ if (typeof $ !== "undefined") {
               classNames: {
                 menu: "tt-menu navbar-search-suggestion",
                 cursor: "active",
-                suggestion: "suggestion d-flex justify-content-between px-3 py-2 w-100"
-              }
+                suggestion:
+                  "suggestion d-flex justify-content-between px-3 py-2 w-100",
+              },
             },
             // ? Add/Update blocks as per need
             // Pages
@@ -519,19 +589,22 @@ if (typeof $ !== "undefined") {
               name: "pages",
               display: "name",
               limit: 5,
-              source: filterConfig((searchData && searchData.pages) ? searchData.pages : []),
+              source: filterConfig(
+                searchData && searchData.pages ? searchData.pages : [],
+              ),
               templates: {
-                header: "<h6 class=\"suggestions-header text-primary mb-0 mx-3 mt-3 pb-2\">Pages</h6>",
+                header:
+                  '<h6 class="suggestions-header text-primary mb-0 mx-3 mt-3 pb-2">Pages</h6>',
                 suggestion: function ({ url, icon, name }) {
                   return (
-                    "<a href=\"" +
+                    '<a href="' +
                     url +
-                    "\">" +
+                    '">' +
                     "<div>" +
-                    "<i class=\"ti " +
+                    '<i class="ti ' +
                     icon +
-                    " me-2\"></i>" +
-                    "<span class=\"align-middle\">" +
+                    ' me-2"></i>' +
+                    '<span class="align-middle">' +
                     name +
                     "</span>" +
                     "</div>" +
@@ -539,75 +612,81 @@ if (typeof $ !== "undefined") {
                   );
                 },
                 notFound:
-                  "<div class=\"not-found px-3 py-2\">" +
-                  "<h6 class=\"suggestions-header text-primary mb-2\">Pages</h6>" +
-                  "<p class=\"py-2 mb-0\"><i class=\"ti ti-alert-circle ti-xs me-2\"></i> No Results Found</p>" +
-                  "</div>"
-              }
+                  '<div class="not-found px-3 py-2">' +
+                  '<h6 class="suggestions-header text-primary mb-2">Pages</h6>' +
+                  '<p class="py-2 mb-0"><i class="ti ti-alert-circle ti-xs me-2"></i> No Results Found</p>' +
+                  "</div>",
+              },
             },
             // Files
             {
               name: "files",
               display: "name",
               limit: 4,
-              source: filterConfig((searchData && searchData.files) ? searchData.files : []),
+              source: filterConfig(
+                searchData && searchData.files ? searchData.files : [],
+              ),
               templates: {
-                header: "<h6 class=\"suggestions-header text-primary mb-0 mx-3 mt-3 pb-2\">Files</h6>",
+                header:
+                  '<h6 class="suggestions-header text-primary mb-0 mx-3 mt-3 pb-2">Files</h6>',
                 suggestion: function ({ src, name, subtitle, meta }) {
                   return (
-                    "<a href=\"javascript:;\">" +
-                    "<div class=\"d-flex w-50\">" +
-                    "<img class=\"me-3\" src=\"" +
+                    '<a href="javascript:;">' +
+                    '<div class="d-flex w-50">' +
+                    '<img class="me-3" src="' +
                     assetsPath +
                     src +
-                    "\" alt=\"" +
+                    '" alt="' +
                     name +
-                    "\" height=\"32\">" +
-                    "<div class=\"w-75\">" +
-                    "<h6 class=\"mb-0\">" +
+                    '" height="32">' +
+                    '<div class="w-75">' +
+                    '<h6 class="mb-0">' +
                     name +
                     "</h6>" +
-                    "<small class=\"text-muted\">" +
+                    '<small class="text-muted">' +
                     subtitle +
                     "</small>" +
                     "</div>" +
                     "</div>" +
-                    "<small class=\"text-muted\">" +
+                    '<small class="text-muted">' +
                     meta +
                     "</small>" +
                     "</a>"
                   );
                 },
                 notFound:
-                  "<div class=\"not-found px-3 py-2\">" +
-                  "<h6 class=\"suggestions-header text-primary mb-2\">Files</h6>" +
-                  "<p class=\"py-2 mb-0\"><i class=\"ti ti-alert-circle ti-xs me-2\"></i> No Results Found</p>" +
-                  "</div>"
-              }
+                  '<div class="not-found px-3 py-2">' +
+                  '<h6 class="suggestions-header text-primary mb-2">Files</h6>' +
+                  '<p class="py-2 mb-0"><i class="ti ti-alert-circle ti-xs me-2"></i> No Results Found</p>' +
+                  "</div>",
+              },
             },
             // Members
             {
               name: "members",
               display: "name",
               limit: 4,
-              source: filterConfig((searchData && searchData.members) ? searchData.members : []),
+              source: filterConfig(
+                searchData && searchData.members ? searchData.members : [],
+              ),
               templates: {
-                header: "<h6 class=\"suggestions-header text-primary mb-0 mx-3 mt-3 pb-2\">Members</h6>",
+                header:
+                  '<h6 class="suggestions-header text-primary mb-0 mx-3 mt-3 pb-2">Members</h6>',
                 suggestion: function ({ name, src, subtitle }) {
                   return (
-                    "<a href=\"app-user-view-account.html\">" +
-                    "<div class=\"d-flex align-items-center\">" +
-                    "<img class=\"rounded-circle me-3\" src=\"" +
+                    '<a href="app-user-view-account.html">' +
+                    '<div class="d-flex align-items-center">' +
+                    '<img class="rounded-circle me-3" src="' +
                     assetsPath +
                     src +
-                    "\" alt=\"" +
+                    '" alt="' +
                     name +
-                    "\" height=\"32\">" +
-                    "<div class=\"user-info\">" +
-                    "<h6 class=\"mb-0\">" +
+                    '" height="32">' +
+                    '<div class="user-info">' +
+                    '<h6 class="mb-0">' +
                     name +
                     "</h6>" +
-                    "<small class=\"text-muted\">" +
+                    '<small class="text-muted">' +
                     subtitle +
                     "</small>" +
                     "</div>" +
@@ -616,12 +695,12 @@ if (typeof $ !== "undefined") {
                   );
                 },
                 notFound:
-                  "<div class=\"not-found px-3 py-2\">" +
-                  "<h6 class=\"suggestions-header text-primary mb-2\">Members</h6>" +
-                  "<p class=\"py-2 mb-0\"><i class=\"ti ti-alert-circle ti-xs me-2\"></i> No Results Found</p>" +
-                  "</div>"
-              }
-            }
+                  '<div class="not-found px-3 py-2">' +
+                  '<h6 class="suggestions-header text-primary mb-2">Members</h6>' +
+                  '<p class="py-2 mb-0"><i class="ti ti-alert-circle ti-xs me-2"></i> No Results Found</p>' +
+                  "</div>",
+              },
+            },
           )
           //On typeahead result render.
           .bind("typeahead:render", function () {
@@ -659,7 +738,7 @@ if (typeof $ !== "undefined") {
       $(".navbar-search-suggestion").each(function () {
         psSearch = new PerfectScrollbar($(this)[0], {
           wheelPropagation: false,
-          suppressScrollX: true
+          suppressScrollX: true,
         });
       });
 
