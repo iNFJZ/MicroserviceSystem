@@ -156,9 +156,7 @@ namespace AuthService.Services
                 {
                     existingUser = new User
                     {
-                        Username = googleUserInfo.Email != null && googleUserInfo.Email.Contains("@")
-                            ? googleUserInfo.Email.Split('@')[0]
-                            : GenerateUsernameFromGoogleInfo(googleUserInfo),
+                        Username = await GenerateUniqueUsernameFromGoogleInfoAsync(googleUserInfo),
                         FullName = googleUserInfo.Name,
                         Email = googleUserInfo.Email,
                         GoogleId = googleUserInfo.Sub,
@@ -204,7 +202,51 @@ namespace AuthService.Services
             return token;
         }
 
-        private string GenerateUsernameFromGoogleInfo(GoogleUserInfo googleUserInfo)
+        private async Task<string> GenerateUniqueUsernameFromGoogleInfoAsync(GoogleUserInfo googleUserInfo)
+        {
+            var baseUsername = googleUserInfo.Email != null && googleUserInfo.Email.Contains("@")
+                ? googleUserInfo.Email.Split('@')[0]
+                : GenerateBaseUsernameFromGoogleInfo(googleUserInfo);
+            
+            baseUsername = System.Text.RegularExpressions.Regex.Replace(baseUsername, @"[^a-zA-Z0-9_]", "");
+            
+            if (string.IsNullOrEmpty(baseUsername))
+                baseUsername = "user";
+
+            var username = baseUsername;
+            var counter = 1;
+            const int maxAttempts = 100; // Prevent infinite loop
+            
+            while (counter <= maxAttempts)
+            {
+                var existingUser = await _userRepository.GetByUsernameAsync(username);
+                if (existingUser == null)
+                {
+                    return username; // Username is available
+                }
+                
+                // Try with counter suffix
+                username = $"{baseUsername}{counter}";
+                counter++;
+            }
+            
+            // If we reach here, try with timestamp
+            var timestamp = DateTime.UtcNow.ToString("yyyyMMddHHmmss");
+            username = $"{baseUsername}{timestamp}";
+            
+            // Final check
+            var finalCheck = await _userRepository.GetByUsernameAsync(username);
+            if (finalCheck == null)
+            {
+                return username;
+            }
+            
+            // Last resort: use GUID
+            var guid = Guid.NewGuid().ToString("N").Substring(0, 8);
+            return $"{baseUsername}{guid}";
+        }
+
+        private string GenerateBaseUsernameFromGoogleInfo(GoogleUserInfo googleUserInfo)
         {
             var baseUsername = googleUserInfo.GivenName?.ToLower() ?? googleUserInfo.Name?.ToLower() ?? "user";
             

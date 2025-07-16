@@ -34,6 +34,12 @@ namespace AuthService.Middleware
 
         public async Task InvokeAsync(HttpContext context, IAuthService authService)
         {
+            if (context.Request.Method == "OPTIONS")
+            {
+                await _next(context);
+                return;
+            }
+
             if (context.Request.ContentType?.StartsWith("application/grpc") == true)
             {
                 await _next(context);

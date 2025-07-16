@@ -54,6 +54,10 @@ namespace AuthService.Middleware
                     response.StatusCode = (int)HttpStatusCode.Conflict;
                     errorResponse.ErrorCode = "USER_ALREADY_EXISTS";
                     break;
+                case UsernameAlreadyExistsException:
+                    response.StatusCode = (int)HttpStatusCode.Conflict;
+                    errorResponse.ErrorCode = "USERNAME_ALREADY_EXISTS";
+                    break;
                 case InvalidTokenException:
                     response.StatusCode = (int)HttpStatusCode.Unauthorized;
                     errorResponse.ErrorCode = "TOKEN_INVALID";

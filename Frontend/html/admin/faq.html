@@ -48,10 +48,8 @@
       rel="stylesheet"
       href="../../assets/vendor/libs/perfect-scrollbar/perfect-scrollbar.css"
     />
-    <link
-      rel="stylesheet"
-      href="../../assets/vendor/libs/typeahead-js/typeahead.css"
-    />
+    <link rel="stylesheet" href="../../assets/vendor/libs/typeahead-js/typeahead.css" />
+    <link rel="stylesheet" href="../../assets/vendor/libs/toastr/toastr.css" />
     <link
       rel="stylesheet"
       href="../../assets/vendor/libs/datatables-bs5/datatables.bootstrap5.css"
@@ -72,7 +70,9 @@
       rel="stylesheet"
       href="../../assets/vendor/libs/sweetalert2/sweetalert2.css"
     />
-    <link rel="stylesheet" href="../../assets/vendor/libs/toastr/toastr.css" />
+    <script src="../../assets/vendor/libs/toastr/toastr.js"></script>
+    <script src="../../assets/vendor/libs/bloodhound/bloodhound.js"></script>
+    <script src="../../assets/vendor/libs/typeahead-js/typeahead.js"></script>
     <script src="../../assets/vendor/js/helpers.js"></script>
     <script src="../../assets/vendor/js/template-customizer.js"></script>
     <script src="../../assets/js/config.js"></script>
@@ -188,7 +188,7 @@
                 <li class="nav-item dropdown-language dropdown me-2 me-xl-0">
                   <a class="nav-link dropdown-toggle hide-arrow d-flex align-items-center" href="javascript:void(0);" data-bs-toggle="dropdown" id="languageDropdownBtn">
                     <span class="fi fi-vn me-2" id="current-lang-flag" style="width: 1.5em; height: 1em;"></span>
-                    <span id="current-lang-name">Tiếng Việt</span>
+                    <span id="current-lang-name">Loading...</span>
                   </a>
                   <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="languageDropdownBtn">
                     <li>
@@ -242,7 +242,7 @@
                   </a>
                   <ul class="dropdown-menu dropdown-menu-end">
                     <li>
-                      <a class="dropdown-item" href="#"
+                      <a class="dropdown-item" href="my-profile.html"
                         ><div class="d-flex">
                           <div class="flex-shrink-0 me-3">
                             <div class="avatar avatar-online">
@@ -483,7 +483,7 @@
     <script src="../../assets/vendor/js/menu.js"></script>
     <script src="../../assets/js/main.js"></script>
     <script src="../../js/admin-auth.js"></script>
-    <script src="../../js/api.js"></script>
+    <script type="module" src="../../js/api.js"></script>
     <script>
       $(document).ready(async function () {
         if (window.adminAuth) {

@@ -99,7 +99,7 @@
                 id="languageDropdownBtn"
               >
                 <span class="fi fi-vn me-2" id="current-lang-flag" style="width: 1.5em; height: 1em;"></span>
-                <span id="current-lang-name">Tiếng Việt</span>
+                <span id="current-lang-name">Loading...</span>
               </a>
               <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="languageDropdownBtn">
                 <li>
@@ -188,6 +188,7 @@
                     id="register-username"
                     name="username"
                     data-i18n-placeholder="enterUsername"
+                    autocomplete="off"
                     autofocus
                   />
                 </div>
@@ -204,6 +205,7 @@
                     id="register-fullName"
                     name="fullName"
                     data-i18n-placeholder="enterFullName"
+                    autocomplete="off"
                   />
                 </div>
                 <div class="mb-3">
@@ -219,7 +221,26 @@
                     id="register-email"
                     name="email"
                     data-i18n-placeholder="enterEmail"
+                    autocomplete="off"
                   />
+                </div>
+                <div class="mb-3">
+                  <label
+                    for="register-phoneNumber"
+                    class="form-label"
+                    data-i18n="phone"
+                    >Phone Number (Optional)</label
+                  >
+                  <input
+                    type="tel"
+                    class="form-control"
+                    id="register-phoneNumber"
+                    name="phoneNumber"
+                    data-i18n-placeholder="enterPhoneNumber"
+                    placeholder="+1 (609) 988-44-11"
+                    autocomplete="off"
+                  />
+                  <div class="form-text" data-i18n="optionalPhoneNumber">Optional phone number</div>
                 </div>
                 <div class="mb-3 form-password-toggle">
                   <label
@@ -237,6 +258,7 @@
                       placeholder="••••••••••••"
                       data-i18n="enterPassword"
                       aria-describedby="password"
+                      autocomplete="off"
                     />
                     <span class="input-group-text cursor-pointer"
                       ><i class="ti ti-eye-off"></i

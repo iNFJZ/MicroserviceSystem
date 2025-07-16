@@ -21,7 +21,7 @@ if (typeof toastr !== "undefined") {
     };
 }
 
-const API_BASE_URL = "http://localhost:5050";
+const API_BASE_URL = "http://localhost:5050/api";
 
 let currentUser = null;
 let authToken = localStorage.getItem("authToken") || null;
@@ -54,7 +54,7 @@ function showMessage(elementId, message, isError = false) {
 
 window.toggleUserStatus = async function(id, isActive) {
     try {
-        await fetch(`${API_BASE_URL}/api/User/${id}/status`, {
+        await fetch(`${API_BASE_URL}/User/${id}/status`, {
             method: "PATCH",
             headers: {
                 "Authorization": `Bearer ${authToken}`,
@@ -88,9 +88,7 @@ window.deleteUser = async function(id) {
             toastr.success(window.i18next.t("userDeletedSuccessfully"));
             
             if (res && res.data && currentUserInfo && 
-                (res.data.id == currentUserInfo.id || 
-                 res.data.email === currentUserInfo.email || 
-                 res.data.username === currentUserInfo.username)) {
+                res.data.id == currentUserInfo.id) {
                 localStorage.removeItem("authToken");
                 sessionStorage.clear();
                 toastr.info(window.i18next.t("yourAccountHasBeenDeleted"));
@@ -136,7 +134,7 @@ window.addEventListener("DOMContentLoaded", async () => {
         let success = false;
         try {
             const requestBody = { code, redirectUri: GOOGLE_REDIRECT_URI };
-            const res = await fetch(`${API_BASE_URL}/api/Auth/login/google`, {
+            const res = await fetch(`${API_BASE_URL}/Auth/login/google`, {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify(requestBody)

@@ -24,39 +24,7 @@ public class UserController : ControllerBase
     [HttpPost]
     public async Task<IActionResult> CreateUser([FromBody] CreateUserDto dto)
     {
-        if (!ModelState.IsValid)
-        {
-            var errors = ModelState.Values
-                .SelectMany(v => v.Errors)
-                .Select(e => e.ErrorMessage)
-                .ToList();
-            return BadRequest(new { success = false, message = "Validation failed", errors });
-        }
-
-        try
-        {
-            var user = new User
-            {
-                Username = dto.Username,
-                Email = dto.Email,
-                FullName = dto.FullName,
-                PhoneNumber = dto.PhoneNumber,
-                LoginProvider = "Local",
-                Status = UserStatus.Active,
-                IsVerified = false
-            };
-
-            var createdUser = await _userService.CreateUserAsync(user);
-            return Ok(new { success = true, data = createdUser, message = "User created successfully" });
-        }
-        catch (ArgumentException ex)
-        {
-            return BadRequest(new { success = false, message = ex.Message });
-        }
-        catch (Exception ex)
-        {
-            return StatusCode(500, new { success = false, message = "An error occurred while creating user", error = ex.Message });
-        }
+        return BadRequest(new { success = false, message = "User creation is handled by AuthService. Please use /api/auth/register endpoint." });
     }
 
     /// <summary>

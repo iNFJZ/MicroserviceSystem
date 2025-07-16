@@ -1,6 +1,7 @@
 ﻿using AuthService.Data;
 using AuthService.Models;
 using AuthService.Services;
+using AuthService.Exceptions;
 using Microsoft.EntityFrameworkCore;
 
 namespace AuthService.Repositories
@@ -20,9 +21,20 @@ namespace AuthService.Repositories
 
         public async Task AddAsync(User user)
         {
-            await _context.Users.AddAsync(user);
-            await _context.SaveChangesAsync();
-            await _cacheService.SetUserAsync(user);
+            try
+            {
+                await _context.Users.AddAsync(user);
+                await _context.SaveChangesAsync();
+                await _cacheService.SetUserAsync(user);
+            }
+            catch (Microsoft.EntityFrameworkCore.DbUpdateException ex) when (ex.InnerException?.Message?.Contains("IX_Users_Username") == true)
+            {
+                throw new AuthException("USERNAME_ALREADY_EXISTS", $"Username '{user.Username}' already exists");
+            }
+            catch (Microsoft.EntityFrameworkCore.DbUpdateException ex) when (ex.InnerException?.Message?.Contains("IX_Users_Email") == true)
+            {
+                throw new AuthException("EMAIL_ALREADY_EXISTS", $"Email '{user.Email}' already exists");
+            }
         }
 
         public async Task<User?> GetByEmailAsync(string email)

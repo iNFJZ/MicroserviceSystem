@@ -210,7 +210,7 @@ function loadActiveUsersTable() {
           if (!json || !Array.isArray(json.data)) return [];
           const users = json.data;
           const activeUsers = users.filter(
-            (u) => u.status === 1 || u.status === "Active",
+            (u) => u.status === 1 || u.status === 2 || u.status === 3 || u.status === "Active" || u.status === "Inactive" || u.status === "Suspended"
           );
           let total = activeUsers.length,
             active = total,
@@ -562,9 +562,20 @@ function handleAddUser() {
   const form = document.getElementById("addNewUserForm");
   if (!form) return;
   const formData = new FormData(form);
+  const username = formData.get("username")?.trim();
   const fullName = formData.get("fullName")?.trim();
   const email = formData.get("email")?.trim();
   const phoneNumber = formData.get("phoneNumber")?.trim();
+  const password = formData.get("password")?.trim();
+
+  if (!username) {
+    toastr.error(window.i18next.t("usernameRequired"));
+    return;
+  }
+  if (!/^[a-zA-Z0-9]+$/.test(username)) {
+    toastr.error(window.i18next.t("usernameInvalidFormat"));
+    return;
+  }
   if (!fullName) {
     toastr.error(window.i18next.t("fullNameRequired"));
     return;
@@ -573,10 +584,15 @@ function handleAddUser() {
     toastr.error(window.i18next.t("validEmailRequired"));
     return;
   }
-  const data = { fullName, email };
+  if (!password || password.length < 6) {
+    toastr.error(window.i18next.t("passwordRequired"));
+    return;
+  }
+  const data = { username, fullName, email, password };
   if (phoneNumber) data.phoneNumber = phoneNumber;
   const token = localStorage.getItem("authToken");
-  fetch("http://localhost:5050/api/User", {
+
+  fetch("http://localhost:5050/api/Auth/register", {
     method: "POST",
     headers: {
       Authorization: `Bearer ${token}`,
@@ -586,18 +602,41 @@ function handleAddUser() {
   })
     .then((res) => res.json())
     .then((res) => {
+      console.log("Add user response:", res); // Debug log
       if (res.success || res.id) {
-        toastr.success(window.i18next.t("userAddedSuccessfully"));
+        toastr.clear();
+        let backendUsername = res.username || username;
+        if (backendUsername !== username) {
+          toastr.success(window.i18next.t("userAddedSuccessfullyWithNewUsername").replace("{old}", username).replace("{new}", backendUsername));
+        } else {
+          toastr.success(window.i18next.t("userAddedSuccessfully"));
+        }
         form.reset();
         $("#offcanvasAddUser").offcanvas("hide");
-        loadAllUsersTable && loadAllUsersTable();
-        loadActiveUsersTable && loadActiveUsersTable();
-        loadDeactiveUsersTable && loadDeactiveUsersTable();
+        toastr.clear();
+        const dt_user_table = $(".datatables-users");
+        if (dt_user_table.length && $.fn.DataTable.isDataTable(dt_user_table)) {
+          dt_user_table.DataTable().ajax.reload(null, false);
+        } else {
+          setTimeout(() => window.location.reload(), 1000);
+        }
+      } else if (
+        (res.errorCode && res.errorCode.toUpperCase() === "EMAIL_ALREADY_EXISTS") ||
+        (res.errorCode && res.errorCode.toUpperCase() === "USER_ALREADY_EXISTS") ||
+        (res.message && res.message.replace(/\s+/g, '').toLowerCase().includes("emailalread")) ||
+        (res.message && res.message.replace(/\s+/g, '').toLowerCase().includes("emailexist")) ||
+        (res.message && res.message.toLowerCase().includes("email") && res.message.toLowerCase().includes("exist"))
+      ) {
+        toastr.clear();
+        toastr.error(window.i18next.t("userAlreadyExists").replace("{email}", email));
       } else {
+        toastr.clear();
         toastr.error(res.message || window.i18next.t("addUserFailed"));
       }
     })
-    .catch(() => toastr.error(window.i18next.t("addUserFailed")));
+    .catch((error) => {
+      toastr.error(window.i18next.t("addUserFailed"));
+    });
 }
 
 // --- CropperJS integration ---
@@ -1335,9 +1374,7 @@ function deleteUser(userId) {
       if (
         userInfo &&
         currentUserInfo &&
-        (userInfo.id == currentUserInfo.id ||
-          userInfo.email === currentUserInfo.email ||
-          userInfo.username === currentUserInfo.username)
+        userInfo.id == currentUserInfo.id
       ) {
         localStorage.removeItem("authToken");
         sessionStorage.clear();
@@ -1542,7 +1579,7 @@ function openViewUserModal(userId) {
         $fallback.hide();
       } else {
         $avatar.hide();
-        const letter = (user.username || "").charAt(0).toUpperCase();
+        const letter = (user.email || "").charAt(0).toUpperCase();
         const color = "#" + (((1 << 24) * Math.random()) | 0).toString(16);
         $fallback
           .text(letter)
@@ -2137,7 +2174,7 @@ document.addEventListener("DOMContentLoaded", function () {
           return;
         }
         const res = await fetch(
-          "http://localhost:5001/api/Auth/change-password",
+          "http://localhost:5050/api/Auth/change-password",
           {
             method: "POST",
             headers: {
@@ -2156,7 +2193,11 @@ document.addEventListener("DOMContentLoaded", function () {
           toastr.success(window.i18next.t("passwordChangedSuccessfully"));
           form.reset();
         } else {
-          toastr.error(data.message || window.i18next.t("changePasswordFailed"));
+          if (data.message && (data.message.toLowerCase().includes("old password is incorrect") || data.message.toLowerCase().includes("current password is incorrect") || data.message.toLowerCase().includes("mật khẩu cũ không đúng") || data.message.toLowerCase().includes("古いパスワードが正しくありません"))) {
+            toastr.error(window.i18next.t("oldPasswordIncorrect"));
+          } else {
+            toastr.error(data.message || window.i18next.t("changePasswordFailed"));
+          }
         }
       } catch (err) {
         toastr.error(window.i18next.t("changePasswordFailed"));

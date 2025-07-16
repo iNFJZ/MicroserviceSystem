@@ -175,11 +175,12 @@ if (app.Environment.IsDevelopment())
     app.UseSwaggerUI();
 }
 
+app.UseCors("AllowFrontend");
+
 app.UseMiddleware<GlobalExceptionHandler>();
 app.UseMiddleware<SecurityHeadersMiddleware>();
 app.UseMiddleware<StrictAuthValidationMiddleware>();
 
-app.UseCors("AllowFrontend");
 app.UseRateLimiter();
 
 app.UseAuthentication();

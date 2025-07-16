@@ -23,4 +23,9 @@ public class CreateUserDto
 
     [StringLength(200000)]
     public string? ProfilePicture { get; set; }
+
+    [Required]
+    [StringLength(100, MinimumLength = 6)]
+    [DataType(DataType.Password)]
+    public string Password { get; set; } = string.Empty;
 } 

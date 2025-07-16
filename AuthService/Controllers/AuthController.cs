@@ -34,11 +34,12 @@ namespace AuthService.Controllers
                 return BadRequest(new { success = false, message = "Validation failed", errors });
             }
 
-            var token = await _auth.RegisterAsync(dto);
+            var (token, username) = await _auth.RegisterAsync(dto);
             return Ok(new { 
                 success = true, 
                 message = "Registration successful",
                 token,
+                username,
                 redirectUrl = $"{_config["Frontend:BaseUrl"]}/auth/account-activated.html"
             });
         }
