@@ -2,16 +2,19 @@
 $(document).ready(async function () {
   let attempts = 0;
   const maxAttempts = 10;
-  
+
   const waitForAdminAuth = async () => {
-    if (window.adminAuth && typeof window.adminAuth.updateUserProfileDisplay === "function") {
+    if (
+      window.adminAuth &&
+      typeof window.adminAuth.updateUserProfileDisplay === "function"
+    ) {
       await window.adminAuth.updateUserProfileDisplay();
     } else if (attempts < maxAttempts) {
       attempts++;
       setTimeout(waitForAdminAuth, 100);
     }
   };
-  
+
   waitForAdminAuth();
 });
 
@@ -20,7 +23,10 @@ document.addEventListener("DOMContentLoaded", async function () {
   const maxAttempts = 20;
 
   const waitForAdminAuth = async () => {
-    if (window.adminAuth && typeof window.adminAuth.updateUserProfileDisplay === "function") {
+    if (
+      window.adminAuth &&
+      typeof window.adminAuth.updateUserProfileDisplay === "function"
+    ) {
       await window.adminAuth.updateUserProfileDisplay();
     } else if (attempts < maxAttempts) {
       attempts++;
@@ -58,7 +64,7 @@ document.addEventListener("DOMContentLoaded", async function () {
     return {
       id: payload.sub,
       email: payload.email,
-      fullName: payload.name
+      fullName: payload.name,
     };
   }
 
@@ -81,11 +87,14 @@ document.addEventListener("DOMContentLoaded", async function () {
   async function loadUserInfo() {
     let user = getCurrentUserInfo();
     if (!user || !user.id) {
-      let msg = (window.i18next && typeof window.i18next.t === 'function')
-        ? window.i18next.t("userNotFoundOrInvalidToken")
-        : "User not found or invalid token.";
-      toastr.error(msg);
-      setTimeout(() => { window.location.href = "/auth/login.html"; }, 1000);
+      let msg =
+        window.i18next && typeof window.i18next.t === "function"
+          ? window.i18next.t("userNotFoundOrInvalidToken")
+          : "User not found or invalid token.";
+      showToastr(msg, "error");
+      setTimeout(() => {
+        window.location.href = "/auth/login.html";
+      }, 1000);
       return;
     }
     try {
@@ -112,8 +121,11 @@ document.addEventListener("DOMContentLoaded", async function () {
           $("#edit-profilePicture-preview").attr("src", u.profilePicture);
           $("#edit-profilePicture-container").show();
         } else {
-          if (typeof window.generateLetterAvatarFromUser === 'function') {
-            $("#edit-profilePicture-preview").attr("src", window.generateLetterAvatarFromUser(u));
+          if (typeof window.generateLetterAvatarFromUser === "function") {
+            $("#edit-profilePicture-preview").attr(
+              "src",
+              window.generateLetterAvatarFromUser(u),
+            );
             $("#edit-profilePicture-container").show();
           } else {
             $("#edit-profilePicture-container").hide();
@@ -130,16 +142,19 @@ document.addEventListener("DOMContentLoaded", async function () {
           bio: u.bio || "",
         });
         $("#editUserForm").data("userid", u.id);
-        
+
         // Update avatar and user info in navbar after loading user data
-        if (window.adminAuth && typeof window.adminAuth.updateUserProfileDisplay === "function") {
+        if (
+          window.adminAuth &&
+          typeof window.adminAuth.updateUserProfileDisplay === "function"
+        ) {
           await window.adminAuth.updateUserProfileDisplay();
         }
       } else {
-        toastr.error(data.message || window.i18next.t("failedToLoadUserInfo"));
+        showToastr(data.message || window.i18next.t("failedToLoadUserInfo"), "error");
       }
     } catch (e) {
-      toastr.error(window.i18next.t("failedToLoadUserInfo"));
+      showToastr(window.i18next.t("failedToLoadUserInfo"), "error");
     }
   }
 
@@ -158,17 +173,17 @@ document.addEventListener("DOMContentLoaded", async function () {
       const file = this.files && this.files[0];
       if (file) {
         if (!file.type.startsWith("image/")) {
-          toastr.error(window.i18next.t("pleaseSelectValidImageFile"));
+          showToastr(window.i18next.t("pleaseSelectValidImageFile"), "error");
           this.value = "";
           return;
         }
         if (file.size > 5 * 1024 * 1024) {
-          toastr.error(window.i18next.t("imageSizeMustBeLessThan5MB"));
+          showToastr(window.i18next.t("imageSizeMustBeLessThan5MB"), "error");
           this.value = "";
           return;
         }
         if (file.size < 10 * 1024) {
-          toastr.warning(window.i18next.t("imageSizeIsVerySmall"));
+          showToastr(window.i18next.t("imageSizeIsVerySmall"), "warning");
         }
         selectedImageFile = file;
         const reader = new FileReader();
@@ -203,13 +218,13 @@ document.addEventListener("DOMContentLoaded", async function () {
     .off("click", "#cropImageBtn")
     .on("click", "#cropImageBtn", function () {
       if (!cropper || !cropperReady) {
-        toastr.error(window.i18next.t("cropperNotReady"));
+        showToastr(window.i18next.t("cropperNotReady"), "error");
         return;
       }
       let cropBox = cropper.getCropBoxData();
       const imageData = cropper.getImageData();
       if (!cropBox || cropBox.width <= 0 || cropBox.height <= 0) {
-        toastr.error(window.i18next.t("cropAreaInvalid"));
+        showToastr(window.i18next.t("cropAreaInvalid"), "error");
         return;
       }
       if (
@@ -217,7 +232,7 @@ document.addEventListener("DOMContentLoaded", async function () {
         (cropBox.width > imageData.naturalWidth ||
           cropBox.height > imageData.naturalHeight)
       ) {
-        toastr.error(window.i18next.t("cropAreaLargerThanImage"));
+        showToastr(window.i18next.t("cropAreaLargerThanImage"), "error");
         return;
       }
       try {
@@ -249,10 +264,11 @@ document.addEventListener("DOMContentLoaded", async function () {
         $("#edit-profilePicture-container, #profile-picture-preview").show();
         setTimeout(() => {
           $("#cropImageModal").modal("hide");
-          const msg = (window.i18next && typeof window.i18next.t === 'function')
-            ? window.i18next.t("profilePictureCroppedSuccessfully")
-            : "Profile picture cropped successfully!";
-          toastr.success(msg);
+          const msg =
+            window.i18next && typeof window.i18next.t === "function"
+              ? window.i18next.t("profilePictureCroppedSuccessfully")
+              : "Profile picture cropped successfully!";
+          showToastr(msg, "success");
           if (window.adminAuth) {
             window.adminAuth.updateUserProfileDisplay();
           }
@@ -261,7 +277,7 @@ document.addEventListener("DOMContentLoaded", async function () {
         window._editProfilePictureBase64 = null;
         $("#crop-avatar-preview, #edit-profilePicture-preview").attr("src", "");
         $("#edit-profilePicture-container, #profile-picture-preview").hide();
-        toastr.error(error.message || window.i18next.t("failedToCropImage"));
+        showToastr(error.message || window.i18next.t("failedToCropImage"), "error");
       }
     });
 
@@ -280,7 +296,7 @@ document.addEventListener("DOMContentLoaded", async function () {
         cropper = null;
       }
 
-      toastr.info(window.i18next.t("profilePictureRemoved"));
+      showToastr(window.i18next.t("profilePictureRemoved"), "info");
     });
 
   $(form)
@@ -290,13 +306,13 @@ document.addEventListener("DOMContentLoaded", async function () {
 
       const userId = $(form).data("userid");
       if (!userId) {
-        toastr.error(window.i18next.t("userIdNotFound"));
+        showToastr(window.i18next.t("userIdNotFound"), "error");
         return;
       }
 
       const user = getCurrentUserInfo();
       if (!user) {
-        toastr.error(window.i18next.t("userNotFound"));
+        showToastr(window.i18next.t("userNotFound"), "error");
         return;
       }
 
@@ -313,7 +329,7 @@ document.addEventListener("DOMContentLoaded", async function () {
       if (dateOfBirth && dateOfBirth.trim() !== "") {
         const today = new Date();
         if (dateOfBirth > today.toISOString().split("T")[0]) {
-          toastr.error(window.i18next.t("dateOfBirthCannotBeInFuture"));
+          showToastr(window.i18next.t("dateOfBirthCannotBeInFuture"), "error");
           return;
         }
         data.dateOfBirth = new Date(dateOfBirth).toISOString();
@@ -322,8 +338,9 @@ document.addEventListener("DOMContentLoaded", async function () {
       if (window._editProfilePictureBase64) {
         data.profilePicture = window._editProfilePictureBase64;
       } else if (selectedImageFile) {
-        toastr.warning(
+        showToastr(
           window.i18next.t("pleaseCropYourProfilePictureBeforeSaving"),
+          "warning",
         );
         return;
       } else if (window._profilePictureRemoved) {
@@ -363,25 +380,26 @@ document.addEventListener("DOMContentLoaded", async function () {
       }
 
       if (!changed) {
-        toastr.warning(window.i18next.t("noInformationChanged"));
+        showToastr(window.i18next.t("noInformationChanged"), "warning");
         return;
       }
 
       if (data.phoneNumber && !/^[0-9]{10,11}$/.test(data.phoneNumber)) {
-        toastr.error(
+        showToastr(
           window.i18next.t("phoneNumberMustBe10To11DigitsAndOnlyNumbers"),
+          "error",
         );
         return;
       }
 
       if (!data.fullName) {
-        toastr.error(window.i18next.t("fullNameIsRequired"));
+        showToastr(window.i18next.t("fullNameIsRequired"), "error");
         return;
       }
 
       const token = getToken();
       if (!token) {
-        toastr.error(window.i18next.t("authenticationRequired"));
+        showToastr(window.i18next.t("authenticationRequired"), "error");
         return;
       }
 
@@ -399,20 +417,20 @@ document.addEventListener("DOMContentLoaded", async function () {
             Object.keys(responseData.errors).forEach((field) => {
               const messages = responseData.errors[field];
               if (Array.isArray(messages)) {
-                messages.forEach((msg) => toastr.error(`${field}: ${msg}`));
+                messages.forEach((msg) => showToastr(`${field}: ${msg}`, "error"));
               } else {
-                toastr.error(`${field}: ${messages}`);
+                showToastr(`${field}: ${messages}`, "error");
               }
             });
           } else if (responseData.message) {
-            toastr.error(responseData.message);
+            showToastr(responseData.message, "error");
           } else {
-            toastr.error(window.i18next.t("failedToUpdateProfile"));
+            showToastr(window.i18next.t("failedToUpdateProfile"), "error");
           }
           return;
         }
 
-        toastr.success(window.i18next.t("profileUpdatedSuccessfully"));
+        showToastr(window.i18next.t("profileUpdatedSuccessfully"), "success");
 
         window._editProfilePictureBase64 = null;
         selectedImageFile = null;
@@ -429,7 +447,7 @@ document.addEventListener("DOMContentLoaded", async function () {
           await window.adminAuth.updateUserProfileDisplay();
         }
       } catch (err) {
-        toastr.error(err.message || window.i18next.t("updateFailed"));
+        showToastr(err.message || window.i18next.t("updateFailed"), "error");
       }
     });
 
@@ -452,13 +470,13 @@ document.addEventListener("DOMContentLoaded", async function () {
   // Add event listener for checkbox
   $(document)
     .off("change", "#accountActivation")
-    .on("change", "#accountActivation", function() {
+    .on("change", "#accountActivation", function () {
       updateDeactivateButtonState();
     });
 
   // Initialize button state on page load
   updateDeactivateButtonState();
-  
+
   // Load user information
   await loadUserInfo();
 
@@ -474,7 +492,9 @@ document.addEventListener("DOMContentLoaded", async function () {
     }
     const color = "#" + (((1 << 24) * Math.random()) | 0).toString(16);
     const svg = `<svg width='40' height='40' xmlns='http://www.w3.org/2000/svg'><circle cx='20' cy='20' r='20' fill='${color}'/><text x='50%' y='50%' text-anchor='middle' dy='.35em' font-family='Arial' font-size='20' fill='#fff'>${letter}</text></svg>`;
-    return "data:image/svg+xml;base64," + btoa(unescape(encodeURIComponent(svg)));
+    return (
+      "data:image/svg+xml;base64," + btoa(unescape(encodeURIComponent(svg)))
+    );
   }
 
   // Make function globally available
@@ -488,7 +508,7 @@ document.addEventListener("DOMContentLoaded", async function () {
       // Check if checkbox is checked
       const checkbox = document.getElementById("accountActivation");
       if (!checkbox || !checkbox.checked) {
-        toastr.warning(window.i18next.t("pleaseConfirmAccountDeactivation"));
+        showToastr(window.i18next.t("pleaseConfirmAccountDeactivation"), "warning");
         return;
       }
 
@@ -500,7 +520,7 @@ document.addEventListener("DOMContentLoaded", async function () {
 
       const user = getCurrentUserInfo();
       if (!user) {
-        toastr.error(window.i18next.t("userNotFound"));
+        showToastr(window.i18next.t("userNotFound"), "error");
         return;
       }
 
@@ -513,16 +533,16 @@ document.addEventListener("DOMContentLoaded", async function () {
         const data = await res.json();
 
         if (res.ok && data.success) {
-          toastr.success(window.i18next.t("accountDeactivated"));
+          showToastr(window.i18next.t("accountDeactivated"), "success");
           localStorage.removeItem("authToken");
           setTimeout(() => {
             window.location.href = "/auth/login.html";
           }, 1500);
         } else {
-          toastr.error(data.message || window.i18next.t("deactivationFailed"));
+          showToastr(data.message || window.i18next.t("deactivationFailed"), "error");
         }
       } catch (err) {
-        toastr.error(err.message || window.i18next.t("deactivationFailed"));
+        showToastr(err.message || window.i18next.t("deactivationFailed"), "error");
       }
     });
 
@@ -558,7 +578,7 @@ document.addEventListener("DOMContentLoaded", async function () {
             cropBox = cropper.getCropBoxData();
             imageData = cropper.getImageData();
           } catch (e) {
-            toastr.error(window.i18next.t("failedToInitializeCropper"));
+            showToastr(window.i18next.t("failedToInitializeCropper"), "error");
             $("#cropImageModal").modal("hide");
             return;
           }
@@ -615,7 +635,7 @@ document.addEventListener("DOMContentLoaded", async function () {
           }
           // Nếu ảnh quá nhỏ (bé hơn 100x100), báo lỗi và không cho crop
           if (imageData.naturalWidth < 100 || imageData.naturalHeight < 100) {
-            toastr.error(window.i18next.t("imageTooSmall"));
+            showToastr(window.i18next.t("imageTooSmall"), "error");
             $("#cropImageModal").modal("hide");
             return;
           }
@@ -624,7 +644,7 @@ document.addEventListener("DOMContentLoaded", async function () {
             tryCount > 10 &&
             (!cropBox || cropBox.width <= 0 || cropBox.height <= 0)
           ) {
-            toastr.error(window.i18next.t("failedToInitializeCropper"));
+            showToastr(window.i18next.t("failedToInitializeCropper"), "error");
             $("#cropImageModal").modal("hide");
             return;
           }
@@ -776,7 +796,7 @@ document.addEventListener("DOMContentLoaded", async function () {
         if (cropperReady) updateAvatarPreview();
       },
       error: function () {
-        toastr.error(window.i18next.t("failedToLoadImage"));
+        showToastr(window.i18next.t("failedToLoadImage"), "error");
         $("#cropImageModal").modal("hide");
       },
     });
@@ -942,7 +962,7 @@ document.addEventListener("DOMContentLoaded", async function () {
       if (file.type.startsWith("image/")) {
         handleImageFile(file);
       } else {
-        toastr.error(window.i18next.t("pleaseSelectValidImageFile"));
+        showToastr(window.i18next.t("pleaseSelectValidImageFile"), "error");
       }
     }
   });
@@ -953,11 +973,11 @@ document.addEventListener("DOMContentLoaded", async function () {
 
   function handleImageFile(file) {
     if (file.size > 5 * 1024 * 1024) {
-      toastr.error(window.i18next.t("imageSizeMustBeLessThan5MB"));
+      showToastr(window.i18next.t("imageSizeMustBeLessThan5MB"), "error");
       return;
     }
     if (file.size < 10 * 1024) {
-      toastr.warning(window.i18next.t("imageSizeIsVerySmall"));
+      showToastr(window.i18next.t("imageSizeIsVerySmall"), "warning");
     }
 
     selectedImageFile = file;
@@ -997,7 +1017,10 @@ document.addEventListener("DOMContentLoaded", async function () {
 
   await loadUserInfo();
 
-  if (window.adminAuth && typeof window.adminAuth.updateUserProfileDisplay === "function") {
+  if (
+    window.adminAuth &&
+    typeof window.adminAuth.updateUserProfileDisplay === "function"
+  ) {
     window.adminAuth.updateUserProfileDisplay();
   }
 

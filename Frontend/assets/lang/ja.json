@@ -234,6 +234,7 @@
   "csv": "CSV",
   "excel": "Excel",
   "pdf": "PDF",
+  "deleteUserMoveToDeactive": "ユーザーを非アクティブユーザーリストに移動",
   "copy": "コピー",
   "fullNameInvalidCharacters": "氏名は文字、スペース、日本語のみ使用できます。",
   "phoneNumberInvalidFormat": "電話番号は10～11桁の数字のみです。",
@@ -344,6 +345,7 @@
   "activeUsersTitle": "ユーザー - 管理パネル",
   "emailRequired": "メールアドレスは必須です",
   "passwordRequired": "パスワードは必須です",
+  "newPasswordMustBeAtLeast6Characters": "新しいパスワードは6文字以上である必要があります。",
   "accountHasBeenDeletedContactSupport": "アカウントは削除されました。サポートまでご連絡ください。",
   "errorCodes": {
     "ACCOUNT_DELETED": "アカウントが削除されました。",
@@ -563,5 +565,11 @@
   "oldPasswordIncorrect": "古いパスワードが正しくありません。",
   "hundredPercent": "100%",
   "left": "左に回転",
-  "right": "右に回転"
+  "right": "右に回転",
+  "exporting": "エクスポート中...",
+  "noDataToExport": "エクスポートするデータがありません",
+  "exportSuccess": "エクスポート成功",
+  "exportFailed": "エクスポート失敗",
+  "updatedAt": "更新日時",
+  "isDeleted": "削除済み"
 }

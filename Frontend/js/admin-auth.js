@@ -125,7 +125,7 @@ class AdminAuth {
       return {
         id: payload.sub,
         email: payload.email,
-        fullName: payload.name
+        fullName: payload.name,
       };
     } catch (e) {
       console.error("Failed to parse JWT token:", e);
@@ -178,8 +178,7 @@ class AdminAuth {
           }
         }
       }
-    } catch (error) {
-    }
+    } catch (error) {}
   }
 }
 
@@ -210,7 +209,13 @@ function loadActiveUsersTable() {
           if (!json || !Array.isArray(json.data)) return [];
           const users = json.data;
           const activeUsers = users.filter(
-            (u) => u.status === 1 || u.status === 2 || u.status === 3 || u.status === "Active" || u.status === "Inactive" || u.status === "Suspended"
+            (u) =>
+              u.status === 1 ||
+              u.status === 2 ||
+              u.status === 3 ||
+              u.status === "Active" ||
+              u.status === "Inactive" ||
+              u.status === "Suspended",
           );
           let total = activeUsers.length,
             active = total,
@@ -393,8 +398,14 @@ function getUserTableColumnDefs(isDeactive) {
         var $status = full.status;
         var statusObj = {
           1: { title: window.i18next.t("active"), class: "bg-label-success" },
-          2: { title: window.i18next.t("inactive"), class: "bg-label-secondary" },
-          3: { title: window.i18next.t("suspended"), class: "bg-label-warning" },
+          2: {
+            title: window.i18next.t("inactive"),
+            class: "bg-label-secondary",
+          },
+          3: {
+            title: window.i18next.t("suspended"),
+            class: "bg-label-warning",
+          },
           4: { title: window.i18next.t("banned"), class: "bg-label-danger" },
         };
         var obj = statusObj[$status] || {
@@ -421,7 +432,7 @@ function getUserTableColumnDefs(isDeactive) {
               },
             );
           } else {
-            return "<span class=\"text-muted\">N/A</span>";
+            return '<span class="text-muted">N/A</span>';
           }
         } else {
           if (full.lastLoginAt) {
@@ -434,7 +445,7 @@ function getUserTableColumnDefs(isDeactive) {
               second: "2-digit",
             });
           } else {
-            return "<span class=\"text-muted\">N/A</span>";
+            return '<span class="text-muted">N/A</span>';
           }
         }
       },
@@ -460,7 +471,7 @@ function getUserTableColumnDefs(isDeactive) {
 }
 
 function getUserTableDom() {
-  return "<\"row me-2\"<\"col-md-2\"<\"me-3\"l>><\"col-md-10\"<\"dt-action-buttons text-xl-end text-lg-start text-md-end text-start d-flex align-items-center justify-content-end flex-md-row flex-column mb-3 mb-md-0\"fB>>>t<\"row mx-2\"<\"col-sm-12 col-md-6\"i><\"col-sm-12 col-md-6\"p>>";
+  return '<"row me-2"<"col-md-2"<"me-3"l>><"col-md-10"<"dt-action-buttons text-xl-end text-lg-start text-md-end text-start d-flex align-items-center justify-content-end flex-md-row flex-column mb-3 mb-md-0"fB>>>t<"row mx-2"<"col-sm-12 col-md-6"i><"col-sm-12 col-md-6"p>>';
 }
 
 function getUserTableLanguage() {
@@ -484,7 +495,7 @@ function getUserTableLanguage() {
       infoEmpty: "Showing 0 to 0 of 0 entries",
       infoFiltered: "(filtered from _MAX_ total entries)",
       lengthMenu: "Show _MENU_ entries",
-      zeroRecords: "No matching records found"
+      zeroRecords: "No matching records found",
     };
     return fallbacks[key] || key;
   };
@@ -495,14 +506,14 @@ function getUserTableLanguage() {
     search: "",
     paginate: {
       previous: getTranslation("previous"),
-      next: getTranslation("next")
+      next: getTranslation("next"),
     },
     info: getTranslation("info"),
     infoEmpty: getTranslation("infoEmpty"),
     infoFiltered: getTranslation("infoFiltered"),
     zeroRecords: getTranslation("zeroRecords"),
     processing: getTranslation("loading"),
-    emptyTable: getTranslation("noData")
+    emptyTable: getTranslation("noData"),
   };
 }
 
@@ -511,43 +522,124 @@ function getUserTableButtons() {
     if (window.i18next && window.i18next.isInitialized) {
       return window.i18next.t(key);
     }
-    // Fallback translations
     const fallbacks = {
       export: "Export",
       print: "Print",
       csv: "CSV",
       excel: "Excel",
       pdf: "PDF",
-      copy: "Copy"
+      copy: "Copy",
     };
     return fallbacks[key] || key;
   };
+
+  function exportAllUserFields(e, dt, button, config) {
+    const data = dt.rows({ search: "applied" }).data().toArray();
+    if (!data || !data.length) {
+      toastr.warning(window.i18next.t("noDataToExport"));
+      return;
+    }
+    // Danh sách field đầy đủ nhất
+    const allFields = [
+      "id", "username", "fullName", "email", "phoneNumber", "status", "isVerified", "lastLoginAt", "deletedAt", "dateOfBirth", "address", "bio", "loginProvider", "profilePicture", "createdAt"
+    ];
+    const headers = allFields.map((key) => {
+      switch (key) {
+        case "id": return window.i18next.t("id");
+        case "username": return window.i18next.t("username");
+        case "fullName": return window.i18next.t("fullName");
+        case "email": return window.i18next.t("email");
+        case "phoneNumber": return window.i18next.t("phone");
+        case "status": return window.i18next.t("status");
+        case "isVerified": return window.i18next.t("verified");
+        case "lastLoginAt": return window.i18next.t("lastLogin");
+        case "deletedAt": return window.i18next.t("deletedAt");
+        case "dateOfBirth": return window.i18next.t("dateOfBirth");
+        case "address": return window.i18next.t("address");
+        case "bio": return window.i18next.t("bio");
+        case "loginProvider": return window.i18next.t("provider");
+        case "profilePicture": return window.i18next.t("profilePicture");
+        case "createdAt": return window.i18next.t("createdAt");
+        default: return key;
+      }
+    });
+    const rows = data.map(u => allFields.map(key => {
+      let val = u[key];
+      if (key === "status") {
+        switch (val) {
+          case 1: return window.i18next.t("active");
+          case 2: return window.i18next.t("inactive");
+          case 3: return window.i18next.t("suspended");
+          case 4: return window.i18next.t("banned");
+          default: return window.i18next.t("unknown");
+        }
+      }
+      if (key === "isVerified") return val ? window.i18next.t("yes") : window.i18next.t("no");
+      if (val === undefined || val === null) return "";
+      if (val instanceof Date) return val.toLocaleString("en-GB");
+      if (typeof val === "string" && val.match(/^\d{4}-\d{2}-\d{2}T/)) {
+        try { return new Date(val).toLocaleString("en-GB"); } catch { return val; }
+      }
+      if (key === "profilePicture" && val) return val.length > 30 ? val.slice(0, 30) + "..." : val;
+      return val;
+    }));
+    let csv = "";
+    csv += headers.join(",") + "\n";
+    rows.forEach(row => {
+      csv += row.map(v => '"' + String(v).replace(/"/g, '""') + '"').join(",") + "\n";
+    });
+    const blob = new Blob([csv], { type: "text/csv;charset=utf-8;" });
+    const link = document.createElement("a");
+    link.href = URL.createObjectURL(blob);
+    link.download = "users_export_" + new Date().toISOString().replace(/[:.]/g, "-") + ".csv";
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+  }
 
   return [
     {
       extend: "collection",
       className: "btn btn-label-secondary dropdown-toggle mx-3",
-      text: "<i class=\"ti ti-screen-share me-1 ti-xs\"></i>" + getTranslation("export"),
+      text:
+        '<i class="ti ti-screen-share me-1 ti-xs"></i>' +
+        getTranslation("export"),
       buttons: [
         {
+          extend: "copyHtml5",
+          text: '<i class="ti ti-copy me-2" ></i>' + getTranslation("copy"),
+          exportOptions: { columns: ':visible' }
+        },
+        {
+          extend: "csvHtml5",
+          text: '<i class="ti ti-file-text me-2" ></i>' + getTranslation("csv"),
+          exportOptions: { columns: ':visible' }
+        },
+        {
+          extend: "excelHtml5",
+          text:
+            '<i class="ti ti-file-spreadsheet me-2"></i>' +
+            getTranslation("excel"),
+          exportOptions: { columns: ':visible' }
+        },
+        {
+          extend: "pdfHtml5",
+          text:
+            '<i class="ti ti-file-code-2 me-2"></i>' + getTranslation("pdf"),
+          exportOptions: { columns: ':visible' }
+        },
+        {
           extend: "print",
-          text: "<i class=\"ti ti-printer me-2\" ></i>" + getTranslation("print"),
+          text: '<i class="ti ti-printer me-2" ></i>' + getTranslation("print"),
+          exportOptions: { columns: ':visible' }
         },
         {
-          extend: "csv",
-          text: "<i class=\"ti ti-file-text me-2\" ></i>" + getTranslation("csv"),
-        },
-        {
-          extend: "excel",
-          text: "<i class=\"ti ti-file-spreadsheet me-2\"></i>" + getTranslation("excel"),
-        },
-        {
-          extend: "pdf",
-          text: "<i class=\"ti ti-file-code-2 me-2\"></i>" + getTranslation("pdf"),
-        },
-        {
-          extend: "copy",
-          text: "<i class=\"ti ti-copy me-2\" ></i>" + getTranslation("copy"),
+          text:
+            '<i class="ti ti-file-spreadsheet me-2"></i>' +
+            getTranslation("excel") +
+            " (All Fields)",
+          action: exportAllUserFields,
+          className: "btn btn-success",
         },
       ],
     },
@@ -602,12 +694,17 @@ function handleAddUser() {
   })
     .then((res) => res.json())
     .then((res) => {
-      console.log("Add user response:", res); // Debug log
+      console.log("Add user response:", res);
       if (res.success || res.id) {
         toastr.clear();
         let backendUsername = res.username || username;
         if (backendUsername !== username) {
-          toastr.success(window.i18next.t("userAddedSuccessfullyWithNewUsername").replace("{old}", username).replace("{new}", backendUsername));
+          toastr.success(
+            window.i18next
+              .t("userAddedSuccessfullyWithNewUsername")
+              .replace("{old}", username)
+              .replace("{new}", backendUsername),
+          );
         } else {
           toastr.success(window.i18next.t("userAddedSuccessfully"));
         }
@@ -621,14 +718,28 @@ function handleAddUser() {
           setTimeout(() => window.location.reload(), 1000);
         }
       } else if (
-        (res.errorCode && res.errorCode.toUpperCase() === "EMAIL_ALREADY_EXISTS") ||
-        (res.errorCode && res.errorCode.toUpperCase() === "USER_ALREADY_EXISTS") ||
-        (res.message && res.message.replace(/\s+/g, '').toLowerCase().includes("emailalread")) ||
-        (res.message && res.message.replace(/\s+/g, '').toLowerCase().includes("emailexist")) ||
-        (res.message && res.message.toLowerCase().includes("email") && res.message.toLowerCase().includes("exist"))
+        (res.errorCode &&
+          res.errorCode.toUpperCase() === "EMAIL_ALREADY_EXISTS") ||
+        (res.errorCode &&
+          res.errorCode.toUpperCase() === "USER_ALREADY_EXISTS") ||
+        (res.message &&
+          res.message
+            .replace(/\s+/g, "")
+            .toLowerCase()
+            .includes("emailalread")) ||
+        (res.message &&
+          res.message
+            .replace(/\s+/g, "")
+            .toLowerCase()
+            .includes("emailexist")) ||
+        (res.message &&
+          res.message.toLowerCase().includes("email") &&
+          res.message.toLowerCase().includes("exist"))
       ) {
         toastr.clear();
-        toastr.error(window.i18next.t("userAlreadyExists").replace("{email}", email));
+        toastr.error(
+          window.i18next.t("userAlreadyExists").replace("{email}", email),
+        );
       } else {
         toastr.clear();
         toastr.error(res.message || window.i18next.t("addUserFailed"));
@@ -664,9 +775,7 @@ $(document).on(
         return;
       }
       if (file.size < 10 * 1024) {
-        toastr.warning(
-          window.i18next.t("imageSizeIsVerySmall"),
-        );
+        toastr.warning(window.i18next.t("imageSizeIsVerySmall"));
       }
       selectedImageFile = file;
       const reader = new FileReader();
@@ -727,12 +836,14 @@ function initializeCropper(imageElement, imageUrl) {
         const imageData = cropper.getImageData();
         if (!imageData || !cropBox) return setTimeout(waitForCropBox, 30);
         if (tryCount === 1) {
-          const boxSize = Math.floor(Math.min(imageData.naturalWidth, imageData.naturalHeight) * 0.8);
+          const boxSize = Math.floor(
+            Math.min(imageData.naturalWidth, imageData.naturalHeight) * 0.8,
+          );
           cropper.setCropBoxData({
             width: boxSize,
             height: boxSize,
             left: imageData.left + (imageData.naturalWidth - boxSize) / 2,
-            top: imageData.top + (imageData.naturalHeight - boxSize) / 2
+            top: imageData.top + (imageData.naturalHeight - boxSize) / 2,
           });
           setTimeout(waitForCropBox, 30);
           return;
@@ -748,11 +859,17 @@ function initializeCropper(imageElement, imageUrl) {
           newTop = imageData.top;
           adjusted = true;
         }
-        if (cropBox.left + cropBox.width > imageData.left + imageData.naturalWidth) {
+        if (
+          cropBox.left + cropBox.width >
+          imageData.left + imageData.naturalWidth
+        ) {
           newLeft = imageData.left + imageData.naturalWidth - cropBox.width;
           adjusted = true;
         }
-        if (cropBox.top + cropBox.height > imageData.top + imageData.naturalHeight) {
+        if (
+          cropBox.top + cropBox.height >
+          imageData.top + imageData.naturalHeight
+        ) {
           newTop = imageData.top + imageData.naturalHeight - cropBox.height;
           adjusted = true;
         }
@@ -761,7 +878,7 @@ function initializeCropper(imageElement, imageUrl) {
             width: cropBox.width,
             height: cropBox.height,
             left: newLeft,
-            top: newTop
+            top: newTop,
           });
           setTimeout(waitForCropBox, 30);
           return;
@@ -771,7 +888,10 @@ function initializeCropper(imageElement, imageUrl) {
           $("#cropImageModal").modal("hide");
           return;
         }
-        if (tryCount > 10 && (!cropBox || cropBox.width <= 0 || cropBox.height <= 0)) {
+        if (
+          tryCount > 10 &&
+          (!cropBox || cropBox.width <= 0 || cropBox.height <= 0)
+        ) {
           toastr.error(window.i18next.t("failedToInitializeCropper"));
           $("#cropImageModal").modal("hide");
           return;
@@ -780,7 +900,7 @@ function initializeCropper(imageElement, imageUrl) {
         let maxZoom = Math.min(
           Math.floor((initialCropBoxWidth / 10) * 100) / 100,
           imageData.naturalWidth / initialCropBoxWidth,
-          3
+          3,
         );
         maxZoom = Math.max(1, maxZoom);
         cropperReady = true;
@@ -815,7 +935,7 @@ function initializeCropper(imageElement, imageUrl) {
               width: newWidth,
               height: newWidth,
               left: cropBox.left,
-              top: cropBox.top
+              top: cropBox.top,
             });
           } else {
             cropper.zoomTo(currentZoom);
@@ -842,7 +962,7 @@ function initializeCropper(imageElement, imageUrl) {
               width: newWidth,
               height: newWidth,
               left: cropBox.left,
-              top: cropBox.top
+              top: cropBox.top,
             });
           } else {
             cropper.zoomTo(currentZoom);
@@ -864,7 +984,7 @@ function initializeCropper(imageElement, imageUrl) {
               width: newWidth,
               height: newWidth,
               left: cropBox.left,
-              top: cropBox.top
+              top: cropBox.top,
             });
           } else {
             cropper.zoomTo(currentZoom);
@@ -922,7 +1042,7 @@ function initializeCropper(imageElement, imageUrl) {
     error: function () {
       toastr.error(window.i18next.t("failedToLoadImage"));
       $("#cropImageModal").modal("hide");
-    }
+    },
   });
   window._cropper = cropper;
 }
@@ -935,7 +1055,8 @@ function updateZoomSlider(maxZoom) {
     const minLabel = zoomSlider.parentElement?.previousElementSibling;
     const maxLabel = document.getElementById("zoom-max-label");
     if (minLabel) minLabel.textContent = "100%";
-    if (maxLabel && maxZoom) maxLabel.textContent = `${Math.round(maxZoom * 100)}%`;
+    if (maxLabel && maxZoom)
+      maxLabel.textContent = `${Math.round(maxZoom * 100)}%`;
   }
 }
 
@@ -984,9 +1105,7 @@ function handleImageFile(file) {
     return;
   }
   if (file.size < 10 * 1024) {
-    toastr.warning(
-      window.i18next.t("imageSizeIsVerySmall"),
-    );
+    toastr.warning(window.i18next.t("imageSizeIsVerySmall"));
   }
 
   selectedImageFile = file;
@@ -1052,7 +1171,11 @@ function updateAvatarPreview() {
       cropBox = cropper.getCropBoxData();
     }
     if (!cropBox || cropBox.width <= 0 || cropBox.height <= 0) return;
-    if (imageData && (cropBox.width > imageData.naturalWidth || cropBox.height > imageData.naturalHeight)) {
+    if (
+      imageData &&
+      (cropBox.width > imageData.naturalWidth ||
+        cropBox.height > imageData.naturalHeight)
+    ) {
       const preview = document.getElementById("crop-avatar-preview");
       if (preview) {
         preview.src = "";
@@ -1119,7 +1242,11 @@ $(document).on("click", "#cropImageBtn", function () {
     toastr.error(window.i18next.t("cropAreaInvalid"));
     return;
   }
-  if (imageData && (cropBox.width > imageData.naturalWidth || cropBox.height > imageData.naturalHeight)) {
+  if (
+    imageData &&
+    (cropBox.width > imageData.naturalWidth ||
+      cropBox.height > imageData.naturalHeight)
+  ) {
     toastr.error(window.i18next.t("cropAreaLargerThanImage"));
     return;
   }
@@ -1152,9 +1279,7 @@ $(document).on("click", "#cropImageBtn", function () {
     $("#edit-profilePicture-container, #profile-picture-preview").show();
     setTimeout(() => {
       $("#cropImageModal").modal("hide");
-      toastr.success(
-        window.i18next.t("profilePictureCroppedSuccessfully"),
-      );
+      toastr.success(window.i18next.t("profilePictureCroppedSuccessfully"));
     }, 200);
   } catch (error) {
     window._editProfilePictureBase64 = null;
@@ -1204,7 +1329,9 @@ function handleUpdateUser(userId) {
   if (window._editProfilePictureBase64) {
     data.profilePicture = window._editProfilePictureBase64;
   } else if (selectedImageFile) {
-    toastr.warning(window.i18next.t("pleaseCropYourProfilePictureBeforeSaving"));
+    toastr.warning(
+      window.i18next.t("pleaseCropYourProfilePictureBeforeSaving"),
+    );
     return;
   } else if (window._profilePictureRemoved) {
     data.profilePicture = null;
@@ -1258,12 +1385,18 @@ function handleUpdateUser(userId) {
   }
   if (data.phoneNumber !== original.phoneNumber) {
     if (data.phoneNumber && !/^[0-9]{10,11}$/.test(data.phoneNumber)) {
-      toastr.error(window.i18next.t("phoneNumberMustBe10To11DigitsAndOnlyNumbers"));
+      toastr.error(
+        window.i18next.t("phoneNumberMustBe10To11DigitsAndOnlyNumbers"),
+      );
       return;
     }
   }
   if (!data.fullName) {
     toastr.error(window.i18next.t("fullNameRequired"));
+    return;
+  }
+  if (!/^[a-zA-ZÀ-ỹ\s]+$/.test(data.fullName)) {
+    toastr.error(window.i18next.t("fullNameInvalidCharacters"));
     return;
   }
   const token = localStorage.getItem("authToken");
@@ -1371,11 +1504,7 @@ function deleteUser(userId) {
       $("#deleteUserModal").modal("hide");
       const userInfo = res.data || res;
 
-      if (
-        userInfo &&
-        currentUserInfo &&
-        userInfo.id == currentUserInfo.id
-      ) {
+      if (userInfo && currentUserInfo && userInfo.id == currentUserInfo.id) {
         localStorage.removeItem("authToken");
         sessionStorage.clear();
         toastr.info(window.i18next.t("yourAccountHasBeenDeleted"));
@@ -1535,10 +1664,16 @@ function openViewUserModal(userId) {
         return;
       }
       $("#viewUserModal").data("userid", user.id);
-      $(".user-username").text(user.username || window.i18next.t("notAvailable"));
-      $(".user-fullName").text(user.fullName || window.i18next.t("notAvailable"));
+      $(".user-username").text(
+        user.username || window.i18next.t("notAvailable"),
+      );
+      $(".user-fullName").text(
+        user.fullName || window.i18next.t("notAvailable"),
+      );
       $(".user-email").text(user.email || window.i18next.t("notAvailable"));
-      $(".user-phone").text(user.phoneNumber || window.i18next.t("notAvailable"));
+      $(".user-phone").text(
+        user.phoneNumber || window.i18next.t("notAvailable"),
+      );
       $(".user-lastlogin").text(
         user.lastLoginAt
           ? new Date(user.lastLoginAt).toLocaleString("en-GB", {
@@ -1569,7 +1704,9 @@ function openViewUserModal(userId) {
           ? new Date(user.dateOfBirth).toLocaleDateString("en-GB")
           : window.i18next.t("notAvailable"),
       );
-      $(".user-verified").text(user.isVerified ? window.i18next.t("yes") : window.i18next.t("no"));
+      $(".user-verified").text(
+        user.isVerified ? window.i18next.t("yes") : window.i18next.t("no"),
+      );
       $(".user-provider").text(user.loginProvider || window.i18next.t("local"));
       $(".user-bio").text(user.bio || window.i18next.t("noBioAvailable"));
       const $avatar = $("#view-user-avatar");
@@ -1704,7 +1841,7 @@ $(document).on("submit", "#addNewUserForm", function (e) {
   e.preventDefault();
   handleAddUser();
 });
-$(document).on("click", ".breadcrumb-item a[href=\"index.html\"]", function (e) {
+$(document).on("click", '.breadcrumb-item a[href="index.html"]', function (e) {
   e.preventDefault();
   window.location.href = "/admin/index.html";
 });
@@ -1753,18 +1890,38 @@ function getStatusBadge(status) {
   switch (status) {
     case 1:
     case "Active":
-      return "<span class=\"badge bg-label-success\">" + window.i18next.t("active") + "</span>";
+      return (
+        '<span class="badge bg-label-success">' +
+        window.i18next.t("active") +
+        "</span>"
+      );
     case 2:
     case "Inactive":
-      return "<span class=\"badge bg-label-secondary\">" + window.i18next.t("inactive") + "</span>";
+      return (
+        '<span class="badge bg-label-secondary">' +
+        window.i18next.t("inactive") +
+        "</span>"
+      );
     case 3:
     case "Suspended":
-      return "<span class=\"badge bg-label-warning\">" + window.i18next.t("suspended") + "</span>";
+      return (
+        '<span class="badge bg-label-warning">' +
+        window.i18next.t("suspended") +
+        "</span>"
+      );
     case 4:
     case "Banned":
-      return "<span class=\"badge bg-label-danger\">" + window.i18next.t("banned") + "</span>";
+      return (
+        '<span class="badge bg-label-danger">' +
+        window.i18next.t("banned") +
+        "</span>"
+      );
     default:
-      return "<span class=\"badge bg-label-secondary\">" + window.i18next.t("unknown") + "</span>";
+      return (
+        '<span class="badge bg-label-secondary">' +
+        window.i18next.t("unknown") +
+        "</span>"
+      );
   }
 }
 
@@ -1782,10 +1939,18 @@ window.openDeleteUserModal = function (userId) {
         return;
       }
       $("#deleteUserModal").data("userid", user.id);
-      $(".delete-user-username").text(user.username || window.i18next.t("notAvailable"));
-      $(".delete-user-fullName").text(user.fullName || window.i18next.t("notAvailable"));
-      $(".delete-user-email").text(user.email || window.i18next.t("notAvailable"));
-      $(".delete-user-phone").text(user.phoneNumber || window.i18next.t("notAvailable"));
+      $(".delete-user-username").text(
+        user.username || window.i18next.t("notAvailable"),
+      );
+      $(".delete-user-fullName").text(
+        user.fullName || window.i18next.t("notAvailable"),
+      );
+      $(".delete-user-email").text(
+        user.email || window.i18next.t("notAvailable"),
+      );
+      $(".delete-user-phone").text(
+        user.phoneNumber || window.i18next.t("notAvailable"),
+      );
       $(".delete-user-status").html(getStatusBadge(user.status));
       $(".delete-user-lastlogin").text(
         user.lastLoginAt
@@ -1799,7 +1964,9 @@ window.openDeleteUserModal = function (userId) {
             })
           : window.i18next.t("never"),
       );
-      $(".delete-user-address").text(user.address || window.i18next.t("notAvailable"));
+      $(".delete-user-address").text(
+        user.address || window.i18next.t("notAvailable"),
+      );
       $(".delete-user-created").text(
         user.createdAt
           ? new Date(user.createdAt).toLocaleString("en-GB", {
@@ -1831,10 +1998,18 @@ window.openRestoreUserModal = function (userId) {
         return;
       }
       $("#restoreUserModal").data("userid", user.id);
-      $(".restore-user-username").text(user.username || window.i18next.t("notAvailable"));
-      $(".restore-user-fullName").text(user.fullName || window.i18next.t("notAvailable"));
-      $(".restore-user-email").text(user.email || window.i18next.t("notAvailable"));
-      $(".restore-user-phone").text(user.phoneNumber || window.i18next.t("notAvailable"));
+      $(".restore-user-username").text(
+        user.username || window.i18next.t("notAvailable"),
+      );
+      $(".restore-user-fullName").text(
+        user.fullName || window.i18next.t("notAvailable"),
+      );
+      $(".restore-user-email").text(
+        user.email || window.i18next.t("notAvailable"),
+      );
+      $(".restore-user-phone").text(
+        user.phoneNumber || window.i18next.t("notAvailable"),
+      );
       $(".restore-user-status").html(getStatusBadge(user.status));
       $(".restore-user-deletedat").text(
         user.deletedAt
@@ -1848,7 +2023,9 @@ window.openRestoreUserModal = function (userId) {
             })
           : window.i18next.t("notAvailable"),
       );
-      $(".restore-user-address").text(user.address || window.i18next.t("notAvailable"));
+      $(".restore-user-address").text(
+        user.address || window.i18next.t("notAvailable"),
+      );
       $(".restore-user-created").text(
         user.createdAt
           ? new Date(user.createdAt).toLocaleString("en-GB", {
@@ -1976,7 +2153,9 @@ async function saveUserProfile(formData) {
       return true;
     } else {
       const errorData = await response.json();
-      toastr.error(errorData.message || window.i18next.t("failedToUpdateProfile"));
+      toastr.error(
+        errorData.message || window.i18next.t("failedToUpdateProfile"),
+      );
       return false;
     }
   } catch (error) {
@@ -2023,10 +2202,10 @@ function saveUserSettings() {
           method: "POST",
           headers: {
             "Content-Type": "application/json",
-            "Authorization": `Bearer ${token}`,
-            "Accept-Language": lang
+            Authorization: `Bearer ${token}`,
+            "Accept-Language": lang,
           },
-          body: JSON.stringify({ language: lang })
+          body: JSON.stringify({ language: lang }),
         });
       }
     }
@@ -2154,7 +2333,9 @@ document.addEventListener("DOMContentLoaded", function () {
       e.preventDefault();
       const oldPwd = document.getElementById("old-password").value.trim();
       const newPwd = document.getElementById("new-password").value.trim();
-      const confirmPwd = document.getElementById("confirm-password").value.trim();
+      const confirmPwd = document
+        .getElementById("confirm-password")
+        .value.trim();
       if (!oldPwd || !newPwd || !confirmPwd) {
         toastr.error(window.i18next.t("allFieldsRequired"));
         return;
@@ -2173,7 +2354,10 @@ document.addEventListener("DOMContentLoaded", function () {
           toastr.error(window.i18next.t("authenticationRequired"));
           return;
         }
-        let lang = (window.i18next && window.i18next.language) || localStorage.getItem("i18nextLng") || "vi";
+        let lang =
+          (window.i18next && window.i18next.language) ||
+          localStorage.getItem("i18nextLng") ||
+          "vi";
         const res = await fetch(
           "http://localhost:5050/api/Auth/change-password",
           {
@@ -2186,7 +2370,7 @@ document.addEventListener("DOMContentLoaded", function () {
               currentPassword: oldPwd,
               newPassword: newPwd,
               confirmPassword: confirmPwd,
-              language: lang
+              language: lang,
             }),
           },
         );
@@ -2195,10 +2379,22 @@ document.addEventListener("DOMContentLoaded", function () {
           toastr.success(window.i18next.t("passwordChangedSuccessfully"));
           form.reset();
         } else {
-          if (data.message && (data.message.toLowerCase().includes("old password is incorrect") || data.message.toLowerCase().includes("current password is incorrect") || data.message.toLowerCase().includes("mật khẩu cũ không đúng") || data.message.toLowerCase().includes("古いパスワードが正しくありません"))) {
+          if (
+            data.message &&
+            (data.message.toLowerCase().includes("old password is incorrect") ||
+              data.message
+                .toLowerCase()
+                .includes("current password is incorrect") ||
+              data.message.toLowerCase().includes("mật khẩu cũ không đúng") ||
+              data.message
+                .toLowerCase()
+                .includes("古いパスワードが正しくありません"))
+          ) {
             toastr.error(window.i18next.t("oldPasswordIncorrect"));
           } else {
-            toastr.error(data.message || window.i18next.t("changePasswordFailed"));
+            toastr.error(
+              data.message || window.i18next.t("changePasswordFailed"),
+            );
           }
         }
       } catch (err) {
@@ -2209,8 +2405,8 @@ document.addEventListener("DOMContentLoaded", function () {
 });
 // --- End Change Password Logic ---
 
-if (typeof window.i18next !== 'undefined') {
-  window.i18next.on('languageChanged', function() {
+if (typeof window.i18next !== "undefined") {
+  window.i18next.on("languageChanged", function () {
     setTimeout(() => {
       reloadCurrentPageData();
     }, 100);

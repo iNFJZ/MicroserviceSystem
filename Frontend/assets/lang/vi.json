@@ -161,7 +161,7 @@
   "excel": "Excel",
   "pdf": "PDF",
   "copy": "Sao chép",
-  "fullNameInvalidCharacters": "Họ tên chỉ được chứa chữ cái, khoảng trắng và ký tự tiếng Việt.",
+  "fullNameInvalidCharacters": "Họ và tên chỉ được chứa chữ cái, dấu cách và ký tự tiếng Việt.",
   "phoneNumberInvalidFormat": "Số điện thoại phải từ 10-11 số và chỉ chứa số.",
   "phoneNumber": "Số điện thoại",
   "phone": "Số điện thoại",
@@ -210,7 +210,7 @@
   "phoneNumberMustBe10To11DigitsAndOnlyNumbers": "Số điện thoại phải từ 10-11 số và chỉ chứa số.",
   "fullNameIsRequired": "Họ tên là bắt buộc.",
   "authenticationRequired": "Yêu cầu xác thực.",
-  "fullNameRequired": "Họ tên là bắt buộc.",
+  "fullNameRequired": "Họ và tên là bắt buộc.",
   "validEmailRequired": "Cần nhập email hợp lệ.",
   "emailRequired": "Email là bắt buộc.",
   "passwordRequired": "Mật khẩu là bắt buộc.",
@@ -294,6 +294,7 @@
   "quickActions": "Tác vụ nhanh",
   "restoreUserConfirmTitle": "Xác nhận khôi phục người dùng",
   "restoreUserAccount": "Khôi phục tài khoản người dùng",
+  "newPasswordMustBeAtLeast6Characters": "Mật khẩu mới phải có ít nhất 6 ký tự.",
   "restoreUserConfirmDesc": "Bạn sắp khôi phục lại tài khoản người dùng này. Hành động này sẽ:",
   "errorCodes": {
     "ACCOUNT_DELETED": "Tài khoản đã bị xóa.",
@@ -552,4 +553,10 @@
   "auth.reset-password.set-new-password-button": "Đặt mật khẩu mới",
   "failedToValidateResetToken": "Lỗi khi xác thực token đặt lại mật khẩu!",
   "verifyEmailInstruction": "Vui lòng kiểm tra email và nhấn vào liên kết xác thực để kích hoạt tài khoản."
+  ,"exporting": "Đang xuất..."
+  ,"noDataToExport": "Không có dữ liệu để xuất"
+  ,"exportSuccess": "Xuất thành công"
+  ,"exportFailed": "Xuất thất bại"
+  ,"updatedAt": "Cập nhật lần cuối"
+  ,"isDeleted": "Đã xóa"
 }
