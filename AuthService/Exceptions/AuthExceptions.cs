@@ -41,6 +41,11 @@ namespace AuthService.Exceptions
         public UserAlreadyExistsException(string email) : base("USER_ALREADY_EXISTS", $"User with email '{email}' already exists") { }
     }
 
+    public class UsernameAlreadyExistsException : AuthException
+    {
+        public UsernameAlreadyExistsException(string username) : base("USERNAME_ALREADY_EXISTS", $"Username '{username}' already exists") { }
+    }
+
     public class UserLockedException : AuthException
     {
         public UserLockedException(string message) : base("ACCOUNT_LOCKED", message) { }

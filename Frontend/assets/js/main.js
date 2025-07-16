@@ -167,20 +167,16 @@ if (document.getElementById("layout-menu")) {
   // Internationalization (Language Dropdown)
   // ---------------------------------------
 
-  // --- Đảm bảo toastr luôn hiển thị khi đổi ngôn ngữ ở mọi trang ---
   function setLanguage(lang) {
     if (!['en', 'vi', 'ja'].includes(lang)) lang = 'en';
     window.i18next.changeLanguage(lang, (err, t) => {
       if (err) {
-        console.log('something went wrong loading', err);
         return;
       }
       localize();
       if (typeof toastr !== 'undefined') {
         toastr.success(window.i18next.t('languageChanged'));
-        console.log('[i18n] Toastr notification shown:', window.i18next.t('languageChanged'));
       } else {
-        console.warn('[i18n] Toastr is undefined!');
       }
       updateLanguageDropdown(lang);
     });
@@ -193,9 +189,9 @@ if (document.getElementById("layout-menu")) {
       }
       window.i18next
         .init({
-          lng: localStorage.getItem("i18nextLng") || "en",
+          lng: localStorage.getItem("i18nextLng") || "vi",
           debug: false,
-          fallbackLng: "en",
+          fallbackLng: "vi",
           backend: {
             loadPath: assetsPath + "lang/{{lng}}.json"
           },
@@ -203,6 +199,8 @@ if (document.getElementById("layout-menu")) {
         })
         .then(function (t) {
           localize();
+          const currentLang = localStorage.getItem("i18nextLng") || "vi";
+          updateLanguageDropdown(currentLang);
         });
     } else {
       console.error("[i18n] i18nextHttpBackend is missing! File i18n.js may be incorrect or missing backend plugin. Please check your vendor/i18n/i18n.js build.");

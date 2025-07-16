@@ -105,7 +105,7 @@
                 id="languageDropdownBtn"
               >
                 <span class="fi fi-vn me-2" id="current-lang-flag" style="width: 1.5em; height: 1em;"></span>
-                <span id="current-lang-name">Tiếng Việt</span>
+                <span id="current-lang-name">Loading...</span>
               </a>
               <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="languageDropdownBtn">
                 <li>
@@ -192,6 +192,7 @@
                     name="email"
                     data-i18n-placeholder="enterEmail"
                     autofocus
+                    autocomplete="off"
                   />
                 </div>
                 <div class="mb-3 form-password-toggle">
@@ -200,6 +201,7 @@
                       class="form-label"
                       for="password"
                       data-i18n="password"
+                      autocomplete="off"
                       >Password</label
                     >
                     <a
@@ -216,6 +218,7 @@
                       class="form-control"
                       name="password"
                       data-i18n-placeholder="enterPassword"
+                      autocomplete="off"
                     />
                     <span class="input-group-text cursor-pointer"
                       ><i class="ti ti-eye-off"></i
@@ -228,6 +231,7 @@
                       class="form-check-input"
                       type="checkbox"
                       id="remember-me"
+                      autocomplete="off"
                     />
                     <label
                       class="form-check-label"

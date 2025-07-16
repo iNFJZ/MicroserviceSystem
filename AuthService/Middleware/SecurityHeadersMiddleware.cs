@@ -21,18 +21,6 @@ namespace AuthService.Middleware
             context.Response.Headers["Permissions-Policy"] = "geolocation=(), microphone=(), camera=()";
             context.Response.Headers["Strict-Transport-Security"] = "max-age=31536000; includeSubDomains";
 
-            // Add CORS headers for preflight requests
-            if (context.Request.Method == "OPTIONS")
-            {
-                context.Response.Headers["Access-Control-Allow-Origin"] = "http://localhost:8080";
-                context.Response.Headers["Access-Control-Allow-Methods"] = "GET, POST, PUT, DELETE, OPTIONS";
-                context.Response.Headers["Access-Control-Allow-Headers"] = "Content-Type, Authorization";
-                context.Response.Headers["Access-Control-Allow-Credentials"] = "true";
-                context.Response.StatusCode = 204;
-                await context.Response.CompleteAsync();
-                return;
-            }
-
             await _next(context);
         }
     }

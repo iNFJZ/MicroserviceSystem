@@ -19,10 +19,11 @@ builder.Services.AddSwaggerGen();
 
 builder.Services.AddCors(options =>
 {
-    options.AddDefaultPolicy(policy =>
-        policy.AllowAnyOrigin()
+    options.AddPolicy("AllowFrontend", policy =>
+        policy.WithOrigins("http://localhost:8080")
               .AllowAnyHeader()
               .AllowAnyMethod()
+              .AllowCredentials()
     );
 });
 
@@ -36,7 +37,7 @@ if (app.Environment.IsDevelopment())
 
 app.UseHttpsRedirection();
 
-app.UseCors();
+app.UseCors("AllowFrontend");
 
 await app.UseOcelot();
 

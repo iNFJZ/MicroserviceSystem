@@ -46,6 +46,10 @@
     <link rel="stylesheet" href="../../assets/vendor/libs/datatables-buttons-bs5/buttons.bootstrap5.css" />
     <link rel="stylesheet" href="../../assets/vendor/libs/select2/select2.css" />
     <link rel="stylesheet" href="../../assets/vendor/libs/@form-validation/umd/styles/index.min.css" />
+    <link rel="stylesheet" href="../../assets/vendor/libs/toastr/toastr.css" />
+    <script src="../../assets/vendor/libs/toastr/toastr.js"></script>
+    <script src="../../assets/vendor/libs/bloodhound/bloodhound.js"></script>
+    <script src="../../assets/vendor/libs/typeahead-js/typeahead.js"></script>
 
     <!-- Page CSS -->
 
@@ -150,7 +154,7 @@
                 <li class="nav-item dropdown-language dropdown me-2 me-xl-0">
                   <a class="nav-link dropdown-toggle hide-arrow d-flex align-items-center" href="javascript:void(0);" data-bs-toggle="dropdown" id="languageDropdownBtn">
                     <span class="fi fi-vn me-2" id="current-lang-flag" style="width: 1.5em; height: 1em;"></span>
-                    <span id="current-lang-name">Tiếng Việt</span>
+                    <span id="current-lang-name">Loading...</span>
                   </a>
                   <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="languageDropdownBtn">
                     <li>
@@ -191,7 +195,7 @@
                   </a>
                   <ul class="dropdown-menu dropdown-menu-end">
                     <li>
-                      <a class="dropdown-item" href="#">
+                      <a class="dropdown-item" href="my-profile.html">
                         <div class="d-flex">
                           <div class="flex-shrink-0 me-3">
                             <div class="avatar avatar-online">
@@ -348,24 +352,43 @@
                   <div class="offcanvas-body mx-0 flex-grow-0 pt-0 h-100">
                     <form class="add-new-user pt-0" id="addNewUserForm" onsubmit="return false">
                       <div class="mb-3">
-                        <label class="form-label" for="add-user-fullName" data-i18n="fullName">Full Name</label>
+                        <label class="form-label" for="add-user-username" data-i18n="username">Username <span class="text-danger">*</span></label>
+                        <input
+                          type="text"
+                          class="form-control"
+                          id="add-user-username"
+                          name="username"
+                          required 
+                          data-i18n-placeholder="enterUsername"
+                          placeholder="Enter username"
+                          pattern="^[a-zA-Z0-9]+$"
+                          title="Username can only contain letters and numbers, no spaces or special characters"
+                          aria-label="Username"
+                          autofocus
+                          autocomplete="off" />
+                        <div class="form-text" data-i18n="usernameRequirements">Username can only contain letters and numbers, no spaces or special characters</div>
+                      </div>
+                      <div class="mb-3">
+                        <label class="form-label" for="add-user-fullName" data-i18n="fullName">Full Name <span class="text-danger">*</span></label>
                         <input
                           type="text"
                           class="form-control"
                           id="add-user-fullName"
                           name="fullName"
                           required data-i18n-placeholder="enterFullName"
-                          aria-label="John Doe" />
+                          aria-label="Full Name"
+                          autocomplete="off" />
                       </div>
                       <div class="mb-3">
-                        <label class="form-label" for="add-user-email" data-i18n="email">Email</label>
+                        <label class="form-label" for="add-user-email" data-i18n="email">Email <span class="text-danger">*</span></label>
                         <input
                           type="email"
                           id="add-user-email"
                           class="form-control"
                           name="email"
                           required data-i18n-placeholder="enterEmail"
-                          aria-label="john.doe@example.com" />
+                          aria-label="Email"
+                          autocomplete="off" />
                       </div>
                       <div class="mb-3">
                         <label class="form-label" for="add-user-contact" data-i18n="phone">Phone Number</label>
@@ -373,10 +396,27 @@
                           type="tel"
                           id="add-user-contact"
                           class="form-control phone-mask"
-                          name="contact"
-                          required data-i18n-placeholder="enterPhoneNumber"
+                          name="phoneNumber"
+                          data-i18n-placeholder="enterPhoneNumber"
                           placeholder="+1 (609) 988-44-11"
-                          aria-label="Phone number" />
+                          aria-label="Phone number"
+                          autocomplete="off" />
+                        <div class="form-text" data-i18n="optionalPhoneNumber">Optional phone number</div>
+                      </div>
+                      <div class="mb-3">
+                        <label class="form-label" for="add-user-password" data-i18n="password">Password <span class="text-danger">*</span></label>
+                        <input
+                          type="password"
+                          id="add-user-password"
+                          class="form-control"
+                          name="password"
+                          required
+                          data-i18n-placeholder="enterPassword"
+                          placeholder="Enter password"
+                          minlength="6"
+                          aria-label="Password"
+                          autocomplete="off" />
+                        <div class="form-text" data-i18n="passwordRequirementsSimple">Password must be at least 6 characters long</div>
                       </div>
                       <button type="submit" class="btn btn-primary me-sm-3 me-1 data-submit" data-i18n="submit">Submit</button>
                       <button type="reset" class="btn btn-label-secondary" data-bs-dismiss="offcanvas" data-i18n="cancel">Cancel</button>
@@ -447,7 +487,6 @@
     <script src="../../assets/vendor/libs/node-waves/node-waves.js"></script>
     <script src="../../assets/vendor/libs/perfect-scrollbar/perfect-scrollbar.js"></script>
     <script src="../../assets/vendor/libs/hammer/hammer.js"></script>
-    <script src="../../assets/vendor/libs/typeahead-js/typeahead.js"></script>
     <script src="../../assets/vendor/js/menu.js"></script>
 
     <!-- endbuild -->
@@ -461,8 +500,8 @@
     <script src="../../assets/vendor/libs/@form-validation/umd/plugin-auto-focus/index.min.js"></script>
     <script src="../../assets/vendor/libs/cleavejs/cleave.js"></script>
     <script src="../../assets/vendor/libs/cleavejs/cleave-phone.js"></script>
-    <link rel="stylesheet" href="../../assets/vendor/libs/toastr/toastr.css" />
-    <script src="../../assets/vendor/libs/toastr/toastr.js"></script>
+
+    <script src="../../assets/vendor/libs/bloodhound/bloodhound.js"></script>
 
     <!-- Main JS -->
     <script src="../../assets/vendor/libs/i18n/i18next.min.js"></script>

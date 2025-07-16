@@ -50,7 +50,7 @@ namespace AuthService.Services
             _resetPasswordTokenExpiryMinutes = int.Parse(_config["AuthPolicy:ResetPasswordTokenExpiryMinutes"] ?? "15");
         }
 
-        public async Task<string> RegisterAsync(RegisterDto dto)
+        public async Task<(string token, string username)> RegisterAsync(RegisterDto dto)
         {
             var sanitizedEmail = dto.Email?.Trim().ToLowerInvariant();
             var sanitizedUsername = dto.Username?.Trim();
@@ -79,6 +79,15 @@ namespace AuthService.Services
             if (sanitizedFullName != null && !System.Text.RegularExpressions.Regex.IsMatch(sanitizedFullName, @"^[a-zA-ZÀ-ỹ\s]+$"))
                 throw new AuthException("INVALID_CHARACTERS", "Full name can only contain letters, spaces, and Vietnamese characters");
             
+            if (!string.IsNullOrWhiteSpace(dto.PhoneNumber))
+            {
+                var phoneNumber = dto.PhoneNumber.Trim();
+                if (phoneNumber.Length > 11)
+                    throw new AuthException("INVALID_PHONE", "Phone number must be less than 11 characters");
+                if (!System.Text.RegularExpressions.Regex.IsMatch(phoneNumber, @"^[0-9]{10,11}$"))
+                    throw new AuthException("INVALID_PHONE", "Phone number must be 10-11 digits and contain only numbers");
+            }
+            
             var emailExists = await _emailVerifierService.VerifyEmailAsync(sanitizedEmail);
             if (!emailExists)
                 throw new EmailNotExistsException(sanitizedEmail);
@@ -92,20 +101,20 @@ namespace AuthService.Services
                     throw new UserAlreadyExistsException(sanitizedEmail);
             }
 
+            var finalUsername = await GenerateUniqueUsernameAsync(sanitizedUsername);
+
             if (string.IsNullOrWhiteSpace(dto.Password))
                 throw new AuthException("REQUIRED_FIELD_MISSING", "Password is required");
             
             if (dto.Password.Length < 6)
                 throw new AuthException("WEAK_PASSWORD", "Password must be at least 6 characters");
             
-            if (!System.Text.RegularExpressions.Regex.IsMatch(dto.Password, @"^(?=.*[a-z])(?=.*[A-Z])(?=.*\d).{6,}$"))
-                throw new AuthException("WEAK_PASSWORD", "Password must contain at least one uppercase letter, one lowercase letter, and one number");
-            
             var user = new User
             {
-                Username = sanitizedUsername,
+                Username = finalUsername,
                 FullName = sanitizedFullName,
                 Email = sanitizedEmail,
+                PhoneNumber = dto.PhoneNumber?.Trim(),
                 PasswordHash = _passwordService.HashPassword(dto.Password),
                 LoginProvider = "Local",
                 Status = UserStatus.Inactive,
@@ -131,7 +140,37 @@ namespace AuthService.Services
                 Language = dto.Language ?? "en"
             });
             
-            return token;
+            return (token, finalUsername);
+        }
+
+        private async Task<string> GenerateUniqueUsernameAsync(string baseUsername)
+        {
+            var username = baseUsername;
+            var counter = 1;
+            const int maxAttempts = 100;
+            while (counter <= maxAttempts)
+            {
+                var existingUser = await _repo.GetByUsernameAsync(username);
+                if (existingUser == null)
+                {
+                    return username;
+                }
+                
+                username = $"{baseUsername}{counter}";
+                counter++;
+            }
+            
+            var timestamp = DateTime.UtcNow.ToString("yyyyMMddHHmmss");
+            username = $"{baseUsername}{timestamp}";
+            
+            var finalCheck = await _repo.GetByUsernameAsync(username);
+            if (finalCheck == null)
+            {
+                return username;
+            }
+            
+            var guid = Guid.NewGuid().ToString("N").Substring(0, 8);
+            return $"{baseUsername}{guid}";
         }
 
         private string GenerateEmailVerifyToken(Guid userId, string email)

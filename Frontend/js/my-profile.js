@@ -1,11 +1,35 @@
 // My Profile JavaScript
 $(document).ready(async function () {
-  if (window.adminAuth) {
-    await window.adminAuth.updateUserProfileDisplay();
-  }
+  let attempts = 0;
+  const maxAttempts = 10;
+  
+  const waitForAdminAuth = async () => {
+    if (window.adminAuth && typeof window.adminAuth.updateUserProfileDisplay === "function") {
+      await window.adminAuth.updateUserProfileDisplay();
+    } else if (attempts < maxAttempts) {
+      attempts++;
+      setTimeout(waitForAdminAuth, 100);
+    }
+  };
+  
+  waitForAdminAuth();
 });
 
 document.addEventListener("DOMContentLoaded", async function () {
+  let attempts = 0;
+  const maxAttempts = 20;
+
+  const waitForAdminAuth = async () => {
+    if (window.adminAuth && typeof window.adminAuth.updateUserProfileDisplay === "function") {
+      await window.adminAuth.updateUserProfileDisplay();
+    } else if (attempts < maxAttempts) {
+      attempts++;
+      setTimeout(waitForAdminAuth, 100);
+    }
+  };
+
+  waitForAdminAuth();
+
   function getToken() {
     if (typeof window.getToken === "function") {
       return window.getToken();
@@ -106,6 +130,11 @@ document.addEventListener("DOMContentLoaded", async function () {
           bio: u.bio || "",
         });
         $("#editUserForm").data("userid", u.id);
+        
+        // Update avatar and user info in navbar after loading user data
+        if (window.adminAuth && typeof window.adminAuth.updateUserProfileDisplay === "function") {
+          await window.adminAuth.updateUserProfileDisplay();
+        }
       } else {
         toastr.error(data.message || window.i18next.t("failedToLoadUserInfo"));
       }
@@ -404,10 +433,64 @@ document.addEventListener("DOMContentLoaded", async function () {
       }
     });
 
+  // Initialize deactivate account button state
+  function updateDeactivateButtonState() {
+    const checkbox = document.getElementById("accountActivation");
+    const deactivateBtn = document.querySelector(".deactivate-account");
+    if (checkbox && deactivateBtn) {
+      deactivateBtn.disabled = !checkbox.checked;
+      if (checkbox.checked) {
+        deactivateBtn.classList.remove("btn-secondary");
+        deactivateBtn.classList.add("btn-danger");
+      } else {
+        deactivateBtn.classList.remove("btn-danger");
+        deactivateBtn.classList.add("btn-secondary");
+      }
+    }
+  }
+
+  // Add event listener for checkbox
+  $(document)
+    .off("change", "#accountActivation")
+    .on("change", "#accountActivation", function() {
+      updateDeactivateButtonState();
+    });
+
+  // Initialize button state on page load
+  updateDeactivateButtonState();
+  
+  // Load user information
+  await loadUserInfo();
+
+  // Function to generate letter avatar
+  function generateLetterAvatarFromUser(user) {
+    let letter = "U";
+    if (user && user.email && user.email.trim() !== "") {
+      letter = user.email.trim().charAt(0).toUpperCase();
+    } else if (user && user.username && user.username.trim() !== "") {
+      letter = user.username.trim().charAt(0).toUpperCase();
+    } else if (user && user.fullName && user.fullName.trim() !== "") {
+      letter = user.fullName.trim().charAt(0).toUpperCase();
+    }
+    const color = "#" + (((1 << 24) * Math.random()) | 0).toString(16);
+    const svg = `<svg width='40' height='40' xmlns='http://www.w3.org/2000/svg'><circle cx='20' cy='20' r='20' fill='${color}'/><text x='50%' y='50%' text-anchor='middle' dy='.35em' font-family='Arial' font-size='20' fill='#fff'>${letter}</text></svg>`;
+    return "data:image/svg+xml;base64," + btoa(unescape(encodeURIComponent(svg)));
+  }
+
+  // Make function globally available
+  window.generateLetterAvatarFromUser = generateLetterAvatarFromUser;
+
   $(document)
     .off("click", ".deactivate-account")
     .on("click", ".deactivate-account", async function (e) {
       e.preventDefault();
+
+      // Check if checkbox is checked
+      const checkbox = document.getElementById("accountActivation");
+      if (!checkbox || !checkbox.checked) {
+        toastr.warning(window.i18next.t("pleaseConfirmAccountDeactivation"));
+        return;
+      }
 
       if (
         !confirm(window.i18next.t("areYouSureYouWantToDeactivateYourAccount"))

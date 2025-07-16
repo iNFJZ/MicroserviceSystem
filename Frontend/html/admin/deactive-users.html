@@ -65,6 +65,10 @@
       rel="stylesheet"
       href="../../assets/vendor/libs/typeahead-js/typeahead.css"
     />
+    <link rel="stylesheet" href="../../assets/vendor/libs/toastr/toastr.css" />
+    <script src="../../assets/vendor/libs/toastr/toastr.js"></script>
+    <script src="../../assets/vendor/libs/bloodhound/bloodhound.js"></script>
+    <script src="../../assets/vendor/libs/typeahead-js/typeahead.js"></script>
     <link
       rel="stylesheet"
       href="../../assets/vendor/libs/datatables-bs5/datatables.bootstrap5.css"
@@ -214,7 +218,7 @@
                 <li class="nav-item dropdown-language dropdown me-2 me-xl-0">
                   <a class="nav-link dropdown-toggle hide-arrow d-flex align-items-center" href="javascript:void(0);" data-bs-toggle="dropdown" id="languageDropdownBtn">
                     <span class="fi fi-vn me-2" id="current-lang-flag" style="width: 1.5em; height: 1em;"></span>
-                    <span id="current-lang-name">Tiếng Việt</span>
+                    <span id="current-lang-name">Loading...</span>
                   </a>
                   <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="languageDropdownBtn">
                     <li>
@@ -267,7 +271,7 @@
                   </a>
                   <ul class="dropdown-menu dropdown-menu-end">
                     <li>
-                      <a class="dropdown-item" href="#">
+                      <a class="dropdown-item" href="my-profile.html">
                         <div class="d-flex">
                           <div class="flex-shrink-0 me-3">
                             <div class="avatar avatar-online">
@@ -505,8 +509,8 @@
     <script src="../../assets/vendor/libs/@form-validation/umd/plugin-auto-focus/index.min.js"></script>
     <script src="../../assets/vendor/libs/cleavejs/cleave.js"></script>
     <script src="../../assets/vendor/libs/cleavejs/cleave-phone.js"></script>
-    <link rel="stylesheet" href="../../assets/vendor/libs/toastr/toastr.css" />
-    <script src="../../assets/vendor/libs/toastr/toastr.js"></script>
+
+    <script src="../../assets/vendor/libs/bloodhound/bloodhound.js"></script>
 
     <!-- Main JS -->
     <script src="../../assets/vendor/libs/i18n/i18next.min.js"></script>
@@ -548,7 +552,6 @@
           type="button"
           class="btn-close"
           data-bs-dismiss="modal"
-          data-i18n="[aria-label]close"
           aria-label="Close"
         ></button>
       </div>
