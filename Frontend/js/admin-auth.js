@@ -2173,6 +2173,7 @@ document.addEventListener("DOMContentLoaded", function () {
           toastr.error(window.i18next.t("authenticationRequired"));
           return;
         }
+        let lang = (window.i18next && window.i18next.language) || localStorage.getItem("i18nextLng") || "vi";
         const res = await fetch(
           "http://localhost:5050/api/Auth/change-password",
           {
@@ -2185,6 +2186,7 @@ document.addEventListener("DOMContentLoaded", function () {
               currentPassword: oldPwd,
               newPassword: newPwd,
               confirmPassword: confirmPwd,
+              language: lang
             }),
           },
         );
