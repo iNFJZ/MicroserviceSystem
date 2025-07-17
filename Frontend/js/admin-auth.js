@@ -136,14 +136,9 @@ class AdminAuth {
   async updateUserProfileDisplay() {
     const userInfo = this.getCurrentUserInfo();
     if (!userInfo) {
-      $(".user-name").text("Guest");
-      $(".user-role").text("User");
-      $(".user-avatar")
-        .attr(
-          "src",
-          generateLetterAvatarFromUser({ email: "guest@system.com" }),
-        )
-        .show();
+      $(".user-name").text("");
+      $(".user-role").text("");
+      $(".user-avatar").attr("src", "");
       return;
     }
 
@@ -203,43 +198,50 @@ function loadActiveUsersTable() {
   if (dt_user_table.length) {
     dt_user_table.DataTable().destroy();
     dt_user_table.DataTable({
+      serverSide: true,
+      processing: true,
       ajax: {
         url: "http://localhost:5050/api/User",
+        type: "GET",
+        data: function (d) {
+          return {
+            page: Math.floor(d.start / d.length) + 1,
+            pageSize: d.length,
+            search: d.search.value || null,
+            sortBy: d.columns[d.order0?.column]?.data || null,
+            sortOrder: d.order0 || "asc",
+          };
+        },
         dataSrc: function (json) {
           if (!json || !Array.isArray(json.data)) return [];
-          const users = json.data;
-          const activeUsers = users.filter(
-            (u) =>
-              u.status === 1 ||
-              u.status === 2 ||
-              u.status === 3 ||
-              u.status === "Active" ||
-              u.status === "Inactive" ||
-              u.status === "Suspended",
-          );
-          let total = activeUsers.length,
-            active = total,
-            inactive = 0,
-            suspended = 0,
-            banned = 0;
-          $("#total-users").text(total);
-          $("#active-users").text(active);
-          $("#inactive-users").text(inactive);
-          $("#banned-users").text(banned);
-          return activeUsers;
+
+          if (json.pagination) {
+            const totalCount = json.pagination.totalCount;
+            updateUserStatsDashboard();
+          }
+
+          return json.data;
+        },
+        dataFilter: function (data) {
+          var json = JSON.parse(data);
+          if (json.pagination) {
+            json.recordsTotal = json.pagination.totalCount;
+            json.recordsFiltered = json.pagination.totalCount;
+          }
+          return JSON.stringify(json);
         },
         beforeSend: function (xhr) {
           if (token) xhr.setRequestHeader("Authorization", "Bearer " + token);
         },
       },
       columns: [
-        { data: null }, // Avatar
+        { data: null },
         { data: "username" },
         { data: "fullName" },
         { data: "email" },
         { data: "status" },
         { data: "lastLoginAt" },
-        { data: null }, // Actions
+        { data: null },
       ],
       columnDefs: getUserTableColumnDefs(),
       order: [[1, "asc"]],
@@ -263,8 +265,20 @@ function loadAllUsersTable() {
   if (dt_user_table.length) {
     dt_user_table.DataTable().destroy();
     dt_user_table.DataTable({
+      serverSide: true,
+      processing: true,
       ajax: {
         url: "http://localhost:5050/api/User?includeDeleted=true",
+        type: "GET",
+        data: function (d) {
+          return {
+            page: Math.floor(d.start / d.length) + 1,
+            pageSize: d.length,
+            search: d.search.value || null,
+            sortBy: d.columns[d.order0?.column]?.data || null,
+            sortOrder: d.order0 || "asc",
+          };
+        },
         dataSrc: function (json) {
           if (!json || !Array.isArray(json.data)) {
             return [];
@@ -286,6 +300,14 @@ function loadAllUsersTable() {
           $("#inactive-users").text(inactive);
           $("#banned-users").text(banned);
           return users;
+        },
+        dataFilter: function (data) {
+          var json = JSON.parse(data);
+          if (json.pagination) {
+            json.recordsTotal = json.pagination.totalCount;
+            json.recordsFiltered = json.pagination.totalCount;
+          }
+          return JSON.stringify(json);
         },
         beforeSend: function (xhr) {
           const token = localStorage.getItem("authToken");
@@ -324,39 +346,101 @@ function loadDeactiveUsersTable() {
   const dt_user_table = $(".datatables-users");
   if (dt_user_table.length) {
     dt_user_table.DataTable().destroy();
-    dt_user_table.DataTable({
-      ajax: {
-        url: "http://localhost:5050/api/User?includeDeleted=true",
-        dataSrc: function (json) {
-          if (!json || !Array.isArray(json.data)) return [];
-          const users = json.data;
-          const deactiveUsers = users.filter(
-            (u) => u.status === 4 || u.status === "Banned" || u.deletedAt,
-          );
-          return deactiveUsers;
-        },
-        beforeSend: function (xhr) {
-          if (token) xhr.setRequestHeader("Authorization", "Bearer " + token);
-        },
+    fetch(
+      "http://localhost:5050/api/User?includeDeleted=true&page=1&pageSize=1",
+      {
+        headers: { Authorization: `Bearer ${token}` },
       },
-      columns: [
-        { data: null }, // Avatar
-        { data: "username" },
-        { data: "fullName" },
-        { data: "email" },
-        { data: "status" },
-        { data: "deletedAt" },
-        { data: null }, // Actions
-      ],
-      columnDefs: getUserTableColumnDefs(true),
-      createdRow: function (row, data) {
-        $(row).attr("data-userid", data.id);
-      },
-      order: [[1, "asc"]],
-      dom: getUserTableDom(),
-      language: getUserTableLanguage(),
-      buttons: getUserTableButtons(),
-    });
+    )
+      .then((res) => res.json())
+      .then((countResult) => {
+        const totalCountRaw =
+          countResult.pagination?.totalCount || countResult.totalCount || 0;
+        if (totalCountRaw === 0) {
+          dt_user_table.DataTable({
+            data: [],
+            columns: [
+              { data: null },
+              { data: "username" },
+              { data: "fullName" },
+              { data: "email" },
+              { data: "status" },
+              { data: "deletedAt" },
+              { data: null },
+            ],
+            columnDefs: getUserTableColumnDefs(true),
+            dom: getUserTableDom(),
+            language: getUserTableLanguage(),
+            buttons: getUserTableButtons(),
+          });
+          return;
+        }
+        fetch(
+          `http://localhost:5050/api/User?includeDeleted=true&page=1&pageSize=${totalCountRaw}`,
+          {
+            headers: { Authorization: `Bearer ${token}` },
+          },
+        )
+          .then((res) => res.json())
+          .then((allResult) => {
+            const users = Array.isArray(allResult.data) ? allResult.data : [];
+            const deactiveUsers = users.filter(
+              (u) => (u.status === 4 || u.status === "Banned") && u.deletedAt,
+            );
+            const totalCount = deactiveUsers.length;
+            dt_user_table.DataTable({
+              serverSide: true,
+              processing: true,
+              ajax: function (data, callback) {
+                const page = Math.floor(data.start / data.length) + 1;
+                const pageSize = data.length;
+                fetch(
+                  `http://localhost:5050/api/User?includeDeleted=true&page=1&pageSize=${totalCountRaw}`,
+                  {
+                    headers: { Authorization: `Bearer ${token}` },
+                  },
+                )
+                  .then((res) => res.json())
+                  .then((allResult) => {
+                    const users = Array.isArray(allResult.data)
+                      ? allResult.data
+                      : [];
+                    const deactiveUsers = users.filter(
+                      (u) =>
+                        (u.status === 4 || u.status === "Banned") &&
+                        u.deletedAt,
+                    );
+                    const paged = deactiveUsers.slice(
+                      (page - 1) * pageSize,
+                      (page - 1) * pageSize + pageSize,
+                    );
+                    callback({
+                      data: paged,
+                      recordsTotal: totalCount,
+                      recordsFiltered: totalCount,
+                    });
+                  });
+              },
+              columns: [
+                { data: null }, // Avatar
+                { data: "username" },
+                { data: "fullName" },
+                { data: "email" },
+                { data: "status" },
+                { data: "deletedAt" },
+                { data: null }, // Actions
+              ],
+              columnDefs: getUserTableColumnDefs(true),
+              createdRow: function (row, data) {
+                $(row).attr("data-userid", data.id);
+              },
+              order: [[1, "asc"]],
+              dom: getUserTableDom(),
+              language: getUserTableLanguage(),
+              buttons: getUserTableButtons(),
+            });
+          });
+      });
   }
 }
 
@@ -533,68 +617,334 @@ function getUserTableButtons() {
     return fallbacks[key] || key;
   };
 
-  function exportAllUserFields(e, dt, button, config) {
-    const data = dt.rows({ search: "applied" }).data().toArray();
-    if (!data || !data.length) {
-      toastr.warning(window.i18next.t("noDataToExport"));
-      return;
-    }
-    // Danh sách field đầy đủ nhất
-    const allFields = [
-      "id", "username", "fullName", "email", "phoneNumber", "status", "isVerified", "lastLoginAt", "deletedAt", "dateOfBirth", "address", "bio", "loginProvider", "profilePicture", "createdAt"
-    ];
-    const headers = allFields.map((key) => {
-      switch (key) {
-        case "id": return window.i18next.t("id");
-        case "username": return window.i18next.t("username");
-        case "fullName": return window.i18next.t("fullName");
-        case "email": return window.i18next.t("email");
-        case "phoneNumber": return window.i18next.t("phone");
-        case "status": return window.i18next.t("status");
-        case "isVerified": return window.i18next.t("verified");
-        case "lastLoginAt": return window.i18next.t("lastLogin");
-        case "deletedAt": return window.i18next.t("deletedAt");
-        case "dateOfBirth": return window.i18next.t("dateOfBirth");
-        case "address": return window.i18next.t("address");
-        case "bio": return window.i18next.t("bio");
-        case "loginProvider": return window.i18next.t("provider");
-        case "profilePicture": return window.i18next.t("profilePicture");
-        case "createdAt": return window.i18next.t("createdAt");
-        default: return key;
+  async function getUserDataForExport(dt) {
+    try {
+      const token = localStorage.getItem("authToken");
+
+      const countResponse = await fetch(
+        "http://localhost:5050/api/User?includeDeleted=true&page=1&pageSize=1",
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+            "Content-Type": "application/json",
+          },
+        },
+      );
+
+      if (!countResponse.ok) {
+        toastr.error(window.i18next.t("failedToLoadData"));
+        return null;
       }
-    });
-    const rows = data.map(u => allFields.map(key => {
-      let val = u[key];
-      if (key === "status") {
-        switch (val) {
-          case 1: return window.i18next.t("active");
-          case 2: return window.i18next.t("inactive");
-          case 3: return window.i18next.t("suspended");
-          case 4: return window.i18next.t("banned");
-          default: return window.i18next.t("unknown");
+
+      const countResult = await countResponse.json();
+      const totalCount =
+        countResult.pagination?.totalCount || countResult.totalCount || 0;
+
+      if (totalCount === 0) {
+        toastr.warning(window.i18next.t("noDataToExport"));
+        return null;
+      }
+
+      const response = await fetch(
+        `http://localhost:5050/api/User?includeDeleted=true&pageSize=${totalCount}`,
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+            "Content-Type": "application/json",
+          },
+        },
+      );
+
+      if (!response.ok) {
+        toastr.error(window.i18next.t("failedToLoadData"));
+        return null;
+      }
+
+      const result = await response.json();
+      let data = result.data || result || [];
+
+      const currentPath = window.location.pathname;
+      if (currentPath.includes("deactive-users")) {
+        data = data.filter(
+          (u) => (u.status === 4 || u.status === "Banned") && u.deletedAt,
+        );
+      } else if (currentPath.includes("active-users")) {
+        data = data.filter((u) => u.status === 1 || u.status === "Active");
+      }
+
+      if (!data || !data.length) {
+        toastr.warning(window.i18next.t("noDataToExport"));
+        return null;
+      }
+
+      const allFields = [
+        "id",
+        "username",
+        "fullName",
+        "email",
+        "phoneNumber",
+        "status",
+        "isVerified",
+        "lastLoginAt",
+        "deletedAt",
+        "dateOfBirth",
+        "address",
+        "bio",
+        "loginProvider",
+        "profilePicture",
+        "createdAt",
+      ];
+
+      const headers = allFields.map((key) => {
+        switch (key) {
+          case "id":
+            return window.i18next.t("id");
+          case "username":
+            return window.i18next.t("username");
+          case "fullName":
+            return window.i18next.t("fullName");
+          case "email":
+            return window.i18next.t("email");
+          case "phoneNumber":
+            return window.i18next.t("phone");
+          case "status":
+            return window.i18next.t("status");
+          case "isVerified":
+            return window.i18next.t("verified");
+          case "lastLoginAt":
+            return window.i18next.t("lastLogin");
+          case "deletedAt":
+            return window.i18next.t("deletedAt");
+          case "dateOfBirth":
+            return window.i18next.t("dateOfBirth");
+          case "address":
+            return window.i18next.t("address");
+          case "bio":
+            return window.i18next.t("bio");
+          case "loginProvider":
+            return window.i18next.t("provider");
+          case "profilePicture":
+            return window.i18next.t("profilePicture");
+          case "createdAt":
+            return window.i18next.t("createdAt");
+          default:
+            return key;
         }
-      }
-      if (key === "isVerified") return val ? window.i18next.t("yes") : window.i18next.t("no");
-      if (val === undefined || val === null) return "";
-      if (val instanceof Date) return val.toLocaleString("en-GB");
-      if (typeof val === "string" && val.match(/^\d{4}-\d{2}-\d{2}T/)) {
-        try { return new Date(val).toLocaleString("en-GB"); } catch { return val; }
-      }
-      if (key === "profilePicture" && val) return val.length > 30 ? val.slice(0, 30) + "..." : val;
-      return val;
-    }));
-    let csv = "";
-    csv += headers.join(",") + "\n";
-    rows.forEach(row => {
-      csv += row.map(v => '"' + String(v).replace(/"/g, '""') + '"').join(",") + "\n";
-    });
+      });
+
+      const rows = data.map((u) =>
+        allFields.map((key) => {
+          let val = u[key];
+          if (key === "status") {
+            switch (val) {
+              case 1:
+                return window.i18next.t("active");
+              case 2:
+                return window.i18next.t("inactive");
+              case 3:
+                return window.i18next.t("suspended");
+              case 4:
+                return window.i18next.t("banned");
+              default:
+                return window.i18next.t("unknown");
+            }
+          }
+          if (key === "isVerified")
+            return val ? window.i18next.t("yes") : window.i18next.t("no");
+          if (
+            key === "phoneNumber" &&
+            (window.location.pathname.includes("active-users") ||
+              window.location.pathname.includes("all-users"))
+          ) {
+            if (typeof val === "string" && val.trim() !== "") {
+              let phone = val.trim();
+              if (phone.startsWith("+84")) return phone;
+              if (phone.startsWith("84")) return "+" + phone;
+              if (phone.startsWith("0")) return "+84" + phone.slice(1);
+              return phone;
+            }
+            return val || "";
+          }
+          if (val === undefined || val === null) return "";
+          if (val instanceof Date) return val.toLocaleString("en-GB");
+          if (typeof val === "string" && val.match(/^\d{4}-\d{2}-\d{2}T/)) {
+            try {
+              return new Date(val).toLocaleString("en-GB");
+            } catch {
+              return val;
+            }
+          }
+          if (key === "profilePicture" && val)
+            return val.length > 30 ? val.slice(0, 30) + "..." : val;
+          return val;
+        }),
+      );
+
+      return { headers, rows, allFields };
+    } catch (error) {
+      console.error("Export error:", error);
+      toastr.error(window.i18next.t("exportFailed"));
+      return null;
+    }
+  }
+
+  async function exportCSVAllFields(e, dt, button, config) {
+    const exportData = await getUserDataForExport(dt);
+    if (!exportData) return;
+
+    const { headers, rows } = exportData;
+
+    function escapeCsvValue(val) {
+      if (val == null || val === undefined) return "";
+      val = String(val);
+      val = val.replace(/"/g, '""');
+      return `"${val}"`;
+    }
+
+    const delimiter = ";";
+    const headersCsv = headers.map(escapeCsvValue).join(delimiter);
+    const rowsCsv = rows
+      .map((r) => r.map(escapeCsvValue).join(delimiter))
+      .join("\n");
+    const BOM = "\uFEFF";
+    const csv = BOM + headersCsv + "\n" + rowsCsv;
+
     const blob = new Blob([csv], { type: "text/csv;charset=utf-8;" });
     const link = document.createElement("a");
     link.href = URL.createObjectURL(blob);
-    link.download = "users_export_" + new Date().toISOString().replace(/[:.]/g, "-") + ".csv";
+    link.download = getExportFileName("csv");
     document.body.appendChild(link);
     link.click();
     document.body.removeChild(link);
+  }
+
+  async function exportExcelAllFields(e, dt, button, config) {
+    const exportData = await getUserDataForExport(dt);
+    if (!exportData) return;
+    const { headers, rows } = exportData;
+    const wb = XLSX.utils.book_new();
+    const ws = XLSX.utils.aoa_to_sheet([headers, ...rows]);
+    const colWidths = headers.map((header, idx) => {
+      const maxLength = Math.max(
+        header.length,
+        ...rows.map((row) => (row[idx] ? String(row[idx]).length : 0)),
+      );
+      return { wch: Math.min(Math.max(maxLength + 2, 10), 40) };
+    });
+    ws["!cols"] = colWidths;
+    const range = XLSX.utils.decode_range(ws["!ref"]);
+    for (let R = range.s.r; R <= range.e.r; ++R) {
+      for (let C = range.s.c; C <= range.e.c; ++C) {
+        const cell = ws[XLSX.utils.encode_cell({ r: R, c: C })];
+        if (cell) {
+          cell.s = cell.s || {};
+          cell.s.border = {
+            top: { style: "thin", color: { rgb: "CCCCCC" } },
+            bottom: { style: "thin", color: { rgb: "CCCCCC" } },
+            left: { style: "thin", color: { rgb: "CCCCCC" } },
+            right: { style: "thin", color: { rgb: "CCCCCC" } },
+          };
+        }
+      }
+    }
+    XLSX.utils.book_append_sheet(wb, ws, "Users");
+    XLSX.writeFile(wb, getExportFileName("xlsx"));
+  }
+
+  async function exportPDFAllFields(e, dt, button, config) {
+    const exportData = await getUserDataForExport(dt);
+    if (!exportData) return;
+    const { headers, rows, allFields } = exportData;
+    const body = [headers, ...rows];
+
+    const colWidths = allFields.map((field, idx) => {
+      const headerLength = headers[idx] ? headers[idx].length : 10;
+      const maxDataLength = Math.max(
+        ...rows.map((row) => (row[idx] ? String(row[idx]).length : 0)),
+      );
+      const maxLength = Math.max(headerLength, maxDataLength);
+      return Math.max(8, Math.min(15, maxLength * 0.8)) + "%";
+    });
+
+    const docDefinition = {
+      pageSize: "A4",
+      pageOrientation: "landscape",
+      pageMargins: [10, 15, 10, 15],
+      defaultStyle: {
+        font: "Roboto",
+        fontSize: 7,
+      },
+      header: {
+        text: window.i18next.t("userList"),
+        style: {
+          alignment: "center",
+          fontSize: 12,
+          bold: true,
+          margin: [0, 5, 0, 10],
+        },
+      },
+      footer: function (currentPage, pageCount) {
+        return {
+          text:
+            window.i18next.t("page") +
+            " " +
+            currentPage.toString() +
+            " / " +
+            pageCount,
+          alignment: "center",
+          fontSize: 8,
+          margin: [0, 10, 0, 5],
+        };
+      },
+      content: [
+        {
+          table: {
+            headerRows: 1,
+            widths: colWidths,
+            body: body,
+          },
+          layout: {
+            hLineWidth: function () {
+              return 0.3;
+            },
+            vLineWidth: function () {
+              return 0.3;
+            },
+            hLineColor: function () {
+              return "#ddd";
+            },
+            vLineColor: function () {
+              return "#ddd";
+            },
+            paddingLeft: function () {
+              return 3;
+            },
+            paddingRight: function () {
+              return 3;
+            },
+            paddingTop: function () {
+              return 2;
+            },
+            paddingBottom: function () {
+              return 2;
+            },
+          },
+        },
+      ],
+      styles: {
+        header: {
+          fontSize: 8,
+          bold: true,
+          fillColor: "#f8f9fa",
+          color: "#333",
+        },
+      },
+    };
+    if (typeof pdfMake !== "undefined") {
+      pdfMake.createPdf(docDefinition).download(getExportFileName("pdf"));
+    } else {
+      toastr.error(window.i18next.t("pdfLibraryNotLoaded"));
+    }
   }
 
   return [
@@ -608,38 +958,27 @@ function getUserTableButtons() {
         {
           extend: "copyHtml5",
           text: '<i class="ti ti-copy me-2" ></i>' + getTranslation("copy"),
-          exportOptions: { columns: ':visible' }
+          exportOptions: { columns: ":visible" },
         },
         {
-          extend: "csvHtml5",
-          text: '<i class="ti ti-file-text me-2" ></i>' + getTranslation("csv"),
-          exportOptions: { columns: ':visible' }
+          text: '<i class="ti ti-file-text me-2"></i>' + getTranslation("csv"),
+          action: exportCSVAllFields,
         },
         {
-          extend: "excelHtml5",
           text:
             '<i class="ti ti-file-spreadsheet me-2"></i>' +
             getTranslation("excel"),
-          exportOptions: { columns: ':visible' }
+          action: exportExcelAllFields,
         },
         {
-          extend: "pdfHtml5",
           text:
             '<i class="ti ti-file-code-2 me-2"></i>' + getTranslation("pdf"),
-          exportOptions: { columns: ':visible' }
+          action: exportPDFAllFields,
         },
         {
           extend: "print",
           text: '<i class="ti ti-printer me-2" ></i>' + getTranslation("print"),
-          exportOptions: { columns: ':visible' }
-        },
-        {
-          text:
-            '<i class="ti ti-file-spreadsheet me-2"></i>' +
-            getTranslation("excel") +
-            " (All Fields)",
-          action: exportAllUserFields,
-          className: "btn btn-success",
+          exportOptions: { columns: ":visible" },
         },
       ],
     },
@@ -1850,9 +2189,34 @@ function updateUserStatsDashboard() {
   const token = localStorage.getItem("authToken");
   if (!token) return;
 
-  fetch("http://localhost:5050/api/User?includeDeleted=true", {
-    headers: { Authorization: "Bearer " + token },
-  })
+  // First, get total count to determine optimal pageSize
+  fetch(
+    "http://localhost:5050/api/User?includeDeleted=true&page=1&pageSize=1",
+    {
+      headers: { Authorization: `Bearer ${token}` },
+    },
+  )
+    .then((res) => res.json())
+    .then((countResult) => {
+      const totalCount =
+        countResult.pagination?.totalCount || countResult.totalCount || 0;
+
+      if (totalCount === 0) {
+        $("#total-users").text(0);
+        $("#active-users").text(0);
+        $("#inactive-users").text(0);
+        $("#banned-users").text(0);
+        return;
+      }
+
+      // Now fetch all data with the actual total count as pageSize
+      return fetch(
+        `http://localhost:5050/api/User?includeDeleted=true&pageSize=${totalCount}`,
+        {
+          headers: { Authorization: `Bearer ${token}` },
+        },
+      );
+    })
     .then((res) => res.json())
     .then((json) => {
       if (!json || !Array.isArray(json.data)) {
@@ -2414,3 +2778,262 @@ if (typeof window.i18next !== "undefined") {
 }
 
 window.generateLetterAvatarFromUser = generateLetterAvatarFromUser;
+
+function setExportButtonLoading(buttonElement, isLoading) {
+  if (!buttonElement) return;
+  if (isLoading) {
+    buttonElement.disabled = true;
+    buttonElement.innerHTML =
+      '<i class="ti ti-loader ti-spin me-2"></i>' +
+      (window.i18next ? window.i18next.t("exporting") : "Exporting...");
+  } else {
+    buttonElement.disabled = false;
+    buttonElement.innerHTML =
+      '<i class="ti ti-download me-2"></i>' +
+      (window.i18next ? window.i18next.t("exportAllUsers") : "Export All Users");
+  }
+}
+
+window.exportAllUsersToCSV = async function (buttonElement) {
+  try {
+    setExportButtonLoading(buttonElement, true);
+    const token = localStorage.getItem("authToken");
+    if (!token) {
+      if (window.toastr)
+        toastr.error(
+          window.i18next
+            ? window.i18next.t("notAuthenticated")
+            : "Not authenticated",
+        );
+      buttonElement.disabled = false;
+      buttonElement.innerHTML =
+        '<i class="ti ti-download me-2"></i>' +
+        (window.i18next
+          ? window.i18next.t("exportAllUsers")
+          : "Export All Users");
+      return;
+    }
+
+    const countRes = await fetch(
+      "http://localhost:5050/api/User?includeDeleted=true&page=1&pageSize=1",
+      {
+        headers: { Authorization: `Bearer ${token}` },
+      },
+    );
+    const countJson = await countRes.json();
+    const totalCount =
+      countJson.pagination?.totalCount || countJson.totalCount || 0;
+
+    if (totalCount === 0) {
+      if (window.toastr)
+        toastr.warning(
+          window.i18next
+            ? window.i18next.t("noDataToExport")
+            : "No data to export",
+        );
+      buttonElement.disabled = false;
+      buttonElement.innerHTML =
+        '<i class="ti ti-download me-2"></i>' +
+        (window.i18next
+          ? window.i18next.t("exportAllUsers")
+          : "Export All Users");
+      return;
+    }
+
+    const res = await fetch(
+      `http://localhost:5050/api/User?includeDeleted=true&pageSize=${totalCount}`,
+      {
+        headers: token ? { Authorization: `Bearer ${token}` } : {},
+      },
+    );
+    const json = await res.json();
+    let users = Array.isArray(json.data) ? json.data : [];
+
+    const currentPath = window.location.pathname;
+    if (currentPath.includes("deactive-users")) {
+      users = users.filter(
+        (u) => (u.status === 4 || u.status === "Banned") && u.deletedAt,
+      );
+    } else if (currentPath.includes("active-users")) {
+      users = users.filter((u) => u.status === 1 || u.status === "Active");
+    }
+
+    if (!users.length) {
+      if (window.toastr)
+        toastr.warning(
+          window.i18next
+            ? window.i18next.t("noDataToExport")
+            : "No data to export",
+        );
+      buttonElement.disabled = false;
+      buttonElement.innerHTML =
+        '<i class="ti ti-download me-2"></i>' +
+        (window.i18next
+          ? window.i18next.t("exportAllUsers")
+          : "Export All Users");
+      return;
+    }
+
+    const allFields = users.reduce((fields, u) => {
+      Object.keys(u).forEach((k) => {
+        if (!fields.includes(k)) fields.push(k);
+      });
+      return fields;
+    }, []);
+
+    const preferredOrder = [
+      "id",
+      "username",
+      "email",
+      "fullName",
+      "phoneNumber",
+      "dateOfBirth",
+      "address",
+      "bio",
+      "status",
+      "isVerified",
+      "googleId",
+      "profilePicture",
+      "loginProvider",
+      "createdAt",
+      "updatedAt",
+      "lastLoginAt",
+      "deletedAt",
+      "isDeleted",
+    ];
+    const fields = preferredOrder
+      .filter((f) => allFields.includes(f))
+      .concat(allFields.filter((f) => !preferredOrder.includes(f)));
+
+    const fieldToI18nKey = {
+      id: "id",
+      username: "username",
+      fullName: "fullName",
+      email: "email",
+      phoneNumber: "phoneNumber",
+      dateOfBirth: "dateOfBirth",
+      address: "address",
+      bio: "bio",
+      status: "status",
+      isVerified: "emailVerified",
+      googleId: "googleId",
+      profilePicture: "profilePicture",
+      loginProvider: "loginProvider",
+      updatedAt: "updatedAt",
+      lastLoginAt: "lastLoginAt",
+      deletedAt: "deletedAt",
+      isDeleted: "isDeleted",
+      createdAt: "createdAt",
+    };
+
+    const headers = fields.map((f) =>
+      window.i18next
+        ? window.i18next.t(fieldToI18nKey[f] || f)
+        : fieldToI18nKey[f] || f,
+    );
+    const rows = users.map((u) =>
+      fields.map((f) => {
+        let val = u[f];
+        if (f === "status") {
+          switch (val) {
+            case 1:
+              return window.i18next ? window.i18next.t("active") : "Active";
+            case 2:
+              return window.i18next ? window.i18next.t("inactive") : "Inactive";
+            case 3:
+              return window.i18next
+                ? window.i18next.t("suspended")
+                : "Suspended";
+            case 4:
+              return window.i18next ? window.i18next.t("banned") : "Banned";
+            default:
+              return window.i18next ? window.i18next.t("unknown") : "Unknown";
+          }
+        }
+        if (f === "isVerified")
+          return val
+            ? window.i18next
+              ? window.i18next.t("yes")
+              : "Yes"
+            : window.i18next
+              ? window.i18next.t("no")
+              : "No";
+        if (val === undefined || val === null) return "";
+        if (val instanceof Date) return val.toLocaleString("en-GB");
+        if (typeof val === "string" && val.match(/^\d{4}-\d{2}-\d{2}T/)) {
+          try {
+            return new Date(val).toLocaleString("en-GB");
+          } catch {
+            return val;
+          }
+        }
+        return val;
+      }),
+    );
+
+    function escapeCsvValue(val) {
+      if (val == null) return "";
+      val = String(val);
+      if (val.includes('"')) val = val.replace(/"/g, '""');
+      if (val.includes(",") || val.includes("\n") || val.includes('"')) {
+        return `"${val}"`;
+      }
+      return val;
+    }
+
+    const delimiter = ";";
+    const headersCsv = headers.map(escapeCsvValue).join(delimiter);
+    const rowsCsv = rows
+      .map((r) => r.map(escapeCsvValue).join(delimiter))
+      .join("\n");
+    const BOM = "\uFEFF";
+    const csv = BOM + headersCsv + "\n" + rowsCsv;
+    const blob = new Blob([csv], { type: "text/csv;charset=utf-8;" });
+    const link = document.createElement("a");
+    link.href = URL.createObjectURL(blob);
+    link.download = getExportFileName("csv");
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+
+    if (window.toastr)
+      toastr.success(
+        window.i18next
+          ? window.i18next.t("exportSuccess")
+          : "Export successful",
+      );
+  } catch (err) {
+    console.error("Export error:", err);
+    if (window.toastr)
+      toastr.error(
+        window.i18next ? window.i18next.t("exportFailed") : "Export failed",
+      );
+  } finally {
+    setExportButtonLoading(buttonElement, false);
+  }
+};
+
+// Initialize export button when DOM is loaded
+document.addEventListener("DOMContentLoaded", function () {
+  const btn = document.getElementById("export-all-users-btn");
+  if (btn) {
+    btn.addEventListener("click", async function (e) {
+      e.preventDefault();
+      await window.exportAllUsersToCSV(this);
+    });
+  }
+});
+
+function getExportFileName(ext) {
+  const path = window.location.pathname;
+  let prefix = "users_export";
+  if (path.includes("all-users")) prefix = "all_users_export";
+  else if (path.includes("active-users")) prefix = "active_users_export";
+  else if (path.includes("deactive-users")) prefix = "deactive_users_export";
+  return (
+    prefix +
+    "_" +
+    new Date().toISOString().replace(/[:.]/g, "-") +
+    (ext ? "." + ext : "")
+  );
+}

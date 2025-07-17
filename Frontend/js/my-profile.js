@@ -151,7 +151,10 @@ document.addEventListener("DOMContentLoaded", async function () {
           await window.adminAuth.updateUserProfileDisplay();
         }
       } else {
-        showToastr(data.message || window.i18next.t("failedToLoadUserInfo"), "error");
+        showToastr(
+          data.message || window.i18next.t("failedToLoadUserInfo"),
+          "error",
+        );
       }
     } catch (e) {
       showToastr(window.i18next.t("failedToLoadUserInfo"), "error");
@@ -277,7 +280,10 @@ document.addEventListener("DOMContentLoaded", async function () {
         window._editProfilePictureBase64 = null;
         $("#crop-avatar-preview, #edit-profilePicture-preview").attr("src", "");
         $("#edit-profilePicture-container, #profile-picture-preview").hide();
-        showToastr(error.message || window.i18next.t("failedToCropImage"), "error");
+        showToastr(
+          error.message || window.i18next.t("failedToCropImage"),
+          "error",
+        );
       }
     });
 
@@ -417,7 +423,9 @@ document.addEventListener("DOMContentLoaded", async function () {
             Object.keys(responseData.errors).forEach((field) => {
               const messages = responseData.errors[field];
               if (Array.isArray(messages)) {
-                messages.forEach((msg) => showToastr(`${field}: ${msg}`, "error"));
+                messages.forEach((msg) =>
+                  showToastr(`${field}: ${msg}`, "error"),
+                );
               } else {
                 showToastr(`${field}: ${messages}`, "error");
               }
@@ -508,7 +516,10 @@ document.addEventListener("DOMContentLoaded", async function () {
       // Check if checkbox is checked
       const checkbox = document.getElementById("accountActivation");
       if (!checkbox || !checkbox.checked) {
-        showToastr(window.i18next.t("pleaseConfirmAccountDeactivation"), "warning");
+        showToastr(
+          window.i18next.t("pleaseConfirmAccountDeactivation"),
+          "warning",
+        );
         return;
       }
 
@@ -539,10 +550,16 @@ document.addEventListener("DOMContentLoaded", async function () {
             window.location.href = "/auth/login.html";
           }, 1500);
         } else {
-          showToastr(data.message || window.i18next.t("deactivationFailed"), "error");
+          showToastr(
+            data.message || window.i18next.t("deactivationFailed"),
+            "error",
+          );
         }
       } catch (err) {
-        showToastr(err.message || window.i18next.t("deactivationFailed"), "error");
+        showToastr(
+          err.message || window.i18next.t("deactivationFailed"),
+          "error",
+        );
       }
     });
 

@@ -46,31 +46,47 @@ window.addEventListener("DOMContentLoaded", async function () {
         }),
       });
       const data = await res.json();
+      const errorCode = data.errorCode || data.ErrorCode;
       if (res.ok && data.token) {
         localStorage.setItem("authToken", data.token);
         if (data.language) {
           window.i18next.changeLanguage(data.language);
         }
-        window.showToastr(window.i18next.t("googleLoginSuccessfulRedirecting"), 'success');
+        window.showToastr(
+          window.i18next.t("googleLoginSuccessfulRedirecting"),
+          "success",
+        );
         setTimeout(() => {
           window.location.href = "/admin/";
         }, 1000);
       } else {
         const errorMessage =
           data.message || window.i18next.t("googleLoginFailed");
-        if (errorMessage.includes("deleted")) {
+        if (
+          errorCode === "ACCOUNT_DELETED" ||
+          errorMessage.includes("deleted")
+        ) {
           window.showToastr(
             window.i18next.t("accountHasBeenDeletedContactSupport"),
-            'error',
+            "error",
           );
-        } else if (errorMessage.includes("banned")) {
-          window.showToastr(window.i18next.t("yourAccountHasBeenDeactivated"), 'error');
+        } else if (
+          errorCode === "ACCOUNT_BANNED" ||
+          errorMessage.includes("banned")
+        ) {
+          window.showToastr(
+            window.i18next.t("yourAccountHasBeenDeactivated"),
+            "error",
+          );
         } else {
-          window.showToastr(window.i18next.t(errorMessage), 'error');
+          window.showToastr(window.i18next.t(errorMessage), "error");
         }
       }
     } catch (err) {
-      window.showToastr(window.i18next.t("googleLoginFailedPleaseTryAgain"), 'error');
+      window.showToastr(
+        window.i18next.t("googleLoginFailedPleaseTryAgain"),
+        "error",
+      );
     }
   }
 });
@@ -95,11 +111,14 @@ window.addEventListener("DOMContentLoaded", async function () {
         } else {
           window.showToastr(
             data.message || window.i18next.t("invalidOrExpiredResetToken"),
-            'error',
+            "error",
           );
         }
       } catch (err) {
-        window.showToastr(window.i18next.t("failedToValidateResetToken"), 'error');
+        window.showToastr(
+          window.i18next.t("failedToValidateResetToken"),
+          "error",
+        );
       }
     }
     emailElem.textContent = email || "not available";
@@ -149,7 +168,7 @@ if (document.getElementById("login-form")) {
           ? window.i18next.t(e)
           : e,
       );
-      window.showToastr(errorMsgs.join("\n"), 'error');
+      window.showToastr(errorMsgs.join("\n"), "error");
       return;
     }
 
@@ -167,7 +186,10 @@ if (document.getElementById("login-form")) {
         if (data.language) {
           window.i18next.changeLanguage(data.language);
         }
-        window.showToastr(window.i18next.t("loginSuccessfulRedirecting"), 'success');
+        window.showToastr(
+          window.i18next.t("loginSuccessfulRedirecting"),
+          "success",
+        );
         setTimeout(() => {
           window.location.href = "/admin/";
         }, 1000);
@@ -180,7 +202,7 @@ if (document.getElementById("login-form")) {
           if (data.errors && Array.isArray(data.errors)) {
             window.showToastr(
               data.errors.map((e) => window.i18next.t(e)).join(", "),
-              'error',
+              "error",
             );
           } else {
             const errorMessage =
@@ -188,12 +210,12 @@ if (document.getElementById("login-form")) {
             if (errorMessage.includes("deleted")) {
               window.showToastr(
                 window.i18next.t("accountHasBeenDeletedContactSupport"),
-                'error',
+                "error",
               );
             } else if (errorMessage.includes("banned")) {
               window.showToastr(
                 window.i18next.t("yourAccountHasBeenDeactivated"),
-                'error',
+                "error",
               );
             } else if (
               errorMessage.includes("Invalid email or password") ||
@@ -202,16 +224,19 @@ if (document.getElementById("login-form")) {
                 "メールアドレスまたはパスワードが正しくありません",
               )
             ) {
-              window.showToastr(window.i18next.t("invalidCredentials"), 'error');
+              window.showToastr(
+                window.i18next.t("invalidCredentials"),
+                "error",
+              );
             } else {
-              window.showToastr(window.i18next.t(errorMessage), 'error');
+              window.showToastr(window.i18next.t(errorMessage), "error");
             }
           }
         }
       }
     } catch (err) {
       console.error("Login error:", err);
-      window.showToastr(window.i18next.t("loginFailedPleaseTryAgain"), 'error');
+      window.showToastr(window.i18next.t("loginFailedPleaseTryAgain"), "error");
     }
   });
 }
@@ -270,7 +295,7 @@ if (document.getElementById("register-form")) {
     }
 
     if (errors.length > 0) {
-      window.showToastr(errors.filter(Boolean).join(", "), 'error');
+      window.showToastr(errors.filter(Boolean).join(", "), "error");
       return;
     }
 
@@ -296,12 +321,12 @@ if (document.getElementById("register-form")) {
               .t("usernameAutoGenerated")
               .replace("{original}", username)
               .replace("{generated}", data.username),
-            'error',
+            "error",
           );
         } else {
           window.showToastr(
             window.i18next.t("registrationSuccessfulCheckEmail"),
-            'success',
+            "success",
           );
         }
         setTimeout(() => {
@@ -311,7 +336,7 @@ if (document.getElementById("register-form")) {
         if (data.errors && Array.isArray(data.errors)) {
           window.showToastr(
             data.errors.map((e) => window.i18next.t(e)).join(", "),
-            'error',
+            "error",
           );
         } else {
           const errorMessage = data.message || "registrationFailed";
@@ -321,22 +346,25 @@ if (document.getElementById("register-form")) {
                 window.i18next
                   .t("usernameAlreadyExists")
                   .replace("{username}", username),
-                'error',
+                "error",
               );
             } else {
               window.showToastr(
                 window.i18next.t("userAlreadyExists").replace("{email}", email),
-                'error',
+                "error",
               );
             }
           } else {
-            window.showToastr(window.i18next.t(errorMessage), 'error');
+            window.showToastr(window.i18next.t(errorMessage), "error");
           }
         }
       }
     } catch (err) {
       console.error("Register error:", err);
-      window.showToastr(window.i18next.t("registrationFailedTryAgain"), 'error');
+      window.showToastr(
+        window.i18next.t("registrationFailedTryAgain"),
+        "error",
+      );
     }
   });
 }
@@ -352,12 +380,15 @@ if (document.getElementById("forgot-password-form")) {
     const language = getCurrentLanguage();
 
     if (!email) {
-      window.showToastr(window.i18next.t("emailRequired"), 'error');
+      window.showToastr(window.i18next.t("emailRequired"), "error");
       return;
     }
 
     if (!isValidEmail(email)) {
-      window.showToastr(window.i18next.t("pleaseEnterValidEmailAddress"), 'error');
+      window.showToastr(
+        window.i18next.t("pleaseEnterValidEmailAddress"),
+        "error",
+      );
       return;
     }
 
@@ -371,17 +402,26 @@ if (document.getElementById("forgot-password-form")) {
 
       if (res.ok) {
         localStorage.setItem("pendingResetEmail", email);
-        window.showToastr(window.i18next.t("resetEmailSentCheckEmail"), 'success');
+        window.showToastr(
+          window.i18next.t("resetEmailSentCheckEmail"),
+          "success",
+        );
         setTimeout(() => {
           window.location.href = "/auth/login.html";
         }, 1500);
         forgotPasswordForm.reset();
       } else {
-        window.showToastr(window.i18next.t(data.message || "failedToSendResetEmail"), 'error');
+        window.showToastr(
+          window.i18next.t(data.message || "failedToSendResetEmail"),
+          "error",
+        );
       }
     } catch (err) {
       console.error("Forgot password error:", err);
-      window.showToastr(window.i18next.t("failedToSendResetEmailTryAgain"), 'error');
+      window.showToastr(
+        window.i18next.t("failedToSendResetEmailTryAgain"),
+        "error",
+      );
     }
   });
 }
@@ -398,17 +438,17 @@ if (document.getElementById("reset-password-form")) {
     const language = getCurrentLanguage();
 
     if (!password) {
-      window.showToastr(window.i18next.t("passwordRequired"), 'error');
+      window.showToastr(window.i18next.t("passwordRequired"), "error");
       return;
     }
 
     if (!isValidPassword(password)) {
-      window.showToastr(window.i18next.t("passwordInvalid"), 'error');
+      window.showToastr(window.i18next.t("passwordInvalid"), "error");
       return;
     }
 
     if (password !== confirmPassword) {
-      window.showToastr(window.i18next.t("passwordsDoNotMatch"), 'error');
+      window.showToastr(window.i18next.t("passwordsDoNotMatch"), "error");
       return;
     }
 
@@ -416,7 +456,7 @@ if (document.getElementById("reset-password-form")) {
     const token = urlParams.get("token");
 
     if (!token) {
-      window.showToastr(window.i18next.t("invalidResetToken"), 'error');
+      window.showToastr(window.i18next.t("invalidResetToken"), "error");
       return;
     }
 
@@ -434,16 +474,25 @@ if (document.getElementById("reset-password-form")) {
       const data = await res.json();
 
       if (res.ok) {
-        window.showToastr(window.i18next.t("passwordResetSuccessRedirectLogin"), 'success');
+        window.showToastr(
+          window.i18next.t("passwordResetSuccessRedirectLogin"),
+          "success",
+        );
         localStorage.removeItem("pendingResetEmail");
         setTimeout(() => {
           window.location.href = "/auth/login.html";
         }, 2000);
       } else {
-        window.showToastr(window.i18next.t(data.message || "passwordResetFailed"), 'error');
+        window.showToastr(
+          window.i18next.t(data.message || "passwordResetFailed"),
+          "error",
+        );
       }
     } catch (err) {
-      window.showToastr(window.i18next.t("passwordResetFailedTryAgain"), 'error');
+      window.showToastr(
+        window.i18next.t("passwordResetFailedTryAgain"),
+        "error",
+      );
     }
   });
 }
@@ -463,28 +512,31 @@ if (document.getElementById("change-password-form")) {
     const language = getCurrentLanguage();
 
     if (!currentPassword) {
-      window.showToastr(window.i18next.t("currentPasswordRequired"), 'error');
+      window.showToastr(window.i18next.t("currentPasswordRequired"), "error");
       return;
     }
 
     if (!newPassword) {
-      window.showToastr(window.i18next.t("newPasswordRequired"), 'error');
+      window.showToastr(window.i18next.t("newPasswordRequired"), "error");
       return;
     }
 
     if (!isValidPassword(newPassword)) {
-      window.showToastr(window.i18next.t("newPasswordInvalid"), 'error');
+      window.showToastr(window.i18next.t("newPasswordInvalid"), "error");
       return;
     }
 
     if (newPassword !== confirmPassword) {
-      window.showToastr(window.i18next.t("newPasswordsDoNotMatch"), 'error');
+      window.showToastr(window.i18next.t("newPasswordsDoNotMatch"), "error");
       return;
     }
 
     const token = localStorage.getItem("authToken");
     if (!token) {
-      window.showToastr(window.i18next.t("mustBeLoggedInToChangePassword"), 'error');
+      window.showToastr(
+        window.i18next.t("mustBeLoggedInToChangePassword"),
+        "error",
+      );
       return;
     }
 
@@ -505,16 +557,22 @@ if (document.getElementById("change-password-form")) {
       const data = await res.json();
 
       if (res.ok) {
-        window.showToastr(window.i18next.t("passwordChangedSuccessfully"), 'success');
+        window.showToastr(
+          window.i18next.t("passwordChangedSuccessfully"),
+          "success",
+        );
         changePasswordForm.reset();
       } else {
         window.showToastr(
           window.i18next.t(data.message || "passwordChangeFailed"),
-          'error',
+          "error",
         );
       }
     } catch (err) {
-      window.showToastr(window.i18next.t("passwordChangeFailedTryAgain"), 'error');
+      window.showToastr(
+        window.i18next.t("passwordChangeFailedTryAgain"),
+        "error",
+      );
     }
   });
 }
@@ -552,7 +610,7 @@ window.addEventListener("DOMContentLoaded", async function () {
     }, 1000);
   }
   if (!token) {
-    window.showToastr(window.i18next.t("invalidOrExpiredToken"), 'error');
+    window.showToastr(window.i18next.t("invalidOrExpiredToken"), "error");
     if (countdownElem) countdownElem.textContent = "-";
     return;
   }
@@ -562,15 +620,18 @@ window.addEventListener("DOMContentLoaded", async function () {
     );
     const data = await res.json();
     if (res.ok && data.success) {
-      window.showToastr(window.i18next.t("emailVerifiedSuccessfully"), 'success');
+      window.showToastr(
+        window.i18next.t("emailVerifiedSuccessfully"),
+        "success",
+      );
       startCountdown();
     } else {
       let msg = data.message || "invalidOrExpiredToken";
-      window.showToastr(window.i18next.t(msg), 'error');
+      window.showToastr(window.i18next.t(msg), "error");
       if (countdownElem) countdownElem.textContent = "-";
     }
   } catch (err) {
-    window.showToastr(window.i18next.t("verifyEmailFailed"), 'error');
+    window.showToastr(window.i18next.t("verifyEmailFailed"), "error");
     if (countdownElem) countdownElem.textContent = "-";
   }
 });

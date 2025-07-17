@@ -362,7 +362,7 @@ public class UserService : IUserService
         var totalUsers = users.Count;
         var activeUsers = users.Count(u => u.Status == UserStatus.Active);
         var inactiveUsers = users.Count(u => u.Status == UserStatus.Inactive);
-        var bannedUsers = users.Count(u => u.Status == UserStatus.Banned);
+        var bannedUsers = users.Count(u => u.Status == UserStatus.Banned && u.DeletedAt != null);
         var verifiedUsers = users.Count(u => u.IsVerified);
         var unverifiedUsers = users.Count(u => !u.IsVerified);
         
