@@ -24,7 +24,7 @@ let config = {
     bodyColor: "#6f6b7d",
     headingColor: "#5d596c",
     textMuted: "#a5a3ae",
-    borderColor: "#dbdade"
+    borderColor: "#dbdade",
   },
   colors_label: {
     primary: "#7367f029",
@@ -33,7 +33,7 @@ let config = {
     info: "#00cfe829",
     warning: "#ff9f4329",
     danger: "#ea545529",
-    dark: "#4b4b4b29"
+    dark: "#4b4b4b29",
   },
   colors_dark: {
     cardColor: "#2f3349",
@@ -41,9 +41,9 @@ let config = {
     bodyColor: "#b6bee3",
     headingColor: "#cfd3ec",
     textMuted: "#7983bb",
-    borderColor: "#434968"
+    borderColor: "#434968",
   },
-  enableMenuLocalStorage: true // Enable menu state with local storage support
+  enableMenuLocalStorage: true, // Enable menu state with local storage support
 };
 
 let assetsPath = document.documentElement.getAttribute("data-assets-path"),
@@ -102,6 +102,14 @@ if (typeof TemplateCustomizer !== "undefined") {
     // defaultNavbarType: 'sticky',
     // defaultFooterFixed: false,
     // defaultShowDropdownOnHover: false,
-    controls: ["rtl", "style", "headerType", "contentLayout", "layoutCollapsed", "layoutNavbarOptions", "themes"]
+    controls: [
+      "rtl",
+      "style",
+      "headerType",
+      "contentLayout",
+      "layoutCollapsed",
+      "layoutNavbarOptions",
+      "themes",
+    ],
   });
 }

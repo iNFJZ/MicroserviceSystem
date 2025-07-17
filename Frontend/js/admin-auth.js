@@ -751,6 +751,8 @@ function getUserTableButtons() {
           }
           if (key === "isVerified")
             return val ? window.i18next.t("yes") : window.i18next.t("no");
+          if (key === "isDeleted")
+            return val ? window.i18next.t("true") : window.i18next.t("false");
           if (
             key === "phoneNumber" &&
             (window.location.pathname.includes("active-users") ||
@@ -823,6 +825,7 @@ function getUserTableButtons() {
     if (!exportData) return;
     const { headers, rows } = exportData;
     const wb = XLSX.utils.book_new();
+    const sheetName = window.i18next ? window.i18next.t("userList") : "Users";
     const ws = XLSX.utils.aoa_to_sheet([headers, ...rows]);
     const colWidths = headers.map((header, idx) => {
       const maxLength = Math.max(
@@ -847,7 +850,7 @@ function getUserTableButtons() {
         }
       }
     }
-    XLSX.utils.book_append_sheet(wb, ws, "Users");
+    XLSX.utils.book_append_sheet(wb, ws, sheetName);
     XLSX.writeFile(wb, getExportFileName("xlsx"));
   }
 
@@ -866,6 +869,10 @@ function getUserTableButtons() {
       return Math.max(8, Math.min(15, maxLength * 0.8)) + "%";
     });
 
+    const pdfTitle = window.i18next
+      ? window.i18next.t("userList")
+      : "User List";
+
     const docDefinition = {
       pageSize: "A4",
       pageOrientation: "landscape",
@@ -875,7 +882,7 @@ function getUserTableButtons() {
         fontSize: 7,
       },
       header: {
-        text: window.i18next.t("userList"),
+        text: pdfTitle,
         style: {
           alignment: "center",
           fontSize: 12,
@@ -886,7 +893,7 @@ function getUserTableButtons() {
       footer: function (currentPage, pageCount) {
         return {
           text:
-            window.i18next.t("page") +
+            (window.i18next ? window.i18next.t("page") : "Page") +
             " " +
             currentPage.toString() +
             " / " +
@@ -2790,7 +2797,9 @@ function setExportButtonLoading(buttonElement, isLoading) {
     buttonElement.disabled = false;
     buttonElement.innerHTML =
       '<i class="ti ti-download me-2"></i>' +
-      (window.i18next ? window.i18next.t("exportAllUsers") : "Export All Users");
+      (window.i18next
+        ? window.i18next.t("exportAllUsers")
+        : "Export All Users");
   }
 }
 
@@ -3027,11 +3036,21 @@ document.addEventListener("DOMContentLoaded", function () {
 function getExportFileName(ext) {
   const path = window.location.pathname;
   let prefix = "users_export";
-  if (path.includes("all-users")) prefix = "all_users_export";
-  else if (path.includes("active-users")) prefix = "active_users_export";
-  else if (path.includes("deactive-users")) prefix = "deactive_users_export";
+  if (window.i18next) {
+    if (path.includes("all-users"))
+      prefix = window.i18next.t("allUsers") + "_export";
+    else if (path.includes("active-users"))
+      prefix = window.i18next.t("activeUsers") + "_export";
+    else if (path.includes("deactive-users"))
+      prefix = window.i18next.t("deactiveUsers") + "_export";
+    else prefix = window.i18next.t("userList") + "_export";
+  } else {
+    if (path.includes("all-users")) prefix = "all_users_export";
+    else if (path.includes("active-users")) prefix = "active_users_export";
+    else if (path.includes("deactive-users")) prefix = "deactive_users_export";
+  }
   return (
-    prefix +
+    prefix.replace(/\s+/g, "_") +
     "_" +
     new Date().toISOString().replace(/[:.]/g, "-") +
     (ext ? "." + ext : "")
