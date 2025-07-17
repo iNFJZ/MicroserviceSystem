@@ -141,7 +141,6 @@ namespace AuthService.Services
                     }
                     
                     existingUser.GoogleId = googleUserInfo.Sub;
-                    existingUser.ProfilePicture = googleUserInfo.Picture;
                     existingUser.LoginProvider = "Google";
                     if (existingUser.Status != UserStatus.Suspended)
                     {
@@ -215,33 +214,29 @@ namespace AuthService.Services
 
             var username = baseUsername;
             var counter = 1;
-            const int maxAttempts = 100; // Prevent infinite loop
+            const int maxAttempts = 100;
             
             while (counter <= maxAttempts)
             {
                 var existingUser = await _userRepository.GetByUsernameAsync(username);
                 if (existingUser == null)
                 {
-                    return username; // Username is available
+                    return username;
                 }
                 
-                // Try with counter suffix
                 username = $"{baseUsername}{counter}";
                 counter++;
             }
             
-            // If we reach here, try with timestamp
             var timestamp = DateTime.UtcNow.ToString("yyyyMMddHHmmss");
             username = $"{baseUsername}{timestamp}";
             
-            // Final check
             var finalCheck = await _userRepository.GetByUsernameAsync(username);
             if (finalCheck == null)
             {
                 return username;
             }
             
-            // Last resort: use GUID
             var guid = Guid.NewGuid().ToString("N").Substring(0, 8);
             return $"{baseUsername}{guid}";
         }
