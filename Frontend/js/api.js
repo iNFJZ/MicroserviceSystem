@@ -1,6 +1,6 @@
 import { getToken, logout } from "./auth-utils.js";
 
-const API_BASE_URL = "http://localhost:5050/api";
+const API_BASE_URL = "http://localhost:550/api";
 
 export async function apiRequest(path, options = {}) {
   const token = getToken();
@@ -30,7 +30,7 @@ export async function apiRequest(path, options = {}) {
       // Fallback to default error handling
       const message = data?.message || `HTTP ${res.status}: ${res.statusText}`;
       if (typeof showToastr !== "undefined") {
-        showToastr(message, 'error');
+        showToastr(message, "error");
       } else {
         alert(message);
       }

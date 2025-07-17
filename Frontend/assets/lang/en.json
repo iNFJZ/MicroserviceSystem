@@ -12,6 +12,7 @@
   "language": "Language",
   "saveSettings": "Save settings",
   "enableDarkMode": "Enable dark mode",
+  "googleId": "Google ID",
   "enableLightMode": "Enable light mode",
   "successUpload": "File uploaded successfully!",
   "successDelete": "File deleted successfully!",
@@ -67,8 +68,8 @@
   "inactiveUsers": "Inactive Users",
   "activeUsers": "Active Users",
   "quickActions": "Quick Actions",
-  "manageActiveUsers": "Manage Active Users",
-  "viewDeactiveUsers": "View Deactive Users",
+  "manageActiveUsers": "Active Users",
+  "viewDeactiveUsers": "Deactive Users",
   "exportAllUsers": "Export All Users",
   "addNewUser": "Add New User",
   "verifyEmailTitle": "Account Created Successfully! 🎉",
@@ -223,7 +224,7 @@
   "page": "Page",
   "totalDeletedUsers": "Total Deleted Users",
   "deletedAt": "Deleted At",
-  "created": "Created",
+  "createdAt": "Created",
   "lastLoginAt": "Last Login At",
   "selectStatus": "Select Status",
   "team": "Team",
@@ -435,9 +436,9 @@
   "googleLoginSuccessfulRedirecting": "Google login successful. Redirecting...",
   "googleLoginFailed": "Google login failed.",
   "accountBanned": "Your account has been banned.",
+  "yourAccountHasBeenDeactivated": "Your account has been banned.",
   "accountDeleted": "Your account has been deleted.",
   "loggingOut": "Logging out...",
-  "loggedOutSuccessfully": "Logged out successfully.",
   "enterServerKey": "Enter server key",
   "search": "Search",
   "myProfileTitle": "My Profile",
@@ -553,11 +554,19 @@
   "auth.reset-password.back-to-login": "Back to Login",
   "auth.reset-password.set-new-password-button": "Set New Password",
   "failedToValidateResetToken": "Failed to validate reset token!",
-  "verifyEmailInstruction": "Please check your email and click the verification link to activate your account."
-  ,"exporting": "Exporting..."
-  ,"noDataToExport": "No data to export"
-  ,"exportSuccess": "Export successful"
-  ,"exportFailed": "Export failed"
-  ,"updatedAt": "Updated At"
-  ,"isDeleted": "Is Deleted"
+  "verifyEmailInstruction": "Please check your email and click the verification link to activate your account.",
+  "exporting": "Exporting...",
+  "noDataToExport": "No data to export",
+  "userList": "User List",
+  "exportSuccess": "Export successful",
+  "exportFailed": "Export failed",
+  "updatedAt": "Updated At",
+  "isDeleted": "Is Deleted",
+  "userDeletedSuccessfully": "User deleted successfully",
+  "yourAccountHasBeenDeleted": "Your account has been deleted",
+  "loggedOutSuccessfully": "Logged out successfully",
+  "failedToInitializeApplication": "Failed to initialize application",
+  "deleteFailed": "Delete failed",
+  "modalNotFound": "Modal not found",
+  "failedToLoadData": "Failed to load data"
 }

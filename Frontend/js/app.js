@@ -18,7 +18,7 @@ import {
   getUserByUsername,
 } from "./api.js";
 
-const API_BASE_URL = "http://localhost:5050/api";
+const API_BASE_URL = "http://localhost:550/api";
 
 let currentUser = null;
 let authToken = localStorage.getItem("authToken") || null;
@@ -35,7 +35,7 @@ if (window.self !== window.top) {
 }
 
 function showMessage(elementId, message, isError = false) {
-  showToastr(message, isError ? 'error' : 'success');
+  showToastr(message, isError ? "error" : "success");
 
   const element = document.getElementById(elementId);
   if (element) {
@@ -80,7 +80,7 @@ window.deleteUser = async function (id) {
       }
 
       const res = await deleteUser(id);
-      showToastr(window.i18next.t("userDeletedSuccessfully"), 'success');
+      showToastr(window.i18next.t("userDeletedSuccessfully"), "success");
 
       if (
         res &&
@@ -90,7 +90,7 @@ window.deleteUser = async function (id) {
       ) {
         localStorage.removeItem("authToken");
         sessionStorage.clear();
-        showToastr(window.i18next.t("yourAccountHasBeenDeleted"), 'info');
+        showToastr(window.i18next.t("yourAccountHasBeenDeleted"), "info");
         setTimeout(() => {
           window.location.href = "/auth/login.html";
         }, 1000);
@@ -102,11 +102,11 @@ window.deleteUser = async function (id) {
         res.message &&
         res.message.includes("deactivated successfully")
       ) {
-        showToastr(window.i18next.t("deactivationEmailSent"), 'info');
+        showToastr(window.i18next.t("deactivationEmailSent"), "info");
       }
       renderUserTable();
     } catch (error) {
-      showToastr(window.i18next.t("failedToDeleteUser"), 'error');
+      showToastr(window.i18next.t("failedToDeleteUser"), "error");
     }
   }
 };
@@ -149,7 +149,10 @@ window.addEventListener("DOMContentLoaded", async () => {
       } catch {}
       if (res.ok && data.token) {
         localStorage.setItem("authToken", data.token);
-        showToastr(window.i18next.t("googleLoginSuccessfulRedirecting"), 'success');
+        showToastr(
+          window.i18next.t("googleLoginSuccessfulRedirecting"),
+          "success",
+        );
         setTimeout(() => {
           window.location.href = "/admin/";
         }, 1000);
@@ -158,12 +161,12 @@ window.addEventListener("DOMContentLoaded", async () => {
         let errorMsg = data.message || window.i18next.t("googleLoginFailed");
         if (errorMsg.toLowerCase().includes("banned")) {
           errorMsg = window.i18next.t("accountBanned");
-          showToastr(errorMsg, 'error');
+          showToastr(errorMsg, "error");
         } else if (errorMsg.toLowerCase().includes("deleted")) {
           errorMsg = window.i18next.t("accountHasBeenDeletedContactSupport");
-          showToastr(errorMsg, 'error');
+          showToastr(errorMsg, "error");
         } else {
-          showToastr(errorMsg, 'error');
+          showToastr(errorMsg, "error");
         }
         if (msg) msg.textContent = errorMsg;
       }
@@ -173,7 +176,7 @@ window.addEventListener("DOMContentLoaded", async () => {
           ? err.message
           : window.i18next.t("googleLoginFailed");
       if (msg) msg.textContent = errorMsg;
-      showToastr(window.i18next.t("googleLoginFailed"), 'error');
+      showToastr(window.i18next.t("googleLoginFailed"), "error");
     }
     if (!success && msg) {
       msg.textContent = window.i18next.t("googleLoginFailed");
@@ -212,7 +215,7 @@ function setupLogoutHandlers() {
       sessionStorage.clear();
       currentUser = null;
       authToken = null;
-      showToastr(window.i18next.t("loggedOutSuccessfully"), 'success');
+      showToastr(window.i18next.t("loggedOutSuccessfully"), "success");
       setTimeout(() => {
         window.location.href = "/auth/login.html";
       }, 500);
@@ -269,7 +272,7 @@ window.addEventListener("DOMContentLoaded", async function () {
     setupLogoutHandlers();
   } catch (error) {
     console.error("Error initializing app:", error);
-    showToastr(window.i18next.t("failedToInitializeApplication"), 'error');
+    showToastr(window.i18next.t("failedToInitializeApplication"), "error");
   }
 });
 
@@ -295,7 +298,7 @@ async function loadActiveUsers() {
     showToastr(
       window.i18next.t("failedToLoadUsers") +
         (err.message || window.i18next.t("unknownError")),
-      'error',
+      "error",
     );
   }
 
@@ -359,7 +362,7 @@ async function loadDeletedUsers() {
     showToastr(
       window.i18next.t("failedToLoadDeletedUsers") +
         (err.message || window.i18next.t("unknownError")),
-      'error',
+      "error",
     );
   }
 
@@ -498,7 +501,7 @@ function renderUserTableWithPagination(users, page) {
 
       try {
         const res = await deleteUser(user.id);
-        showToastr(window.i18next.t("userDeletedSuccessfully"), 'success');
+        showToastr(window.i18next.t("userDeletedSuccessfully"), "success");
 
         if (
           res &&
@@ -510,7 +513,7 @@ function renderUserTableWithPagination(users, page) {
         ) {
           localStorage.removeItem("authToken");
           sessionStorage.clear();
-          showToastr(window.i18next.t("yourAccountHasBeenDeleted"), 'info');
+          showToastr(window.i18next.t("yourAccountHasBeenDeleted"), "info");
           setTimeout(() => {
             window.location.href = "/auth/login.html";
           }, 1000);
@@ -522,7 +525,7 @@ function renderUserTableWithPagination(users, page) {
           res.message &&
           res.message.includes("deactivated successfully")
         ) {
-          showToastr(window.i18next.t("deactivationEmailSent"), 'info');
+          showToastr(window.i18next.t("deactivationEmailSent"), "info");
         }
         allUsersCache = [];
         filteredUsersCache = [];
@@ -535,7 +538,7 @@ function renderUserTableWithPagination(users, page) {
         await loadDeletedUsers();
         await updateUserStats();
       } catch (err) {
-        showToastr(window.i18next.t("deleteFailed"), 'error');
+        showToastr(window.i18next.t("deleteFailed"), "error");
         btn.disabled = false;
         btn.textContent = window.i18next.t("delete");
       }
@@ -604,7 +607,7 @@ function renderDeletedUserTableWithPagination(users, page) {
         btn.textContent = window.i18next.t("restoring");
         try {
           await restoreUser(user.id);
-          showToastr(window.i18next.t("userRestoredSuccessfully"), 'success');
+          showToastr(window.i18next.t("userRestoredSuccessfully"), "success");
           allUsersCache = [];
           filteredUsersCache = [];
           allDeletedUsersCache = [];
@@ -620,7 +623,7 @@ function renderDeletedUserTableWithPagination(users, page) {
           await loadDeletedUsers();
           await updateUserStats();
         } catch (err) {
-          showToastr(window.i18next.t("restoreFailed"), 'error');
+          showToastr(window.i18next.t("restoreFailed"), "error");
           btn.disabled = false;
           btn.textContent = window.i18next.t("restore");
         }
@@ -739,7 +742,7 @@ window.addEventListener("DOMContentLoaded", function () {
         errors.push(window.i18next.t("statusRequired"));
       }
       if (errors.length > 0) {
-        showToastr(errors.filter(Boolean).join("<br>"), 'error');
+        showToastr(errors.filter(Boolean).join("<br>"), "error");
         return;
       }
 
@@ -761,7 +764,7 @@ window.addEventListener("DOMContentLoaded", function () {
         updateData.isVerified = isVerified;
 
         await updateUser(userId, updateData);
-        showToastr(window.i18next.t("userUpdatedSuccessfully"), 'success');
+        showToastr(window.i18next.t("userUpdatedSuccessfully"), "success");
         closeEditModal();
 
         const oldUser = allUsersCache.find((u) => u.id === userId);
@@ -806,7 +809,7 @@ window.addEventListener("DOMContentLoaded", function () {
         } else {
           msg += window.i18next.t("unknownError");
         }
-        showToastr(msg, 'error');
+        showToastr(msg, "error");
       } finally {
         saveBtn.disabled = false;
         saveBtn.textContent = window.i18next.t("saveChanges");
@@ -863,7 +866,7 @@ function clearActiveModal() {
 function editUser(userId) {
   const user = allUsersCache.find((u) => u.id === userId);
   if (!user) {
-    showToastr(window.i18next.t("userNotFound"), 'error');
+    showToastr(window.i18next.t("userNotFound"), "error");
     return;
   }
 
@@ -884,7 +887,7 @@ function editUser(userId) {
 
   const modal = document.getElementById("edit-user-modal");
   if (!modal) {
-    showToastr(window.i18next.t("modalNotFound"), 'error');
+    showToastr(window.i18next.t("modalNotFound"), "error");
     return;
   }
 

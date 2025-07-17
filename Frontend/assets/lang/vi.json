@@ -181,8 +181,9 @@
   "confirmAccountDeactivation": "Xác nhận vô hiệu hóa tài khoản",
   "totalDeletedUsers": "Tổng người dùng đã xóa",
   "deletedAt": "Thời gian xóa",
-  "created": "Ngày tạo",
+  "createdAt": "Ngày tạo",
   "lastLoginAt": "Lần đăng nhập cuối",
+  "lastLogin": "Lần đăng nhập cuối",
   "notAvailable": "Không có dữ liệu",
   "notificationPreferences": "Cài đặt thông báo",
   "enableEmailNotifications": "Bật thông báo qua email",
@@ -227,6 +228,9 @@
   "emailNotAvailable": "Email không khả dụng",
   "loginFailed": "Đăng nhập thất bại.",
   "changePasswordFailed": "Đổi mật khẩu thất bại!",
+  "deleteFailed": "Xóa thất bại",
+  "failedToLoadData": "Tải dữ liệu thất bại",
+  "modalNotFound": "Không tìm thấy modal",
   "loginFailedPleaseTryAgain": "Đăng nhập thất bại. Vui lòng thử lại.",
   "loginSuccessfulRedirecting": "Đăng nhập thành công. Đang chuyển hướng...",
   "userDeletedSuccessfully": "Xóa người dùng thành công!",
@@ -236,6 +240,7 @@
   "failedToRestoreUser": "Khôi phục người dùng thất bại.",
   "failedToLoadUserInformation": "Tải thông tin người dùng thất bại.",
   "restore": "Khôi phục",
+  "googleId": "Google ID",
   "edit": "Chỉnh sửa",
   "totalUsers": "Tổng người dùng",
   "appsAndPages": "Ứng dụng & Trang",
@@ -279,12 +284,13 @@
   "googleLoginSuccessfulRedirecting": "Đăng nhập Google thành công. Đang chuyển hướng...",
   "googleLoginFailed": "Đăng nhập Google thất bại.",
   "accountBanned": "Tài khoản của bạn đã bị khóa.",
+  "yourAccountHasBeenDeactivated": "Tài khoản của bạn đã bị khóa.",
   "accountDeleted": "Tài khoản của bạn đã bị xóa.",
   "loggingOut": "Đang đăng xuất...",
   "loggedOutSuccessfully": "Đăng xuất thành công.",
   "addNewUser": "Thêm người dùng mới",
-  "manageActiveUsers": "Quản lý người dùng hoạt động",
-  "viewDeactiveUsers": "Xem người dùng đã xóa",
+  "manageActiveUsers": "Người dùng hoạt động",
+  "viewDeactiveUsers": "Người dùng đã dừng hoạt động",
   "exportAllUsers": "Xuất tất cả người dùng",
   "allUsers": "Tất cả người dùng",
   "currentlyActive": "Đang hoạt động",
@@ -552,11 +558,12 @@
   "auth.reset-password.back-to-login": "Quay về đăng nhập",
   "auth.reset-password.set-new-password-button": "Đặt mật khẩu mới",
   "failedToValidateResetToken": "Lỗi khi xác thực token đặt lại mật khẩu!",
-  "verifyEmailInstruction": "Vui lòng kiểm tra email và nhấn vào liên kết xác thực để kích hoạt tài khoản."
-  ,"exporting": "Đang xuất..."
-  ,"noDataToExport": "Không có dữ liệu để xuất"
-  ,"exportSuccess": "Xuất thành công"
-  ,"exportFailed": "Xuất thất bại"
-  ,"updatedAt": "Cập nhật lần cuối"
-  ,"isDeleted": "Đã xóa"
+  "verifyEmailInstruction": "Vui lòng kiểm tra email và nhấn vào liên kết xác thực để kích hoạt tài khoản.",
+  "exporting": "Đang xuất...",
+  "noDataToExport": "Không có dữ liệu để xuất",
+  "userList": "Danh sách người dùng",
+  "exportSuccess": "Xuất thành công",
+  "exportFailed": "Xuất thất bại",
+  "updatedAt": "Cập nhật lần cuối",
+  "isDeleted": "Đã xóa"
 }

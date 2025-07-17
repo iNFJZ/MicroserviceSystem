@@ -83,10 +83,6 @@ namespace AuthService.Controllers
             {
                 return BadRequest(new { message = ex.Message });
             }
-            catch (Exception ex)
-            {
-                return BadRequest(new { message = "An unexpected error occurred during Google login" });
-            }
         }
 
         [Authorize]
