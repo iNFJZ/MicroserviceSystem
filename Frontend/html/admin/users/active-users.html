@@ -915,6 +915,58 @@
         </div>
       </div>
     </div>
+
+    <!-- Core JS -->
+    <!-- build:js assets/vendor/js/core.js -->
+    <script src="/assets/vendor/libs/jquery/jquery.js"></script>
+    <script src="/assets/vendor/libs/popper/popper.js"></script>
+    <script src="/assets/vendor/js/bootstrap.js"></script>
+    <script src="/assets/vendor/libs/perfect-scrollbar/perfect-scrollbar.js"></script>
+    <script src="/assets/vendor/libs/node-waves/node-waves.js"></script>
+    <script src="/assets/vendor/libs/hammer/hammer.js"></script>
+    <script src="/assets/vendor/libs/i18n/i18next.min.js"></script>
+    <script src="/assets/vendor/libs/i18n/i18nextHttpBackend.min.js"></script>
+    <script src="/assets/vendor/js/menu.js"></script>
+    <!-- endbuild -->
+
+    <!-- Vendors JS -->
+    <script src="/assets/vendor/libs/datatables-bs5/datatables-bootstrap5.js"></script>
+    <script src="/assets/vendor/libs/select2/select2.js"></script>
+    <script src="/assets/vendor/libs/@form-validation/umd/bundle/popular.min.js"></script>
+
+    <!-- Main JS -->
+    <script src="/assets/vendor/libs/i18n/i18next.min.js"></script>
+    <script src="/assets/vendor/libs/i18n/i18nextHttpBackend.min.js"></script>
+    <script src="/assets/vendor/libs/typeahead-js/typeahead.js"></script>
+    <script src="/assets/js/main.js"></script>
+
+    <!-- Toastr JS -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.js"></script>
+    <script src="/js/notification.js"></script>
+    <script src="/js/error-handler.js"></script>
+    
+    <!-- Page JS -->
+    <script src="/js/admin-auth.js"></script>
+    <script src="/js/users.js"></script>
+    
+    <!-- CropperJS Script CDN -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.13/cropper.min.js"></script>
+    
+    <script>
+      $(document).ready(async function () {
+        if (window.adminAuth) {
+          await window.adminAuth.updateUserProfileDisplay();
+        }
+        if (typeof bindLanguageDropdownHandlers === 'function') {
+          bindLanguageDropdownHandlers();
+        } else if (window.bindLanguageDropdownHandlers) {
+          window.bindLanguageDropdownHandlers();
+        }
+      });
+    </script>
+    
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.2.7/pdfmake.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.2.7/vfs_fonts.js"></script>
   </body>
 </html>
 
