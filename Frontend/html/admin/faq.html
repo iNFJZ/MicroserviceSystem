@@ -18,7 +18,7 @@
     <link
       rel="icon"
       type="image/x-icon"
-      href="../../assets/img/favicon/favicon.ico"
+      href="/assets/img/favicon/favicon.ico"
     />
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
@@ -26,54 +26,54 @@
       href="https://fonts.googleapis.com/css2?family=Public+Sans:ital,wght@0,300;0,400;0,500;0,600;0,700;1,300;1,400;1,500;1,600;1,700&ampdisplay=swap"
       rel="stylesheet"
     />
-    <link rel="stylesheet" href="../../assets/vendor/fonts/fontawesome.css" />
-    <link rel="stylesheet" href="../../assets/vendor/fonts/tabler-icons.css" />
-    <link rel="stylesheet" href="../../assets/vendor/fonts/flag-icons.css" />
+    <link rel="stylesheet" href="/assets/vendor/fonts/fontawesome.css" />
+    <link rel="stylesheet" href="/assets/vendor/fonts/tabler-icons.css" />
+    <link rel="stylesheet" href="/assets/vendor/fonts/flag-icons.css" />
     <link
       rel="stylesheet"
-      href="../../assets/vendor/css/rtl/core.css"
+      href="/assets/vendor/css/rtl/core.css"
       class="template-customizer-core-css"
     />
     <link
       rel="stylesheet"
-      href="../../assets/vendor/css/rtl/theme-default.css"
+      href="/assets/vendor/css/rtl/theme-default.css"
       class="template-customizer-theme-css"
     />
-    <link rel="stylesheet" href="../../assets/css/demo.css" />
+    <link rel="stylesheet" href="/assets/css/demo.css" />
     <link
       rel="stylesheet"
-      href="../../assets/vendor/libs/node-waves/node-waves.css"
+      href="/assets/vendor/libs/node-waves/node-waves.css"
     />
     <link
       rel="stylesheet"
-      href="../../assets/vendor/libs/perfect-scrollbar/perfect-scrollbar.css"
+      href="/assets/vendor/libs/perfect-scrollbar/perfect-scrollbar.css"
     />
-    <link rel="stylesheet" href="../../assets/vendor/libs/typeahead-js/typeahead.css" />
+    <link rel="stylesheet" href="/assets/vendor/libs/typeahead-js/typeahead.css" />
     <!-- Toastr CSS -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.css">
     <link
       rel="stylesheet"
-      href="../../assets/vendor/libs/datatables-bs5/datatables.bootstrap5.css"
+      href="/assets/vendor/libs/datatables-bs5/datatables.bootstrap5.css"
     />
     <link
       rel="stylesheet"
-      href="../../assets/vendor/libs/select2/select2.css"
+      href="/assets/vendor/libs/select2/select2.css"
     />
     <link
       rel="stylesheet"
-      href="../../assets/vendor/libs/@form-validation/umd/styles/index.min.css"
+      href="/assets/vendor/libs/@form-validation/umd/styles/index.min.css"
     />
     <link
       rel="stylesheet"
-      href="../../assets/vendor/libs/animate-css/animate.css"
+      href="/assets/vendor/libs/animate-css/animate.css"
     />
     <link
       rel="stylesheet"
-      href="../../assets/vendor/libs/sweetalert2/sweetalert2.css"
+      href="/assets/vendor/libs/sweetalert2/sweetalert2.css"
     />
-    <script src="../../assets/vendor/js/helpers.js"></script>
-    <script src="../../assets/vendor/js/template-customizer.js"></script>
-    <script src="../../assets/js/config.js"></script>
+    <script src="/assets/vendor/js/helpers.js"></script>
+    <script src="/assets/vendor/js/template-customizer.js"></script>
+    <script src="/assets/js/config.js"></script>
   </head>
   <body>
     <div class="layout-wrapper layout-content-navbar">
@@ -84,10 +84,10 @@
           class="layout-menu menu-vertical menu bg-menu-theme"
         >
           <div class="app-brand demo">
-            <a href="index.html" class="app-brand-link">
+            <a href="/admin/index.html" class="app-brand-link">
               <span class="app-brand-logo demo">
                 <img
-                  src="../assets/img/branding/logo-i-vuexy.svg"
+                  src="/assets/img/branding/logo-i-vuexy.svg"
                   alt="EDISA Logo"
                   style="height: 32px; width: auto"
                 />
@@ -106,13 +106,9 @@
           </div>
           <div class="menu-inner-shadow"></div>
           <ul class="menu-inner py-1">
-            <!-- Apps & Pages -->
             <li class="menu-header small text-uppercase">
-              <span class="menu-header-text" data-i18n="appsAndPages"
-                >Apps & Pages</span
-              >
+              <span class="menu-header-text" data-i18n="appsAndPages">Apps & Pages</span>
             </li>
-
             <!-- User Management -->
             <li class="menu-item">
               <a href="javascript:void(0);" class="menu-link menu-toggle">
@@ -121,25 +117,48 @@
               </a>
               <ul class="menu-sub">
                 <li class="menu-item">
-                  <a href="all-users.html" class="menu-link">
+                  <a href="/admin/index.html" class="menu-link">
                     <div data-i18n="allUsers">All Users</div>
                   </a>
                 </li>
                 <li class="menu-item">
-                  <a href="active-users.html" class="menu-link">
+                  <a href="/admin/users/active-users.html" class="menu-link">
                     <div data-i18n="activeUsers">Active Users</div>
                   </a>
                 </li>
                 <li class="menu-item">
-                  <a href="deactive-users.html" class="menu-link">
+                  <a href="/admin/users/deactive-users.html" class="menu-link">
                     <div data-i18n="deactiveUsers">Deactive Users</div>
                   </a>
                 </li>
               </ul>
             </li>
-
-            <!-- Logout -->
+            <!-- File Management -->
             <li class="menu-item">
+              <a href="javascript:void(0);" class="menu-link menu-toggle">
+                <i class="menu-icon tf-icons ti ti-file"></i>
+                <div data-i18n="fileManagement">File Management</div>
+              </a>
+              <ul class="menu-sub">
+                <li class="menu-item">
+                  <a href="/admin/files/files.html" class="menu-link">
+                    <div data-i18n="fileList">File List</div>
+                  </a>
+                </li>
+                <li class="menu-item">
+                  <a href="/admin/files/upload-file.html" class="menu-link">
+                    <div data-i18n="uploadFile">Upload File</div>
+                  </a>
+                </li>
+              </ul>
+            </li>
+            <li class="menu-item">
+              <a href="/admin/faq.html" class="menu-link">
+                <i class="menu-icon tf-icons ti ti-help"></i>
+                <div data-i18n="faq">FAQ</div>
+              </a>
+            </li>
+            <li class="menu-item" style="margin-top:auto;">
               <a href="javascript:void(0);" class="menu-link" id="logout-btn">
                 <i class="menu-icon tf-icons ti ti-logout"></i>
                 <div data-i18n="logOut">Log Out</div>
@@ -240,7 +259,7 @@
                   </a>
                   <ul class="dropdown-menu dropdown-menu-end">
                     <li>
-                      <a class="dropdown-item" href="my-profile.html"
+                      <a class="dropdown-item" href="/admin/profile/my-profile.html"
                         ><div class="d-flex">
                           <div class="flex-shrink-0 me-3">
                             <div class="avatar avatar-online">
@@ -266,7 +285,7 @@
                     </li>
                     <li><div class="dropdown-divider"></div></li>
                     <li>
-                      <a class="dropdown-item" href="my-profile.html"
+                      <a class="dropdown-item" href="/admin/profile/my-profile.html"
                         ><i class="ti ti-user-check me-2 ti-sm"></i
                         ><span class="align-middle" data-i18n="myProfile"
                           >My Profile</span
@@ -274,7 +293,7 @@
                       >
                     </li>
                     <li>
-                      <a class="dropdown-item" href="security.html">
+                      <a class="dropdown-item" href="/admin/profile/security.html">
                         <i class="ti ti-lock me-2 ti-sm"></i>
                         <span class="align-middle" data-i18n="security"
                           >Security</span
@@ -282,18 +301,10 @@
                       </a>
                     </li>
                     <li>
-                      <a class="dropdown-item" href="notifications.html"
+                      <a class="dropdown-item" href="/admin/profile/notifications.html"
                         ><i class="ti ti-settings me-2 ti-sm"></i
                         ><span class="align-middle" data-i18n="settings"
                           >Settings</span
-                        ></a
-                      >
-                    </li>
-                    <li>
-                      <a class="dropdown-item active" href="faq.html" aria-current="page"
-                        ><i class="ti ti-help me-2 ti-sm"></i
-                        ><span class="align-middle" data-i18n="faq"
-                          >FAQ</span
                         ></a
                       >
                     </li>
@@ -302,7 +313,7 @@
                       <a
                         class="dropdown-item"
                         href="javascript:void(0);"
-                        id="logout-btn-secondary"
+                        id="logout-btn-dropdown"
                         ><i class="ti ti-logout me-2 ti-sm"></i
                         ><span class="align-middle" data-i18n="logOut"
                           >Log Out</span
@@ -323,7 +334,7 @@
                 <li class="nav-item">
                   <a
                     class="nav-link d-flex align-items-center"
-                    href="my-profile.html"
+                    href="/admin/profile/my-profile.html"
                     ><i class="ti-xs ti ti-users me-1"></i
                     ><span data-i18n="myProfile">My Profile</span></a
                   >
@@ -331,7 +342,7 @@
                 <li class="nav-item">
                   <a
                     class="nav-link d-flex align-items-center"
-                    href="security.html"
+                    href="/admin/profile/security.html"
                     ><i class="ti-xs ti ti-lock me-1"></i
                     ><span data-i18n="security">Security</span></a
                   >
@@ -339,7 +350,7 @@
                 <li class="nav-item">
                   <a
                     class="nav-link d-flex align-items-center"
-                    href="notifications.html"
+                    href="/admin/profile/notifications.html"
                     ><i class="ti-xs ti ti-bell me-1"></i
                     ><span data-i18n="settings">Settings</span></a
                   >
@@ -347,7 +358,7 @@
                 <li class="nav-item">
                   <a
                     class="nav-link active d-flex align-items-center"
-                    href="faq.html"
+                    href="/admin/faq.html"
                     ><i class="ti-xs ti ti-help me-1"></i
                     ><span data-i18n="faq">FAQ</span></a
                   >
@@ -471,27 +482,34 @@
       </div>
     </div>
     <!-- Core JS -->
-    <script src="../../assets/vendor/libs/jquery/jquery.js"></script>
-    <script src="../../assets/vendor/libs/popper/popper.js"></script>
-    <script src="../../assets/vendor/js/bootstrap.js"></script>
-    <script src="../../assets/vendor/libs/node-waves/node-waves.js"></script>
-    <script src="../../assets/vendor/libs/hammer/hammer.js"></script>
-    <script src="../../assets/vendor/libs/i18n/i18next.min.js"></script>
-    <script src="../../assets/vendor/libs/i18n/i18nextHttpBackend.min.js"></script>
-    <script src="../../assets/vendor/js/menu.js"></script>
-    <script src="../../assets/js/main.js"></script>
+    <script src="/assets/vendor/libs/jquery/jquery.js"></script>
+    <script src="/assets/vendor/libs/popper/popper.js"></script>
+    <script src="/assets/vendor/js/bootstrap.js"></script>
+    <script src="/assets/vendor/libs/node-waves/node-waves.js"></script>
+    <script src="/assets/vendor/libs/hammer/hammer.js"></script>
+    <script src="/assets/vendor/libs/i18n/i18next.min.js"></script>
+    <script src="/assets/vendor/libs/i18n/i18nextHttpBackend.min.js"></script>
+    <script src="/assets/vendor/js/menu.js"></script>
+    <script src="/assets/js/main.js"></script>
 
     <!-- Toastr JS -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.js"></script>
-    <script src="../../js/notification.js"></script>
+    <script src="/js/notification.js"></script>
 
-    <script src="../../js/admin-auth.js"></script>
-    <script type="module" src="../../js/api.js"></script>
+    <script src="/js/admin-auth.js"></script>
+    <script type="module" src="/js/api.js"></script>
     <script>
       $(document).ready(async function () {
         if (window.adminAuth) {
           await window.adminAuth.updateUserProfileDisplay();
           initializePageFunctionality();
+        }
+        // Test Toastr
+        if (typeof showToastr === 'function') {
+          showToastr('Test Toastr on faq.html', 'success');
+          console.log('showToastr called');
+        } else {
+          console.error('showToastr is not defined');
         }
       });
     </script>

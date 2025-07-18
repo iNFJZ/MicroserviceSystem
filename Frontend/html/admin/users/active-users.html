@@ -18,7 +18,7 @@
     <meta name="description" content="" />
 
     <!-- Favicon -->
-    <link rel="icon" type="image/x-icon" href="../../assets/img/favicon/favicon.ico" />
+    <link rel="icon" type="image/x-icon" href="/assets/img/favicon/favicon.ico" />
 
     <!-- Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com" />
@@ -28,43 +28,43 @@
       rel="stylesheet" />
 
     <!-- Icons -->
-    <link rel="stylesheet" href="../../assets/vendor/fonts/fontawesome.css" />
-    <link rel="stylesheet" href="../../assets/vendor/fonts/tabler-icons.css" />
-    <link rel="stylesheet" href="../../assets/vendor/fonts/flag-icons.css" />
+    <link rel="stylesheet" href="/assets/vendor/fonts/fontawesome.css" />
+    <link rel="stylesheet" href="/assets/vendor/fonts/tabler-icons.css" />
+    <link rel="stylesheet" href="/assets/vendor/fonts/flag-icons.css" />
 
     <!-- Core CSS -->
-    <link rel="stylesheet" href="../../assets/vendor/css/rtl/core.css" class="template-customizer-core-css" />
-    <link rel="stylesheet" href="../../assets/vendor/css/rtl/theme-default.css" class="template-customizer-theme-css" />
-    <link rel="stylesheet" href="../../assets/css/demo.css" />
-    <link rel="stylesheet" href="../../assets/css/styles.css" />
+    <link rel="stylesheet" href="/assets/vendor/css/rtl/core.css" class="template-customizer-core-css" />
+    <link rel="stylesheet" href="/assets/vendor/css/rtl/theme-default.css" class="template-customizer-theme-css" />
+    <link rel="stylesheet" href="/assets/css/demo.css" />
+    <link rel="stylesheet" href="/assets/css/styles.css" />
 
     <!-- Vendors CSS -->
-    <link rel="stylesheet" href="../../assets/vendor/libs/node-waves/node-waves.css" />
-    <link rel="stylesheet" href="../../assets/vendor/libs/perfect-scrollbar/perfect-scrollbar.css" />
-    <link rel="stylesheet" href="../../assets/vendor/libs/typeahead-js/typeahead.css" />
-    <link rel="stylesheet" href="../../assets/vendor/libs/datatables-bs5/datatables.bootstrap5.css" />
-    <link rel="stylesheet" href="../../assets/vendor/libs/datatables-responsive-bs5/responsive.bootstrap5.css" />
-    <link rel="stylesheet" href="../../assets/vendor/libs/datatables-buttons-bs5/buttons.bootstrap5.css" />
-    <link rel="stylesheet" href="../../assets/vendor/libs/select2/select2.css" />
-    <link rel="stylesheet" href="../../assets/vendor/libs/@form-validation/umd/styles/index.min.css" />
-    <link rel="stylesheet" href="../../assets/vendor/css/pages/page-auth.css" />
-    <link rel="stylesheet" href="../../css/auth.css" />
+    <link rel="stylesheet" href="/assets/vendor/libs/node-waves/node-waves.css" />
+    <link rel="stylesheet" href="/assets/vendor/libs/perfect-scrollbar/perfect-scrollbar.css" />
+    <link rel="stylesheet" href="/assets/vendor/libs/typeahead-js/typeahead.css" />
+    <link rel="stylesheet" href="/assets/vendor/libs/datatables-bs5/datatables.bootstrap5.css" />
+    <link rel="stylesheet" href="/assets/vendor/libs/datatables-responsive-bs5/responsive.bootstrap5.css" />
+    <link rel="stylesheet" href="/assets/vendor/libs/datatables-buttons-bs5/buttons.bootstrap5.css" />
+    <link rel="stylesheet" href="/assets/vendor/libs/select2/select2.css" />
+    <link rel="stylesheet" href="/assets/vendor/libs/@form-validation/umd/styles/index.min.css" />
+    <link rel="stylesheet" href="/assets/vendor/css/pages/page-auth.css" />
+    <link rel="stylesheet" href="/css/auth.css" />
     <!-- Toastr CSS -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.css" />
 
     <!-- Page CSS -->
 
     <!-- Helpers -->
-    <script src="../../assets/vendor/js/helpers.js"></script>
+    <script src="/assets/vendor/js/helpers.js"></script>
     <!--! Template customizer & Theme config files MUST be included after core stylesheets and helpers.js in the <head> section -->
     <!--? Template customizer: To hide customizer set displayCustomizer value false in config.js.  -->
-    <script src="../../assets/vendor/js/template-customizer.js"></script>
+    <script src="/assets/vendor/js/template-customizer.js"></script>
     <!--? Config:  Mandatory theme config file contain global vars & default theme options, Set your preferred theme option in this file.  -->
-    <script src="../../assets/js/config.js"></script>
+    <script src="/assets/js/config.js"></script>
     <!-- CropperJS CSS CDN -->
     <link href="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.13/cropper.min.css" rel="stylesheet" />
     <!-- Custom Cropper CSS -->
-    <link rel="stylesheet" href="../../css/cropper.css" />
+    <link rel="stylesheet" href="/css/cropper.css" />
   </head>
 
   <body>
@@ -75,9 +75,9 @@
 
         <aside id="layout-menu" class="layout-menu menu-vertical menu bg-menu-theme">
           <div class="app-brand demo">
-            <a href="index.html" class="app-brand-link">
+            <a href="/admin/index.html" class="app-brand-link">
               <span class="app-brand-logo demo">
-                <img src="../assets/img/branding/logo-i-vuexy.svg" alt="EDISA Logo" style="height:32px;width:auto;">
+                <img src="/assets/img/branding/logo-i-vuexy.svg" alt="EDISA Logo" style="height:32px;width:auto;">
               </span>
               <span class="app-brand-text demo menu-text fw-bold" data-i18n="systemName">EDISA</span>
             </a>
@@ -94,30 +94,51 @@
             <li class="menu-header small text-uppercase">
               <span class="menu-header-text" data-i18n="appsAndPages">Apps & Pages</span>
             </li>
-            <li class="menu-item active">
+            <!-- User Management -->
+            <li class="menu-item open active">
               <a href="javascript:void(0);" class="menu-link menu-toggle">
                 <i class="menu-icon tf-icons ti ti-users"></i>
                 <div data-i18n="userManagement">User Management</div>
               </a>
               <ul class="menu-sub">
                 <li class="menu-item">
-                  <a href="all-users.html" class="menu-link">
+                  <a href="/admin/index.html" class="menu-link">
                     <div data-i18n="allUsers">All Users</div>
                   </a>
                 </li>
                 <li class="menu-item active">
-                  <a href="active-users.html" class="menu-link">
+                  <a href="/admin/users/active-users.html" class="menu-link">
                     <div data-i18n="activeUsers">Active Users</div>
                   </a>
                 </li>
                 <li class="menu-item">
-                  <a href="deactive-users.html" class="menu-link">
+                  <a href="/admin/users/deactive-users.html" class="menu-link">
                     <div data-i18n="deactiveUsers">Deactive Users</div>
                   </a>
                 </li>
               </ul>
             </li>
+            <!-- File Management -->
             <li class="menu-item">
+              <a href="javascript:void(0);" class="menu-link menu-toggle">
+                <i class="menu-icon tf-icons ti ti-file"></i>
+                <div data-i18n="fileManagement">File Management</div>
+              </a>
+              <ul class="menu-sub">
+                <li class="menu-item">
+                  <a href="/admin/files/files.html" class="menu-link">
+                    <div data-i18n="fileList">File List</div>
+                  </a>
+                </li>
+                <li class="menu-item">
+                  <a href="/admin/files/upload-file.html" class="menu-link">
+                    <div data-i18n="uploadFile">Upload File</div>
+                  </a>
+                </li>
+              </ul>
+            </li>
+            <!-- Logout luôn ở cuối -->
+            <li class="menu-item" style="margin-top:auto;">
               <a href="javascript:void(0);" class="menu-link" id="logout-btn">
                 <i class="menu-icon tf-icons ti ti-logout"></i>
                 <div data-i18n="logOut">Log Out</div>
@@ -196,7 +217,7 @@
                   </a>
                   <ul class="dropdown-menu dropdown-menu-end">
                     <li>
-                      <a class="dropdown-item" href="my-profile.html">
+                      <a class="dropdown-item" href="/admin/profile/my-profile.html">
                         <div class="d-flex">
                           <div class="flex-shrink-0 me-3">
                             <div class="avatar avatar-online">
@@ -214,13 +235,13 @@
                       <div class="dropdown-divider"></div>
                     </li>
                     <li>
-                      <a class="dropdown-item" href="my-profile.html">
+                      <a class="dropdown-item" href="/admin/profile/my-profile.html">
                         <i class="ti ti-user-check me-2 ti-sm"></i>
                         <span class="align-middle" data-i18n="myProfile">My Profile</span>
                       </a>
                     </li>
                     <li>
-                      <a class="dropdown-item" href="security.html">
+                      <a class="dropdown-item" href="/admin/profile/security.html">
                         <i class="ti ti-lock me-2 ti-sm"></i>
                         <span class="align-middle" data-i18n="security"
                           >Security</span
@@ -228,13 +249,13 @@
                       </a>
                     </li>
                     <li>
-                      <a class="dropdown-item" href="notifications.html">
+                      <a class="dropdown-item" href="/admin/profile/notifications.html">
                         <i class="ti ti-settings me-2 ti-sm"></i>
                         <span class="align-middle" data-i18n="settings">Settings</span>
                       </a>
                     </li>
                     <li>
-                      <a class="dropdown-item" href="faq.html">
+                      <a class="dropdown-item" href="/admin/faq.html">
                         <i class="ti ti-help me-2 ti-sm"></i>
                         <span class="align-middle" data-i18n="faq">FAQ</span>
                       </a>
@@ -277,7 +298,7 @@
               <h4 class="py-3 mb-4">
                 <nav aria-label="breadcrumb">
                   <ol class="breadcrumb">
-                    <li class="breadcrumb-item"><a href="index.html" data-i18n="dashboard">Dashboard</a></li>
+                    <li class="breadcrumb-item"><a href="/admin/index.html" data-i18n="dashboard">Dashboard</a></li>
                     <li class="breadcrumb-item active" aria-current="page" data-i18n="activeUsers">Active Users</li>
                   </ol>
                 </nav>
@@ -482,25 +503,25 @@
     <!-- Core JS -->
     <!-- build:js assets/vendor/js/core.js -->
 
-    <script src="../../assets/vendor/libs/jquery/jquery.js"></script>
-    <script src="../../assets/vendor/libs/popper/popper.js"></script>
-    <script src="../../assets/vendor/js/bootstrap.js"></script>
-    <script src="../../assets/vendor/libs/node-waves/node-waves.js"></script>
-    <script src="../../assets/vendor/libs/perfect-scrollbar/perfect-scrollbar.js"></script>
-    <script src="../../assets/vendor/libs/hammer/hammer.js"></script>
-    <script src="../../assets/vendor/js/menu.js"></script>
+    <script src="/assets/vendor/libs/jquery/jquery.js"></script>
+    <script src="/assets/vendor/libs/popper/popper.js"></script>
+    <script src="/assets/vendor/js/bootstrap.js"></script>
+    <script src="/assets/vendor/libs/node-waves/node-waves.js"></script>
+    <script src="/assets/vendor/libs/perfect-scrollbar/perfect-scrollbar.js"></script>
+    <script src="/assets/vendor/libs/hammer/hammer.js"></script>
+    <script src="/assets/vendor/js/menu.js"></script>
 
     <!-- endbuild -->
 
     <!-- Vendors JS -->
-    <script src="../../assets/vendor/libs/moment/moment.js"></script>
-    <script src="../../assets/vendor/libs/datatables-bs5/datatables-bootstrap5.js"></script>
-    <script src="../../assets/vendor/libs/select2/select2.js"></script>
-    <script src="../../assets/vendor/libs/@form-validation/umd/bundle/popular.min.js"></script>
-    <script src="../../assets/vendor/libs/@form-validation/umd/plugin-bootstrap5/index.min.js"></script>
-    <script src="../../assets/vendor/libs/@form-validation/umd/plugin-auto-focus/index.min.js"></script>
-    <script src="../../assets/vendor/libs/cleavejs/cleave.js"></script>
-    <script src="../../assets/vendor/libs/cleavejs/cleave-phone.js"></script>
+    <script src="/assets/vendor/libs/moment/moment.js"></script>
+    <script src="/assets/vendor/libs/datatables-bs5/datatables-bootstrap5.js"></script>
+    <script src="/assets/vendor/libs/select2/select2.js"></script>
+    <script src="/assets/vendor/libs/@form-validation/umd/bundle/popular.min.js"></script>
+    <script src="/assets/vendor/libs/@form-validation/umd/plugin-bootstrap5/index.min.js"></script>
+    <script src="/assets/vendor/libs/@form-validation/umd/plugin-auto-focus/index.min.js"></script>
+    <script src="/assets/vendor/libs/cleavejs/cleave.js"></script>
+    <script src="/assets/vendor/libs/cleavejs/cleave-phone.js"></script>
 
     <!-- DataTables Export Dependencies -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
@@ -514,18 +535,23 @@
     <script src="https://cdn.datatables.net/buttons/2.4.1/js/buttons.colVis.min.js"></script>
 
     <!-- Main JS -->
-    <script src="../../assets/vendor/libs/i18n/i18next.min.js"></script>
-    <script src="../../assets/vendor/libs/i18n/i18nextHttpBackend.min.js"></script>
-    <script src="../../assets/js/main.js"></script>
+    <script src="/assets/vendor/libs/i18n/i18next.min.js"></script>
+    <script src="/assets/vendor/libs/i18n/i18nextHttpBackend.min.js"></script>
+    <script src="/assets/vendor/libs/typeahead-js/typeahead.js"></script>
+    <script src="/assets/js/main.js"></script>
 
     <!-- Toastr JS -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.js"></script>
-    <script src="../../js/notification.js"></script>
+    <script src="/js/notification.js"></script>
     
     <!-- Page JS -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.13/cropper.min.js"></script>
-    <script src="../../js/admin-auth.js"></script>
-    <script>loadActiveUsersTable();</script>
+    <script src="/js/admin-auth.js"></script>
+    <script>
+      if (typeof loadActiveUsersTable === "function") {
+        loadActiveUsersTable();
+      }
+    </script>
     <script>
       $(document).ready(async function() {
         if (window.adminAuth) {
@@ -632,7 +658,7 @@
               <div class="mb-3" id="edit-profilePicture-container" style="display: none;">
                 <label class="form-label" data-i18n="currentProfilePicture">Current Profile Picture</label>
                 <div class="d-flex align-items-center">
-                  <img id="edit-profilePicture-preview" src="" alt="Profile Picture Preview" 
+                  <img id="edit-profilePicture-preview" src="/assets/img/avatars/default.png" alt="Profile Picture Preview" 
                        style="width: 80px; height: 80px; border-radius: 50%; object-fit: cover; border: 3px solid #e7e7ff; box-shadow: 0 2px 8px rgba(0,0,0,0.1);" />
                   <div class="ms-3">
                     <button type="button" class="btn btn-sm btn-outline-danger" id="remove-profile-picture" data-i18n="removePicture"><i class="ti ti-trash me-1"></i>Remove Picture</button>
@@ -662,7 +688,7 @@
               <div class="col-md-3 text-center mb-3">
                 <div class="d-flex flex-column align-items-center justify-content-center" style="gap: 12px;">
                   <div class="avatar avatar-xl d-flex align-items-center justify-content-center" style="width: 100px; height: 100px; margin: 0 auto;">
-                    <img id="view-user-avatar" src="" class="rounded-circle" style="width: 100px; height: 100px; object-fit: cover; display: none;" />
+                    <img id="view-user-avatar" src="/assets/img/avatars/default.png" class="rounded-circle" style="width: 100px; height: 100px;" />
                     <div id="avatar-fallback" class="avatar-initial rounded-circle" style="width: 100px; height: 100px; display: none; align-items: center; justify-content: center; font-weight: bold; font-size: 40px;"></div>
                   </div>
                   <div class="user-status-badge d-flex justify-content-center"></div>

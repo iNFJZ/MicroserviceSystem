@@ -390,7 +390,11 @@ document.addEventListener("DOMContentLoaded", async function () {
         return;
       }
 
-      if (data.phoneNumber && !/^[0-9]{10,11}$/.test(data.phoneNumber)) {
+      let phone = formData.get("phoneNumber")?.trim();
+      if (phone && phone.startsWith("+84")) phone = "0" + phone.slice(3);
+      else if (phone && phone.startsWith("84")) phone = "0" + phone.slice(2);
+
+      if (phone && !/^[0-9]{10,11}$/.test(phone)) {
         showToastr(
           window.i18next.t("phoneNumberMustBe10To11DigitsAndOnlyNumbers"),
           "error",
@@ -498,11 +502,26 @@ document.addEventListener("DOMContentLoaded", async function () {
     } else if (user && user.fullName && user.fullName.trim() !== "") {
       letter = user.fullName.trim().charAt(0).toUpperCase();
     }
-    const color = "#" + (((1 << 24) * Math.random()) | 0).toString(16);
-    const svg = `<svg width='40' height='40' xmlns='http://www.w3.org/2000/svg'><circle cx='20' cy='20' r='20' fill='${color}'/><text x='50%' y='50%' text-anchor='middle' dy='.35em' font-family='Arial' font-size='20' fill='#fff'>${letter}</text></svg>`;
-    return (
-      "data:image/svg+xml;base64," + btoa(unescape(encodeURIComponent(svg)))
-    );
+    function stringToColor(str) {
+      let hash = 0;
+      for (let i = 0; i < str.length; i++) {
+        hash = str.charCodeAt(i) + ((hash << 5) - hash);
+      }
+      let color = '#';
+      for (let i = 0; i < 3; i++) {
+        const value = (hash >> (i * 8)) & 0xFF;
+        color += ('00' + value.toString(16)).slice(-2);
+      }
+      return color;
+    }
+    const color = stringToColor(user?.email || user?.username || user?.fullName || 'U');
+    const svg = `<svg width='80' height='80' xmlns='http://www.w3.org/2000/svg'><circle cx='40' cy='40' r='40' fill='${color}'/><text x='50%' y='50%' text-anchor='middle' dy='.35em' font-family='Arial' font-size='36' fill='#fff'>${letter}</text></svg>`;
+    try {
+      return "data:image/svg+xml;base64," + btoa(unescape(encodeURIComponent(svg)));
+    } catch (e) {
+      // Fallback: trả về ảnh rỗng
+      return '';
+    }
   }
 
   // Make function globally available
@@ -523,43 +542,50 @@ document.addEventListener("DOMContentLoaded", async function () {
         return;
       }
 
-      if (
-        !confirm(window.i18next.t("areYouSureYouWantToDeactivateYourAccount"))
-      ) {
-        return;
-      }
+      const result = await Swal.fire({
+        title: window.i18next.t("areYouSureYouWantToDeactivateYourAccount"),
+        text: "",
+        icon: "warning",
+        showCancelButton: true,
+        confirmButtonColor: "#dc3545",
+        cancelButtonColor: "#6c757d",
+        confirmButtonText: window.i18next.t("yes"),
+        cancelButtonText: window.i18next.t("no"),
+      });
 
-      const user = getCurrentUserInfo();
-      if (!user) {
-        showToastr(window.i18next.t("userNotFound"), "error");
-        return;
-      }
+      if (result.isConfirmed) {
+        const user = getCurrentUserInfo();
+        if (!user) {
+          showToastr(window.i18next.t("userNotFound"), "error");
+          return;
+        }
 
-      try {
-        const res = await fetch(`${API_BASE}/${user.id}`, {
-          method: "DELETE",
-          headers: getAuthHeaders(),
-        });
+        try {
+          const res = await fetch(`${API_BASE}/${user.id}`, {
+            method: "DELETE",
+            headers: getAuthHeaders(),
+          });
 
-        const data = await res.json();
+          const data = await res.json();
 
-        if (res.ok && data.success) {
-          showToastr(window.i18next.t("accountDeactivated"), "success");
-          localStorage.removeItem("authToken");
-          setTimeout(() => {
-            window.location.href = "/auth/login.html";
-          }, 1500);
-        } else {
+          if (res.ok && data.success) {
+            showToastr(window.i18next.t("accountDeactivated"), "success");
+            localStorage.removeItem("authToken");
+            setTimeout(() => {
+              window.location.href = "/auth/login.html";
+            }, 1500);
+          } else {
+            showToastr(
+              data.message || window.i18next.t("deactivationFailed"),
+              "error",
+            );
+          }
+        } catch (err) {
           showToastr(
-            data.message || window.i18next.t("deactivationFailed"),
+            err.message || window.i18next.t("deactivationFailed"),
             "error",
           );
         }
-      } catch (err) {
-        showToastr(
-          err.message || window.i18next.t("deactivationFailed"),
-          "error",
-        );
       }
     });
 

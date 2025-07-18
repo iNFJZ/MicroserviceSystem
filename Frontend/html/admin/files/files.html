@@ -1,0 +1,1064 @@
+<!doctype html>
+
+<html
+  lang="en"
+  class="light-style layout-navbar-fixed layout-menu-fixed"
+  dir="ltr"
+  data-theme="theme-default"
+  data-assets-path="../../assets/"
+  data-template="vertical-menu-template"
+>
+  <head>
+    <meta charset="utf-8" />
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1.0, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0"
+    />
+
+    <title data-i18n="fileManagementTitle">File Management - Admin Panel</title>
+
+    <meta name="description" content="" />
+
+    <!-- Favicon -->
+    <link
+      rel="icon"
+      type="image/x-icon"
+      href="/assets/img/favicon/favicon.ico"
+    />
+
+    <!-- Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Public+Sans:ital,wght@0,300;0,400;0,500;0,600;0,700;1,300;1,400;1,500;1,600;1,700&ampdisplay=swap"
+      rel="stylesheet"
+    />
+
+    <!-- Icons -->
+    <link rel="stylesheet" href="/assets/vendor/fonts/fontawesome.css" />
+    <link rel="stylesheet" href="/assets/vendor/fonts/tabler-icons.css" />
+    <link rel="stylesheet" href="/assets/vendor/fonts/flag-icons.css" />
+
+    <!-- Core CSS -->
+    <link
+      rel="stylesheet"
+      href="/assets/vendor/css/rtl/core.css"
+      class="template-customizer-core-css"
+    />
+    <link
+      rel="stylesheet"
+      href="/assets/vendor/css/rtl/theme-default.css"
+      class="template-customizer-theme-css"
+    />
+    <link rel="stylesheet" href="/assets/css/demo.css" />
+    <link rel="stylesheet" href="/assets/css/styles.css" />
+
+    <!-- Vendors CSS -->
+    <link
+      rel="stylesheet"
+      href="/assets/vendor/libs/node-waves/node-waves.css"
+    />
+    <link
+      rel="stylesheet"
+      href="/assets/vendor/libs/perfect-scrollbar/perfect-scrollbar.css"
+    />
+    <link
+      rel="stylesheet"
+      href="/assets/vendor/libs/typeahead-js/typeahead.css"
+    />
+    <link
+      rel="stylesheet"
+      href="/assets/vendor/libs/datatables-bs5/datatables.bootstrap5.css"
+    />
+    <link
+      rel="stylesheet"
+      href="/assets/vendor/libs/datatables-responsive-bs5/responsive.bootstrap5.css"
+    />
+    <link
+      rel="stylesheet"
+      href="/assets/vendor/libs/datatables-buttons-bs5/buttons.bootstrap5.css"
+    />
+    <link rel="stylesheet" href="/assets/vendor/libs/select2/select2.css" />
+    <link
+      rel="stylesheet"
+      href="/assets/vendor/libs/@form-validation/umd/styles/index.min.css"
+    />
+    <link rel="stylesheet" href="/assets/vendor/css/pages/page-auth.css" />
+    <link rel="stylesheet" href="/css/auth.css" />
+    <!-- Toastr CSS -->
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.css"
+    />
+
+    <!-- Page CSS -->
+
+    <!-- Helpers -->
+    <script src="/assets/vendor/js/helpers.js"></script>
+    <!--! Template customizer & Theme config files MUST be included after core stylesheets and helpers.js in the <head> section -->
+    <!--? Template customizer: To hide customizer set displayCustomizer value false in config.js.  -->
+    <script src="/assets/vendor/js/template-customizer.js"></script>
+    <!--? Config:  Mandatory theme config file contain global vars & default theme options, Set your preferred theme option in this file.  -->
+    <script src="/assets/js/config.js"></script>
+    <!-- CropperJS CSS CDN -->
+    <link
+      href="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.13/cropper.min.css"
+      rel="stylesheet"
+    />
+    <!-- Custom Cropper CSS -->
+    <link rel="stylesheet" href="/css/cropper.css" />
+  </head>
+
+  <body>
+    <!-- Layout wrapper -->
+    <div class="layout-wrapper layout-content-navbar">
+      <div class="layout-container">
+        <!-- Menu -->
+
+        <aside
+          id="layout-menu"
+          class="layout-menu menu-vertical menu bg-menu-theme"
+        >
+          <div class="app-brand demo">
+            <a href="/admin/index.html" class="app-brand-link">
+              <span class="app-brand-logo demo">
+                <img
+                  src="/assets/img/branding/logo-i-vuexy.svg"
+                  alt="EDISA Logo"
+                  style="height: 32px; width: auto"
+                />
+              </span>
+              <span
+                class="app-brand-text demo menu-text fw-bold"
+                data-i18n="systemName"
+                >EDISA</span
+              >
+            </a>
+
+            <a
+              href="javascript:void(0);"
+              class="layout-menu-toggle menu-link text-large ms-auto"
+            >
+              <i
+                class="ti menu-toggle-icon d-none d-xl-block ti-sm align-middle"
+              ></i>
+              <i class="ti ti-x d-block d-xl-none ti-sm align-middle"></i>
+            </a>
+          </div>
+
+          <div class="menu-inner-shadow"></div>
+
+          <ul class="menu-inner py-1">
+            <li class="menu-header small text-uppercase">
+              <span class="menu-header-text" data-i18n="appsAndPages"
+                >Apps & Pages</span
+              >
+            </li>
+            <!-- User Management -->
+            <li class="menu-item">
+              <a href="javascript:void(0);" class="menu-link menu-toggle">
+                <i class="menu-icon tf-icons ti ti-users"></i>
+                <div data-i18n="userManagement">User Management</div>
+              </a>
+              <ul class="menu-sub">
+                <li class="menu-item">
+                  <a href="/admin/index.html" class="menu-link">
+                    <div data-i18n="allUsers">All Users</div>
+                  </a>
+                </li>
+                <li class="menu-item">
+                  <a href="/admin/users/active-users.html" class="menu-link">
+                    <div data-i18n="activeUsers">Active Users</div>
+                  </a>
+                </li>
+                <li class="menu-item">
+                  <a href="/admin/users/deactive-users.html" class="menu-link">
+                    <div data-i18n="deactiveUsers">Deactive Users</div>
+                  </a>
+                </li>
+              </ul>
+            </li>
+            <!-- File Management -->
+            <li class="menu-item open active">
+              <a href="javascript:void(0);" class="menu-link menu-toggle">
+                <i class="menu-icon tf-icons ti ti-file"></i>
+                <div data-i18n="fileManagement">File Management</div>
+              </a>
+              <ul class="menu-sub">
+                <li class="menu-item active">
+                  <a href="/admin/files/files.html" class="menu-link">
+                    <div data-i18n="fileList">File List</div>
+                  </a>
+                </li>
+                <li class="menu-item">
+                  <a href="/admin/files/upload-file.html" class="menu-link">
+                    <div data-i18n="uploadFile">Upload File</div>
+                  </a>
+                </li>
+              </ul>
+            </li>
+            <li class="menu-item" style="margin-top: auto">
+              <a href="/auth/login.html" class="menu-link" id="logout-btn">
+                <i class="menu-icon tf-icons ti ti-logout"></i>
+                <div data-i18n="logOut">Đăng xuất</div>
+              </a>
+            </li>
+          </ul>
+        </aside>
+        <!-- / Menu -->
+
+        <!-- Layout container -->
+        <div class="layout-page">
+          <!-- Navbar -->
+
+          <nav
+            class="layout-navbar container-xxl navbar navbar-expand-xl navbar-detached align-items-center bg-navbar-theme"
+            id="layout-navbar"
+          >
+            <div
+              class="layout-menu-toggle navbar-nav align-items-xl-center me-3 me-xl-0 d-xl-none"
+            >
+              <a
+                class="nav-item nav-link px-0 me-xl-4"
+                href="javascript:void(0)"
+              >
+                <i class="ti ti-menu-2 ti-sm"></i>
+              </a>
+            </div>
+
+            <div
+              class="navbar-nav-right d-flex align-items-center"
+              id="navbar-collapse"
+            >
+              <!-- Search -->
+              <div class="navbar-nav align-items-center">
+                <div class="nav-item d-flex align-items-center">
+                  <i class="ti ti-search ti-lg me-2"></i>
+                  <input
+                    type="text"
+                    class="form-control search-input container-xxl border-0"
+                    data-i18n-placeholder="search"
+                    placeholder="Search..."
+                    aria-label="Search..."
+                  />
+                </div>
+              </div>
+              <!-- /Search -->
+
+              <ul class="navbar-nav flex-row align-items-center ms-auto">
+                <!-- Language -->
+                <li class="nav-item dropdown-language dropdown me-2 me-xl-0">
+                  <a
+                    class="nav-link dropdown-toggle hide-arrow d-flex align-items-center"
+                    href="javascript:void(0);"
+                    data-bs-toggle="dropdown"
+                    id="languageDropdownBtn"
+                  >
+                    <span
+                      class="fi fi-vn me-2"
+                      id="current-lang-flag"
+                      style="width: 1.5em; height: 1em"
+                    ></span>
+                    <span id="current-lang-name">Loading...</span>
+                  </a>
+                  <ul
+                    class="dropdown-menu dropdown-menu-end"
+                    aria-labelledby="languageDropdownBtn"
+                  >
+                    <li>
+                      <a
+                        class="dropdown-item d-flex align-items-center"
+                        href="javascript:void(0);"
+                        data-language="vi"
+                      >
+                        <span
+                          class="fi fi-vn me-2"
+                          style="width: 1.5em; height: 1em"
+                        ></span>
+                        <span class="align-middle">Tiếng Việt</span>
+                      </a>
+                    </li>
+                    <li>
+                      <a
+                        class="dropdown-item d-flex align-items-center"
+                        href="javascript:void(0);"
+                        data-language="en"
+                      >
+                        <span
+                          class="fi fi-us me-2"
+                          style="width: 1.5em; height: 1em"
+                        ></span>
+                        <span class="align-middle">English</span>
+                      </a>
+                    </li>
+                    <li>
+                      <a
+                        class="dropdown-item d-flex align-items-center"
+                        href="javascript:void(0);"
+                        data-language="ja"
+                      >
+                        <span
+                          class="fi fi-jp me-2"
+                          style="width: 1.5em; height: 1em"
+                        ></span>
+                        <span class="align-middle">日本語</span>
+                      </a>
+                    </li>
+                  </ul>
+                </li>
+                <!--/ Language -->
+                <!-- User -->
+                <li class="nav-item navbar-dropdown dropdown-user dropdown">
+                  <a
+                    class="nav-link dropdown-toggle hide-arrow"
+                    href="javascript:void(0);"
+                    data-bs-toggle="dropdown"
+                  >
+                    <div class="d-flex">
+                      <div class="flex-shrink-0 me-3">
+                        <div class="avatar avatar-online">
+                          <img
+                            class="w-px-40 h-auto rounded-circle user-avatar"
+                          />
+                        </div>
+                      </div>
+                      <div class="flex-grow-1">
+                        <span
+                          class="fw-semibold d-block user-name"
+                          data-i18n="loading"
+                          >Loading...</span
+                        >
+                        <small class="text-muted user-role" data-i18n="admin"
+                          >Admin</small
+                        >
+                      </div>
+                    </div>
+                  </a>
+                  <ul class="dropdown-menu dropdown-menu-end">
+                    <li>
+                      <a
+                        class="dropdown-item"
+                        href="/admin/profile/my-profile.html"
+                      >
+                        <div class="d-flex">
+                          <div class="flex-shrink-0 me-3">
+                            <div class="avatar avatar-online">
+                              <img
+                                class="w-px-40 h-auto rounded-circle user-avatar"
+                              />
+                            </div>
+                          </div>
+                          <div class="flex-grow-1">
+                            <span
+                              class="fw-semibold d-block user-name"
+                              data-i18n="loading"
+                              >Loading...</span
+                            >
+                            <small
+                              class="text-muted user-role"
+                              data-i18n="loading"
+                              >Loading...</small
+                            >
+                          </div>
+                        </div>
+                      </a>
+                    </li>
+                    <li>
+                      <div class="dropdown-divider"></div>
+                    </li>
+                    <li>
+                      <a
+                        class="dropdown-item"
+                        href="/admin/profile/my-profile.html"
+                      >
+                        <i class="ti ti-user-check me-2 ti-sm"></i>
+                        <span class="align-middle" data-i18n="myProfile"
+                          >My Profile</span
+                        >
+                      </a>
+                    </li>
+                    <li>
+                      <a
+                        class="dropdown-item"
+                        href="/admin/profile/security.html"
+                      >
+                        <i class="ti ti-lock me-2 ti-sm"></i>
+                        <span class="align-middle" data-i18n="security"
+                          >Security</span
+                        >
+                      </a>
+                    </li>
+                    <li>
+                      <a
+                        class="dropdown-item"
+                        href="/admin/profile/notifications.html"
+                      >
+                        <i class="ti ti-settings me-2 ti-sm"></i>
+                        <span class="align-middle" data-i18n="settings"
+                          >Settings</span
+                        >
+                      </a>
+                    </li>
+                    <li>
+                      <a
+                        class="dropdown-item"
+                        href="javascript:void(0);"
+                        id="logout-btn-dropdown"
+                      >
+                        <i class="ti ti-logout me-2 ti-sm"></i>
+                        <span class="align-middle" data-i18n="logOut"
+                          >Log Out</span
+                        >
+                      </a>
+                    </li>
+                  </ul>
+                </li>
+                <!--/ User -->
+              </ul>
+            </div>
+
+            <!-- Search Small Screens -->
+            <div class="navbar-search-wrapper search-input-wrapper d-none">
+              <input
+                type="text"
+                class="form-control search-input container-xxl border-0"
+                data-i18n-placeholder="search"
+                placeholder="Search..."
+                aria-label="Search..."
+              />
+              <i class="ti ti-x ti-sm search-toggler cursor-pointer"></i>
+            </div>
+          </nav>
+
+          <!-- / Navbar -->
+
+          <!-- Content wrapper -->
+          <div class="content-wrapper">
+            <!-- Content -->
+
+            <div class="container-xxl flex-grow-1 container-p-y">
+              <h4 class="fw-bold py-3 mb-4" data-i18n="fileList">File List</h4>
+              <div class="card">
+                <div class="card-header border-bottom">
+                  <div
+                    class="d-flex justify-content-between align-items-center"
+                  >
+                    <h5 class="card-title mb-0" data-i18n="fileList">
+                      File List
+                    </h5>
+                    <a
+                      href="/admin/files/upload-file.html"
+                      class="btn btn-primary"
+                      id="upload-file-btn"
+                      data-i18n="uploadFile"
+                    >
+                      <i class="ti ti-upload me-1"></i
+                      ><span data-i18n="uploadFile">Upload File</span>
+                    </a>
+                  </div>
+                </div>
+                <div class="card-datatable table-responsive">
+                  <table class="datatables-files table border-top">
+                    <thead>
+                      <tr>
+                        <th data-i18n="fileName">File Name</th>
+                        <th data-i18n="fileSize">Size</th>
+                        <th data-i18n="fileType">Type</th>
+                        <th data-i18n="createdAt">Created At</th>
+                        <th data-i18n="actions">Actions</th>
+                      </tr>
+                    </thead>
+                    <tbody></tbody>
+                  </table>
+                </div>
+              </div>
+            </div>
+            <!-- / Content -->
+
+            <!-- Footer -->
+            <!-- <footer class="content-footer footer bg-footer-theme">
+              <div class="container-xxl">
+                <div
+                  class="footer-container d-flex align-items-center justify-content-between py-2 flex-md-row flex-column">
+                  <div>
+                    ©
+                    <script>
+                      document.write(new Date().getFullYear());
+                    </script>
+                    , made with ❤️ by <a href="https://pixinvent.com" target="_blank" class="fw-medium">Pixinvent</a>
+                  </div>
+                  <div class="d-none d-lg-inline-block">
+                    <a href="https://themeforest.net/licenses/standard" class="footer-link me-4" target="_blank"
+                      >License</a
+                    >
+                    <a href="https://1.envato.market/pixinvent_portfolio" target="_blank" class="footer-link me-4"
+                      >More Themes</a
+                    >
+
+                    <a
+                      href="https://demos.pixinvent.com/vuexy-html-admin-template/documentation/"
+                      target="_blank"
+                      class="footer-link me-4"
+                      >Documentation</a
+                    >
+
+                    <a href="https://pixinvent.ticksy.com/" target="_blank" class="footer-link d-none d-sm-inline-block"
+                      >Support</a
+                    >
+                  </div>
+                </div>
+              </div>
+            </footer> -->
+            <!-- / Footer -->
+
+            <div class="content-backdrop fade"></div>
+          </div>
+          <!-- Content wrapper -->
+        </div>
+        <!-- / Layout page -->
+      </div>
+
+      <!-- Overlay -->
+      <div class="layout-overlay layout-menu-toggle"></div>
+
+      <!-- Drag Target Area To SlideIn Menu On Small Screens -->
+      <div class="drag-target"></div>
+    </div>
+    <!-- / Layout wrapper -->
+
+    <!-- Core JS -->
+    <!-- build:js assets/vendor/js/core.js -->
+
+    <script src="/assets/vendor/libs/jquery/jquery.js"></script>
+    <script src="/assets/vendor/libs/popper/popper.js"></script>
+    <script src="/assets/vendor/js/bootstrap.js"></script>
+    <script src="/assets/vendor/libs/node-waves/node-waves.js"></script>
+    <script src="/assets/vendor/libs/perfect-scrollbar/perfect-scrollbar.js"></script>
+    <script src="/assets/vendor/libs/hammer/hammer.js"></script>
+    <script src="/assets/vendor/js/menu.js"></script>
+
+    <!-- endbuild -->
+
+    <!-- Vendors JS -->
+    <script src="/assets/vendor/libs/moment/moment.js"></script>
+    <script src="/assets/vendor/libs/datatables-bs5/datatables-bootstrap5.js"></script>
+    <script src="/assets/vendor/libs/select2/select2.js"></script>
+    <script src="/assets/vendor/libs/@form-validation/umd/bundle/popular.min.js"></script>
+    <script src="/assets/vendor/libs/@form-validation/umd/plugin-bootstrap5/index.min.js"></script>
+    <script src="/assets/vendor/libs/@form-validation/umd/plugin-auto-focus/index.min.js"></script>
+    <script src="/assets/vendor/libs/cleavejs/cleave.js"></script>
+    <script src="/assets/vendor/libs/cleavejs/cleave-phone.js"></script>
+
+    <!-- DataTables Export Dependencies -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.2.7/pdfmake.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.2.7/vfs_fonts.js"></script>
+    <script src="https://cdn.datatables.net/buttons/2.4.1/js/dataTables.buttons.min.js"></script>
+    <script src="https://cdn.datatables.net/buttons/2.4.1/js/buttons.bootstrap5.min.js"></script>
+    <script src="https://cdn.datatables.net/buttons/2.4.1/js/buttons.html5.min.js"></script>
+    <script src="https://cdn.datatables.net/buttons/2.4.1/js/buttons.print.min.js"></script>
+    <script src="https://cdn.datatables.net/buttons/2.4.1/js/buttons.colVis.min.js"></script>
+
+    <!-- Main JS -->
+    <script src="/assets/vendor/libs/i18n/i18next.min.js"></script>
+    <script src="/assets/vendor/libs/i18n/i18nextHttpBackend.min.js"></script>
+    <script src="/assets/vendor/libs/typeahead-js/typeahead.js"></script>
+    <script src="/assets/js/main.js"></script>
+
+    <!-- Toastr JS -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.js"></script>
+    <script src="/js/notification.js"></script>
+
+    <!-- Page JS -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.13/cropper.min.js"></script>
+    <script src="/js/admin-auth.js"></script>
+    <script>
+      $(document).ready(async function () {
+        if (window.adminAuth) {
+          await window.adminAuth.updateUserProfileDisplay();
+        }
+
+        if (typeof loadFilesTable === "function") {
+          loadFilesTable();
+        }
+      });
+    </script>
+
+    <!-- Upload File Modal -->
+    <div
+      class="modal fade"
+      id="uploadFileModal"
+      tabindex="-1"
+      aria-labelledby="uploadFileModalLabel"
+      aria-hidden="true"
+    >
+      <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h5
+              class="modal-title"
+              id="uploadFileModalLabel"
+              data-i18n="uploadFile"
+            >
+              <i class="ti ti-upload me-2"></i>Upload File
+            </h5>
+            <button
+              type="button"
+              class="btn-close"
+              data-bs-dismiss="modal"
+              aria-label="Close"
+            ></button>
+          </div>
+          <div class="modal-body">
+            <form id="uploadFileForm" enctype="multipart/form-data">
+              <div class="mb-3">
+                <label for="fileInput" class="form-label" data-i18n="chooseFile"
+                  >Choose File</label
+                >
+                <input
+                  type="file"
+                  class="form-control"
+                  id="fileInput"
+                  name="files"
+                  multiple
+                  required
+                />
+              </div>
+              <button type="submit" class="btn btn-primary" data-i18n="upload">
+                Upload
+              </button>
+            </form>
+          </div>
+        </div>
+      </div>
+    </div>
+    <!-- View File Modal -->
+    <div
+      class="modal fade"
+      id="viewFileModal"
+      tabindex="-1"
+      aria-labelledby="viewFileModalLabel"
+      aria-hidden="true"
+    >
+      <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h5
+              class="modal-title"
+              id="viewFileModalLabel"
+              data-i18n="fileDetails"
+            >
+              <i class="ti ti-file-description me-2"></i>File Details
+            </h5>
+            <button
+              type="button"
+              class="btn-close"
+              data-bs-dismiss="modal"
+              aria-label="Close"
+            ></button>
+          </div>
+          <div class="modal-body">
+            <div class="container-fluid">
+              <div class="row g-3">
+                <div class="col-md-6">
+                  <div class="mb-2">
+                    <div
+                      class="text-muted small fw-semibold"
+                      data-i18n="fileName"
+                    >
+                      File Name
+                    </div>
+                    <div class="fs-6 fw-bold file-name">-</div>
+                  </div>
+                  <div class="mb-2">
+                    <div
+                      class="text-muted small fw-semibold"
+                      data-i18n="fileSize"
+                    >
+                      File Size
+                    </div>
+                    <div class="fs-6 fw-bold file-size">-</div>
+                  </div>
+                </div>
+                <div class="col-md-6">
+                  <div class="mb-2">
+                    <div
+                      class="text-muted small fw-semibold"
+                      data-i18n="fileType"
+                    >
+                      File Type
+                    </div>
+                    <div class="fs-6 fw-bold file-type">-</div>
+                  </div>
+                  <div class="mb-2">
+                    <div
+                      class="text-muted small fw-semibold"
+                      data-i18n="createdAt"
+                    >
+                      Created
+                    </div>
+                    <div class="fs-6 fw-bold file-created">-</div>
+                  </div>
+                  <div class="mb-2 file-description-row">
+                    <div class="text-muted small fw-semibold" data-i18n="description">Description</div>
+                    <div class="fs-6 fw-bold file-description">-</div>
+                  </div>
+                </div>
+              </div>
+              <div class="row mt-4">
+                <div class="col-12 d-flex justify-content-end gap-2">
+                  <button
+                    class="btn btn-success btn-download-file"
+                    data-i18n="download"
+                  >
+                    <i class="ti ti-download"></i>
+                    <span data-i18n="download">Download</span>
+                  </button>
+                  <button
+                    class="btn btn-danger btn-delete-file"
+                    data-i18n="delete"
+                  >
+                    <i class="ti ti-trash"></i>
+                    <span data-i18n="delete">Delete</span>
+                  </button>
+                  <button
+                    type="button"
+                    class="btn btn-secondary"
+                    data-bs-dismiss="modal"
+                    data-i18n="close"
+                  >
+                    <i class="ti ti-x me-1"></i>Close
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div
+      class="modal fade"
+      id="deleteFileModal"
+      tabindex="-1"
+      aria-labelledby="deleteFileModalLabel"
+      aria-hidden="true"
+    >
+      <div class="modal-dialog modal-dialog-centered">
+        <div
+          class="modal-content"
+          style="
+            background: #fff;
+            border-radius: 12px;
+            border: 2px solid #ea5455;
+          "
+        >
+          <div
+            class="modal-header"
+            style="background: #fff0f0; border-bottom: 1px solid #ea5455"
+          >
+            <h5
+              class="modal-title fw-bold text-danger w-100 d-flex justify-content-center align-items-center gap-2"
+              id="deleteFileModalLabel"
+              style="text-align: center"
+            >
+              <i class="ti ti-alert-triangle"></i
+              ><span data-i18n="deleteFileConfirmTitle"
+                >Delete File Confirmation</span
+              >
+            </h5>
+            <button
+              type="button"
+              class="btn-close"
+              data-bs-dismiss="modal"
+              aria-label="Close"
+            ></button>
+          </div>
+          <div class="modal-body">
+            <div
+              class="alert alert-danger border border-danger"
+              role="alert"
+              style="background: #fff6f6; color: #a94442"
+            >
+              <h6 class="alert-heading mb-2 fw-bold">
+                <i class="ti ti-alert-circle me-2"></i
+                ><span data-i18n="warningActionCannotBeUndone"
+                  >Warning: This action cannot be undone!</span
+                >
+              </h6>
+              <p class="mb-0" data-i18n="deleteFileConfirmDesc">
+                You are about to permanently delete this file. This action
+                cannot be undone and the file will be removed from storage.
+              </p>
+            </div>
+            <div class="card border-danger shadow-sm mt-3">
+              <div class="card-header bg-white border-bottom border-danger">
+                <h6
+                  class="mb-0 text-danger fw-bold"
+                  data-i18n="fileInformation"
+                >
+                  <i class="ti ti-file me-2"></i>File Information
+                </h6>
+              </div>
+              <div class="card-body" style="padding-top: 25px">
+                <div class="row">
+                  <div class="col-md-6">
+                    <div class="mb-2">
+                      <strong data-i18n="fileName">File Name:</strong>
+                      <span class="delete-file-name"></span>
+                    </div>
+                    <div class="mb-2">
+                      <strong data-i18n="fileSize">File Size:</strong>
+                      <span class="delete-file-size"></span>
+                    </div>
+                  </div>
+                  <div class="col-md-6">
+                    <div class="mb-2">
+                      <strong data-i18n="fileType">File Type:</strong>
+                      <span class="delete-file-type"></span>
+                    </div>
+                    <div class="mb-2">
+                      <strong data-i18n="createdAt">Created:</strong>
+                      <span class="delete-file-created"></span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="modal-footer bg-white border-top border-danger">
+            <button
+              type="button"
+              class="btn btn-secondary"
+              data-bs-dismiss="modal"
+              data-i18n="cancel"
+            >
+              <i class="ti ti-x me-1"></i>Cancel
+            </button>
+            <button
+              type="button"
+              class="btn btn-danger fw-bold"
+              id="confirmDeleteFile"
+              data-i18n="delete"
+            >
+              <i class="ti ti-trash me-1"></i>Delete
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Modal Crop Image -->
+    <div
+      class="modal fade"
+      id="cropImageModal"
+      tabindex="-1"
+      aria-labelledby="cropImageModalLabel"
+      aria-hidden="true"
+    >
+      <div class="modal-dialog modal-xl modal-dialog-centered cropper-modal-xl">
+        <div class="modal-content cropper-modal-content">
+          <div class="modal-header border-0 pb-0">
+            <h5
+              class="modal-title fw-bold"
+              id="cropImageModalLabel"
+              data-i18n="editProfilePicture"
+            >
+              <i class="ti ti-crop me-2"></i>Edit Profile Picture
+            </h5>
+            <button
+              type="button"
+              class="btn-close"
+              data-bs-dismiss="modal"
+              aria-label="Close"
+            ></button>
+          </div>
+          <div class="modal-body p-0 cropper-modal-body">
+            <div class="row g-0 h-100">
+              <!-- Left side - Cropper -->
+              <div class="col-lg-8 h-100 cropper-left-panel">
+                <div
+                  class="cropper-container-wrapper h-100 d-flex align-items-center justify-content-center p-4"
+                >
+                  <div class="cropper-container">
+                    <img id="cropper-image" />
+                    <div class="cropper-overlay">
+                      <div class="crop-circle-overlay"></div>
+                    </div>
+                    <!-- Drag & Drop Zone -->
+                    <div class="drag-drop-zone drag-drop-content">
+                      <div class="text-center">
+                        <i class="ti ti-photo-plus drag-drop-icon"></i>
+                        <p
+                          class="mb-2 fw-semibold"
+                          data-i18n="dragDropImageHere"
+                        >
+                          Drag & drop your image here
+                        </p>
+                        <p
+                          class="text-muted small mb-0"
+                          data-i18n="orClickToBrowse"
+                        >
+                          or click to browse
+                        </p>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Right side - Controls & Preview -->
+              <div class="col-lg-4 h-100 cropper-right-panel">
+                <div class="cropper-controls-container">
+                  <!-- Instructions -->
+                  <div class="mb-4">
+                    <h6 class="fw-bold mb-3" data-i18n="howToCrop">
+                      <i class="ti ti-info-circle me-2 text-primary"></i>How to
+                      crop
+                    </h6>
+                    <div class="d-flex flex-column gap-2">
+                      <div class="d-flex align-items-center">
+                        <i class="ti ti-mouse me-2 text-muted"></i>
+                        <span class="small" data-i18n="dragToMove"
+                          >Drag to move the image</span
+                        >
+                      </div>
+                      <div class="d-flex align-items-center">
+                        <i class="ti ti-zoom-in me-2 text-muted"></i>
+                        <span class="small" data-i18n="scrollToZoom"
+                          >Scroll to zoom in/out</span
+                        >
+                      </div>
+                      <div class="d-flex align-items-center">
+                        <i class="ti ti-arrows-move me-2 text-muted"></i>
+                        <span class="small" data-i18n="circleShowsAvatar"
+                          >The circle shows your avatar area</span
+                        >
+                      </div>
+                    </div>
+                  </div>
+
+                  <!-- Zoom Controls -->
+                  <div class="mb-4">
+                    <h6 class="fw-bold mb-3" data-i18n="zoom">Zoom</h6>
+                    <div class="d-flex align-items-center gap-2">
+                      <button
+                        type="button"
+                        class="btn btn-outline-secondary btn-sm"
+                        id="zoom-out-btn"
+                      >
+                        <i class="ti ti-zoom-out"></i>
+                      </button>
+                      <div class="flex-grow-1">
+                        <input
+                          type="range"
+                          class="form-range"
+                          id="zoom-slider"
+                          min="1"
+                          max="3"
+                          step="0.01"
+                          value="1"
+                        />
+                      </div>
+                      <button
+                        type="button"
+                        class="btn btn-outline-secondary btn-sm"
+                        id="zoom-in-btn"
+                      >
+                        <i class="ti ti-zoom-in"></i>
+                      </button>
+                    </div>
+                    <div class="d-flex justify-content-between mt-1">
+                      <small class="text-muted" data-i18n="zoom100">100%</small>
+                      <small
+                        class="text-muted zoom-percentage"
+                        data-i18n="zoomPercentage"
+                        >100%</small
+                      >
+                      <small
+                        id="zoom-max-label"
+                        class="text-muted"
+                        data-i18n="zoom300"
+                        >300%</small
+                      >
+                    </div>
+                  </div>
+
+                  <!-- Rotation Controls -->
+                  <div class="mb-4">
+                    <h6 class="fw-bold mb-3" data-i18n="rotate">Rotate</h6>
+                    <div class="d-flex gap-2">
+                      <button
+                        type="button"
+                        class="btn btn-outline-secondary btn-sm"
+                        id="rotate-left-btn"
+                        data-i18n="rotateLeft"
+                      >
+                        <i class="ti ti-rotate-ccw me-1"></i>Left
+                      </button>
+                      <button
+                        type="button"
+                        class="btn btn-outline-secondary btn-sm"
+                        id="rotate-right-btn"
+                        data-i18n="rotateRight"
+                      >
+                        <i class="ti ti-rotate-cw me-1"></i>Right
+                      </button>
+                      <button
+                        type="button"
+                        class="btn btn-outline-secondary btn-sm"
+                        id="reset-btn"
+                        data-i18n="reset"
+                      >
+                        <i class="ti ti-refresh me-1"></i>Reset
+                      </button>
+                    </div>
+                  </div>
+
+                  <!-- Preview -->
+                  <div class="mb-4">
+                    <h6 class="fw-bold mb-3" data-i18n="preview">Preview</h6>
+                    <div class="text-center">
+                      <div
+                        class="avatar-preview-wrapper avatar-preview-container"
+                      >
+                        <img
+                          id="crop-avatar-preview"
+                          class="crop-avatar-preview"
+                        />
+                        <div class="preview-overlay"></div>
+                      </div>
+                    </div>
+                  </div>
+
+                  <!-- Action Buttons -->
+                  <div class="mt-auto">
+                    <div class="d-grid gap-2">
+                      <button
+                        type="button"
+                        class="btn btn-primary fw-bold"
+                        id="cropImageBtn"
+                        data-i18n="saveProfilePicture"
+                      >
+                        <i class="ti ti-check me-2"></i>Save Profile Picture
+                      </button>
+                      <button
+                        type="button"
+                        class="btn btn-outline-secondary"
+                        data-bs-dismiss="modal"
+                        data-i18n="cancel"
+                      >
+                        <i class="ti ti-x me-2"></i>Cancel
+                      </button>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <script src="/js/admin/files/files.js"></script>
+  </body>
+</html>

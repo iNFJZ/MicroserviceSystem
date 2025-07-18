@@ -18,7 +18,7 @@ import {
   getUserByUsername,
 } from "./api.js";
 
-const API_BASE_URL = "http://localhost:550/api";
+const API_BASE_URL = "http://localhost:5050/api";
 
 let currentUser = null;
 let authToken = localStorage.getItem("authToken") || null;
@@ -35,6 +35,12 @@ if (window.self !== window.top) {
 }
 
 function showMessage(elementId, message, isError = false) {
+  if (
+    typeof window.i18next !== "undefined" &&
+    typeof window.i18next.t === "function"
+  ) {
+    message = window.i18next.t(message);
+  }
   showToastr(message, isError ? "error" : "success");
 
   const element = document.getElementById(elementId);
@@ -74,9 +80,7 @@ window.deleteUser = async function (id) {
             email: payload.email,
             username: payload.username,
           };
-        } catch (e) {
-          console.error("Failed to parse JWT token:", e);
-        }
+        } catch (e) {}
       }
 
       const res = await deleteUser(id);
@@ -271,7 +275,6 @@ window.addEventListener("DOMContentLoaded", async function () {
     setupTabSwitching();
     setupLogoutHandlers();
   } catch (error) {
-    console.error("Error initializing app:", error);
     showToastr(window.i18next.t("failedToInitializeApplication"), "error");
   }
 });
@@ -494,9 +497,7 @@ function renderUserTableWithPagination(users, page) {
             email: payload.email,
             username: payload.username,
           };
-        } catch (e) {
-          console.error("Failed to parse JWT token:", e);
-        }
+        } catch (e) {}
       }
 
       try {
@@ -712,7 +713,9 @@ window.addEventListener("DOMContentLoaded", function () {
       const email = sanitizeInput(
         document.getElementById("edit-email").value.trim(),
       );
-      const phone = document.getElementById("edit-phone").value.trim();
+      let phone = document.getElementById("edit-phone").value.trim();
+      if (phone.startsWith("+84")) phone = "0" + phone.slice(3);
+      else if (phone.startsWith("84")) phone = "0" + phone.slice(2);
       const dob = document.getElementById("edit-dob").value.trim();
       const address = sanitizeInput(
         document.getElementById("edit-address").value.trim(),
