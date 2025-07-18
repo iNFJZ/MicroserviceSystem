@@ -1,0 +1,238 @@
+<!doctype html>
+<html lang="en" class="light-style layout-navbar-fixed layout-menu-fixed" dir="ltr" data-theme="theme-default" data-assets-path="/assets/" data-template="vertical-menu-template">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0" />
+    <title data-i18n="uploadFileTitle">Upload File - Admin Panel</title>
+    <meta name="description" content="" />
+    <link rel="icon" type="image/x-icon" href="/assets/img/favicon/favicon.ico" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Public+Sans:ital,wght@0,300;0,400;0,500;0,600;0,700;1,300;1,400;1,500;1,600;1,700&ampdisplay=swap" rel="stylesheet" />
+    <link rel="stylesheet" href="/assets/vendor/fonts/fontawesome.css" />
+    <link rel="stylesheet" href="/assets/vendor/fonts/tabler-icons.css" />
+    <link rel="stylesheet" href="/assets/vendor/fonts/flag-icons.css" />
+    <link rel="stylesheet" href="/assets/vendor/css/rtl/core.css" class="template-customizer-core-css" />
+    <link rel="stylesheet" href="/assets/vendor/css/rtl/theme-default.css" class="template-customizer-theme-css" />
+    <link rel="stylesheet" href="/assets/css/demo.css" />
+    <link rel="stylesheet" href="/css/styles.css" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.css" />
+    <link rel="stylesheet" href="/assets/vendor/libs/node-waves/node-waves.css" />
+    <link rel="stylesheet" href="/assets/vendor/libs/perfect-scrollbar/perfect-scrollbar.css" />
+    <link rel="stylesheet" href="/assets/vendor/libs/select2/select2.css" />
+    <link rel="stylesheet" href="/assets/vendor/libs/@form-validation/umd/styles/index.min.css" />
+    <link rel="stylesheet" href="/assets/vendor/libs/animate-css/animate.css" />
+    <link rel="stylesheet" href="/assets/vendor/libs/sweetalert2/sweetalert2.css" />
+    <script src="/assets/vendor/js/helpers.js"></script>
+    <script src="/assets/vendor/js/template-customizer.js"></script>
+    <script src="/assets/js/config.js"></script>
+  </head>
+  <body>
+    <div class="layout-wrapper layout-content-navbar">
+      <div class="layout-container">
+        <!-- Menu -->
+        <aside id="layout-menu" class="layout-menu menu-vertical menu bg-menu-theme">
+          <div class="app-brand demo">
+            <a href="/admin/index.html" class="app-brand-link">
+              <span class="app-brand-logo demo">
+                <img src="/assets/img/branding/logo-i-vuexy.svg" alt="EDISA Logo" style="height: 32px; width: auto" />
+              </span>
+              <span class="app-brand-text demo menu-text fw-bold" data-i18n="systemName">EDISA</span>
+            </a>
+            <a href="javascript:void(0);" class="layout-menu-toggle menu-link text-large ms-auto">
+              <i class="ti menu-toggle-icon d-none d-xl-block ti-sm align-middle"></i>
+              <i class="ti ti-x d-block d-xl-none ti-sm align-middle"></i>
+            </a>
+          </div>
+          <div class="menu-inner-shadow"></div>
+          <ul class="menu-inner py-1">
+            <li class="menu-header small text-uppercase">
+              <span class="menu-header-text" data-i18n="appsAndPages">Apps & Pages</span>
+            </li>
+            <!-- User Management -->
+            <li class="menu-item">
+              <a href="javascript:void(0);" class="menu-link menu-toggle">
+                <i class="menu-icon tf-icons ti ti-users"></i>
+                <div data-i18n="userManagement">User Management</div>
+              </a>
+              <ul class="menu-sub">
+                <li class="menu-item">
+                  <a href="/admin/index.html" class="menu-link">
+                    <div data-i18n="allUsers">All Users</div>
+                  </a>
+                </li>
+                <li class="menu-item">
+                  <a href="/admin/users/active-users.html" class="menu-link">
+                    <div data-i18n="activeUsers">Active Users</div>
+                  </a>
+                </li>
+                <li class="menu-item">
+                  <a href="/admin/users/deactive-users.html" class="menu-link">
+                    <div data-i18n="deactiveUsers">Deactive Users</div>
+                  </a>
+                </li>
+              </ul>
+            </li>
+            <!-- File Management -->
+            <li class="menu-item open active">
+              <a href="javascript:void(0);" class="menu-link menu-toggle">
+                <i class="menu-icon tf-icons ti ti-file"></i>
+                <div data-i18n="fileManagement">File Management</div>
+              </a>
+              <ul class="menu-sub">
+                <li class="menu-item">
+                  <a href="/admin/files/files.html" class="menu-link">
+                    <div data-i18n="fileList">File List</div>
+                  </a>
+                </li>
+                <li class="menu-item active">
+                  <a href="upload-file.html" class="menu-link">
+                    <div data-i18n="uploadFile">Tải tệp lên</div>
+                  </a>
+                </li>
+              </ul>
+            </li>
+            <li class="menu-item" style="margin-top:auto;">
+              <a href="javascript:void(0);" class="menu-link" id="logout-btn">
+                <i class="menu-icon tf-icons ti ti-logout"></i>
+                <div data-i18n="logOut">Log Out</div>
+              </a>
+            </li>
+          </ul>
+        </aside>
+        <!-- / Menu -->
+        <div class="layout-page">
+          <!-- Navbar -->
+          <nav class="layout-navbar container-xxl navbar navbar-expand-xl navbar-detached align-items-center bg-navbar-theme" id="layout-navbar">
+            <div class="layout-menu-toggle navbar-nav align-items-xl-center me-3 me-xl-0 d-xl-none">
+              <a class="nav-item nav-link px-0 me-xl-4" href="javascript:void(0)">
+                <i class="ti ti-menu-2 ti-sm"></i>
+              </a>
+            </div>
+            <div class="navbar-nav-right d-flex align-items-center" id="navbar-collapse">
+              <!-- Search -->
+              <div class="navbar-nav align-items-center">
+                <div class="nav-item d-flex align-items-center">
+                  <i class="ti ti-search ti-lg me-2"></i>
+                  <input type="text" class="form-control border-0 shadow-none" data-i18n-placeholder="search" placeholder="Search..." aria-label="Search..." />
+                </div>
+              </div>
+              <!-- /Search -->
+              <ul class="navbar-nav flex-row align-items-center ms-auto">
+                <!-- Language -->
+                <li class="nav-item dropdown-language dropdown me-2 me-xl-0">
+                  <a class="nav-link dropdown-toggle hide-arrow d-flex align-items-center" href="javascript:void(0);" data-bs-toggle="dropdown" id="languageDropdownBtn">
+                    <span class="fi fi-vn me-2" id="current-lang-flag" style="width: 1.5em; height: 1em;"></span>
+                    <span id="current-lang-name">Loading...</span>
+                  </a>
+                  <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="languageDropdownBtn">
+                    <li><a class="dropdown-item d-flex align-items-center" href="javascript:void(0);" data-language="vi"><span class="fi fi-vn me-2" style="width: 1.5em; height: 1em;"></span><span class="align-middle">Tiếng Việt</span></a></li>
+                    <li><a class="dropdown-item d-flex align-items-center" href="javascript:void(0);" data-language="en"><span class="fi fi-us me-2" style="width: 1.5em; height: 1em;"></span><span class="align-middle">English</span></a></li>
+                    <li><a class="dropdown-item d-flex align-items-center" href="javascript:void(0);" data-language="ja"><span class="fi fi-jp me-2" style="width: 1.5em; height: 1em;"></span><span class="align-middle">日本語</span></a></li>
+                  </ul>
+                </li>
+                <!--/ Language -->
+                <!-- User -->
+                <li class="nav-item navbar-dropdown dropdown-user dropdown">
+                  <a class="nav-link dropdown-toggle hide-arrow" href="javascript:void(0);" data-bs-toggle="dropdown">
+                    <div class="d-flex">
+                      <div class="flex-shrink-0 me-3">
+                        <div class="avatar avatar-online">
+                          <img alt="User Avatar" class="w-px-40 h-auto rounded-circle user-avatar" />
+                        </div>
+                      </div>
+                      <div class="flex-grow-1">
+                        <span class="fw-semibold d-block user-name" data-i18n="loading">Loading...</span>
+                        <small class="text-muted user-role" data-i18n="admin">Admin</small>
+                      </div>
+                    </div>
+                  </a>
+                  <ul class="dropdown-menu dropdown-menu-end">
+                    <li><a class="dropdown-item" href="/admin/profile/my-profile.html"><i class="ti ti-user-check me-2 ti-sm"></i><span class="align-middle" data-i18n="myProfile">My Profile</span></a></li>
+                    <li><a class="dropdown-item" href="/admin/profile/security.html"><i class="ti ti-lock me-2 ti-sm"></i><span class="align-middle" data-i18n="security">Security</span></a></li>
+                    <li><a class="dropdown-item" href="/admin/profile/notifications.html"><i class="ti ti-settings me-2 ti-sm"></i><span class="align-middle" data-i18n="settings">Settings</span></a></li>
+                    <li><div class="dropdown-divider"></div></li>
+                    <li><a class="dropdown-item" href="javascript:void(0);" id="logout-btn-dropdown"><i class="ti ti-logout me-2 ti-sm"></i><span class="align-middle" data-i18n="logOut">Log Out</span></a></li>
+                  </ul>
+                </li>
+                <!--/ User -->
+              </ul>
+            </div>
+          </nav>
+          <!-- / Navbar -->
+          <div class="content-wrapper">
+            <div class="container-xxl flex-grow-1 container-p-y">
+              <h4 class="fw-bold py-3 mb-4" data-i18n="uploadFileTitle">Upload File</h4>
+              <div class="row justify-content-center">
+                <div class="col-md-8 col-lg-6">
+                  <div class="card shadow-sm">
+                    <div class="card-body">
+                      <form id="uploadFileForm" enctype="multipart/form-data" autocomplete="off">
+                        <div class="mb-3">
+                          <label for="fileInput" class="form-label" data-i18n="chooseFile">Choose File</label>
+                          <input class="form-control" type="file" id="fileInput" name="file" required />
+                          <div class="form-text" data-i18n="maxFileSize">Max file size: 100MB</div>
+                        </div>
+                        <div class="mb-3" id="filePreviewContainer" style="display:none;">
+                          <label class="form-label" data-i18n="filePreview">File Preview</label>
+                          <div id="filePreview" class="border rounded p-2 bg-light"></div>
+                        </div>
+                        <div class="mb-3">
+                          <label for="fileDescription" class="form-label" data-i18n="description">Description (optional)</label>
+                          <input type="text" class="form-control" id="fileDescription" name="description" maxlength="255" data-i18n-placeholder="enterDescription" />
+                        </div>
+                        <button type="submit" class="btn btn-primary w-100" id="uploadBtn" data-i18n="upload">Upload</button>
+                      </form>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <!-- / Content -->
+            <div class="content-backdrop fade"></div>
+          </div>
+        </div>
+        <!-- / Layout page -->
+      </div>
+      <!-- Overlay -->
+      <div class="layout-overlay layout-menu-toggle"></div>
+      <div class="drag-target"></div>
+    </div>
+    <!-- / Layout wrapper -->
+    <!-- Core JS -->
+    <script src="/assets/vendor/libs/jquery/jquery.js"></script>
+    <script src="/assets/vendor/libs/popper/popper.js"></script>
+    <script src="/assets/vendor/js/bootstrap.js"></script>
+    <script src="/assets/vendor/libs/node-waves/node-waves.js"></script>
+    <script src="/assets/vendor/libs/perfect-scrollbar/perfect-scrollbar.js"></script>
+    <script src="/assets/vendor/libs/hammer/hammer.js"></script>
+    <script src="/assets/vendor/libs/i18n/i18next.min.js"></script>
+    <script src="/assets/vendor/libs/i18n/i18nextHttpBackend.min.js"></script>
+    <script src="/assets/vendor/js/menu.js"></script>
+    <script src="/assets/js/main.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.js"></script>
+    <script src="/js/notification.js"></script>
+    <script src="/js/admin-auth.js"></script>
+    <script>
+      $(document).ready(async function () {
+        if (window.adminAuth) {
+          await window.adminAuth.updateUserProfileDisplay();
+        } else {
+          console.error('AdminAuth not initialized');
+        }
+        if (typeof bindLanguageDropdownHandlers === 'function') {
+          bindLanguageDropdownHandlers();
+        } else if (window.bindLanguageDropdownHandlers) {
+          window.bindLanguageDropdownHandlers();
+        }
+        if (typeof showToastr === 'function') {
+          showToastr('Test Toastr on upload-file.html', 'success');
+          console.log('showToastr called');
+        } else {
+          console.error('showToastr is not defined');
+        }
+      });
+    </script>
+    <script type="module" src="/js/admin/files/upload-file.js"></script>
+  </body>
+</html> 

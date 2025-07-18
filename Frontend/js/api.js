@@ -1,6 +1,6 @@
 import { getToken, logout } from "./auth-utils.js";
 
-const API_BASE_URL = "http://localhost:550/api";
+const API_BASE_URL = "http://localhost:5050/api";
 
 export async function apiRequest(path, options = {}) {
   const token = getToken();
@@ -28,11 +28,14 @@ export async function apiRequest(path, options = {}) {
       window.errorHandler.handleApiError(data);
     } else {
       // Fallback to default error handling
-      const message = data?.message || `HTTP ${res.status}: ${res.statusText}`;
+      let message = data?.message || `HTTP ${res.status}: ${res.statusText}`;
+      if (typeof window.i18next !== "undefined" && typeof window.i18next.t === "function") {
+        message = window.i18next.t(message);
+      }
       if (typeof showToastr !== "undefined") {
         showToastr(message, "error");
       } else {
-        alert(message);
+        toastr.error(message);
       }
     }
 

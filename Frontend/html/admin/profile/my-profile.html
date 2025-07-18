@@ -1,0 +1,989 @@
+<!doctype html>
+
+<html
+  lang="en"
+  class="light-style layout-navbar-fixed layout-menu-fixed"
+  dir="ltr"
+  data-theme="theme-default"
+  data-assets-path="../../assets/"
+  data-template="vertical-menu-template"
+>
+  <head>
+    <meta charset="utf-8" />
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1.0, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0"
+    />
+
+    <title data-i18n="myProfileTitle">My Profile - Admin Panel</title>
+
+    <meta name="description" content="" />
+
+    <!-- Favicon -->
+    <link
+      rel="icon"
+      type="image/x-icon"
+      href="/assets/img/favicon/favicon.ico"
+    />
+
+    <!-- Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Public+Sans:ital,wght@0,300;0,400;0,500;0,600;0,700;1,300;1,400;1,500;1,600;1,700&ampdisplay=swap"
+      rel="stylesheet"
+    />
+
+    <!-- Icons -->
+    <link rel="stylesheet" href="/assets/vendor/fonts/fontawesome.css" />
+    <link rel="stylesheet" href="/assets/vendor/fonts/tabler-icons.css" />
+    <link rel="stylesheet" href="/assets/vendor/fonts/flag-icons.css" />
+
+    <!-- Core CSS -->
+    <link
+      rel="stylesheet"
+      href="/assets/vendor/css/rtl/core.css"
+      class="template-customizer-core-css"
+    />
+    <link
+      rel="stylesheet"
+      href="/assets/vendor/css/rtl/theme-default.css"
+      class="template-customizer-theme-css"
+    />
+    <link rel="stylesheet" href="/assets/css/demo.css" />
+    <link rel="stylesheet" href="/assets/css/styles.css" />
+    <!-- Vendors CSS -->
+    <link
+      rel="stylesheet"
+      href="/assets/vendor/libs/node-waves/node-waves.css"
+    />
+    <link
+      rel="stylesheet"
+      href="/assets/vendor/libs/perfect-scrollbar/perfect-scrollbar.css"
+    />
+    <link
+      rel="stylesheet"
+      href="/assets/vendor/libs/typeahead-js/typeahead.css"
+    />
+    <link rel="stylesheet" href="/assets/vendor/css/pages/page-auth.css" />
+    <link rel="stylesheet" href="/css/auth.css" />
+    <!-- Toastr CSS -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.css" />
+
+    <!-- Page CSS -->
+    <!-- CropperJS CSS CDN -->
+    <link
+      href="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.13/cropper.min.css"
+      rel="stylesheet"
+    />
+    <!-- Custom Cropper CSS -->
+    <link rel="stylesheet" href="/css/cropper.css" />
+
+    <!-- Helpers -->
+    <script src="/assets/vendor/js/helpers.js"></script>
+    <!--! Template customizer & Theme config files MUST be included after core stylesheets and helpers.js in the <head> section -->
+    <!--? Template customizer: To hide customizer set displayCustomizer value false in config.js.  -->
+    <script src="/assets/vendor/js/template-customizer.js"></script>
+    <!--? Config:  Mandatory theme config file contain global vars & default theme options, Set your preferred theme option in this file.  -->
+    <script src="/assets/js/config.js"></script>
+  </head>
+
+  <body>
+    <!-- Layout wrapper -->
+    <div class="layout-wrapper layout-content-navbar">
+      <div class="layout-container">
+        <!-- Menu -->
+
+        <aside
+          id="layout-menu"
+          class="layout-menu menu-vertical menu bg-menu-theme"
+        >
+          <div class="app-brand demo">
+            <a href="/admin/index.html" class="app-brand-link">
+              <span class="app-brand-logo demo">
+                <img
+                  src="/assets/img/branding/logo-i-vuexy.svg"
+                  alt="EDISA Logo"
+                  style="height: 32px; width: auto"
+                />
+              </span>
+              <span class="app-brand-text demo menu-text fw-bold">EDISA</span>
+            </a>
+
+            <a
+              href="javascript:void(0);"
+              class="layout-menu-toggle menu-link text-large ms-auto"
+            >
+              <i
+                class="ti menu-toggle-icon d-none d-xl-block ti-sm align-middle"
+              ></i>
+              <i class="ti ti-x d-block d-xl-none ti-sm align-middle"></i>
+            </a>
+          </div>
+
+          <div class="menu-inner-shadow"></div>
+
+          <ul class="menu-inner py-1">
+            <li class="menu-header small text-uppercase">
+              <span class="menu-header-text" data-i18n="appsAndPages">Apps & Pages</span>
+            </li>
+            <!-- User Management -->
+            <li class="menu-item">
+              <a href="javascript:void(0);" class="menu-link menu-toggle">
+                <i class="menu-icon tf-icons ti ti-users"></i>
+                <div data-i18n="userManagement">User Management</div>
+              </a>
+              <ul class="menu-sub">
+                <li class="menu-item">
+                  <a href="/admin/index.html" class="menu-link">
+                    <div data-i18n="allUsers">All Users</div>
+                  </a>
+                </li>
+                <li class="menu-item">
+                  <a href="/admin/users/active-users.html" class="menu-link">
+                    <div data-i18n="activeUsers">Active Users</div>
+                  </a>
+                </li>
+                <li class="menu-item">
+                  <a href="/admin/users/deactive-users.html" class="menu-link">
+                    <div data-i18n="deactiveUsers">Deactive Users</div>
+                  </a>
+                </li>
+              </ul>
+            </li>
+            <!-- File Management -->
+            <li class="menu-item">
+              <a href="javascript:void(0);" class="menu-link menu-toggle">
+                <i class="menu-icon tf-icons ti ti-file"></i>
+                <div data-i18n="fileManagement">File Management</div>
+              </a>
+              <ul class="menu-sub">
+                <li class="menu-item">
+                  <a href="/admin/files/files.html" class="menu-link">
+                    <div data-i18n="fileList">File List</div>
+                  </a>
+                </li>
+                <li class="menu-item">
+                  <a href="/admin/files/upload-file.html" class="menu-link">
+                    <div data-i18n="uploadFile">Upload File</div>
+                  </a>
+                </li>
+              </ul>
+            </li>
+            <li class="menu-item" style="margin-top:auto;">
+              <a href="javascript:void(0);" class="menu-link" id="logout-btn">
+                <i class="menu-icon tf-icons ti ti-logout"></i>
+                <div data-i18n="logOut">Log Out</div>
+              </a>
+            </li>
+          </ul>
+        </aside>
+        <!-- / Menu -->
+
+        <!-- Layout container -->
+        <div class="layout-page">
+          <!-- Navbar -->
+
+          <nav
+            class="layout-navbar container-xxl navbar navbar-expand-xl navbar-detached align-items-center bg-navbar-theme"
+            id="layout-navbar"
+          >
+            <div
+              class="layout-menu-toggle navbar-nav align-items-xl-center me-3 me-xl-0 d-xl-none"
+            >
+              <a
+                class="nav-item nav-link px-0 me-xl-4"
+                href="javascript:void(0)"
+              >
+                <i class="ti ti-menu-2 ti-sm"></i>
+              </a>
+            </div>
+
+            <div
+              class="navbar-nav-right d-flex align-items-center"
+              id="navbar-collapse"
+            >
+              <!-- Search -->
+              <div class="navbar-nav align-items-center">
+                <div class="nav-item d-flex align-items-center">
+                  <i class="ti ti-search ti-lg me-2"></i>
+                  <input
+                    type="text"
+                    class="form-control border-0 shadow-none"
+                    data-i18n-placeholder="search"
+                    placeholder="Search..."
+                    aria-label="Search..."
+                  />
+                </div>
+              </div>
+              <!-- /Search -->
+
+              <ul class="navbar-nav flex-row align-items-center ms-auto">
+                <!-- Language -->
+                <li class="nav-item dropdown-language dropdown me-2 me-xl-0">
+                  <a class="nav-link dropdown-toggle hide-arrow d-flex align-items-center" href="javascript:void(0);" data-bs-toggle="dropdown" id="languageDropdownBtn">
+                    <span class="fi fi-vn me-2" id="current-lang-flag" style="width: 1.5em; height: 1em;"></span>
+                    <span id="current-lang-name">Loading...</span>
+                  </a>
+                  <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="languageDropdownBtn">
+                    <li>
+                      <a class="dropdown-item d-flex align-items-center" href="javascript:void(0);" data-language="vi">
+                        <span class="fi fi-vn me-2" style="width: 1.5em; height: 1em;"></span>
+                        <span class="align-middle">Tiếng Việt</span>
+                      </a>
+                    </li>
+                    <li>
+                      <a class="dropdown-item d-flex align-items-center" href="javascript:void(0);" data-language="en">
+                        <span class="fi fi-us me-2" style="width: 1.5em; height: 1em;"></span>
+                        <span class="align-middle">English</span>
+                      </a>
+                    </li>
+                    <li>
+                      <a class="dropdown-item d-flex align-items-center" href="javascript:void(0);" data-language="ja">
+                        <span class="fi fi-jp me-2" style="width: 1.5em; height: 1em;"></span>
+                        <span class="align-middle">日本語</span>
+                      </a>
+                    </li>
+                  </ul>
+                </li>
+                <!--/ Language -->
+                <!-- User -->
+                <li class="nav-item navbar-dropdown dropdown-user dropdown">
+                  <a class="nav-link dropdown-toggle hide-arrow" href="javascript:void(0);" data-bs-toggle="dropdown">
+                    <div class="d-flex">
+                      <div class="flex-shrink-0 me-3">
+                        <div class="avatar avatar-online">
+                          <img class="w-px-40 h-auto rounded-circle user-avatar" />
+                        </div>
+                      </div>
+                      <div class="flex-grow-1">
+                        <span class="fw-semibold d-block user-name" data-i18n="loading">Loading...</span>
+                        <small class="text-muted user-role" data-i18n="admin">Admin</small>
+                      </div>
+                    </div>
+                  </a>
+                  <ul class="dropdown-menu dropdown-menu-end">
+                    <li>
+                      <a class="dropdown-item" href="/admin/profile/my-profile.html">
+                        <div class="d-flex">
+                          <div class="flex-shrink-0 me-3">
+                            <div class="avatar avatar-online">
+                              <img class="w-px-40 h-auto rounded-circle user-avatar" />
+                            </div>
+                          </div>
+                          <div class="flex-grow-1">
+                            <span class="fw-semibold d-block user-name" data-i18n="loading">Loading...</span>
+                            <small class="text-muted user-role" data-i18n="loading">Loading...</small>
+                          </div>
+                        </div>
+                      </a>
+                    </li>
+                    <li>
+                      <div class="dropdown-divider"></div>
+                    </li>
+                    <li>
+                      <a class="dropdown-item" href="/admin/profile/my-profile.html">
+                        <i class="ti ti-user-check me-2 ti-sm"></i>
+                        <span class="align-middle" data-i18n="myProfile">My Profile</span>
+                      </a>
+                    </li>
+                    <li>
+                      <a class="dropdown-item" href="/admin/profile/security.html">
+                        <i class="ti ti-lock me-2 ti-sm"></i>
+                        <span class="align-middle" data-i18n="security">Security</span>
+                      </a>
+                    </li>
+                    <li>
+                      <a class="dropdown-item" href="/admin/profile/notifications.html">
+                        <i class="ti ti-settings me-2 ti-sm"></i>
+                        <span class="align-middle" data-i18n="settings">Settings</span>
+                      </a>
+                    </li>
+                    <li>
+                      <a class="dropdown-item" href="/admin/faq.html">
+                        <i class="ti ti-help me-2 ti-sm"></i>
+                        <span class="align-middle" data-i18n="faq">FAQ</span>
+                      </a>
+                    </li>
+                    <li>
+                      <div class="dropdown-divider"></div>
+                    </li>
+                    <li>
+                      <a class="dropdown-item" href="javascript:void(0);" id="logout-btn">
+                        <i class="ti ti-logout me-2 ti-sm"></i>
+                        <span class="align-middle" data-i18n="logOut">Log Out</span>
+                      </a>
+                    </li>
+                  </ul>
+                </li>
+                <!--/ User -->
+              </ul>
+            </div>
+
+            <!-- Search Small Screens -->
+            <div class="navbar-search-wrapper search-input-wrapper d-none">
+              <input
+                type="text"
+                class="form-control search-input container-xxl border-0"
+                data-i18n="search"
+                placeholder="Search..."
+                aria-label="Search..."
+              />
+              <i class="ti ti-x ti-sm search-toggler cursor-pointer"></i>
+            </div>
+          </nav>
+
+          <!-- / Navbar -->
+
+          <!-- Content wrapper -->
+          <div class="content-wrapper open active">
+            <!-- Content -->
+
+            <div class="container-xxl flex-grow-1 container-p-y">
+              <h4 class="fw-bold py-3 mb-4" data-i18n="myProfileTitle">
+                My Profile
+              </h4>
+              <ul class="nav nav-pills flex-column flex-md-row mb-4">
+                <li class="nav-item">
+                  <a
+                    class="nav-link active d-flex align-items-center"
+                    href="/admin/profile/my-profile.html"
+                  >
+                    <i class="ti-xs ti ti-users me-1"></i>
+                    <span data-i18n="myProfile">My Profile</span>
+                  </a>
+                </li>
+                <li class="nav-item">
+                  <a
+                    class="nav-link d-flex align-items-center"
+                    href="/admin/profile/security.html"
+                  >
+                    <i class="ti-xs ti ti-lock me-1"></i>
+                    <span data-i18n="security">Security</span>
+                  </a>
+                </li>
+                <li class="nav-item">
+                  <a
+                    class="nav-link d-flex align-items-center"
+                    href="/admin/profile/notifications.html"
+                  >
+                    <i class="ti-xs ti ti-bell me-1"></i>
+                    <span data-i18n="settings">Settings</span>
+                  </a>
+                </li>
+                <li class="nav-item">
+                  <a class="nav-link d-flex align-items-center" href="/admin/faq.html">
+                    <i class="ti-xs ti ti-help me-1"></i>
+                    <span data-i18n="faq">FAQ</span>
+                  </a>
+                </li>
+              </ul>
+              <div class="row">
+                <div class="col-md-12">
+                  <div class="card mb-4">
+                    <h5 class="card-header" data-i18n="profileDetails">
+                      Profile Details
+                    </h5>
+                    <div class="card-body">
+                      <form
+                        id="editUserForm"
+                        class="needs-validation"
+                        novalidate
+                      >
+                        <div class="row">
+                          <div class="col-md-6">
+                            <div class="mb-3">
+                              <label
+                                for="edit-username"
+                                class="form-label"
+                                data-i18n="username"
+                                >Username</label
+                              >
+                              <input
+                                type="text"
+                                class="form-control"
+                                id="edit-username"
+                                name="username"
+                                disabled
+                              />
+                              <div
+                                class="form-text"
+                                data-i18n="usernameCannotChange"
+                              >
+                                Username cannot be changed
+                              </div>
+                            </div>
+                          </div>
+                          <div class="col-md-6">
+                            <div class="mb-3">
+                              <label
+                                for="edit-email"
+                                class="form-label"
+                                data-i18n="email"
+                                >Email</label
+                              >
+                              <input
+                                type="email"
+                                class="form-control"
+                                id="edit-email"
+                                name="email"
+                                disabled
+                              />
+                              <div
+                                class="form-text"
+                                data-i18n="emailCannotChange"
+                              >
+                                Email cannot be changed
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+                        <div class="row">
+                          <div class="col-md-6">
+                            <div class="mb-3">
+                              <label
+                                for="edit-fullName"
+                                class="form-label"
+                                data-i18n="fullName"
+                                >Full Name
+                                <span class="text-danger">*</span></label
+                              >
+                              <input
+                                type="text"
+                                class="form-control"
+                                id="edit-fullName"
+                                name="fullName"
+                                required
+                                data-i18n-placeholder="enterFullName"
+                              />
+                              <div
+                                class="invalid-feedback"
+                                data-i18n="pleaseProvideValidFullName"
+                              >
+                                Please provide a valid full name.
+                              </div>
+                            </div>
+                          </div>
+                          <div class="col-md-6">
+                            <div class="mb-3">
+                              <label
+                                for="edit-phoneNumber"
+                                class="form-label"
+                                data-i18n="phoneNumber"
+                                >Phone Number</label
+                              >
+                              <input
+                                type="tel"
+                                class="form-control"
+                                id="edit-phoneNumber"
+                                name="phoneNumber"
+                                data-i18n-placeholder="enterPhoneNumber"
+                              />
+                              <div
+                                class="form-text"
+                                data-i18n="optionalPhoneNumber"
+                              >
+                                Optional phone number
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+                        <div class="row">
+                          <div class="col-md-6">
+                            <div class="mb-3">
+                              <label
+                                for="edit-dateOfBirth"
+                                class="form-label"
+                                data-i18n="dateOfBirth"
+                                >Date of Birth</label
+                              >
+                              <input
+                                type="date"
+                                class="form-control"
+                                id="edit-dateOfBirth"
+                                name="dateOfBirth"
+                              />
+                              <div
+                                class="form-text"
+                                data-i18n="optionalDateOfBirth"
+                              >
+                                Optional date of birth
+                              </div>
+                            </div>
+                          </div>
+                          <div class="col-md-6">
+                            <div class="mb-3">
+                              <label
+                                for="edit-profilePicture"
+                                class="form-label"
+                                data-i18n="profilePicture"
+                                >Profile Picture</label
+                              >
+                              <input
+                                type="file"
+                                class="form-control"
+                                id="edit-profilePicture"
+                                name="profilePicture"
+                                accept="image/*"
+                              />
+                              <div
+                                class="form-text"
+                                data-i18n="uploadNewProfilePicture"
+                              >
+                                Upload new profile picture (optional)
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+                        <div
+                          class="mb-3"
+                          id="edit-profilePicture-container"
+                          style="display: none"
+                        >
+                          <label
+                            class="form-label"
+                            data-i18n="currentProfilePicture"
+                            >Current Profile Picture</label
+                          >
+                          <div class="d-flex align-items-center">
+                            <img
+                              id="edit-profilePicture-preview"
+                              src=""
+                              alt="Profile Picture Preview"
+                              style="
+                                width: 80px;
+                                height: 80px;
+                                border-radius: 50%;
+                                object-fit: cover;
+                                border: 3px solid #e7e7ff;
+                                box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+                              "
+                            />
+                            <div class="ms-3">
+                              <button
+                                type="button"
+                                class="btn btn-sm btn-outline-danger"
+                                id="remove-profile-picture"
+                              >
+                                <i class="ti ti-trash me-1"></i
+                                ><span data-i18n="removePicture"
+                                  >Remove Picture</span
+                                >
+                              </button>
+                            </div>
+                          </div>
+                        </div>
+                        <div class="mb-3">
+                          <label
+                            for="edit-address"
+                            class="form-label"
+                            data-i18n="address"
+                            >Address</label
+                          >
+                          <textarea
+                            class="form-control"
+                            id="edit-address"
+                            name="address"
+                            rows="2"
+                            data-i18n-placeholder="enterFullAddress"
+                            placeholder="Enter full address"
+                          ></textarea>
+                          <div
+                            class="form-text"
+                            data-i18n="optionalAddressInformation"
+                          >
+                            Optional address information
+                          </div>
+                        </div>
+                        <div class="mb-3">
+                          <label
+                            for="edit-bio"
+                            class="form-label"
+                            data-i18n="bio"
+                            >Bio</label
+                          >
+                          <textarea
+                            class="form-control"
+                            id="edit-bio"
+                            name="bio"
+                            rows="3"
+                            data-i18n-placeholder="tellUsAboutYourself"
+                            placeholder="Tell us about yourself"
+                          ></textarea>
+                          <div class="form-text" data-i18n="optionalBiography">
+                            Optional biography or description
+                          </div>
+                        </div>
+                        <div class="mt-2">
+                          <button
+                            type="submit"
+                            class="btn btn-primary me-2"
+                            data-i18n="saveChanges"
+                          >
+                            Save changes
+                          </button>
+                          <button
+                            type="reset"
+                            class="btn btn-label-secondary"
+                            data-i18n="cancel"
+                          >
+                            Cancel
+                          </button>
+                        </div>
+                      </form>
+                    </div>
+                  </div>
+                  <div class="card">
+                    <h5 class="card-header" data-i18n="deleteAccount">
+                      Delete Account
+                    </h5>
+                    <div class="card-body">
+                      <div class="mb-3 col-12 mb-0">
+                        <div class="alert alert-warning">
+                          <h5
+                            class="alert-heading mb-1"
+                            data-i18n="areYouSureDeleteAccount"
+                          >
+                            Are you sure you want to delete your account?
+                          </h5>
+                          <p class="mb-0" data-i18n="noGoingBack">
+                            Once you delete your account, there is no going
+                            back. Please be certain.
+                          </p>
+                        </div>
+                      </div>
+                      <form
+                        id="formAccountDeactivation"
+                        onsubmit="return false"
+                      >
+                        <div class="form-check mb-4">
+                          <input
+                            class="form-check-input"
+                            type="checkbox"
+                            name="accountActivation"
+                            id="accountActivation"
+                          />
+                          <label
+                            class="form-check-label"
+                            for="accountActivation"
+                            data-i18n="confirmAccountDeactivation"
+                            >I confirm my account deactivation</label
+                          >
+                        </div>
+                        <button
+                          type="submit"
+                          class="btn btn-secondary deactivate-account"
+                          data-i18n="deactivateAccount"
+                          disabled
+                        >
+                          Deactivate Account
+                        </button>
+                      </form>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <!-- / Content -->
+
+            <!-- Footer -->
+            <!-- <footer class="content-footer footer bg-footer-theme">
+              <div class="container-xxl">
+                <div
+                  class="footer-container d-flex align-items-center justify-content-between py-2 flex-md-row flex-column">
+                  <div>
+                    ©
+                    <script>
+                      document.write(new Date().getFullYear());
+                    </script>
+                    , made with ❤️ by <a href="https://pixinvent.com" target="_blank" class="fw-medium">Pixinvent</a>
+                  </div>
+                  <div class="d-none d-lg-inline-block">
+                    <a href="https://themeforest.net/licenses/standard" class="footer-link me-4" target="_blank"
+                      data-i18n="license">License</a
+                    >
+                    <a href="https://1.envato.market/pixinvent_portfolio" target="_blank" class="footer-link me-4"
+                      data-i18n="moreThemes">More Themes</a
+                    >
+
+                    <a
+                      href="https://demos.pixinvent.com/vuexy-html-admin-template/documentation/"
+                      target="_blank"
+                      class="footer-link me-4"
+                      data-i18n="documentation">Documentation</a
+                    >
+
+                    <a href="https://pixinvent.ticksy.com/" target="_blank" class="footer-link d-none d-sm-inline-block"
+                      data-i18n="support">Support</a
+                    >
+                  </div>
+                </div>
+              </div>
+            </footer> -->
+            <!-- / Footer -->
+
+            <div class="content-backdrop fade"></div>
+          </div>
+          <!-- Content wrapper -->
+        </div>
+        <!-- / Layout page -->
+      </div>
+
+      <!-- Overlay -->
+      <div class="layout-overlay layout-menu-toggle"></div>
+
+      <!-- Drag Target Area To SlideIn Menu On Small Screens -->
+      <div class="drag-target"></div>
+    </div>
+    <!-- / Layout wrapper -->
+
+    <!-- Modal Crop Image -->
+    <div
+      class="modal fade"
+      id="cropImageModal"
+      tabindex="-1"
+      aria-labelledby="cropImageModalLabel"
+      aria-hidden="true"
+    >
+      <div class="modal-dialog modal-xl modal-dialog-centered cropper-modal-xl">
+        <div class="modal-content cropper-modal-content">
+          <div class="modal-header border-0 pb-0">
+            <h5 class="modal-title fw-bold" id="cropImageModalLabel">
+              <i class="ti ti-crop me-2"></i
+              ><span data-i18n="editProfilePicture">Edit Profile Picture</span>
+            </h5>
+            <button
+              type="button"
+              class="btn-close"
+              data-bs-dismiss="modal"
+              aria-label="Close"
+            ></button>
+          </div>
+          <div class="modal-body p-0 cropper-modal-body">
+            <div class="row g-0 h-100">
+              <!-- Left side - Cropper -->
+              <div class="col-lg-8 h-100 cropper-left-panel">
+                <div
+                  class="cropper-container-wrapper h-100 d-flex align-items-center justify-content-center p-4"
+                >
+                  <div class="cropper-container">
+                    <img id="cropper-image" />
+                    <div class="cropper-overlay">
+                      <div class="crop-circle-overlay"></div>
+                    </div>
+                    <!-- Drag & Drop Zone -->
+                    <div class="drag-drop-zone drag-drop-content">
+                      <div class="text-center">
+                        <i class="ti ti-photo-plus drag-drop-icon"></i>
+                        <p class="mb-2 fw-semibold" data-i18n="dragDropImage">
+                          Drag & drop your image here
+                        </p>
+                        <p
+                          class="text-muted small mb-0"
+                          data-i18n="clickToBrowse"
+                        >
+                          or click to browse
+                        </p>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Right side - Controls & Preview -->
+              <div class="col-lg-4 h-100 cropper-right-panel">
+                <div class="cropper-controls-container">
+                  <!-- Instructions -->
+                  <div class="mb-4">
+                    <h6 class="fw-bold mb-3">
+                      <i class="ti ti-info-circle me-2 text-primary"></i
+                      ><span data-i18n="howToCrop">How to crop</span>
+                    </h6>
+                    <div class="d-flex flex-column gap-2">
+                      <div class="d-flex align-items-center">
+                        <i class="ti ti-mouse me-2 text-muted"></i>
+                        <span class="small" data-i18n="dragToMoveImage"
+                          >Drag to move the image</span
+                        >
+                      </div>
+                      <div class="d-flex align-items-center">
+                        <i class="ti ti-zoom-in me-2 text-muted"></i>
+                        <span class="small" data-i18n="scrollToZoom"
+                          >Scroll to zoom in/out</span
+                        >
+                      </div>
+                      <div class="d-flex align-items-center">
+                        <i class="ti ti-arrows-move me-2 text-muted"></i>
+                        <span class="small" data-i18n="circleShowsAvatarArea"
+                          >The circle shows your avatar area</span
+                        >
+                      </div>
+                    </div>
+                  </div>
+
+                  <!-- Zoom Controls -->
+                  <div class="mb-4">
+                    <h6 class="fw-bold mb-3" data-i18n="zoom">Zoom</h6>
+                    <div class="d-flex align-items-center gap-2">
+                      <button
+                        type="button"
+                        class="btn btn-outline-secondary btn-sm"
+                        id="zoom-out-btn"
+                      >
+                        <i class="ti ti-zoom-out"></i>
+                      </button>
+                      <div class="flex-grow-1">
+                        <input
+                          type="range"
+                          class="form-range"
+                          id="zoom-slider"
+                          min="1"
+                          max="3"
+                          step="0.01"
+                          value="1"
+                        />
+                      </div>
+                      <button
+                        type="button"
+                        class="btn btn-outline-secondary btn-sm"
+                        id="zoom-in-btn"
+                      >
+                        <i class="ti ti-zoom-in"></i>
+                      </button>
+                    </div>
+                    <div class="d-flex justify-content-between mt-1">
+                      <small class="text-muted" data-i18n="hundredPercent"
+                        >100%</small
+                      >
+                      <small
+                        class="text-muted zoom-percentage"
+                        data-i18n="hundredPercent"
+                        >100%</small
+                      >
+                      <small
+                        id="zoom-max-label"
+                        class="text-muted"
+                        data-i18n="threeHundredPercent"
+                        >300%</small
+                      >
+                    </div>
+                  </div>
+
+                  <!-- Rotation Controls -->
+                  <div class="mb-4">
+                    <h6 class="fw-bold mb-3" data-i18n="rotate">Rotate</h6>
+                    <div class="d-flex gap-2">
+                      <button
+                        type="button"
+                        class="btn btn-outline-secondary btn-sm"
+                        id="rotate-left-btn"
+                      >
+                        <i class="ti ti-rotate-ccw me-1"></i
+                        ><span data-i18n="left">Left</span>
+                      </button>
+                      <button
+                        type="button"
+                        class="btn btn-outline-secondary btn-sm"
+                        id="rotate-right-btn"
+                      >
+                        <i class="ti ti-rotate-cw me-1"></i
+                        ><span data-i18n="right">Right</span>
+                      </button>
+                      <button
+                        type="button"
+                        class="btn btn-outline-secondary btn-sm"
+                        id="reset-btn"
+                      >
+                        <i class="ti ti-refresh me-1"></i
+                        ><span data-i18n="reset">Reset</span>
+                      </button>
+                    </div>
+                  </div>
+
+                  <!-- Preview -->
+                  <div class="mb-4">
+                    <h6 class="fw-bold mb-3" data-i18n="preview">Preview</h6>
+                    <div class="text-center">
+                      <div
+                        class="avatar-preview-wrapper avatar-preview-container"
+                      >
+                        <img
+                          id="crop-avatar-preview"
+                          class="crop-avatar-preview"
+                        />
+                        <div class="preview-overlay"></div>
+                      </div>
+                    </div>
+                  </div>
+
+                  <!-- Action Buttons -->
+                  <div class="mt-auto">
+                    <div class="d-grid gap-2">
+                      <button
+                        type="button"
+                        class="btn btn-primary fw-bold"
+                        id="cropImageBtn"
+                        data-i18n="saveProfilePicture"
+                      >
+                        <i class="ti ti-check me-2"></i
+                        ><span data-i18n="saveProfilePicture"
+                          >Save Profile Picture</span
+                        >
+                      </button>
+                      <button
+                        type="button"
+                        class="btn btn-outline-secondary"
+                        data-bs-dismiss="modal"
+                      >
+                        <i class="ti ti-x me-2"></i
+                        ><span data-i18n="cancel">Cancel</span>
+                      </button>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Core JS -->
+    <!-- build:js assets/vendor/js/core.js -->
+
+    <script src="/assets/vendor/libs/jquery/jquery.js"></script>
+    <script src="/assets/vendor/libs/popper/popper.js"></script>
+    <script src="/assets/vendor/js/bootstrap.js"></script>
+    <script src="/assets/vendor/libs/node-waves/node-waves.js"></script>
+    <script src="/assets/vendor/libs/perfect-scrollbar/perfect-scrollbar.js"></script>
+    <script src="/assets/vendor/libs/hammer/hammer.js"></script>
+    <script src="/assets/vendor/libs/i18n/i18next.min.js"></script>
+    <script src="/assets/vendor/libs/i18n/i18nextHttpBackend.min.js"></script>
+    <script src="/assets/vendor/js/menu.js"></script>
+
+    <!-- endbuild -->
+
+    <!-- Vendors JS -->
+    <script src="/assets/vendor/libs/select2/select2.js"></script>
+    <script src="/assets/vendor/libs/@form-validation/umd/bundle/popular.min.js"></script>
+    <script src="/assets/vendor/libs/@form-validation/umd/plugin-bootstrap5/index.min.js"></script>
+    <script src="/assets/vendor/libs/@form-validation/umd/plugin-auto-focus/index.min.js"></script>
+    <script src="/assets/vendor/libs/cleavejs/cleave.js"></script>
+    <script src="/assets/vendor/libs/cleavejs/cleave-phone.js"></script>
+    <script src="/assets/vendor/libs/sweetalert2/sweetalert2.js"></script>
+
+    <!-- Main JS -->
+    <script src="/assets/vendor/libs/i18n/i18next.min.js"></script>
+    <script src="/assets/vendor/libs/i18n/i18nextHttpBackend.min.js"></script>
+    <script src="/assets/js/main.js"></script>
+
+    <!-- Toastr JS -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.js"></script>
+    <script src="/js/notification.js"></script>
+    
+    <!-- Page JS -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.13/cropper.min.js"></script>
+    <script src="/js/admin-auth.js"></script>
+    <script src="/js/my-profile.js"></script>
+  </body>
+</html>

@@ -15,8 +15,12 @@
       "DownstreamHostAndPorts": [
         { "Host": "file-service", "Port": 80 }
       ],
-      "UpstreamPathTemplate": "/api/file/{everything}",
-      "UpstreamHttpMethod": [ "GET", "POST", "PUT", "DELETE" ]
+      "UpstreamPathTemplate": "/api/File/{everything}",
+      "UpstreamHttpMethod": [ "GET", "POST", "PUT", "DELETE" ],
+      "AuthenticationOptions": {
+        "AuthenticationProviderKey": "Bearer"
+      },
+      "DangerousAcceptAnyServerCertificateValidator": true
     },
     {
       "DownstreamPathTemplate": "/api/User/{everything}",

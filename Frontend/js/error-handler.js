@@ -19,12 +19,10 @@ class ErrorHandler {
       const response = await fetch(`/assets/lang/${this.currentLanguage}.json`);
       this.langData = await response.json();
     } catch (error) {
-      console.error("Failed to load language data:", error);
       try {
         const response = await fetch("/assets/lang/en.json");
         this.langData = await response.json();
       } catch (fallbackError) {
-        console.error("Failed to load fallback language data:", fallbackError);
       }
     }
   }
@@ -68,7 +66,11 @@ class ErrorHandler {
     if (typeof window.showToastr !== "undefined") {
       window.showToastr(message, type);
     } else {
-      alert(message);
+      if (typeof window.toastr !== "undefined") {
+        window.toastr.error(message);
+      } else {
+        alert(message);
+      }
     }
   }
 
@@ -105,7 +107,12 @@ class ErrorHandler {
       if (typeof window.showToastr !== "undefined") {
         window.showToastr(message, "error");
       } else {
-        alert(message);
+        // Thay thế alert(message) bằng showToastr(message, 'error') hoặc toastr.error(message)
+        if (typeof window.toastr !== "undefined") {
+          window.toastr.error(message);
+        } else {
+          alert(message);
+        }
       }
     }
   }
