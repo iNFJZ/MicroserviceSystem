@@ -628,8 +628,6 @@
     <script src="/assets/vendor/libs/@form-validation/umd/bundle/popular.min.js"></script>
 
     <!-- Main JS -->
-    <script src="/assets/vendor/libs/i18n/i18next.min.js"></script>
-    <script src="/assets/vendor/libs/i18n/i18nextHttpBackend.min.js"></script>
     <script src="/assets/vendor/libs/typeahead-js/typeahead.js"></script>
     <script src="/assets/js/main.js"></script>
 
@@ -639,9 +637,7 @@
     <script src="/js/error-handler.js"></script>
     <!-- Page JS -->
     <script src="/js/admin-auth.js"></script>
-    <script>
-      updateUserStatsDashboard();
-    </script>
+    
     <script>
       $(document).ready(async function () {
         if (window.adminAuth) {
@@ -652,7 +648,11 @@
         } else if (window.bindLanguageDropdownHandlers) {
           window.bindLanguageDropdownHandlers();
         }
-
+        
+        // Load dashboard stats after DOM is ready
+        if (typeof updateUserStatsDashboard === 'function') {
+          updateUserStatsDashboard();
+        }
       });
     </script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.2.7/pdfmake.min.js"></script>
