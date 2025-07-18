@@ -226,12 +226,7 @@
         } else if (window.bindLanguageDropdownHandlers) {
           window.bindLanguageDropdownHandlers();
         }
-        if (typeof showToastr === 'function') {
-          showToastr('Test Toastr on upload-file.html', 'success');
-          console.log('showToastr called');
-        } else {
-          console.error('showToastr is not defined');
-        }
+
       });
     </script>
     <script type="module" src="/js/admin/files/upload-file.js"></script>
